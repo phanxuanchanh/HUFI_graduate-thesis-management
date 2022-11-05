@@ -87,6 +87,9 @@
 	    (object Class "Sinh vien"
 		quid       	"5CDAF76201A6"
 		stereotype 	"Business Actor")
+	    (object Class "Hoi Dong Cham Thi"
+		quid       	"5CDAF87B006D"
+		stereotype 	"Business Actor")
 	    (object UseCase "Phan cong giang vien"
 		quid       	"5CDAF4A402EE"
 		stereotype 	"Business Use Case")
@@ -111,6 +114,8 @@
 	    (object UseCase "Bao ve de tai"
 		quid       	"5CDAF7C702DE"
 		stereotype 	"Business Use Case")
+	    (object UseCase "NewUseCase"
+		quid       	"5CDAF8910242")
 	    (object Association "$UNNAMED$0"
 		quid       	"5CDAF4DC03A9"
 		roles      	(list role_list
@@ -824,7 +829,39 @@
 				vertices   	(list Points
 				    (845, 2146)
 				    (482, 1892))
-				line_style 	0)))))))
+				line_style 	0)))
+		    (object ClassView "Class" "Use Case View::Hoi Dong Cham Thi" @36
+			ShowCompartmentStereotypes 	TRUE
+			SuppressAttribute 	TRUE
+			SuppressOperation 	TRUE
+			IncludeAttribute 	TRUE
+			IncludeOperation 	TRUE
+			location   	(3536, 1616)
+			font       	(object Font
+			    size       	10
+			    face       	"Arial"
+			    bold       	FALSE
+			    italics    	FALSE
+			    underline  	FALSE
+			    strike     	FALSE
+			    color      	0
+			    default_color 	TRUE)
+			label      	(object ItemLabel
+			    Parent_View 	@36
+			    location   	(3535, 1824)
+			    anchor_loc 	1
+			    nlines     	2
+			    max_width  	591
+			    justify    	0
+			    label      	"Hoi Dong Cham Thi")
+			icon       	"Business Actor"
+			icon_style 	"Icon"
+			line_color 	3342489
+			fill_color 	13434879
+			quidu      	"5CDAF87B006D"
+			width      	202
+			annotation 	8
+			autoResize 	TRUE)))))
     root_category 	(object Class_Category "Logical View"
 	quid       	"39C9260C00D5"
 	exportControl 	"Public"
@@ -857,7 +894,7 @@
 		origin_x   	0
 		origin_y   	0
 		items      	(list diagram_item_list
-		    (object CategoryView "Logical View::java" @36
+		    (object CategoryView "Logical View::java" @37
 			location   	(208, 272)
 			font       	(object Font
 			    size       	10
@@ -869,7 +906,7 @@
 			    color      	0
 			    default_color 	TRUE)
 			label      	(object ItemLabel
-			    Parent_View 	@36
+			    Parent_View 	@37
 			    location   	(64, 188)
 			    nlines     	2
 			    max_width  	288
@@ -881,7 +918,7 @@
 			quidu      	"39C92661003B"
 			width      	300
 			height     	180)
-		    (object CategoryView "Logical View::javax" @37
+		    (object CategoryView "Logical View::javax" @38
 			location   	(656, 272)
 			font       	(object Font
 			    size       	10
@@ -893,7 +930,7 @@
 			    color      	0
 			    default_color 	TRUE)
 			label      	(object ItemLabel
-			    Parent_View 	@37
+			    Parent_View 	@38
 			    location   	(512, 188)
 			    nlines     	2
 			    max_width  	288
@@ -905,7 +942,7 @@
 			quidu      	"39C926610018"
 			width      	300
 			height     	180)
-		    (object CategoryView "Logical View::org" @38
+		    (object CategoryView "Logical View::org" @39
 			location   	(1104, 272)
 			font       	(object Font
 			    size       	10
@@ -917,7 +954,7 @@
 			    color      	0
 			    default_color 	TRUE)
 			label      	(object ItemLabel
-			    Parent_View 	@38
+			    Parent_View 	@39
 			    location   	(960, 188)
 			    nlines     	2
 			    max_width  	288
@@ -938,7 +975,7 @@
 		origin_x   	0
 		origin_y   	0
 		items      	(list diagram_item_list
-		    (object NoteView @39
+		    (object NoteView @40
 			location   	(224, 624)
 			font       	(object Font
 			    size       	10
@@ -953,7 +990,7 @@
 			fill_color 	12632256
 			width      	300
 			height     	132)
-		    (object NoteView @40
+		    (object NoteView @41
 			location   	(704, 624)
 			font       	(object Font
 			    size       	10
@@ -968,7 +1005,7 @@
 			fill_color 	8421631
 			width      	300
 			height     	132)
-		    (object NoteView @41
+		    (object NoteView @42
 			location   	(1200, 624)
 			font       	(object Font
 			    size       	10
@@ -983,7 +1020,7 @@
 			fill_color 	12615680
 			width      	300
 			height     	132)
-		    (object NoteView @42
+		    (object NoteView @43
 			location   	(1664, 624)
 			font       	(object Font
 			    size       	10
@@ -998,7 +1035,7 @@
 			fill_color 	16777215
 			width      	300
 			height     	132)
-		    (object Label @43
+		    (object Label @44
 			location   	(81, 369)
 			font       	(object Font
 			    size       	12
@@ -1013,7 +1050,7 @@
 			max_width  	1163
 			justify    	1
 			label      	"J2EE: Java 2 Platform, Enterprise Edition - v 1.2.1")
-		    (object Label @44
+		    (object Label @45
 			location   	(96, 608)
 			font       	(object Font
 			    size       	10
@@ -1028,7 +1065,7 @@
 			max_width  	268
 			justify    	1
 			label      	"Abstract Class")
-		    (object Label @45
+		    (object Label @46
 			location   	(592, 608)
 			font       	(object Font
 			    size       	10
@@ -1043,7 +1080,7 @@
 			max_width  	225
 			justify    	1
 			label      	"Final Class")
-		    (object Label @46
+		    (object Label @47
 			location   	(1104, 608)
 			font       	(object Font
 			    size       	10
@@ -1058,7 +1095,7 @@
 			max_width  	206
 			justify    	1
 			label      	"Interface")
-		    (object Label @47
+		    (object Label @48
 			location   	(1552, 608)
 			font       	(object Font
 			    size       	10
