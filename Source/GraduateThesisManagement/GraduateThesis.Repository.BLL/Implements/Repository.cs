@@ -2,10 +2,6 @@
 using GraduateThesis.Repository.DAL;
 using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GraduateThesis.Repository.BLL.Implements
 {
@@ -21,6 +17,10 @@ namespace GraduateThesis.Repository.BLL.Implements
         }
 
         private bool disposedValue;
+
+        public IStudentRepository StudentRepository => new StudentRepository(_context);
+
+        public IStudentClassRepository StudentClassRepository => new StudentClassRepository(_context);
 
         protected virtual void Dispose(bool disposing)
         {

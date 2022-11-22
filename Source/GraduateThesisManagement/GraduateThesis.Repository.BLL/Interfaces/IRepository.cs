@@ -8,5 +8,7 @@ namespace GraduateThesis.Repository.BLL.Interfaces
 {
     public interface IRepository : IDisposable
     {
+        IStudentRepository StudentRepository { get; }
+        IStudentClassRepository StudentClassRepository { get; }
     }
 }
