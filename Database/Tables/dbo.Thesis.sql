@@ -13,11 +13,3 @@
 )
 ON [PRIMARY]
 GO
-
-ALTER TABLE [dbo].[Thesis]
-  ADD CONSTRAINT [FK_Thesis_Council_ID] FOREIGN KEY ([PK_Council_ID]) REFERENCES [dbo].[Council] ([ID])
-GO
-
-ALTER TABLE [dbo].[Thesis]
-  ADD CONSTRAINT [FK_Thesis_Topic_ID] FOREIGN KEY ([PK_Topic_ID]) REFERENCES [dbo].[Topic] ([ID])
-GO

@@ -10,11 +10,3 @@
 )
 ON [PRIMARY]
 GO
-
-ALTER TABLE [dbo].[Counterargument]
-  ADD CONSTRAINT [FK_Counterargument_Lecturers_ID] FOREIGN KEY ([PK_Lecturers_ID]) REFERENCES [dbo].[Lecturers] ([ID])
-GO
-
-ALTER TABLE [dbo].[Counterargument]
-  ADD CONSTRAINT [FK_Counterargument_Thesis_ID] FOREIGN KEY ([PK_Thesis_ID]) REFERENCES [dbo].[Thesis] ([ID])
-GO

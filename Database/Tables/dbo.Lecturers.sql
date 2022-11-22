@@ -1,6 +1,7 @@
 ﻿CREATE TABLE [dbo].[Lecturers] (
   [ID] [varchar](50) NOT NULL,
   [Name] [nvarchar](50) NOT NULL,
+  [Description] [nvarchar](50) NOT NULL,
   [Sex] [char](10) NOT NULL,
   [Phone] [int] NOT NULL,
   [Adress] [nvarchar](50) NOT NULL,

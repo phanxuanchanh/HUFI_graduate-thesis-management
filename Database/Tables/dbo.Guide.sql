@@ -10,11 +10,3 @@
 )
 ON [PRIMARY]
 GO
-
-ALTER TABLE [dbo].[Guide]
-  ADD CONSTRAINT [FK_Guide_Lecturers_ID] FOREIGN KEY ([PK_Thesis_ID]) REFERENCES [dbo].[Lecturers] ([ID])
-GO
-
-ALTER TABLE [dbo].[Guide]
-  ADD CONSTRAINT [FK_Guide_Thesis_ID] FOREIGN KEY ([PK_Thesis_ID]) REFERENCES [dbo].[Thesis] ([ID])
-GO
