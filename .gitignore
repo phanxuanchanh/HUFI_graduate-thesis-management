@@ -349,3 +349,4 @@ MigrationBackup/
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
 /Source/GraduateThesisManagement/GraduateThesisManagement/appsettings.Development.json
+/Source/GraduateThesisManagement/GraduateThesis.Web/appsettings.Development.json

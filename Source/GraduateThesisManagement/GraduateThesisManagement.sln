@@ -3,7 +3,27 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.3.32825.248
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GraduateThesisManagement", "GraduateThesisManagement\GraduateThesisManagement.csproj", "{3C74BABB-9FB2-4BE1-8426-808158AACDC0}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{EF62BD17-4039-4F77-A302-890DCFD6B1FF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WebApi", "WebApi", "{040B27F1-A99D-42CE-AC9F-A0E421056F42}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Web", "Web", "{6DC0E381-0D13-4F95-8C2C-5D9D9CFEE82E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GraduateThesis.RepositoryPatterns", "GraduateThesis.RepositoryPatterns\GraduateThesis.RepositoryPatterns.csproj", "{428D7B8D-2223-434D-85D6-691051F2CA0C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Repository", "Repository", "{E20CE89C-C251-4EC3-974D-C30764E068FB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GraduateThesis.Web", "GraduateThesis.Web\GraduateThesis.Web.csproj", "{0CBA689A-BE38-4953-8F3B-AD3ECE24296D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GraduateThesis.Repository.DAL", "GraduateThesis.Repository.DAL\GraduateThesis.Repository.DAL.csproj", "{EB79FF5D-1CE7-458C-8B4B-87AB725DF635}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GraduateThesis.Repository.BLL", "GraduateThesis.Repository.BLL\GraduateThesis.Repository.BLL.csproj", "{329AE565-5D1E-4E70-886F-8D566ACA4480}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GraduateThesis.Repository.DTO", "GraduateThesis.Repository.DTO\GraduateThesis.Repository.DTO.csproj", "{26A84399-A6A0-4F9A-9CD5-4E18C49DB8B6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GraduateThesis.Models", "GraduateThesis.Models\GraduateThesis.Models.csproj", "{5E3C26F0-DE1D-4C8E-95EC-4A20FC4B395F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GraduateThesis.Generics", "GraduateThesis.Generics\GraduateThesis.Generics.csproj", "{462834C4-F0C5-47D2-ACE2-F31B3BB95C81}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,13 +31,46 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{3C74BABB-9FB2-4BE1-8426-808158AACDC0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3C74BABB-9FB2-4BE1-8426-808158AACDC0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3C74BABB-9FB2-4BE1-8426-808158AACDC0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3C74BABB-9FB2-4BE1-8426-808158AACDC0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{428D7B8D-2223-434D-85D6-691051F2CA0C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{428D7B8D-2223-434D-85D6-691051F2CA0C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{428D7B8D-2223-434D-85D6-691051F2CA0C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{428D7B8D-2223-434D-85D6-691051F2CA0C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0CBA689A-BE38-4953-8F3B-AD3ECE24296D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0CBA689A-BE38-4953-8F3B-AD3ECE24296D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0CBA689A-BE38-4953-8F3B-AD3ECE24296D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0CBA689A-BE38-4953-8F3B-AD3ECE24296D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EB79FF5D-1CE7-458C-8B4B-87AB725DF635}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EB79FF5D-1CE7-458C-8B4B-87AB725DF635}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EB79FF5D-1CE7-458C-8B4B-87AB725DF635}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EB79FF5D-1CE7-458C-8B4B-87AB725DF635}.Release|Any CPU.Build.0 = Release|Any CPU
+		{329AE565-5D1E-4E70-886F-8D566ACA4480}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{329AE565-5D1E-4E70-886F-8D566ACA4480}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{329AE565-5D1E-4E70-886F-8D566ACA4480}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{329AE565-5D1E-4E70-886F-8D566ACA4480}.Release|Any CPU.Build.0 = Release|Any CPU
+		{26A84399-A6A0-4F9A-9CD5-4E18C49DB8B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{26A84399-A6A0-4F9A-9CD5-4E18C49DB8B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{26A84399-A6A0-4F9A-9CD5-4E18C49DB8B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{26A84399-A6A0-4F9A-9CD5-4E18C49DB8B6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5E3C26F0-DE1D-4C8E-95EC-4A20FC4B395F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5E3C26F0-DE1D-4C8E-95EC-4A20FC4B395F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5E3C26F0-DE1D-4C8E-95EC-4A20FC4B395F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5E3C26F0-DE1D-4C8E-95EC-4A20FC4B395F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{462834C4-F0C5-47D2-ACE2-F31B3BB95C81}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{462834C4-F0C5-47D2-ACE2-F31B3BB95C81}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{462834C4-F0C5-47D2-ACE2-F31B3BB95C81}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{462834C4-F0C5-47D2-ACE2-F31B3BB95C81}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{428D7B8D-2223-434D-85D6-691051F2CA0C} = {EF62BD17-4039-4F77-A302-890DCFD6B1FF}
+		{0CBA689A-BE38-4953-8F3B-AD3ECE24296D} = {6DC0E381-0D13-4F95-8C2C-5D9D9CFEE82E}
+		{EB79FF5D-1CE7-458C-8B4B-87AB725DF635} = {E20CE89C-C251-4EC3-974D-C30764E068FB}
+		{329AE565-5D1E-4E70-886F-8D566ACA4480} = {E20CE89C-C251-4EC3-974D-C30764E068FB}
+		{26A84399-A6A0-4F9A-9CD5-4E18C49DB8B6} = {E20CE89C-C251-4EC3-974D-C30764E068FB}
+		{5E3C26F0-DE1D-4C8E-95EC-4A20FC4B395F} = {EF62BD17-4039-4F77-A302-890DCFD6B1FF}
+		{462834C4-F0C5-47D2-ACE2-F31B3BB95C81} = {EF62BD17-4039-4F77-A302-890DCFD6B1FF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {72E29965-1916-4D3D-B95A-773CD63E07F4}
