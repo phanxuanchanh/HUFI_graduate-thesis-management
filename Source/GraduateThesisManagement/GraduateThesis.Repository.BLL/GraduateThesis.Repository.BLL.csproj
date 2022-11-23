@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\GraduateThesis.Generics\GraduateThesis.Generics.csproj" />
+    <ProjectReference Include="..\GraduateThesis.Repository.DAL\GraduateThesis.Repository.DAL.csproj" />
+    <ProjectReference Include="..\GraduateThesis.Repository.DTO\GraduateThesis.Repository.DTO.csproj" />
+    <ProjectReference Include="..\GraduateThesis.RepositoryPatterns\GraduateThesis.RepositoryPatterns.csproj" />
+  </ItemGroup>
+
+</Project>
