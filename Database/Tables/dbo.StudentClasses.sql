@@ -1,4 +1,4 @@
-﻿CREATE TABLE [dbo].[StudentClass] (
+﻿CREATE TABLE [dbo].[StudentClasses] (
   [ID] [nvarchar](50) NOT NULL,
   [Name] [nvarchar](100) NOT NULL,
   [Description] [nvarchar](200) NOT NULL,
