@@ -2,7 +2,7 @@
 
 namespace GraduateThesis.RepositoryPatterns
 {
-    public class IRepositoryConfiguration
+    public interface IRepositoryConfiguration
     {
     }
 }

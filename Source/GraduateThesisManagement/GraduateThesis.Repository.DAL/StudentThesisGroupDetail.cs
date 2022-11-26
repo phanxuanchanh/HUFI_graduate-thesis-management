@@ -7,10 +7,11 @@ namespace GraduateThesis.Repository.DAL
 {
     public partial class StudentThesisGroupDetail
     {
-        public string PkStudentThesisGroupId { get; set; }
-        public string Name { get; set; }
+        public string StudentThesisGroupId { get; set; }
+        public string StudentId { get; set; }
         public string Notes { get; set; }
 
-        public virtual StudentThesisGroup PkStudentThesisGroup { get; set; }
+        public virtual Student Student { get; set; }
+        public virtual StudentThesisGroup StudentThesisGroup { get; set; }
     }
 }

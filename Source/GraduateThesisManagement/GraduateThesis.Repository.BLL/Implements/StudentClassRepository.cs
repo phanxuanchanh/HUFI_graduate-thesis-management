@@ -14,22 +14,22 @@ namespace GraduateThesis.Repository.BLL.Implements
     public class StudentClassRepository : IStudentClassRepository
     {
         private HUFI_graduatethesisContext _context;
-        private GenericRepository<StudentClass, StudentClassInput, StudentClassOutput> _genericRepository;
+        private GenericRepository<HUFI_graduatethesisContext, StudentClass, StudentClassInput, StudentClassOutput> _genericRepository;
 
         internal StudentClassRepository(HUFI_graduatethesisContext context)
         {
             _context = context;
-            _genericRepository = new GenericRepository<StudentClass, StudentClassInput, StudentClassOutput>(_context.StudentClasses);
+            _genericRepository = new GenericRepository<HUFI_graduatethesisContext, StudentClass, StudentClassInput, StudentClassOutput>(_context, _context.StudentClasses);
         }
 
         public DataResponse BatchDelete(string id)
         {
-            throw new NotImplementedException();
+            return _genericRepository.BatchDelete(id);
         }
 
-        public Task<DataResponse> BatchDeleteAsync(string id)
+        public async Task<DataResponse> BatchDeleteAsync(string id)
         {
-            throw new NotImplementedException();
+            return await _genericRepository.BatchDeleteAsync(id);
         }
 
         public int Count()
@@ -44,12 +44,12 @@ namespace GraduateThesis.Repository.BLL.Implements
 
         public DataResponse<StudentClassOutput> Create(StudentClassInput input)
         {
-            throw new NotImplementedException();
+            return _genericRepository.Create(input, GenerateUIDOptions.ShortUID);
         }
 
-        public Task<DataResponse<StudentClassOutput>> CreateAsync(StudentClassInput input)
+        public async Task<DataResponse<StudentClassOutput>> CreateAsync(StudentClassInput input)
         {
-            throw new NotImplementedException();
+            return await _genericRepository.CreateAsync(input, GenerateUIDOptions.ShortUID);
         }
 
         public DataResponse ForceDelete(string id)
@@ -85,6 +85,7 @@ namespace GraduateThesis.Repository.BLL.Implements
         public DataResponse<StudentClassOutput> Update(StudentClassInput input)
         {
             throw new NotImplementedException();
+            //return _genericRepository.Update(input.Id, input);
         }
 
         public Task<DataResponse<StudentClassOutput>> UpdateAsync(StudentClassInput input)

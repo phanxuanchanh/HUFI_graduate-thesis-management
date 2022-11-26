@@ -11,5 +11,6 @@ namespace GraduateThesis.Repository.BLL.Interfaces
 {
     public interface IStudentClassRepository : ICrudPattern<StudentClass, StudentClassInput, StudentClassOutput, string>
     {
+
     }
 }

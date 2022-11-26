@@ -17,11 +17,12 @@ namespace GraduateThesis.Repository.DAL
         public string Description { get; set; }
         public int StudentQuantity { get; set; }
         public string Notes { get; set; }
-        public string PkFacultyId { get; set; }
-        public string PkCourseTrainingId { get; set; }
+        public string FacultyId { get; set; }
+        public DateTime? CreatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
+        public DateTime? DeletedAt { get; set; }
 
-        public virtual CourseTraining PkCourseTraining { get; set; }
-        public virtual Faculty PkFaculty { get; set; }
+        public virtual Faculty Faculty { get; set; }
         public virtual ICollection<Student> Students { get; set; }
     }
 }

@@ -14,11 +14,13 @@ namespace GraduateThesis.Repository.DAL
 
         public string Id { get; set; }
         public string Name { get; set; }
-        public string Comment { get; set; }
+        public string Description { get; set; }
         public string Notes { get; set; }
         public string Chairman { get; set; }
-        public double CouncilPoint { get; set; }
-        public int Numberofmember { get; set; }
+        public decimal CouncilPoint { get; set; }
+        public DateTime? CreatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
+        public DateTime? DeletedAt { get; set; }
 
         public virtual ICollection<Thesis> Theses { get; set; }
     }
