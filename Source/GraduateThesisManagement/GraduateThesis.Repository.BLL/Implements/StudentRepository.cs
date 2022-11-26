@@ -15,22 +15,22 @@ namespace GraduateThesis.Repository.BLL.Implements
     public class StudentRepository : IStudentRepository
     {
         private HUFI_graduatethesisContext _context;
-        private GenericRepository<Student, StudentInput, StudentOutput> _genericRepository;
+        private GenericRepository<HUFI_graduatethesisContext, Student, StudentInput, StudentOutput> _genericRepository;
 
         internal StudentRepository(HUFI_graduatethesisContext context)
         {
             _context = context;
-            _genericRepository = new GenericRepository<Student, StudentInput, StudentOutput>(_context.Students);
+            _genericRepository = new GenericRepository<HUFI_graduatethesisContext, Student, StudentInput, StudentOutput>(_context, _context.Students);
         }
 
         public DataResponse BatchDelete(string id)
         {
-            throw new NotImplementedException();
+            return _genericRepository.BatchDelete(id);
         }
 
-        public Task<DataResponse> BatchDeleteAsync(string id)
+        public async Task<DataResponse> BatchDeleteAsync(string id)
         {
-            throw new NotImplementedException();
+            return await _genericRepository.BatchDeleteAsync(id);
         }
 
         public int Count()
@@ -45,15 +45,20 @@ namespace GraduateThesis.Repository.BLL.Implements
 
         public DataResponse<StudentOutput> Create(StudentInput input)
         {
-            throw new NotImplementedException();
+            return _genericRepository.Create(input, GenerateUIDOptions.ShortUID);
         }
 
-        public Task<DataResponse<StudentOutput>> CreateAsync(StudentInput input)
+        public async Task<DataResponse<StudentOutput>> CreateAsync(StudentInput input)
+        {
+            return await _genericRepository.CreateAsync(input, GenerateUIDOptions.ShortUID);
+        }
+
+        public ForgotPasswordModel CreateNewPassword(NewPasswordModel newPasswordModel)
         {
             throw new NotImplementedException();
         }
 
-        public Task<ForgotPasswordModel> CreateNewPassword(NewPasswordModel newPasswordModel)
+        public Task<ForgotPasswordModel> CreateNewPasswordAsync(NewPasswordModel newPasswordModel)
         {
             throw new NotImplementedException();
         }
@@ -68,7 +73,12 @@ namespace GraduateThesis.Repository.BLL.Implements
             throw new NotImplementedException();
         }
 
-        public Task<AccountVerificationModel> ForgotPassword(ForgotPasswordModel forgotPasswordModel)
+        public AccountVerificationModel ForgotPassword(ForgotPasswordModel forgotPasswordModel)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<AccountVerificationModel> ForgotPasswordAsync(ForgotPasswordModel forgotPasswordModel)
         {
             throw new NotImplementedException();
         }
@@ -103,7 +113,12 @@ namespace GraduateThesis.Repository.BLL.Implements
             throw new NotImplementedException();
         }
 
-        public Task<NewPasswordModel> VerifyAccount(AccountVerificationModel accountVerificationModel)
+        public NewPasswordModel VerifyAccount(AccountVerificationModel accountVerificationModel)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<NewPasswordModel> VerifyAccountAsync(AccountVerificationModel accountVerificationModel)
         {
             throw new NotImplementedException();
         }

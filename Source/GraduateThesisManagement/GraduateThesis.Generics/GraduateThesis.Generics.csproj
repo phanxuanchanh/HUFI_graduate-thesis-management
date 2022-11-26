@@ -9,6 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\GraduateThesis.Common\GraduateThesis.Common.csproj" />
     <ProjectReference Include="..\GraduateThesis.ExtensionMethods\GraduateThesis.ExtensionMethods.csproj" />
     <ProjectReference Include="..\GraduateThesis.Models\GraduateThesis.Models.csproj" />
   </ItemGroup>

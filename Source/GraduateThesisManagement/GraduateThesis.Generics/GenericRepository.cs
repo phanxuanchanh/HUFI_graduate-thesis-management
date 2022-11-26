@@ -1,4 +1,5 @@
-﻿using GraduateThesis.ExtensionMethods;
+﻿using GraduateThesis.Common;
+using GraduateThesis.ExtensionMethods;
 using GraduateThesis.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -99,11 +100,11 @@ namespace GraduateThesis.Generics
 
         #region create new records method
 
-        public DataResponse<TOutput> Create(TInput input)
+        public DataResponse<TOutput> Create(TInput input, GenerateUIDOptions generateUIDOptions)
         {
             TEntity entity = ToEntity(input);
 
-            PropertyInfo? idPropertyInfo = entity.GetType().GetProperty("ID");
+            PropertyInfo idPropertyInfo = entity.GetType().GetProperty("Id");
             if (idPropertyInfo == null)
                 return new DataResponse<TOutput>
                 {
@@ -111,9 +112,12 @@ namespace GraduateThesis.Generics
                     Message = "Property named 'ID' not found"
                 };
 
-            //object? id = idPropertyInfo.GetValue(entity, null);
-            //if (id is string)
-            //    idPropertyInfo.SetValue(entity, ShortUID.Generate());
+            object id = idPropertyInfo.GetValue(entity, null);
+            if (id is string && generateUIDOptions == GenerateUIDOptions.ShortUID)
+                idPropertyInfo.SetValue(entity, UID.GetShortUID());
+
+            if (id is string && generateUIDOptions == GenerateUIDOptions.MicrosoftUID)
+                idPropertyInfo.SetValue(entity, UID.GetUUID());
 
             _dbSet.Add(entity);
 
@@ -130,11 +134,11 @@ namespace GraduateThesis.Generics
             };
         }
 
-        public async Task<DataResponse<TOutput>> CreateAsync(TInput input)
+        public async Task<DataResponse<TOutput>> CreateAsync(TInput input, GenerateUIDOptions generateUIDOptions)
         {
             TEntity entity = ToEntity(input);
 
-            PropertyInfo? idPropertyInfo = entity.GetType().GetProperty("ID");
+            PropertyInfo idPropertyInfo = entity.GetType().GetProperty("Id");
             if (idPropertyInfo == null)
                 return new DataResponse<TOutput>
                 {
@@ -142,9 +146,12 @@ namespace GraduateThesis.Generics
                     Message = "Property named 'ID' not found"
                 };
 
-            //object? id = idPropertyInfo.GetValue(entity, null);
-            //if (id is string)
-            //    idPropertyInfo.SetValue(entity, "");
+            object id = idPropertyInfo.GetValue(entity, null);
+            if (id is string && generateUIDOptions == GenerateUIDOptions.ShortUID)
+                idPropertyInfo.SetValue(entity, UID.GetShortUID());
+
+            if(id is string && generateUIDOptions == GenerateUIDOptions.MicrosoftUID)
+                idPropertyInfo.SetValue(entity, UID.GetUUID());
 
             _dbSet.Add(entity);
 
@@ -162,14 +169,13 @@ namespace GraduateThesis.Generics
             };
         }
 
-
         #endregion
 
         #region update records method
 
         public DataResponse Update(object id, TInput input)
         {
-            TEntity? entity_fromDb = _dbSet.Find(id);
+            TEntity entity_fromDb = _dbSet.Find(id);
             if (entity_fromDb == null)
                 return new DataResponse { Status = DataResponseStatus.NotFound };
 
@@ -186,7 +192,7 @@ namespace GraduateThesis.Generics
 
         public async Task<DataResponse> UpdateAsync(object id, TInput input)
         {
-            TEntity? entity_fromDb = _dbSet.Find(id);
+            TEntity entity_fromDb = _dbSet.Find(id);
             if (entity_fromDb == null)
                 return new DataResponse { Status = DataResponseStatus.NotFound };
 
@@ -209,11 +215,11 @@ namespace GraduateThesis.Generics
 
         public DataResponse BatchDelete(object id)
         {
-            TEntity? entity = _dbSet.Find(id);
+            TEntity entity = _dbSet.Find(id);
             if (entity == null)
                 return new DataResponse { Status = DataResponseStatus.NotFound };
 
-            PropertyInfo? isDeletedPropertyInfo = entity.GetType().GetProperty("IsDeleted");
+            PropertyInfo isDeletedPropertyInfo = entity.GetType().GetProperty("IsDeleted");
             if (isDeletedPropertyInfo == null)
                 return new DataResponse<TOutput>
                 {
@@ -228,11 +234,11 @@ namespace GraduateThesis.Generics
 
         public async Task<DataResponse> BatchDeleteAsync(object id)
         {
-            TEntity? entity = await _dbSet.FindAsync(id);
+            TEntity entity = await _dbSet.FindAsync(id);
             if (entity == null)
                 return new DataResponse { Status = DataResponseStatus.NotFound };
 
-            PropertyInfo? isDeletedPropertyInfo = entity.GetType().GetProperty("IsDeleted");
+            PropertyInfo isDeletedPropertyInfo = entity.GetType().GetProperty("IsDeleted");
             if (isDeletedPropertyInfo == null)
                 throw new Exception("");
 

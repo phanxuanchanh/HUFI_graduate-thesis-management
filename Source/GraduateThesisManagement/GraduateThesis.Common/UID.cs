@@ -1,21 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GraduateThesis.Common
 {
     public class UID
     {
-        public string GetShortUID()
+        public static string GetShortUID()
         {
-            return null;
+            return ShortUID.ShortUID.Generate();
         }
 
-        public string GetUUID()
+        public static string GetUUID()
         {
-            return null;
+            return Guid.NewGuid().ToString();
         }
     }
 }

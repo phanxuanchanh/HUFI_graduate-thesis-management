@@ -1,27 +1,65 @@
 ﻿using System;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace GraduateThesis.Common
 {
     public class HashFunctions
     {
-        public string GetSHA256()
+        public string GetSHA256(string input)
         {
-            return "";
+            using (SHA256 sha256 = SHA256.Create())
+            {
+                StringBuilder hashSb = new StringBuilder();
+                byte[] hash = sha256.ComputeHash(Encoding.UTF8.GetBytes(input));
+                foreach (byte b in hash)
+                {
+                    hashSb.Append(b.ToString("x2"));
+                }
+                return hashSb.ToString();
+            }
         }
 
-        public string GetSHA384()
+        public string GetSHA384(string input)
         {
-            return "";
+            using (SHA384 sha384 = SHA384.Create())
+            {
+                StringBuilder hashSb = new StringBuilder();
+                byte[] hash = sha384.ComputeHash(Encoding.UTF8.GetBytes(input));
+                foreach (byte b in hash)
+                {
+                    hashSb.Append(b.ToString("x2"));
+                }
+                return hashSb.ToString();
+            }
         }
 
-        public string GetSHA512()
+        public string GetSHA512(string input)
         {
-            return "";
+            using (SHA512 sha512 = SHA512.Create())
+            {
+                StringBuilder hashSb = new StringBuilder();
+                byte[] hash = sha512.ComputeHash(Encoding.UTF8.GetBytes(input));
+                foreach (byte b in hash)
+                {
+                    hashSb.Append(b.ToString("x2"));
+                }
+                return hashSb.ToString();
+            }
         }
 
-        public string GetMD5()
+        public string GetMD5(string input)
         {
-            return "";
+            using (MD5 md5 = MD5.Create())
+            {
+                byte[] hash = md5.ComputeHash(Encoding.UTF8.GetBytes(input));
+                StringBuilder hashSb = new StringBuilder();
+                foreach (byte b in hash)
+                {
+                    hashSb.Append(b.ToString("X2"));
+                }
+                return hashSb.ToString();
+            };
         }
     }
 }
