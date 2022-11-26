@@ -9,7 +9,7 @@ namespace GraduateThesis.Repository.DAL
     {
         public Student()
         {
-            StudentThesisGroups = new HashSet<StudentThesisGroup>();
+            StudentThesisGroupDetails = new HashSet<StudentThesisGroupDetail>();
         }
 
         public string Id { get; set; }
@@ -20,12 +20,15 @@ namespace GraduateThesis.Repository.DAL
         public DateTime Birthday { get; set; }
         public string Avatar { get; set; }
         public string Notes { get; set; }
-        public string PkStudentClassId { get; set; }
-        public string PkThesisId { get; set; }
-        public string Sex { get; set; }
+        public string StudentClassId { get; set; }
+        public string CourseTrainingId { get; set; }
+        public string Password { get; set; }
+        public string Salt { get; set; }
+        public DateTime? CreatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
+        public DateTime? DeletedAt { get; set; }
 
-        public virtual StudentClass PkStudentClass { get; set; }
-        public virtual Thesis PkThesis { get; set; }
-        public virtual ICollection<StudentThesisGroup> StudentThesisGroups { get; set; }
+        public virtual StudentClass StudentClass { get; set; }
+        public virtual ICollection<StudentThesisGroupDetail> StudentThesisGroupDetails { get; set; }
     }
 }

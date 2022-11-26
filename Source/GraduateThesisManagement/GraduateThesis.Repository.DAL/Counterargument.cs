@@ -14,8 +14,5 @@ namespace GraduateThesis.Repository.DAL
         public string Notes { get; set; }
         public string Comment { get; set; }
         public int Feedbackpoints { get; set; }
-
-        public virtual Lecturer PkLecturers { get; set; }
-        public virtual Thesis PkThesis { get; set; }
     }
 }

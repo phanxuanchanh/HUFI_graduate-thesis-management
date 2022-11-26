@@ -1,7 +1,9 @@
-﻿using GraduateThesis.Models;
+﻿using GraduateThesis.Generics;
+using GraduateThesis.Models;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DAL;
 using GraduateThesis.Repository.DTO;
+using GraduateThesis.RepositoryPatterns;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,10 +15,12 @@ namespace GraduateThesis.Repository.BLL.Implements
     public class StudentRepository : IStudentRepository
     {
         private HUFI_graduatethesisContext _context;
+        private GenericRepository<Student, StudentInput, StudentOutput> _genericRepository;
 
         internal StudentRepository(HUFI_graduatethesisContext context)
         {
             _context = context;
+            _genericRepository = new GenericRepository<Student, StudentInput, StudentOutput>(_context.Students);
         }
 
         public DataResponse BatchDelete(string id)
@@ -31,12 +35,12 @@ namespace GraduateThesis.Repository.BLL.Implements
 
         public int Count()
         {
-            throw new NotImplementedException();
+            return _genericRepository.Count();
         }
 
-        public Task<int> CountAsync()
+        public async Task<int> CountAsync()
         {
-            throw new NotImplementedException();
+            return await _genericRepository.CountAsync();
         }
 
         public DataResponse<StudentOutput> Create(StudentInput input)
@@ -49,12 +53,22 @@ namespace GraduateThesis.Repository.BLL.Implements
             throw new NotImplementedException();
         }
 
+        public Task<ForgotPasswordModel> CreateNewPassword(NewPasswordModel newPasswordModel)
+        {
+            throw new NotImplementedException();
+        }
+
         public DataResponse ForceDelete(string id)
         {
             throw new NotImplementedException();
         }
 
         public Task<DataResponse> ForceDeleteAsync(string id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<AccountVerificationModel> ForgotPassword(ForgotPasswordModel forgotPasswordModel)
         {
             throw new NotImplementedException();
         }
@@ -85,6 +99,11 @@ namespace GraduateThesis.Repository.BLL.Implements
         }
 
         public Task<DataResponse<StudentOutput>> UpdateAsync(StudentInput input)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<NewPasswordModel> VerifyAccount(AccountVerificationModel accountVerificationModel)
         {
             throw new NotImplementedException();
         }

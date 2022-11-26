@@ -10,7 +10,6 @@ namespace GraduateThesis.Repository.DAL
         public Thesis()
         {
             StudentThesisGroups = new HashSet<StudentThesisGroup>();
-            Students = new HashSet<Student>();
         }
 
         public string Id { get; set; }
@@ -18,17 +17,18 @@ namespace GraduateThesis.Repository.DAL
         public string Description { get; set; }
         public int MaxStudentNumber { get; set; }
         public string SourceCode { get; set; }
-        public string Generalcommet { get; set; }
+        public string GeneralComment { get; set; }
         public int Year { get; set; }
         public string Notes { get; set; }
-        public string PkTopicId { get; set; }
-        public string PkCouncilId { get; set; }
+        public string TopicId { get; set; }
+        public string CouncilId { get; set; }
+        public bool IsDeleted { get; set; }
+        public DateTime? CreatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
+        public DateTime? DeletedAt { get; set; }
 
-        public virtual Council PkCouncil { get; set; }
-        public virtual Topic PkTopic { get; set; }
-        public virtual Counterargument Counterargument { get; set; }
-        public virtual Guide Guide { get; set; }
+        public virtual Council Council { get; set; }
+        public virtual Topic Topic { get; set; }
         public virtual ICollection<StudentThesisGroup> StudentThesisGroups { get; set; }
-        public virtual ICollection<Student> Students { get; set; }
     }
 }
