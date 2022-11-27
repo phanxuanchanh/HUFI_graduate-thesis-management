@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.17" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\GraduateThesis.Common\GraduateThesis.Common.csproj" />
+    <ProjectReference Include="..\GraduateThesis.ExtensionMethods\GraduateThesis.ExtensionMethods.csproj" />
+    <ProjectReference Include="..\GraduateThesis.Models\GraduateThesis.Models.csproj" />
+  </ItemGroup>
+
+</Project>
