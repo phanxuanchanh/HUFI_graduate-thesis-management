@@ -4,10 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GraduateThesis.Models
+namespace GraduateThesis.Common.File
 {
-    public enum DataResponseStatus
+    internal class FileManager
     {
-        Success, NotFound, AlreadyExists, Failed
     }
 }

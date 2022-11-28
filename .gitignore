@@ -350,3 +350,4 @@ MigrationBackup/
 .ionide/
 /Source/GraduateThesisManagement/GraduateThesisManagement/appsettings.Development.json
 /Source/GraduateThesisManagement/GraduateThesis.Web/appsettings.Development.json
+/Source/GraduateThesisManagement/GraduateThesis.WebApi/appsettings.Development.json
