@@ -33,7 +33,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Extensions", "Extensions", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GraduateThesis.WebExtensions", "GraduateThesis.WebExtensions\GraduateThesis.WebExtensions.csproj", "{90182A72-FDEF-43A2-8D9D-54D1F89D40B4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GraduateThesis.WebApi", "GraduateThesis.WebApi\GraduateThesis.WebApi.csproj", "{83AB1A1F-60C9-4553-A976-48CF81FD9A2E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GraduateThesis.WebApi", "GraduateThesis.WebApi\GraduateThesis.WebApi.csproj", "{83AB1A1F-60C9-4553-A976-48CF81FD9A2E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
