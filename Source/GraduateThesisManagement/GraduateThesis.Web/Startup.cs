@@ -30,6 +30,8 @@ namespace GraduateThesis.Web
             services.AddControllersWithViews();
             services.AddScoped<IRepository>(r => new Repository.BLL.Implements.Repository(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DbConnection"))));
+
+            services.AddSession();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -51,6 +53,7 @@ namespace GraduateThesis.Web
             app.UseRouting();
 
             app.UseAuthorization();
+            app.UseSession();
 
             app.UseEndpoints(endpoints =>
             {
