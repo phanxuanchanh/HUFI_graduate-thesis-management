@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using GraduateThesis.Common.Authorization;
+using GraduateThesis.WebExtensions;
+using Microsoft.AspNetCore.Mvc;
 
 namespace GraduateThesis.Web.Controllers
 {
@@ -6,6 +8,7 @@ namespace GraduateThesis.Web.Controllers
     public class DashboardController : Controller
     {
         [Route("simple")]
+        [WebAuthorize(AccountRole.Administrator)]
         public IActionResult GetSimple()
         {
             return View();
