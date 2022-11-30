@@ -5,13 +5,12 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace GraduateThesis.WebApi.Controllers
 {
-    [Route("api/faculties")]
+    [Route("api/topic")]
     [ApiController]
-    public class FacultiesControler : ApiControllerBase<IFacultiesRepository, FacultiesInput, FacultiesOutput, string>
+    public class TopicController : ApiControllerBase<ITopicRepository, TopicInput, TopicOutput, string>
     {
-        public FacultiesControler(IRepository repository) : base(repository.FacultiesRepository)
+        public TopicController(IRepository repository) : base(repository.TopicRepository)
         {
         }
     }
 }
-

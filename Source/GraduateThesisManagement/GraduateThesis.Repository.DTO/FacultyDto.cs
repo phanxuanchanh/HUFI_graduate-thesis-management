@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace GraduateThesis.Repository.DTO
 {
-    public class ThesisInput
+    public class FacultyInput
     {
     }
 
-    public class ThesisOutput : ThesisInput
+    public class FacultyOutput : FacultyInput
     {
 
     }

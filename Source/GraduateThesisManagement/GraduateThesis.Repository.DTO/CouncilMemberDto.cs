@@ -6,7 +6,12 @@ using System.Threading.Tasks;
 
 namespace GraduateThesis.Repository.DTO
 {
-    internal class CouncilMemberDto
+    public class CouncilMemberInput
     {
+    }
+
+    public class CouncilMemberOutput : CouncilMemberInput
+    {
+
     }
 }

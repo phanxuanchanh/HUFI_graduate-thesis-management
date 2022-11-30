@@ -10,13 +10,13 @@ using System.Threading.Tasks;
 
 namespace GraduateThesis.Repository.BLL.Implements
 {
-    public class StudentThesisGroupRepository : IStudentThesisGroupRepository
+    public class FacultyRepository : IFacultyRepository
     {
-        private HUFI_graduatethesisContext _context;
+        private HUFI_graduatethesisContext context;
 
-        public StudentThesisGroupRepository(HUFI_graduatethesisContext context)
+        public FacultyRepository(HUFI_graduatethesisContext context)
         {
-            _context = context;
+            this.context = context;
         }
 
         public DataResponse BatchDelete(string id)
@@ -39,12 +39,12 @@ namespace GraduateThesis.Repository.BLL.Implements
             throw new NotImplementedException();
         }
 
-        public DataResponse<StudentThesisGroupOutput> Create(StudentThesisGroupInput input)
+        public DataResponse<FacultyOutput> Create(FacultyInput input)
         {
             throw new NotImplementedException();
         }
 
-        public Task<DataResponse<StudentThesisGroupOutput>> CreateAsync(StudentThesisGroupInput input)
+        public Task<DataResponse<FacultyOutput>> CreateAsync(FacultyInput input)
         {
             throw new NotImplementedException();
         }
@@ -59,32 +59,32 @@ namespace GraduateThesis.Repository.BLL.Implements
             throw new NotImplementedException();
         }
 
-        public StudentThesisGroupOutput Get(string id)
+        public FacultyOutput Get(string id)
         {
             throw new NotImplementedException();
         }
 
-        public Task<StudentThesisGroupOutput> GetAsync(string id)
+        public Task<FacultyOutput> GetAsync(string id)
         {
             throw new NotImplementedException();
         }
 
-        public List<StudentThesisGroupOutput> GetList(int count = 200)
+        public List<FacultyOutput> GetList(int count = 200)
         {
             throw new NotImplementedException();
         }
 
-        public Task<List<StudentThesisGroupOutput>> GetListAsync(int count = 200)
+        public Task<List<FacultyOutput>> GetListAsync(int count = 200)
         {
             throw new NotImplementedException();
         }
 
-        public DataResponse<StudentThesisGroupOutput> Update(StudentThesisGroupInput input)
+        public DataResponse<FacultyOutput> Update(FacultyInput input)
         {
             throw new NotImplementedException();
         }
 
-        public Task<DataResponse<StudentThesisGroupOutput>> UpdateAsync(StudentThesisGroupInput input)
+        public Task<DataResponse<FacultyOutput>> UpdateAsync(FacultyInput input)
         {
             throw new NotImplementedException();
         }

@@ -5,6 +5,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Controllers\CounterargumentController.cs" />
+    <Compile Remove="Controllers\CourseTrainingController.cs" />
+    <Compile Remove="Controllers\DoresearchController.cs" />
+    <Compile Remove="Controllers\FacultyStaffsController.cs" />
+    <Compile Remove="Controllers\GuideController.cs" />
+    <Compile Remove="Controllers\LecturersController.cs" />
+    <Compile Remove="Controllers\ResearchController.cs" />
+    <Compile Remove="Controllers\StudentThesisGroupDetailsController.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
   </ItemGroup>
 
