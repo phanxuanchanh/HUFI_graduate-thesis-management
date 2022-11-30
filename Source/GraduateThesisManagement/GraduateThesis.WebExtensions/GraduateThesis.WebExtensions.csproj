@@ -5,7 +5,19 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Views\Authorization\ShowUnauthorize.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Views\Authorization\ShowUnauthorize.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\GraduateThesis.Common\GraduateThesis.Common.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
   </ItemGroup>
 
 </Project>
