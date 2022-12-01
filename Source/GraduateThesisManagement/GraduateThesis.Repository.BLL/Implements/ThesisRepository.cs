@@ -17,6 +17,9 @@ namespace GraduateThesis.Repository.BLL.Implements
         internal ThesisRepository(HUFI_graduatethesisContext context)
         {
             _context = context;
+
+            ConfigureIncludes();
+            ConfigureSelectors();
         }
 
         public DataResponse BatchDelete(string id)
@@ -27,6 +30,16 @@ namespace GraduateThesis.Repository.BLL.Implements
         public Task<DataResponse> BatchDeleteAsync(string id)
         {
             throw new NotImplementedException();
+        }
+
+        public void ConfigureIncludes()
+        {
+           
+        }
+
+        public void ConfigureSelectors()
+        {
+            
         }
 
         public int Count()
@@ -79,12 +92,12 @@ namespace GraduateThesis.Repository.BLL.Implements
             throw new NotImplementedException();
         }
 
-        public DataResponse<ThesisOutput> Update(ThesisInput input)
+        public DataResponse<ThesisOutput> Update(string id, ThesisInput input)
         {
             throw new NotImplementedException();
         }
 
-        public Task<DataResponse<ThesisOutput>> UpdateAsync(ThesisInput input)
+        public Task<DataResponse<ThesisOutput>> UpdateAsync(string id, ThesisInput input)
         {
             throw new NotImplementedException();
         }

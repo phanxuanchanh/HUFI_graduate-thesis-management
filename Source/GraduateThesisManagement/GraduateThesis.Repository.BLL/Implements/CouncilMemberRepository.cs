@@ -1,4 +1,5 @@
-﻿using GraduateThesis.Models;
+﻿using GraduateThesis.Generics;
+using GraduateThesis.Models;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DAL;
 using GraduateThesis.Repository.DTO;
@@ -13,40 +14,55 @@ namespace GraduateThesis.Repository.BLL.Implements
     public class CouncilMemberRepository : ICouncilMemberRepository
     {
         private HUFI_graduatethesisContext _context;
+        private GenericRepository<HUFI_graduatethesisContext, CouncilMember, CouncilMemberInput, CouncilMemberOutput> _genericRepository;
 
         public CouncilMemberRepository(HUFI_graduatethesisContext context)
         {
             _context = context;
+            _genericRepository = new GenericRepository<HUFI_graduatethesisContext, CouncilMember, CouncilMemberInput, CouncilMemberOutput>(context, context.CouncilMembers);
+
+            ConfigureIncludes();
+            ConfigureSelectors();
         }
 
         public DataResponse BatchDelete(string id)
         {
-            throw new NotImplementedException();
+            return _genericRepository.BatchDelete(id);
         }
 
         public Task<DataResponse> BatchDeleteAsync(string id)
         {
-            throw new NotImplementedException();
+            return _genericRepository.BatchDeleteAsync(id);
+        }
+
+        public void ConfigureIncludes()
+        {
+            
+        }
+
+        public void ConfigureSelectors()
+        {
+           
         }
 
         public int Count()
         {
-            throw new NotImplementedException();
+            return _genericRepository.Count();
         }
 
-        public Task<int> CountAsync()
+        public async Task<int> CountAsync()
         {
-            throw new NotImplementedException();
+            return await _genericRepository.CountAsync();
         }
 
         public DataResponse<CouncilMemberOutput> Create(CouncilMemberInput input)
         {
-            throw new NotImplementedException();
+            return _genericRepository.Create(input, GenerateUIDOptions.ShortUID);
         }
 
-        public Task<DataResponse<CouncilMemberOutput>> CreateAsync(CouncilMemberInput input)
+        public async Task<DataResponse<CouncilMemberOutput>> CreateAsync(CouncilMemberInput input)
         {
-            throw new NotImplementedException();
+            return await _genericRepository.CreateAsync(input, GenerateUIDOptions.ShortUID);
         }
 
         public DataResponse ForceDelete(string id)
@@ -61,32 +77,32 @@ namespace GraduateThesis.Repository.BLL.Implements
 
         public CouncilMemberOutput Get(string id)
         {
-            throw new NotImplementedException();
+            return _genericRepository.GetById(id);
         }
 
         public Task<CouncilMemberOutput> GetAsync(string id)
         {
-            throw new NotImplementedException();
+            return _genericRepository.GetByIdAsync(id);
         }
 
         public List<CouncilMemberOutput> GetList(int count = 200)
         {
-            throw new NotImplementedException();
+            return _genericRepository.GetList(count);
         }
 
-        public Task<List<CouncilMemberOutput>> GetListAsync(int count = 200)
+        public async Task<List<CouncilMemberOutput>> GetListAsync(int count = 200)
         {
-            throw new NotImplementedException();
+            return await _genericRepository.GetListAsync(count);
         }
 
-        public DataResponse<CouncilMemberOutput> Update(CouncilMemberInput input)
+        public DataResponse<CouncilMemberOutput> Update(string id, CouncilMemberInput input)
         {
-            throw new NotImplementedException();
+            return _genericRepository.Update(id, input);
         }
 
-        public Task<DataResponse<CouncilMemberOutput>> UpdateAsync(CouncilMemberInput input)
+        public Task<DataResponse<CouncilMemberOutput>> UpdateAsync(string id, CouncilMemberInput input)
         {
-            throw new NotImplementedException();
+            return _genericRepository.UpdateAsync(id, input);
         }
     }
 }

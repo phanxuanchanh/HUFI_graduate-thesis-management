@@ -1,4 +1,5 @@
-﻿using GraduateThesis.Models;
+﻿using GraduateThesis.Generics;
+using GraduateThesis.Models;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DAL;
 using GraduateThesis.Repository.DTO;
@@ -13,40 +14,55 @@ namespace GraduateThesis.Repository.BLL.Implements
     public class FacultyRepository : IFacultyRepository
     {
         private HUFI_graduatethesisContext context;
+        private GenericRepository<HUFI_graduatethesisContext, Faculty, FacultyInput, FacultyOutput> _genericRepository;
 
         public FacultyRepository(HUFI_graduatethesisContext context)
         {
             this.context = context;
+            _genericRepository = new GenericRepository<HUFI_graduatethesisContext, Faculty, FacultyInput, FacultyOutput>(context, context.Faculties);
+
+            ConfigureIncludes();
+            ConfigureSelectors();
         }
 
         public DataResponse BatchDelete(string id)
         {
-            throw new NotImplementedException();
+            return _genericRepository.BatchDelete(id);
         }
 
         public Task<DataResponse> BatchDeleteAsync(string id)
         {
-            throw new NotImplementedException();
+            return _genericRepository.BatchDeleteAsync(id);
+        }
+
+        public void ConfigureIncludes()
+        {
+            
+        }
+
+        public void ConfigureSelectors()
+        {
+            
         }
 
         public int Count()
         {
-            throw new NotImplementedException();
+            return _genericRepository.Count();
         }
 
         public Task<int> CountAsync()
         {
-            throw new NotImplementedException();
+            return _genericRepository.CountAsync();
         }
 
         public DataResponse<FacultyOutput> Create(FacultyInput input)
         {
-            throw new NotImplementedException();
+            return _genericRepository.Create(input, GenerateUIDOptions.ShortUID);
         }
 
-        public Task<DataResponse<FacultyOutput>> CreateAsync(FacultyInput input)
+        public async Task<DataResponse<FacultyOutput>> CreateAsync(FacultyInput input)
         {
-            throw new NotImplementedException();
+            return await _genericRepository.CreateAsync(input, GenerateUIDOptions.ShortUID);
         }
 
         public DataResponse ForceDelete(string id)
@@ -61,32 +77,32 @@ namespace GraduateThesis.Repository.BLL.Implements
 
         public FacultyOutput Get(string id)
         {
-            throw new NotImplementedException();
+            return _genericRepository.GetById(id);
         }
 
         public Task<FacultyOutput> GetAsync(string id)
         {
-            throw new NotImplementedException();
+            return _genericRepository.GetByIdAsync(id);
         }
 
         public List<FacultyOutput> GetList(int count = 200)
         {
-            throw new NotImplementedException();
+            return _genericRepository.GetList(count);
         }
 
         public Task<List<FacultyOutput>> GetListAsync(int count = 200)
         {
-            throw new NotImplementedException();
+            return _genericRepository.GetListAsync(count);
         }
 
-        public DataResponse<FacultyOutput> Update(FacultyInput input)
+        public DataResponse<FacultyOutput> Update(string id, FacultyInput input)
         {
-            throw new NotImplementedException();
+            return _genericRepository.Update(id, input);
         }
 
-        public Task<DataResponse<FacultyOutput>> UpdateAsync(FacultyInput input)
+        public Task<DataResponse<FacultyOutput>> UpdateAsync(string id, FacultyInput input)
         {
-            throw new NotImplementedException();
+            return _genericRepository.UpdateAsync(id, input);
         }
     }
 }

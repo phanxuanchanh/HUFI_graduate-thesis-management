@@ -1,4 +1,5 @@
-﻿using GraduateThesis.Models;
+﻿using GraduateThesis.Generics;
+using GraduateThesis.Models;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DAL;
 using GraduateThesis.Repository.DTO;
@@ -13,40 +14,55 @@ namespace GraduateThesis.Repository.BLL.Implements
     public class CouncilRepository : ICouncilRepository
     {
         private HUFI_graduatethesisContext _context;
+        private GenericRepository<HUFI_graduatethesisContext, Council, CouncilInput, CouncilOutput> _genericRepository;
 
         internal CouncilRepository(HUFI_graduatethesisContext context)
         {
             _context = context;
+            _genericRepository = new GenericRepository<HUFI_graduatethesisContext, Council, CouncilInput, CouncilOutput>(context, context.Councils);
+
+            ConfigureIncludes();
+            ConfigureSelectors();
         }
 
         public DataResponse BatchDelete(string id)
         {
-            throw new NotImplementedException();
+            return _genericRepository.BatchDelete(id);
         }
 
-        public Task<DataResponse> BatchDeleteAsync(string id)
+        public async Task<DataResponse> BatchDeleteAsync(string id)
         {
-            throw new NotImplementedException();
+            return await _genericRepository.BatchDeleteAsync(id);
+        }
+
+        public void ConfigureIncludes()
+        {
+            
+        }
+
+        public void ConfigureSelectors()
+        {
+            
         }
 
         public int Count()
         {
-            throw new NotImplementedException();
+            return _genericRepository.Count();
         }
 
-        public Task<int> CountAsync()
+        public async Task<int> CountAsync()
         {
-            throw new NotImplementedException();
+            return await _genericRepository.CountAsync();
         }
 
         public DataResponse<CouncilOutput> Create(CouncilInput input)
         {
-            throw new NotImplementedException();
+            return _genericRepository.Create(input, GenerateUIDOptions.ShortUID);
         }
 
         public Task<DataResponse<CouncilOutput>> CreateAsync(CouncilInput input)
         {
-            throw new NotImplementedException();
+            return _genericRepository.CreateAsync(input, GenerateUIDOptions.ShortUID);
         }
 
         public DataResponse ForceDelete(string id)
@@ -61,32 +77,32 @@ namespace GraduateThesis.Repository.BLL.Implements
 
         public CouncilOutput Get(string id)
         {
-            throw new NotImplementedException();
+            return _genericRepository.GetById(id);
         }
 
         public Task<CouncilOutput> GetAsync(string id)
         {
-            throw new NotImplementedException();
+            return _genericRepository.GetByIdAsync(id);
         }
 
         public List<CouncilOutput> GetList(int count = 200)
         {
-            throw new NotImplementedException();
+            return _genericRepository.GetList(count);
         }
 
         public Task<List<CouncilOutput>> GetListAsync(int count = 200)
         {
-            throw new NotImplementedException();
+            return _genericRepository.GetListAsync(count);
         }
 
-        public DataResponse<CouncilOutput> Update(CouncilInput input)
+        public DataResponse<CouncilOutput> Update(string id, CouncilInput input)
         {
-            throw new NotImplementedException();
+            return _genericRepository.Update(id, input);
         }
 
-        public Task<DataResponse<CouncilOutput>> UpdateAsync(CouncilInput input)
+        public async Task<DataResponse<CouncilOutput>> UpdateAsync(string id, CouncilInput input)
         {
-            throw new NotImplementedException();
+            return await _genericRepository.UpdateAsync(id, input);
         }
     }
 }
