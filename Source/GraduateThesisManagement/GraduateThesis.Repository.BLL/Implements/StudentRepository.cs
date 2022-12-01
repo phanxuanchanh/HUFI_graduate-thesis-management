@@ -43,7 +43,10 @@ namespace GraduateThesis.Repository.BLL.Implements
 
         public void ConfigureSelectors()
         {
-            
+            _genericRepository.Selector = s => new StudentOutput
+            {
+
+            };
         }
 
         public int Count()

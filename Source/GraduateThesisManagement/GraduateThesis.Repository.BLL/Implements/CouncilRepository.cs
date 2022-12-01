@@ -42,7 +42,10 @@ namespace GraduateThesis.Repository.BLL.Implements
 
         public void ConfigureSelectors()
         {
-            
+            _genericRepository.Selector = s => new CouncilOutput
+            {
+
+            };
         }
 
         public int Count()
