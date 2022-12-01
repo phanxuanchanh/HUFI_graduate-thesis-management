@@ -21,6 +21,9 @@ namespace GraduateThesis.Repository.BLL.Implements
         {
             _context = context;
             _genericRepository = new GenericRepository<HUFI_graduatethesisContext, Student, StudentInput, StudentOutput>(_context, _context.Students);
+
+            ConfigureIncludes();
+            ConfigureSelectors();
         }
 
         public DataResponse BatchDelete(string id)
@@ -31,6 +34,19 @@ namespace GraduateThesis.Repository.BLL.Implements
         public async Task<DataResponse> BatchDeleteAsync(string id)
         {
             return await _genericRepository.BatchDeleteAsync(id);
+        }
+
+        public void ConfigureIncludes()
+        {
+            
+        }
+
+        public void ConfigureSelectors()
+        {
+            _genericRepository.Selector = s => new StudentOutput
+            {
+
+            };
         }
 
         public int Count()
@@ -85,32 +101,32 @@ namespace GraduateThesis.Repository.BLL.Implements
 
         public StudentOutput Get(string id)
         {
-            throw new NotImplementedException();
+            return _genericRepository.GetById(id);
         }
 
         public Task<StudentOutput> GetAsync(string id)
         {
-            throw new NotImplementedException();
+            return _genericRepository.GetByIdAsync(id);
         }
 
         public List<StudentOutput> GetList(int count = 200)
         {
-            throw new NotImplementedException();
+            return _genericRepository.GetList(count);
         }
 
         public Task<List<StudentOutput>> GetListAsync(int count = 200)
         {
-            throw new NotImplementedException();
+            return _genericRepository.GetListAsync(count);
         }
 
-        public DataResponse<StudentOutput> Update(StudentInput input)
+        public DataResponse<StudentOutput> Update(string id, StudentInput input)
         {
-            throw new NotImplementedException();
+            return _genericRepository.Update(id, input);
         }
 
-        public Task<DataResponse<StudentOutput>> UpdateAsync(StudentInput input)
+        public Task<DataResponse<StudentOutput>> UpdateAsync(string id, StudentInput input)
         {
-            throw new NotImplementedException();
+            return _genericRepository.UpdateAsync(id, input);
         }
 
         public NewPasswordModel VerifyAccount(AccountVerificationModel accountVerificationModel)

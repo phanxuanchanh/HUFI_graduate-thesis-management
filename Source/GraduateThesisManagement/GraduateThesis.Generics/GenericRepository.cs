@@ -173,11 +173,11 @@ namespace GraduateThesis.Generics
 
         #region update records method
 
-        public DataResponse Update(object id, TInput input)
+        public DataResponse<TOutput> Update(object id, TInput input)
         {
             TEntity entity_fromDb = _dbSet.Find(id);
             if (entity_fromDb == null)
-                return new DataResponse { Status = DataResponseStatus.NotFound };
+                return new DataResponse<TOutput> { Status = DataResponseStatus.NotFound };
 
 
 
@@ -187,14 +187,17 @@ namespace GraduateThesis.Generics
             if (affected == 0)
                 return new DataResponse<TOutput> { Status = DataResponseStatus.Failed };
 
-            return new DataResponse { Status = DataResponseStatus.Success };
+            return new DataResponse<TOutput> {
+                Status = DataResponseStatus.Success,
+                Data = ToOutput(entity_fromDb)
+            };
         }
 
-        public async Task<DataResponse> UpdateAsync(object id, TInput input)
+        public async Task<DataResponse<TOutput>> UpdateAsync(object id, TInput input)
         {
             TEntity entity_fromDb = _dbSet.Find(id);
             if (entity_fromDb == null)
-                return new DataResponse { Status = DataResponseStatus.NotFound };
+                return new DataResponse<TOutput> { Status = DataResponseStatus.NotFound };
 
 
 
@@ -205,7 +208,11 @@ namespace GraduateThesis.Generics
             if (affected == 0)
                 return new DataResponse<TOutput> { Status = DataResponseStatus.Failed };
 
-            return new DataResponse { Status = DataResponseStatus.Success };
+            return new DataResponse<TOutput>
+            {
+                Status = DataResponseStatus.Success,
+                Data = ToOutput(entity_fromDb)
+            };
         }
 
 
