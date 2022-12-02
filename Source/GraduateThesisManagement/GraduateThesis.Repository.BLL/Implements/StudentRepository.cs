@@ -95,12 +95,12 @@ namespace GraduateThesis.Repository.BLL.Implements
 
         public List<StudentOutput> GetList(int count = 200)
         {
-            throw new NotImplementedException();
+            return  _genericRepository.GetList(count);
         }
 
-        public Task<List<StudentOutput>> GetListAsync(int count = 200)
+        public async Task<List<StudentOutput>> GetListAsync(int count = 200)
         {
-            throw new NotImplementedException();
+            return await _genericRepository.GetListAsync(count);
         }
 
         public DataResponse<StudentOutput> Update(StudentInput input)
