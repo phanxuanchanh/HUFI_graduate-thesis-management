@@ -11,15 +11,15 @@ using System.Threading.Tasks;
 
 namespace GraduateThesis.Repository.BLL.Implements
 {
-    public class TopicRepository : ITopicRepository
+    public class FacultyRepository : IFacultyRepository
     {
-        private HUFI_graduatethesisContext _context;
-        private GenericRepository<HUFI_graduatethesisContext, Topic, TopicInput, TopicOutput> _genericRepository;
+        private HUFI_graduatethesisContext context;
+        private GenericRepository<HUFI_graduatethesisContext, Faculty, FacultyInput, FacultyOutput> _genericRepository;
 
-        internal TopicRepository(HUFI_graduatethesisContext context)
+        public FacultyRepository(HUFI_graduatethesisContext context)
         {
-            _context = context;
-            _genericRepository = new GenericRepository<HUFI_graduatethesisContext, Topic, TopicInput, TopicOutput>(context, context.Topics);
+            this.context = context;
+            _genericRepository = new GenericRepository<HUFI_graduatethesisContext, Faculty, FacultyInput, FacultyOutput>(context, context.Faculties);
 
             ConfigureIncludes();
             ConfigureSelectors();
@@ -30,9 +30,9 @@ namespace GraduateThesis.Repository.BLL.Implements
             return _genericRepository.BatchDelete(id);
         }
 
-        public async Task<DataResponse> BatchDeleteAsync(string id)
+        public Task<DataResponse> BatchDeleteAsync(string id)
         {
-            return await _genericRepository.BatchDeleteAsync(id);
+            return _genericRepository.BatchDeleteAsync(id);
         }
 
         public void ConfigureIncludes()
@@ -42,7 +42,7 @@ namespace GraduateThesis.Repository.BLL.Implements
 
         public void ConfigureSelectors()
         {
-            _genericRepository.Selector = s => new TopicOutput
+            _genericRepository.Selector = s => new FacultyOutput
             {
 
             };
@@ -53,17 +53,17 @@ namespace GraduateThesis.Repository.BLL.Implements
             return _genericRepository.Count();
         }
 
-        public async Task<int> CountAsync()
+        public Task<int> CountAsync()
         {
-            return await _genericRepository.CountAsync();
+            return _genericRepository.CountAsync();
         }
 
-        public DataResponse<TopicOutput> Create(TopicInput input)
+        public DataResponse<FacultyOutput> Create(FacultyInput input)
         {
             return _genericRepository.Create(input, GenerateUIDOptions.ShortUID);
         }
 
-        public async Task<DataResponse<TopicOutput>> CreateAsync(TopicInput input)
+        public async Task<DataResponse<FacultyOutput>> CreateAsync(FacultyInput input)
         {
             return await _genericRepository.CreateAsync(input, GenerateUIDOptions.ShortUID);
         }
@@ -78,32 +78,32 @@ namespace GraduateThesis.Repository.BLL.Implements
             throw new NotImplementedException();
         }
 
-        public TopicOutput Get(string id)
+        public FacultyOutput Get(string id)
         {
             return _genericRepository.GetById(id);
         }
 
-        public async Task<TopicOutput> GetAsync(string id)
+        public Task<FacultyOutput> GetAsync(string id)
         {
-            return await _genericRepository.GetByIdAsync(id);
+            return _genericRepository.GetByIdAsync(id);
         }
 
-        public List<TopicOutput> GetList(int count = 200)
+        public List<FacultyOutput> GetList(int count = 200)
         {
             return _genericRepository.GetList(count);
         }
 
-        public Task<List<TopicOutput>> GetListAsync(int count = 200)
+        public Task<List<FacultyOutput>> GetListAsync(int count = 200)
         {
             return _genericRepository.GetListAsync(count);
         }
 
-        public DataResponse<TopicOutput> Update(string id, TopicInput input)
+        public DataResponse<FacultyOutput> Update(string id, FacultyInput input)
         {
             return _genericRepository.Update(id, input);
         }
 
-        public Task<DataResponse<TopicOutput>> UpdateAsync(string id, TopicInput input)
+        public Task<DataResponse<FacultyOutput>> UpdateAsync(string id, FacultyInput input)
         {
             return _genericRepository.UpdateAsync(id, input);
         }

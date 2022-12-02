@@ -20,6 +20,9 @@ namespace GraduateThesis.Repository.BLL.Implements
         {
             _context = context;
             _genericRepository = new GenericRepository<HUFI_graduatethesisContext, StudentClass, StudentClassInput, StudentClassOutput>(_context, _context.StudentClasses);
+
+            ConfigureIncludes();
+            ConfigureSelectors();
         }
 
         public DataResponse BatchDelete(string id)
@@ -30,6 +33,19 @@ namespace GraduateThesis.Repository.BLL.Implements
         public async Task<DataResponse> BatchDeleteAsync(string id)
         {
             return await _genericRepository.BatchDeleteAsync(id);
+        }
+
+        public void ConfigureIncludes()
+        {
+            
+        }
+
+        public void ConfigureSelectors()
+        {
+            _genericRepository.Selector = s => new StudentClassOutput
+            {
+
+            };
         }
 
         public int Count()
@@ -82,15 +98,14 @@ namespace GraduateThesis.Repository.BLL.Implements
             return await _genericRepository.GetListAsync();
         }
 
-        public DataResponse<StudentClassOutput> Update(StudentClassInput input)
+        public DataResponse<StudentClassOutput> Update(string id, StudentClassInput input)
         {
-            throw new NotImplementedException();
-            //return _genericRepository.Update(input.Id, input);
+            return _genericRepository.Update(id, input);
         }
 
-        public Task<DataResponse<StudentClassOutput>> UpdateAsync(StudentClassInput input)
+        public async Task<DataResponse<StudentClassOutput>> UpdateAsync(string id, StudentClassInput input)
         {
-            throw new NotImplementedException();
+            return await _genericRepository.UpdateAsync(id, input);
         }
     }
 }

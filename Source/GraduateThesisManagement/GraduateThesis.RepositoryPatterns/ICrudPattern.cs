@@ -25,7 +25,7 @@ namespace GraduateThesis.RepositoryPatterns
         Task<List<TOutput>> GetListAsync(int count = 200);
         Task<TOutput> GetAsync(T_ID id);
         Task<DataResponse<TOutput>> CreateAsync(TInput input);
-        Task<DataResponse<TOutput>> UpdateAsync(TInput input);
+        Task<DataResponse<TOutput>> UpdateAsync(T_ID id, TInput input);
         Task<DataResponse> BatchDeleteAsync(T_ID id);
         Task<DataResponse> ForceDeleteAsync(T_ID id);
         Task<int> CountAsync();
@@ -33,7 +33,7 @@ namespace GraduateThesis.RepositoryPatterns
         List<TOutput> GetList(int count = 200);
         TOutput Get(T_ID id);
         DataResponse<TOutput> Create(TInput input);
-        DataResponse<TOutput> Update(TInput input);
+        DataResponse<TOutput> Update(T_ID id, TInput input);
         DataResponse BatchDelete(T_ID id);
         DataResponse ForceDelete(T_ID id);
         int Count();

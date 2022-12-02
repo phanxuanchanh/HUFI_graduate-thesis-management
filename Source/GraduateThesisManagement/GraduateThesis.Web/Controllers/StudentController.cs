@@ -1,9 +1,4 @@
-﻿using GraduateThesis.Generics;
-using GraduateThesis.Models;
-using GraduateThesis.Repository.BLL.Interfaces;
-using GraduateThesis.Repository.DAL;
-using GraduateThesis.Repository.DTO;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -47,5 +47,6 @@ namespace GraduateThesis.Repository.DTO
     }
     public class CounciOutput : CouncilInput
     {
+
     }
 }

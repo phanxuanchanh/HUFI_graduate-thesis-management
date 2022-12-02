@@ -9,8 +9,7 @@ using System.Threading.Tasks;
 
 namespace GraduateThesis.Repository.BLL.Interfaces
 {
-    public interface IStudentClassRepository : ICrudPattern<StudentClass, StudentClassInput, StudentClassOutput, string>, IRepositoryConfiguration
+    public interface IFacultyRepository : ICrudPattern<Faculty, FacultyInput, FacultyOutput, string>, IRepositoryConfiguration
     {
-
     }
 }

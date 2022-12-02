@@ -64,4 +64,9 @@ namespace GraduateThesis.Repository.DTO
         public CounciOutput CounciClass { get; set; }
 
     }
+
+    public class ThesisOutput : ThesisInput
+    {
+
+    }
 }
