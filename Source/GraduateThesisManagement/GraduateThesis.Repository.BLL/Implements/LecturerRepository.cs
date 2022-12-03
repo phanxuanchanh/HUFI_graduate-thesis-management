@@ -12,15 +12,15 @@ using System.Threading.Tasks;
 
 namespace GraduateThesis.Repository.BLL.Implements
 {
-    public class StudentRepository : IStudentRepository
+    public class LecturerRepository : ILecturerRepository
     {
         private HUFI_graduatethesisContext _context;
-        private GenericRepository<HUFI_graduatethesisContext, Student, StudentInput, StudentOutput> _genericRepository;
+        private GenericRepository<HUFI_graduatethesisContext, Lecturer, LecturerInput, LecturerOutput> _genericRepository;
 
-        internal StudentRepository(HUFI_graduatethesisContext context)
+        internal LecturerRepository(HUFI_graduatethesisContext context)
         {
             _context = context;
-            _genericRepository = new GenericRepository<HUFI_graduatethesisContext, Student, StudentInput, StudentOutput>(_context, _context.Students);
+            _genericRepository = new GenericRepository<HUFI_graduatethesisContext, Lecturer, LecturerInput, LecturerOutput>(_context, _context.Lecturers);
 
             ConfigureIncludes();
             ConfigureSelectors();
@@ -37,23 +37,23 @@ namespace GraduateThesis.Repository.BLL.Implements
         }
 
         public void ConfigureIncludes()
-        { 
-            
+        {
+
         }
 
         public void ConfigureSelectors()
         {
-            _genericRepository.Selector = s => new StudentOutput
+            _genericRepository.Selector = s => new LecturerOutput
             {
                 Id = s.Id,
                 Name = s.Name,
-                Phone = s.Phone,
+                //Phone = s.Phone,
                 Adress = s.Adress,
                 Avatar = s.Avatar,
                 Birthday = s.Birthday,
                 Notes = s.Notes,
                 Email = s.Email
-                
+
 
             };
         }
@@ -68,12 +68,12 @@ namespace GraduateThesis.Repository.BLL.Implements
             return await _genericRepository.CountAsync();
         }
 
-        public DataResponse<StudentOutput> Create(StudentInput input)
+        public DataResponse<LecturerOutput> Create(LecturerInput input)
         {
             return _genericRepository.Create(input, GenerateUIDOptions.ShortUID);
         }
 
-        public async Task<DataResponse<StudentOutput>> CreateAsync(StudentInput input)
+        public async Task<DataResponse<LecturerOutput>> CreateAsync(LecturerInput input)
         {
             return await _genericRepository.CreateAsync(input, GenerateUIDOptions.ShortUID);
         }
@@ -108,36 +108,36 @@ namespace GraduateThesis.Repository.BLL.Implements
             throw new NotImplementedException();
         }
 
-        public StudentOutput Get(string id)
+        public LecturerOutput Get(string id)
         {
             return _genericRepository.GetById(id);
         }
 
-        public Task<StudentOutput> GetAsync(string id)
+        public Task<LecturerOutput> GetAsync(string id)
         {
             return _genericRepository.GetByIdAsync(id);
         }
 
-        public List<StudentOutput> GetList(int count = 200)
+        public List<LecturerOutput> GetList(int count = 200)
         {
             return _genericRepository.GetList(count);
         }
 
-        public async Task<List<StudentOutput>> GetListAsync(int count = 200)
+        public async Task<List<LecturerOutput>> GetListAsync(int count = 200)
         {
             return await _genericRepository.GetListAsync(count);
         }
 
-        public DataResponse<StudentOutput> Update(string id, StudentInput input)
+        public DataResponse<LecturerOutput> Update(string id, LecturerInput input)
         {
             return _genericRepository.Update(id, input);
         }
 
-        public Task<DataResponse<StudentOutput>> UpdateAsync(string id, StudentInput input)
+        public Task<DataResponse<LecturerOutput>> UpdateAsync(string id, LecturerInput input)
         {
             return _genericRepository.UpdateAsync(id, input);
         }
-
+    
         public NewPasswordModel VerifyAccount(AccountVerificationModel accountVerificationModel)
         {
             throw new NotImplementedException();
@@ -147,5 +147,9 @@ namespace GraduateThesis.Repository.BLL.Implements
         {
             throw new NotImplementedException();
         }
-    }
+
+    
+
+    } 
+
 }

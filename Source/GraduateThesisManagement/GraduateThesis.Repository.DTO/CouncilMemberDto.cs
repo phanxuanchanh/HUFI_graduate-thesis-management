@@ -19,12 +19,9 @@ namespace GraduateThesis.Repository.DTO
     }
     public class CouncilMemberOutput : CouncilMemberInput
     {
-        public CounciOutput CounciClass { get; set; }
+        public CouncilOutput CounciClass { get; set; }
 
     }
 
-    public class CouncilMemberOutput : CouncilMemberInput
-    {
-
-    }
+  
 }

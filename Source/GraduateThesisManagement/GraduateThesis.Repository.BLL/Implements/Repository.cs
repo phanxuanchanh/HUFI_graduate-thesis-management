@@ -34,6 +34,9 @@ namespace GraduateThesis.Repository.BLL.Implements
 
         public ICouncilMemberRepository CouncilMemberRepository => new CouncilMemberRepository(_context);
 
+        public ILecturerRepository LecturerRepository => new LecturerRepository(_context);
+
+
         protected virtual void Dispose(bool disposing)
         {
             if (!disposedValue)

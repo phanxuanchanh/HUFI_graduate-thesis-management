@@ -61,12 +61,9 @@ namespace GraduateThesis.Repository.DTO
     public class ThesisOutput : ThesisInput
     {
         public TopicOutput TopicClass { get; set; }
-        public CounciOutput CounciClass { get; set; }
+        public CouncilOutput CounciClass { get; set; }
 
     }
 
-    public class ThesisOutput : ThesisInput
-    {
-
-    }
+    
 }

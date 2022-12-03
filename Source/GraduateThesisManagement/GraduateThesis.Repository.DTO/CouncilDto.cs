@@ -45,7 +45,7 @@ namespace GraduateThesis.Repository.DTO
         public DateTime DeletedAt { get; set; }
 
     }
-    public class CounciOutput : CouncilInput
+    public class CouncilOutput : CouncilInput
     {
 
     }

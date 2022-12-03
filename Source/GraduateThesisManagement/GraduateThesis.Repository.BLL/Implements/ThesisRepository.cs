@@ -93,9 +93,9 @@ namespace GraduateThesis.Repository.BLL.Implements
             return _genericRepository.GetList(count);
         }
 
-        public Task<List<ThesisOutput>> GetListAsync(int count = 200)
+        public async Task<List<ThesisOutput>> GetListAsync(int count = 200)
         {
-            return _genericRepository.GetListAsync(count);
+            return  await _genericRepository.GetListAsync(count);
         }
 
         public DataResponse<ThesisOutput> Update(string id, ThesisInput input)
