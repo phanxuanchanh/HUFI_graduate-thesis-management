@@ -340,7 +340,7 @@ namespace GraduateThesis.Repository.DAL
                     .IsUnicode(false)
                     .HasColumnName("ID");
 
-                entity.Property(e => e.Adress)
+                entity.Property(e => e.Address)
                     .IsRequired()
                     .HasMaxLength(400);
 
@@ -369,16 +369,21 @@ namespace GraduateThesis.Repository.DAL
 
                 entity.Property(e => e.Notes).HasMaxLength(200);
 
-                entity.Property(e => e.Password).HasMaxLength(100);
+                entity.Property(e => e.Password)
+                    .IsRequired()
+                    .HasMaxLength(100);
 
                 entity.Property(e => e.Phone)
                     .IsRequired()
                     .HasMaxLength(20)
                     .IsUnicode(false);
 
-                entity.Property(e => e.Salt).HasMaxLength(100);
+                entity.Property(e => e.Salt)
+                    .IsRequired()
+                    .HasMaxLength(100);
 
                 entity.Property(e => e.StudentClassId)
+                    .IsRequired()
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
@@ -387,6 +392,7 @@ namespace GraduateThesis.Repository.DAL
                 entity.HasOne(d => d.StudentClass)
                     .WithMany(p => p.Students)
                     .HasForeignKey(d => d.StudentClassId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Students_StudentClasses_ID");
             });
 
