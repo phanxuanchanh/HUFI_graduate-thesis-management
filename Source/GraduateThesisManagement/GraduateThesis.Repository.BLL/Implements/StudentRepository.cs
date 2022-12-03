@@ -37,8 +37,8 @@ namespace GraduateThesis.Repository.BLL.Implements
         }
 
         public void ConfigureIncludes()
-        { 
-            
+        {
+            _genericRepository.IncludeMany(i => i.StudentClass);
         }
 
         public void ConfigureSelectors()
@@ -52,9 +52,15 @@ namespace GraduateThesis.Repository.BLL.Implements
                 Avatar = s.Avatar,
                 Birthday = s.Birthday,
                 Notes = s.Notes,
-                Email = s.Email
-                
-
+                Email = s.Email,
+                StudentClass = new StudentClassOutput
+                {
+                    Id = s.StudentClass.Id,
+                    Name = s.StudentClass.Name,
+                    Description = s.StudentClass.Description,
+                    StudentQuantity = s.StudentClass.StudentQuantity,
+                    Notes = s.StudentClass.Notes
+                }
             };
         }
 
@@ -126,6 +132,16 @@ namespace GraduateThesis.Repository.BLL.Implements
         public async Task<List<StudentOutput>> GetListAsync(int count = 200)
         {
             return await _genericRepository.GetListAsync(count);
+        }
+
+        public Pagination<StudentOutput> GetPagination(int page, int pageSize, string orderBy, string keyword)
+        {
+            return _genericRepository.GetPagination(page, pageSize, orderBy, keyword);
+        }
+
+        public async Task<Pagination<StudentOutput>> GetPaginationAsync(int page, int pageSize, string orderBy, string keyword)
+        {
+            return await _genericRepository.GetPaginationAsync(page, pageSize, orderBy, keyword);
         }
 
         public DataResponse<StudentOutput> Update(string id, StudentInput input)

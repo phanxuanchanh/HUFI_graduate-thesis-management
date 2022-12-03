@@ -43,7 +43,7 @@ namespace GraduateThesis.Repository.DTO
         public string CouncilId { get; set; }
 
 
-        public string IsDeleted { get; set; }
+        public bool IsDeleted { get; set; }
 
         [Display(Name = "Ngày tạo")]
         [DataType(DataType.Date, ErrorMessage = "{0} có kiểu dữ liệu không hợp lệ")]
