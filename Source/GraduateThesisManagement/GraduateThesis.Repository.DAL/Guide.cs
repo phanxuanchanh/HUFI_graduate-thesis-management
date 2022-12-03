@@ -14,5 +14,6 @@ namespace GraduateThesis.Repository.DAL
         public string Notes { get; set; }
         public string Comment { get; set; }
         public string PkLecturersId { get; set; }
+        public bool IsDeleted { get; set; }
     }
 }

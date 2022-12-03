@@ -16,7 +16,7 @@ namespace GraduateThesis.Repository.DAL
         public string Name { get; set; }
         public string Phone { get; set; }
         public string Email { get; set; }
-        public string Adress { get; set; }
+        public string Address { get; set; }
         public DateTime Birthday { get; set; }
         public string Avatar { get; set; }
         public string Notes { get; set; }

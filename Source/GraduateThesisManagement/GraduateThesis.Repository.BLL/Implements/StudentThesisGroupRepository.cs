@@ -115,14 +115,14 @@ namespace GraduateThesis.Repository.BLL.Implements
             return _genericRepository.GetListAsync(count);
         }
 
-        public Pagination<StudentThesisGroupOutput> GetPagination(int page, int pageSize, string orderBy, string keyword)
+        public Pagination<StudentThesisGroupOutput> GetPagination(int page, int pageSize, string orderBy, OrderOptions orderOptions, string keyword)
         {
-            return _genericRepository.GetPagination(page, pageSize, orderBy, keyword);
+            return _genericRepository.GetPagination(page, pageSize, orderBy, orderOptions, keyword);
         }
 
-        public async Task<Pagination<StudentThesisGroupOutput>> GetPaginationAsync(int page, int pageSize, string orderBy, string keyword)
+        public async Task<Pagination<StudentThesisGroupOutput>> GetPaginationAsync(int page, int pageSize, string orderBy, OrderOptions orderOptions, string keyword)
         {
-            return await _genericRepository.GetPaginationAsync(page, pageSize, orderBy, keyword);
+            return await _genericRepository.GetPaginationAsync(page, pageSize, orderBy, orderOptions, keyword);
         }
 
         public DataResponse<StudentThesisGroupOutput> Update(string id, StudentThesisGroupInput input)

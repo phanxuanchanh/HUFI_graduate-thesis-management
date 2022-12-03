@@ -24,7 +24,7 @@ namespace GraduateThesis.Repository.DTO
         public string Email { get; set; }
 
         [Display(Name = "Đia chỉ")]
-        public string Adress { get; set; }
+        public string Address { get; set; }
 
         [Display(Name = "Ngày sinh")]
         [DataType(DataType.Date, ErrorMessage = "{0} có kiểu dữ liệu không hợp lệ")]
