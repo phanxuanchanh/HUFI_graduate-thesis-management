@@ -43,7 +43,6 @@ namespace GraduateThesis.Generics
 
         [NonAction]
         protected async Task<IActionResult> GetActionResultAsync<TResponseModel>(string methodName, params object[] parameters)
-            //where TResponseModel : List<TOutput>, TOutput, DataResponse, DataResponse<TOutput>
             where TResponseModel : class
         {
             MethodInfo methodInfo = _subRepositoryType.GetMethod(methodName);
@@ -54,19 +53,12 @@ namespace GraduateThesis.Generics
             Task<TResponseModel> resultAsync = (Task<TResponseModel>)methodInfo.Invoke(_subRepository, parameters)!;
             TResponseModel output = await resultAsync;
 
-            if (output.GetType().Equals(typeof(Pagination<TOutput>)))
-            {
-                return Ok(output);
-            }
-            else if (output.GetType().Equals(typeof(List<TOutput>)))
-            {
-                return Ok(output);
-            }
-            else if (output.GetType().Equals(typeof(TOutput)))
-            {
-                if (output == null)
-                    return NotFound();
+            if (output == null)
+                return NotFound();
 
+            if (output.GetType().Equals(typeof(Pagination<TOutput>)) 
+                || output.GetType().Equals(typeof(List<TOutput>)) || output.GetType().Equals(typeof(TOutput)))
+            {
                 return Ok(output);
             }
             else if (output.GetType().Equals(typeof(DataResponse)))
@@ -76,7 +68,7 @@ namespace GraduateThesis.Generics
             }
             else if (output.GetType().Equals(typeof(DataResponse<TOutput>)))
             {
-                DataResponse<TOutput> dataResponse = (DataResponse<TOutput>)Convert.ChangeType(output, typeof(DataResponse));
+                DataResponse<TOutput> dataResponse = (DataResponse<TOutput>)Convert.ChangeType(output, typeof(DataResponse<TOutput>));
                 return GetActionResult(dataResponse);
             }
             else
@@ -155,11 +147,11 @@ namespace GraduateThesis.Generics
 
         [Route("delete/{id}")]
         [HttpDelete]
-        public virtual async Task<IActionResult> BatchDelete(int id)
+        public virtual async Task<IActionResult> BatchDelete(T_ID id)
         {
             try
             {
-                return await GetActionResultAsync<DataResponse<TOutput>>("BatchDeleteAsync", new object[] { id });
+                return await GetActionResultAsync<DataResponse>("BatchDeleteAsync", new object[] { id });
             }
             catch (Exception ex)
             {

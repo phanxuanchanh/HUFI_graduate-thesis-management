@@ -293,7 +293,7 @@ namespace GraduateThesis.Generics
                     entityPropertyInfo.SetValue(entity_fromDb, inputProperty.GetValue(input));
             }
 
-            MethodInfo saveChangesMethodInfo = _contextType.GetMethod("SaveChangesAsync")!;
+            MethodInfo saveChangesMethodInfo = _contextType.GetMethod("SaveChanges", new Type[] { })!;
             int affected = (int)saveChangesMethodInfo.Invoke(_context, null)!;
 
             if (affected == 0)
@@ -307,7 +307,7 @@ namespace GraduateThesis.Generics
 
         public async Task<DataResponse<TOutput>> UpdateAsync(object id, TInput input)
         {
-            TEntity entity_fromDb = _dbSet.Find(id);
+            TEntity entity_fromDb = await _dbSet.FindAsync(id);
             if (entity_fromDb == null)
                 return new DataResponse<TOutput> { Status = DataResponseStatus.NotFound };
 
@@ -319,8 +319,8 @@ namespace GraduateThesis.Generics
                     entityPropertyInfo.SetValue(entity_fromDb, inputProperty.GetValue(input));
             }
 
-            MethodInfo saveChangesMethodInfo = _contextType.GetMethod("SaveChangesAsync")!;
-            Task<int> resultAsync = (Task<int>)saveChangesMethodInfo.Invoke(_context, null)!;
+            MethodInfo saveChangesMethodInfo = _contextType.GetMethod("SaveChangesAsync", new Type[] { typeof(CancellationToken) });
+            Task<int> resultAsync = (Task<int>)saveChangesMethodInfo.Invoke(_context, new object[] { default(CancellationToken) });
 
             int affected = await resultAsync;
             if (affected == 0)
@@ -354,12 +354,6 @@ namespace GraduateThesis.Generics
 
             isDeletedPropertyInfo.SetValue(entity, true);
 
-            MethodInfo saveChangesMethodInfo = _contextType.GetMethod("SaveChanges")!;
-            int affected = (int)saveChangesMethodInfo.Invoke(_context, null)!;
-
-            if (affected == 0)
-                return new DataResponse { Status = DataResponseStatus.Failed };
-
             return new DataResponse { Status = DataResponseStatus.Success };
         }
 
@@ -371,16 +365,13 @@ namespace GraduateThesis.Generics
 
             PropertyInfo isDeletedPropertyInfo = entity.GetType().GetProperty("IsDeleted");
             if (isDeletedPropertyInfo == null)
-                throw new Exception("");
+                return new DataResponse<TOutput>
+                {
+                    Status = DataResponseStatus.Failed,
+                    Message = "Property named 'IsDeleted' not found"
+                };
 
             isDeletedPropertyInfo.SetValue(entity, true);
-
-            MethodInfo saveChangesMethodInfo = _contextType.GetMethod("SaveChangesAsync")!;
-            Task<int> resultAsync = (Task<int>)saveChangesMethodInfo.Invoke(_context, null)!;
-
-            int affected = await resultAsync;
-            if (affected == 0)
-                return new DataResponse<TOutput> { Status = DataResponseStatus.Failed };
 
             return new DataResponse { Status = DataResponseStatus.Success };
         }
