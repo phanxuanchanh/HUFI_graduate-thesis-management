@@ -12,6 +12,6 @@ namespace GraduateThesis.Repository.DTO
 
     public class StudentThesisGroupOutput : StudentThesisGroupInput
     {
-
     }
+
 }

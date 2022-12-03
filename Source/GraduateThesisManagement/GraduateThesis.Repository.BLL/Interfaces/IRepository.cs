@@ -16,5 +16,7 @@ namespace GraduateThesis.Repository.BLL.Interfaces
         ICouncilMemberRepository CouncilMemberRepository { get; }
         IStudentThesisGroupRepository StudentThesisGroupRepository { get; }
         IFacultyRepository FacultyRepository { get; }
+        ILecturerRepository LecturerRepository { get; }
+
     }
 }

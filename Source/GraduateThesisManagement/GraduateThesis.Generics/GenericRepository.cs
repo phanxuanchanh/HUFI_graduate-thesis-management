@@ -60,6 +60,11 @@ namespace GraduateThesis.Generics
             return (TEntity)To(input, typeof(TEntity));
         }
 
+        public Task<DataResponse> Create<T>(string v, T studentInput)
+        {
+            throw new NotImplementedException();
+        }
+
         public void IncludeMany(params Expression<Func<TEntity, object>>[] navigationPropertyPaths)
         {
             if (navigationPropertyPaths != null)
