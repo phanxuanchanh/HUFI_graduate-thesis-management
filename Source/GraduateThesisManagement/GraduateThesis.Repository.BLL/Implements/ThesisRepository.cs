@@ -37,14 +37,31 @@ namespace GraduateThesis.Repository.BLL.Implements
 
         public void ConfigureIncludes()
         {
-           
+            _genericRepository.IncludeMany(i => i.Topic);
         }
 
         public void ConfigureSelectors()
         {
             _genericRepository.Selector = s => new ThesisOutput
             {
-
+                Id = s.Id,
+                Name = s.Name,
+                Description = s.Description,
+                MaxStudentNumber = s.MaxStudentNumber,
+                SourceCode= s.SourceCode,
+                GeneralComment= s.GeneralComment,
+                Year= s.Year,
+                Notes= s.Notes,
+                TopicId= s.TopicId,
+                CouncilId= s.CouncilId,
+                IsDeleted= s.IsDeleted,
+                TopicClass = new TopicOutput
+                {
+                    Name= s.Topic.Name,
+                    Description= s.Topic.Description,
+                    Notes= s.Topic.Notes,
+                    Id= s.Topic.Id,
+                }
             };
         }
 
@@ -96,6 +113,16 @@ namespace GraduateThesis.Repository.BLL.Implements
         public async Task<List<ThesisOutput>> GetListAsync(int count = 200)
         {
             return  await _genericRepository.GetListAsync(count);
+        }
+
+        public Pagination<ThesisOutput> GetPagination(int page, int pageSize, string orderBy, string keyword)
+        {
+            return _genericRepository.GetPagination(page, pageSize, orderBy, keyword);
+        }
+
+        public async Task<Pagination<ThesisOutput>> GetPaginationAsync(int page, int pageSize, string orderBy, string keyword)
+        {
+            return await _genericRepository.GetPaginationAsync(page, pageSize, orderBy, keyword);
         }
 
         public DataResponse<ThesisOutput> Update(string id, ThesisInput input)

@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace GraduateThesis.WebApi.Controllers
 {
-    [Route("api/faculties")]
+    [Route("api/faculty")]
     [ApiController]
     public class FacultyControler : ApiControllerBase<IFacultyRepository, FacultyInput, FacultyOutput, string>
     {

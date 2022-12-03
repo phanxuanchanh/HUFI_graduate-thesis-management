@@ -44,7 +44,11 @@ namespace GraduateThesis.Repository.BLL.Implements
         {
             _genericRepository.Selector = s => new StudentClassOutput
             {
-
+                Id = s.Id,
+                Name = s.Name,
+                Description = s.Description,
+                StudentQuantity= s.StudentQuantity,
+                Notes= s.Notes,
             };
         }
 
@@ -96,6 +100,16 @@ namespace GraduateThesis.Repository.BLL.Implements
         public async Task<List<StudentClassOutput>> GetListAsync(int count = 200)
         {
             return await _genericRepository.GetListAsync();
+        }
+
+        public Pagination<StudentClassOutput> GetPagination(int page, int pageSize, string orderBy, string keyword)
+        {
+            return _genericRepository.GetPagination(page, pageSize, orderBy, keyword);
+        }
+
+        public async Task<Pagination<StudentClassOutput>> GetPaginationAsync(int page, int pageSize, string orderBy, string keyword)
+        {
+            return await _genericRepository.GetPaginationAsync(page, pageSize, orderBy, keyword);
         }
 
         public DataResponse<StudentClassOutput> Update(string id, StudentClassInput input)

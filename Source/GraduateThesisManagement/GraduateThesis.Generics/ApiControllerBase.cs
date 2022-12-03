@@ -54,7 +54,11 @@ namespace GraduateThesis.Generics
             Task<TResponseModel> resultAsync = (Task<TResponseModel>)methodInfo.Invoke(_subRepository, parameters)!;
             TResponseModel output = await resultAsync;
 
-            if (output.GetType().Equals(typeof(List<TOutput>)))
+            if (output.GetType().Equals(typeof(Pagination<TOutput>)))
+            {
+                return Ok(output);
+            }
+            else if (output.GetType().Equals(typeof(List<TOutput>)))
             {
                 return Ok(output);
             }
@@ -79,6 +83,19 @@ namespace GraduateThesis.Generics
                 return StatusCode(500);
         }
 
+        [Route("get-pagination")]
+        [HttpGet]
+        public virtual async Task<IActionResult> GetPagination(int page = 1, int pageSize = 10, string orderBy = null, string keyword = null)
+        {
+            try
+            {
+                return await GetActionResultAsync<Pagination<TOutput>>("GetPaginationAsync", new object[] { page, pageSize, orderBy, keyword });
+            }
+            catch (Exception ex)
+            {
+                return GetActionResult(ex);
+            }
+        }
 
         [Route("get-list")]
         [HttpGet]
