@@ -70,12 +70,12 @@ namespace GraduateThesis.Repository.BLL.Implements
 
         public DataResponse<StudentOutput> Create(StudentInput input)
         {
-            return _genericRepository.Create(input, GenerateUIDOptions.ShortUID);
+            return _genericRepository.Create(input, GenerateUIDOptions.None);
         }
 
         public async Task<DataResponse<StudentOutput>> CreateAsync(StudentInput input)
         {
-            return await _genericRepository.CreateAsync(input, GenerateUIDOptions.ShortUID);
+            return await _genericRepository.CreateAsync(input, GenerateUIDOptions.None);
         }
 
         public ForgotPasswordModel CreateNewPassword(NewPasswordModel newPasswordModel)

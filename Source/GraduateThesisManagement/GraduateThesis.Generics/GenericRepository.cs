@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace GraduateThesis.Generics
@@ -155,13 +156,13 @@ namespace GraduateThesis.Generics
             if (id is string && generateUIDOptions == GenerateUIDOptions.ShortUID)
                 idPropertyInfo.SetValue(entity, UID.GetShortUID());
 
-            if(id is string && generateUIDOptions == GenerateUIDOptions.MicrosoftUID)
+            if (id is string && generateUIDOptions == GenerateUIDOptions.MicrosoftUID)
                 idPropertyInfo.SetValue(entity, UID.GetUUID());
 
             _dbSet.Add(entity);
 
-            MethodInfo saveChangesMethodInfo = _contextType.GetMethod("SaveChangesAsync")!;
-            Task<int> resultAsync = (Task<int>)saveChangesMethodInfo.Invoke(_context, null)!;
+            MethodInfo saveChangesMethodInfo = _contextType.GetMethod("SaveChangesAsync", new Type[] { typeof(CancellationToken) });
+            Task<int> resultAsync = (Task<int>)saveChangesMethodInfo.Invoke(_context, new object[] { default(CancellationToken) });
 
             int affected = await resultAsync;
             if (affected == 0)
