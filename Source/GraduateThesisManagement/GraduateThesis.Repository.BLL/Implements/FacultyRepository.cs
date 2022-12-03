@@ -44,7 +44,7 @@ namespace GraduateThesis.Repository.BLL.Implements
         {
             _genericRepository.Selector = s => new FacultyOutput
             {
-
+                
             };
         }
 

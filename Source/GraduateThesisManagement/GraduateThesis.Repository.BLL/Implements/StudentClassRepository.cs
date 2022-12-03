@@ -44,7 +44,11 @@ namespace GraduateThesis.Repository.BLL.Implements
         {
             _genericRepository.Selector = s => new StudentClassOutput
             {
-
+                Id = s.Id,
+                Name = s.Name,
+                Description = s.Description,
+                StudentQuantity= s.StudentQuantity,
+                Notes= s.Notes,
             };
         }
 
