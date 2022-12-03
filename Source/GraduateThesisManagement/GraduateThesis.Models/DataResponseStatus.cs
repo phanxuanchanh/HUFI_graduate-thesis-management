@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace GraduateThesis.Models
 {
+
     public enum DataResponseStatus
     {
         Success, NotFound, AlreadyExists, Failed

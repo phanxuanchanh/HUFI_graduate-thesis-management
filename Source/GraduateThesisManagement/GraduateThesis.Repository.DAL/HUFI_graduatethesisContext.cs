@@ -38,6 +38,7 @@ namespace GraduateThesis.Repository.DAL
         {
             if (!optionsBuilder.IsConfigured)
             {
+
             }
         }
 
