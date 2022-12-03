@@ -44,7 +44,12 @@ namespace GraduateThesis.Repository.BLL.Implements
         {
             _genericRepository.Selector = s => new CouncilMemberOutput
             {
-
+                Id= s.Id,
+                councilId= s.CouncilId,
+                CounciClass = new CouncilOutput
+                {
+                   
+                }
             };
         }
 

@@ -37,14 +37,31 @@ namespace GraduateThesis.Repository.BLL.Implements
 
         public void ConfigureIncludes()
         {
-           
+            _genericRepository.IncludeMany(i => i.Topic);
         }
 
         public void ConfigureSelectors()
         {
             _genericRepository.Selector = s => new ThesisOutput
             {
-
+                Id = s.Id,
+                Name = s.Name,
+                Description = s.Description,
+                MaxStudentNumber = s.MaxStudentNumber,
+                SourceCode= s.SourceCode,
+                GeneralComment= s.GeneralComment,
+                Year= s.Year,
+                Notes= s.Notes,
+                TopicId= s.TopicId,
+                CouncilId= s.CouncilId,
+                IsDeleted= s.IsDeleted,
+                TopicClass = new TopicOutput
+                {
+                    Name= s.Topic.Name,
+                    Description= s.Topic.Description,
+                    Notes= s.Topic.Notes,
+                    Id= s.Topic.Id,
+                }
             };
         }
 

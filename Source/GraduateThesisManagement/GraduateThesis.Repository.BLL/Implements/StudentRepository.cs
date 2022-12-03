@@ -37,8 +37,8 @@ namespace GraduateThesis.Repository.BLL.Implements
         }
 
         public void ConfigureIncludes()
-        { 
-            
+        {
+            _genericRepository.IncludeMany(i => i.StudentClass);
         }
 
         public void ConfigureSelectors()
@@ -52,9 +52,15 @@ namespace GraduateThesis.Repository.BLL.Implements
                 Avatar = s.Avatar,
                 Birthday = s.Birthday,
                 Notes = s.Notes,
-                Email = s.Email
-                
-
+                Email = s.Email,
+                StudentClass = new StudentClassOutput
+                {
+                    Id = s.StudentClass.Id,
+                    Name = s.StudentClass.Name,
+                    Description = s.StudentClass.Description,
+                    StudentQuantity = s.StudentClass.StudentQuantity,
+                    Notes = s.StudentClass.Notes
+                }
             };
         }
 
