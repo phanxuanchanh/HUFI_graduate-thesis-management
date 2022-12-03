@@ -394,12 +394,6 @@ namespace GraduateThesis.Generics
 
             isDeletedPropertyInfo.SetValue(entity, true);
 
-            MethodInfo saveChangesMethodInfo = _contextType.GetMethod("SaveChanges", new Type[] { })!;
-            int affected = (int)saveChangesMethodInfo.Invoke(_context, null)!;
-
-            if (affected == 0)
-                return new DataResponse { Status = DataResponseStatus.Failed };
-
             return new DataResponse { Status = DataResponseStatus.Success };
         }
 
@@ -418,13 +412,6 @@ namespace GraduateThesis.Generics
                 };
 
             isDeletedPropertyInfo.SetValue(entity, true);
-
-            MethodInfo saveChangesMethodInfo = _contextType.GetMethod("SaveChangesAsync", new Type[] { typeof(CancellationToken) });
-            Task<int> resultAsync = (Task<int>)saveChangesMethodInfo.Invoke(_context, new object[] { default(CancellationToken) });
-
-            int affected = await resultAsync;
-            if (affected == 0)
-                return new DataResponse<TOutput> { Status = DataResponseStatus.Failed };
 
             return new DataResponse { Status = DataResponseStatus.Success };
         }
