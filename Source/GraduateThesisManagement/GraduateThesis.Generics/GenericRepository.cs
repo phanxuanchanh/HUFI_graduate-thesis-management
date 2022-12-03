@@ -1,12 +1,16 @@
 ﻿using GraduateThesis.Common;
 using GraduateThesis.ExtensionMethods;
 using GraduateThesis.Models;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace GraduateThesis.Generics
@@ -20,15 +24,31 @@ namespace GraduateThesis.Generics
         private TContext _context;
         private Type _contextType;
         private DbSet<TEntity> _dbSet;
-        private Expression<Func<TEntity, object>>[] _navigationPropertyPaths = default!;
-
-        public Expression<Func<TEntity, TOutput>> Selector { get; set; } = default!;
+        private Expression<Func<TEntity, object>>[] _navigationPropertyPaths;
+        public Expression<Func<TEntity, TOutput>> Selector { get; set; }
 
         public GenericRepository(TContext context, DbSet<TEntity> dbSet)
         {
             _context = context;
             _dbSet = dbSet;
             _contextType = _context.GetType();
+        }
+
+        private bool IsValidType(Type type)
+        {
+            if (type == typeof(int))
+                return true;
+
+            if (type == typeof(long))
+                return true;
+
+            if (type == typeof(double))
+                return true;
+
+            if (type == typeof(string))
+                return true;
+
+            return false;
         }
 
         private object To(object input, Type outputType)
@@ -60,18 +80,99 @@ namespace GraduateThesis.Generics
             return (TEntity)To(input, typeof(TEntity));
         }
 
-        public Task<DataResponse> Create<T>(string v, T studentInput)
-        {
-            throw new NotImplementedException();
-        }
-
         public void IncludeMany(params Expression<Func<TEntity, object>>[] navigationPropertyPaths)
         {
             if (navigationPropertyPaths != null)
                 _navigationPropertyPaths = navigationPropertyPaths;
         }
 
+        public string GetWhereExpressionForPagination(string prefix, string keyword)
+        {
+            StringBuilder expStringBuilder = new StringBuilder($"{prefix} => ");
+            foreach(PropertyInfo property in typeof(TEntity).GetProperties())
+            {
+                if (IsValidType(property.PropertyType))
+                    expStringBuilder.Append($"{prefix}.{property.Name}.Contains(\"{keyword}\") || ");
+            }
+
+            return expStringBuilder.ToString().TrimEnd(' ').TrimEnd('|').TrimEnd('|');
+        }
+
+        public string GetOrderByForPagination(string prefix, string propertyName)
+        {
+            if (typeof(TEntity).GetProperty(propertyName) == null)
+                throw new Exception($"Property named '{propertyName}' not found");
+
+            return $"{prefix} => {prefix}.{propertyName}";
+        }
+
         #region get records method
+
+        public Pagination<TOutput> GetPagination(int page, int pageSize, string orderBy, string keyword)
+        {
+            int n = (page - 1) * pageSize;
+            int totalItemCount = _dbSet.Count();
+            IQueryable<TEntity> queryable = _dbSet.IncludeMultiple(_navigationPropertyPaths);
+
+            if (!string.IsNullOrEmpty(orderBy) && !string.IsNullOrEmpty(keyword))
+            {
+                queryable = queryable.OrderBy(GetOrderByForPagination("p", orderBy))
+                    .Where(GetWhereExpressionForPagination("p", keyword));
+            }
+            
+            if (!string.IsNullOrEmpty(orderBy))
+            {
+                queryable = queryable.OrderBy(GetOrderByForPagination("p", orderBy));
+            }
+
+            if (!string.IsNullOrEmpty(keyword))
+            {
+                queryable = queryable.Where(GetWhereExpressionForPagination("p", keyword));
+            }
+
+            List<TOutput> onePageOfData = queryable.Skip(n).Take(pageSize).Select(Selector).ToList();
+
+            return new Pagination<TOutput>
+            {
+                Page = page,
+                PageSize = pageSize,
+                TotalItemCount = totalItemCount,
+                Items = onePageOfData
+            };
+        }
+
+        public async Task<Pagination<TOutput>> GetPaginationAsync(int page, int pageSize, string orderBy, string keyword) 
+        {
+            int n = (page - 1) * pageSize;
+            int totalItemCount = await _dbSet.CountAsync();
+            IQueryable<TEntity> queryable = _dbSet.IncludeMultiple(_navigationPropertyPaths);
+
+            if (!string.IsNullOrEmpty(orderBy) && !string.IsNullOrEmpty(keyword))
+            {
+                queryable = queryable.OrderBy(GetOrderByForPagination("p", orderBy))
+                    .Where(GetWhereExpressionForPagination("p", keyword));
+            }
+
+            if (!string.IsNullOrEmpty(orderBy))
+            {
+                queryable = queryable.OrderBy(GetOrderByForPagination("p", orderBy));
+            }
+
+            if (!string.IsNullOrEmpty(keyword))
+            {
+                queryable = queryable.Where(GetWhereExpressionForPagination("p", keyword));
+            }
+
+            List<TOutput> onePageOfData = await queryable.Skip(n).Take(pageSize).Select(Selector).ToListAsync();
+
+            return new Pagination<TOutput>
+            {
+                Page = page,
+                PageSize = pageSize,
+                TotalItemCount = totalItemCount,
+                Items = onePageOfData
+            };
+        }
 
         public List<TOutput> GetList(int count = 200)
         {
@@ -126,7 +227,7 @@ namespace GraduateThesis.Generics
 
             _dbSet.Add(entity);
 
-            MethodInfo saveChangesMethodInfo = _contextType.GetMethod("SaveChanges")!;
+            MethodInfo saveChangesMethodInfo = _contextType.GetMethod("SaveChanges", new Type[] {})!;
             int affected = (int)saveChangesMethodInfo.Invoke(_context, null)!;
 
             if (affected == 0)
@@ -155,13 +256,13 @@ namespace GraduateThesis.Generics
             if (id is string && generateUIDOptions == GenerateUIDOptions.ShortUID)
                 idPropertyInfo.SetValue(entity, UID.GetShortUID());
 
-            if(id is string && generateUIDOptions == GenerateUIDOptions.MicrosoftUID)
+            if (id is string && generateUIDOptions == GenerateUIDOptions.MicrosoftUID)
                 idPropertyInfo.SetValue(entity, UID.GetUUID());
 
             _dbSet.Add(entity);
 
-            MethodInfo saveChangesMethodInfo = _contextType.GetMethod("SaveChangesAsync")!;
-            Task<int> resultAsync = (Task<int>)saveChangesMethodInfo.Invoke(_context, null)!;
+            MethodInfo saveChangesMethodInfo = _contextType.GetMethod("SaveChangesAsync", new Type[] { typeof(CancellationToken) });
+            Task<int> resultAsync = (Task<int>)saveChangesMethodInfo.Invoke(_context, new object[] { default(CancellationToken) });
 
             int affected = await resultAsync;
             if (affected == 0)
@@ -184,7 +285,13 @@ namespace GraduateThesis.Generics
             if (entity_fromDb == null)
                 return new DataResponse<TOutput> { Status = DataResponseStatus.NotFound };
 
-
+            Type entityType = entity_fromDb.GetType();
+            foreach (PropertyInfo inputProperty in input.GetType().GetProperties())
+            {
+                PropertyInfo entityPropertyInfo = entityType.GetProperty(inputProperty.Name);
+                if (entityPropertyInfo != null)
+                    entityPropertyInfo.SetValue(entity_fromDb, inputProperty.GetValue(input));
+            }
 
             MethodInfo saveChangesMethodInfo = _contextType.GetMethod("SaveChangesAsync")!;
             int affected = (int)saveChangesMethodInfo.Invoke(_context, null)!;
@@ -204,7 +311,13 @@ namespace GraduateThesis.Generics
             if (entity_fromDb == null)
                 return new DataResponse<TOutput> { Status = DataResponseStatus.NotFound };
 
-
+            Type entityType = entity_fromDb.GetType();
+            foreach(PropertyInfo inputProperty in input.GetType().GetProperties())
+            {
+                PropertyInfo entityPropertyInfo = entityType.GetProperty(inputProperty.Name);
+                if (entityPropertyInfo != null)
+                    entityPropertyInfo.SetValue(entity_fromDb, inputProperty.GetValue(input));
+            }
 
             MethodInfo saveChangesMethodInfo = _contextType.GetMethod("SaveChangesAsync")!;
             Task<int> resultAsync = (Task<int>)saveChangesMethodInfo.Invoke(_context, null)!;
@@ -241,6 +354,12 @@ namespace GraduateThesis.Generics
 
             isDeletedPropertyInfo.SetValue(entity, true);
 
+            MethodInfo saveChangesMethodInfo = _contextType.GetMethod("SaveChanges")!;
+            int affected = (int)saveChangesMethodInfo.Invoke(_context, null)!;
+
+            if (affected == 0)
+                return new DataResponse { Status = DataResponseStatus.Failed };
+
             return new DataResponse { Status = DataResponseStatus.Success };
         }
 
@@ -255,6 +374,13 @@ namespace GraduateThesis.Generics
                 throw new Exception("");
 
             isDeletedPropertyInfo.SetValue(entity, true);
+
+            MethodInfo saveChangesMethodInfo = _contextType.GetMethod("SaveChangesAsync")!;
+            Task<int> resultAsync = (Task<int>)saveChangesMethodInfo.Invoke(_context, null)!;
+
+            int affected = await resultAsync;
+            if (affected == 0)
+                return new DataResponse<TOutput> { Status = DataResponseStatus.Failed };
 
             return new DataResponse { Status = DataResponseStatus.Success };
         }

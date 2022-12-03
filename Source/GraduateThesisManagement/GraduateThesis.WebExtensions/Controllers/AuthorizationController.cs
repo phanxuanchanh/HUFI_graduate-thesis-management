@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace GraduateThesis.WebExtensions.Controllers
 {
-    public class AuthorizationController : Controller
-    {
-        public ActionResult ShowUnauthorize()
-        {
-            return View();
-        }
-    }
+    //public class AuthorizationController : Controller
+    //{
+    //    public ActionResult ShowUnauthorize()
+    //    {
+    //        return View();
+    //    }
+    //}
 }

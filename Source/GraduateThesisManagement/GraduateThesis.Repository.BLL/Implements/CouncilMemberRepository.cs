@@ -44,7 +44,12 @@ namespace GraduateThesis.Repository.BLL.Implements
         {
             _genericRepository.Selector = s => new CouncilMemberOutput
             {
-
+                Id= s.Id,
+                councilId= s.CouncilId,
+                CounciClass = new CouncilOutput
+                {
+                   
+                }
             };
         }
 
@@ -96,6 +101,16 @@ namespace GraduateThesis.Repository.BLL.Implements
         public async Task<List<CouncilMemberOutput>> GetListAsync(int count = 200)
         {
             return await _genericRepository.GetListAsync(count);
+        }
+
+        public Pagination<CouncilMemberOutput> GetPagination(int page, int pageSize, string orderBy, string keyword)
+        {
+            return _genericRepository.GetPagination(page, pageSize, orderBy, keyword);
+        }
+
+        public async Task<Pagination<CouncilMemberOutput>> GetPaginationAsync(int page, int pageSize, string orderBy, string keyword)
+        {
+            return await _genericRepository.GetPaginationAsync(page, pageSize, orderBy, keyword);
         }
 
         public DataResponse<CouncilMemberOutput> Update(string id, CouncilMemberInput input)

@@ -38,6 +38,8 @@ namespace GraduateThesis.Repository.DTO
 
         [Display(Name = "Giới tính")]
         public string Sex { get; set; }
+
+        public string StudentClassId { get; set; }
     }
 
     public class StudentOutput : StudentInput
