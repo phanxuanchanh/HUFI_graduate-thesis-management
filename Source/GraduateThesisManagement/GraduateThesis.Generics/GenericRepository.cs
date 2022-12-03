@@ -127,7 +127,7 @@ namespace GraduateThesis.Generics
 
             _dbSet.Add(entity);
 
-            MethodInfo saveChangesMethodInfo = _contextType.GetMethod("SaveChanges")!;
+            MethodInfo saveChangesMethodInfo = _contextType.GetMethod("SaveChanges", new Type[] {})!;
             int affected = (int)saveChangesMethodInfo.Invoke(_context, null)!;
 
             if (affected == 0)
