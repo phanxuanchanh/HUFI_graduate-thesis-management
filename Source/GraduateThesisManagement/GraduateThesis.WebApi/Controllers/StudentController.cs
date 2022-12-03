@@ -12,5 +12,7 @@ namespace GraduateThesis.WebApi.Controllers
         public StudentController(IRepository repository) : base(repository.StudentRepository)
         {
         }
+       
     }
+
 }
