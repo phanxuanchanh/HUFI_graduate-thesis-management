@@ -49,7 +49,7 @@ namespace GraduateThesis.Repository.BLL.Implements
                 Description = s.Description,
                 Notes = s.Notes,
                 Chairman = s.Chairman,
-                CouncilPoint = s.CouncilPoint,
+                //CouncilPoint = s.CouncilPoint,    
 
 
             };
