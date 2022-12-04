@@ -14,10 +14,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\GraduateThesis.Common\GraduateThesis.Common.csproj" />
+    <ProjectReference Include="..\GraduateThesis.Models\GraduateThesis.Models.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
+    <PackageReference Include="X.PagedList" Version="8.4.3" />
   </ItemGroup>
 
 </Project>

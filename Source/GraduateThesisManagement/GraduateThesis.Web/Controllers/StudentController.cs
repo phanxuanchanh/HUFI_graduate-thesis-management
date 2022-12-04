@@ -1,20 +1,20 @@
 ﻿using GraduateThesis.Models;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DTO;
+using GraduateThesis.WebExtensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
+using X.PagedList;
 
 namespace GraduateThesis.Web.Controllers
 {
     [Route("student")]
     public class StudentController : Controller
     {
-
         private readonly IStudentRepository _studentRepository;
         private readonly IStudentClassRepository _studentClassRepository;
 
@@ -24,10 +24,18 @@ namespace GraduateThesis.Web.Controllers
             _studentClassRepository = repository.StudentClassRepository;
 
         }
+
         [Route("list")]
         [HttpGet]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int page = 1, int pageSize = 10, string orderBy = null, string orderOptions = null, string keyword = null)
         {
+            Pagination<StudentOutput> pagination;
+            if (orderOptions == null)
+                pagination = await _studentRepository.GetPaginationAsync(page, pageSize, orderBy, OrderOptions.ASC, keyword);
+            else
+                pagination = await _studentRepository.GetPaginationAsync(page, pageSize, orderBy, OrderOptions.DESC, keyword);
+
+            StaticPagedList<StudentOutput> pagedList = pagination.ToStaticPagedList();
 
             return View(await _studentRepository.GetListAsync());
         }
