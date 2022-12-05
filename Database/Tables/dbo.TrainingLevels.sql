@@ -1,12 +1,11 @@
-﻿CREATE TABLE [dbo].[Faculties] (
+﻿CREATE TABLE [dbo].[TrainingLevels] (
   [ID] [varchar](50) NOT NULL,
-  [Name] [varchar](50) NOT NULL,
-  [Description] [nvarchar](50) NULL,
+  [Name] [nvarchar](50) NOT NULL,
   [CreatedAt] [datetime] NULL,
   [UpdatedAt] [datetime] NULL,
   [DeletedAt] [datetime] NULL,
   [IsDeleted] [bit] NOT NULL,
-  CONSTRAINT [PK_Faculty_ID] PRIMARY KEY CLUSTERED ([ID])
+  CONSTRAINT [PK_TrainingLevel_ID] PRIMARY KEY CLUSTERED ([ID])
 )
 ON [PRIMARY]
 GO

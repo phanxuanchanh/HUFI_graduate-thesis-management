@@ -3,11 +3,11 @@
   [Name] [nvarchar](100) NOT NULL,
   [Description] [nvarchar](200) NULL,
   [StudentQuantity] [int] NOT NULL,
-  [Notes] [nvarchar](200) NULL,
   [FacultyId] [varchar](50) NOT NULL,
   [CreatedAt] [datetime] NULL,
   [UpdatedAt] [datetime] NULL,
   [DeletedAt] [datetime] NULL,
+  [IsDeleted] [bit] NOT NULL,
   CONSTRAINT [PK_StudentClass_ID] PRIMARY KEY CLUSTERED ([ID])
 )
 ON [PRIMARY]
