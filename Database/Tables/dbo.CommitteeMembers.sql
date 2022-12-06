@@ -1,9 +1,10 @@
 ﻿CREATE TABLE [dbo].[CommitteeMembers] (
   [ID] [varchar](50) NOT NULL,
   [ThesisId] [varchar](50) NOT NULL,
-  [CouncilId] [varchar](50) NOT NULL,
+  [CommitteeId] [varchar](50) NOT NULL,
   [FacultyStaffId] [varchar](50) NULL,
   [Titles] [varchar](50) NOT NULL,
+  [Point] [decimal] NULL,
   [CreatedAt] [datetime] NULL,
   [UpdatedAt] [datetime] NULL,
   [DeletedAt] [datetime] NULL,
@@ -14,7 +15,11 @@ ON [PRIMARY]
 GO
 
 ALTER TABLE [dbo].[CommitteeMembers]
-  ADD CONSTRAINT [FK_CommitteeMembers_ThesisCommittees_ID] FOREIGN KEY ([CouncilId]) REFERENCES [dbo].[ThesisCommittees] ([ID])
+  ADD CONSTRAINT [FK_CommitteeMembers_Theses_ID] FOREIGN KEY ([ID]) REFERENCES [dbo].[Theses] ([ID])
+GO
+
+ALTER TABLE [dbo].[CommitteeMembers]
+  ADD CONSTRAINT [FK_CommitteeMembers_ThesisCommittees_ID] FOREIGN KEY ([CommitteeId]) REFERENCES [dbo].[ThesisCommittees] ([ID])
 GO
 
 ALTER TABLE [dbo].[CommitteeMembers]

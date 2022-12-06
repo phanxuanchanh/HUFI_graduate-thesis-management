@@ -25,17 +25,18 @@
   [UpdatedAt] [datetime] NULL,
   [DeletedAt] [datetime] NULL,
   [IsDeleted] [bit] NOT NULL,
+  [LectureId] [varchar](50) NOT NULL,
   CONSTRAINT [PK_Thesis_ID] PRIMARY KEY CLUSTERED ([ID])
 )
 ON [PRIMARY]
 GO
 
 ALTER TABLE [dbo].[Theses]
-  ADD CONSTRAINT [FK_Theses_Specializations_ID] FOREIGN KEY ([SpecializationId]) REFERENCES [dbo].[Specializations] ([ID])
+  ADD CONSTRAINT [FK_Theses_FacultyStaffs_ID] FOREIGN KEY ([LectureId]) REFERENCES [dbo].[FacultyStaffs] ([ID])
 GO
 
 ALTER TABLE [dbo].[Theses]
-  ADD CONSTRAINT [FK_Theses_Specialization_ID] FOREIGN KEY ([SpecializationId]) REFERENCES [dbo].[Specialization] ([ID])
+  ADD CONSTRAINT [FK_Theses_Specializations_ID] FOREIGN KEY ([SpecializationId]) REFERENCES [dbo].[Specializations] ([ID])
 GO
 
 ALTER TABLE [dbo].[Theses]
