@@ -35,6 +35,10 @@ ALTER TABLE [dbo].[Theses]
 GO
 
 ALTER TABLE [dbo].[Theses]
+  ADD CONSTRAINT [FK_Theses_Specialization_ID] FOREIGN KEY ([SpecializationId]) REFERENCES [dbo].[Specialization] ([ID])
+GO
+
+ALTER TABLE [dbo].[Theses]
   ADD CONSTRAINT [FK_Theses_Topics_ID] FOREIGN KEY ([TopicId]) REFERENCES [dbo].[Topics] ([ID])
 GO
 

@@ -8,6 +8,7 @@
   [Avatar] [varchar](200) NULL,
   [Description] [ntext] NULL,
   [StudentClassId] [varchar](50) NOT NULL,
+  [CourseTrainingId] [varchar](50) NOT NULL,
   [Password] [nvarchar](100) NOT NULL,
   [Salt] [nvarchar](100) NOT NULL,
   [CreatedAt] [datetime] NULL,
