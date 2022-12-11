@@ -7,14 +7,14 @@
   [PracticalResults] [ntext] NULL,
   [Defects] [ntext] NULL,
   [Conclusions] [ntext] NULL,
-  [Answers] [ntext] NULL,
+  [Questions] [ntext] NULL,
   [Point] [decimal] NULL,
   [IsCompleted] [bit] NOT NULL,
   [CreatedAt] [datetime] NULL,
   [UpdatedAt] [datetime] NULL,
   [DeletedAt] [datetime] NULL,
   [IsDeleted] [bit] NOT NULL,
-  CONSTRAINT [PK_Counterargument_PK_Thesis_ID] PRIMARY KEY CLUSTERED ([ThesisId], [LectureId])
+  CONSTRAINT [PK_Counterargument_PK_Thesis_ID] PRIMARY KEY CLUSTERED ([ThesisId])
 )
 ON [PRIMARY]
 TEXTIMAGE_ON [PRIMARY]

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace GraduateThesis.Repository.DTO
@@ -45,7 +46,6 @@ namespace GraduateThesis.Repository.DTO
     public class StudentOutput : StudentInput
     {
         public StudentClassOutput StudentClass { get; set; }
-
-      
+        public List<StudentThesisGroupOutput> StudentThesisGroups { get; set; }
     }
 }

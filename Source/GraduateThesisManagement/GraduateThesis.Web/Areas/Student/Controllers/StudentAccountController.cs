@@ -2,6 +2,7 @@
 using GraduateThesis.Models;
 using GraduateThesis.Repository.BLL.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace GraduateThesis.Web.Areas.Student.Controllers
 {
@@ -26,17 +27,22 @@ namespace GraduateThesis.Web.Areas.Student.Controllers
 
         [Route("sign-in")]
         [HttpPost]
-        public IActionResult SignIn(SignInModel signInModel)
+        public async Task<IActionResult> SignIn(SignInModel signInModel)
         {
             string pageName = "Trang đăng nhập dành cho sinh viên";
             if (ModelState.IsValid)
             {
-                AddViewData(pageName, "Success", "Dữ liệu nhập vào không hợp lệ!");
-                return View();
+                SignInResultModel signInResultModel = await _studentRepository.SignInAsync(signInModel);
+
+                if (signInResultModel.Status == SignInStatus.Success)
+                    return RedirectToAction("Index");
+
+                AddTempData(pageName, signInResultModel);
+                return RedirectToAction("LoadSignInView");
             }
 
-            AddViewData(pageName, "InvalidData", "Dữ liệu nhập vào không hợp lệ!");
-            return View(signInModel);
+            AddTempData(pageName, SignInStatus.InvalidData);
+            return RedirectToAction("LoadSignInView");
         }
 
         [Route("forgot-password-view")]

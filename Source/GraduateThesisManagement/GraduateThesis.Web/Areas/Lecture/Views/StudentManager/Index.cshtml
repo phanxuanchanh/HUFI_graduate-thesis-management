@@ -1,0 +1,159 @@
+﻿@using X.PagedList.Mvc.Core
+@using X.PagedList.Web.Common
+@model IEnumerable<StudentOutput>
+@{
+    IPagedList pagedInfo = (IPagedList)ViewData["PagedList"];
+}
+
+<h1 class="mt-4">@ViewData["PageName"]</h1>
+<ol class="breadcrumb mb-4">
+    <li class="breadcrumb-item active"></li>
+</ol>
+
+@await Component.InvokeAsync("StatusArea")
+
+<div class="card mb-4">
+    <div class="card-body">
+        <a asp-action="Create" class="btn btn-primary">Tạo mới</a>
+        <a asp-action="Create" class="btn btn-primary">Nhập từ XLS</a>
+        <a asp-action="Create" class="btn btn-primary">Xuất XLS</a>
+        <a asp-action="Create" class="btn btn-primary">Thùng rác</a>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header">
+        <svg class="svg-inline--fa fa-table me-1" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="table" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg=""><path fill="currentColor" d="M448 32C483.3 32 512 60.65 512 96V416C512 451.3 483.3 480 448 480H64C28.65 480 0 451.3 0 416V96C0 60.65 28.65 32 64 32H448zM224 256V160H64V256H224zM64 320V416H224V320H64zM288 416H448V320H288V416zM448 256V160H288V256H448z"></path></svg><!-- <i class="fas fa-table me-1"></i> Font Awesome fontawesome.com -->
+        @ViewData["PageName"]
+    </div>
+    <div class="card-body">
+        <div class="dataTable-wrapper dataTable-loading no-footer sortable searchable fixed-columns">
+            <form asp-action="Index" asp-controller="StudentManager" method="get">
+                <input type="hidden" name="page" value="1" />
+                <input type="hidden" name="orderBy" value="@ViewData["OrderBy"]" />
+                <input type="hidden" name="orderOptions" value="@ViewData["OrderOptions"]" />
+                <div class="dataTable-top">
+                    <div class="dataTable-dropdown">
+                        <label>
+                                <select class="dataTable-selector" name="pageSize" onchange="this.form.submit();">
+                                    @for (int i = 5; i <= 50; i++)
+                                    {
+                                        if (i == pagedInfo.PageSize)
+                                        {
+                                            <option value="@i" selected>@i</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@i">@i</option>
+                                        }
+                                    }
+                                </select> dòng trên 1 trang
+
+                        
+                        </label>
+                    </div>
+                    <div class="dataTable-search">
+                        <input class="dataTable-input" placeholder="Tìm kiếm..." type="text" name="keyword" value="@ViewData["Keyword"]">
+                        </div>
+                </div>
+            </form>
+            <div class="dataTable-container">
+                <table id="datatablesSimple" class="dataTable-table">
+                    <thead>
+                        <tr>
+                            <th data-sortable="">
+                                <a href="#" class="">STT</a>
+                            </th>
+                            <th data-sortable="">
+                                <a href="#" class="dataTable-sorter">ID</a>
+                            </th>
+                            <th data-sortable="">
+                                <a href="#" class="dataTable-sorter">@Html.DisplayNameFor(model => model.Name)</a>
+                            </th>
+                            <th data-sortable="">
+                                <a href="#" class="dataTable-sorter">@Html.DisplayNameFor(model => model.Phone)</a>
+                            </th>
+                            <th data-sortable="">
+                                <a href="#" class="dataTable-sorter">@Html.DisplayNameFor(model => model.Email)</a>
+                            </th>
+                            <th data-sortable="">
+                                <a href="#" class="dataTable-sorter">Công cụ</a>
+                            </th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @{
+                            int count = 1;
+                        }
+                        @foreach (StudentOutput student in (IEnumerable<StudentOutput>)ViewData["PagedList"])
+                        {
+                            <tr>
+                                <td>
+                                    @count
+                                </td>
+                                <td>
+                                    @student.Id
+                                </td>
+                                <td>
+                                    @student.Name
+                                </td>
+                                <td>
+                                    @student.Phone
+                                </td>
+                                <td>
+                                    @student.Email
+                                </td>
+                                <td class="project-actions text-right">
+                                    <a class="btn btn-success btn-sm" asp-action="Details" asp-controller="StudentManager" asp-route-id="@student.Id">
+                                        <i class="fas fa-folder"></i> Chi tiết
+                                    </a>
+                                    <a class="btn btn-primary btn-sm" asp-action="Edit" asp-controller="StudentManager" asp-route-id="@student.Id">
+                                        <i class="fas fa-folder"></i> Sửa
+                                    </a>
+                                    <button type="submit" form="deleteStudent_@count" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i> Xóa</button>
+                                    <form asp-action="Delete" asp-controller="StudentManager" asp-route-id="@student.Id" id="deleteStudent_@count">
+                                    </form>
+                                </td>
+                            </tr>
+                            count++;
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div class="dataTable-bottom">
+                <div class="dataTable-info">Hiển thị @pagedInfo.PageSize trên tổng @pagedInfo.TotalItemCount dòng</div>
+                <nav class="dataTable-pagination">
+                    <ul class="dataTable-pagination-list">
+                        @Html.PagedListPager(
+                            (IPagedList)ViewData["PagedList"], 
+                            p => Url.Action("Index", new { 
+                                page = p, 
+                                pageSize = pagedInfo.PageSize,
+                                orderBy = @ViewData["OrderBy"],
+                                orderOptions = @ViewData["OrderOptions"],
+                                keyword = @ViewData["Keyword"]
+                            }),
+                            PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing(new PagedListRenderOptions
+                            {
+                                LiElementClasses = new string[] { "page-item" },
+                                PageClasses = new string[] { "page-link" }
+                            },
+                            ajaxOptions: new AjaxOptions
+                            {
+                                UpdateTargetId = "dataTable",
+                                InsertionMode = InsertionMode.Replace,
+                                HttpMethod = "GET"
+                            }))
+                    </ul>
+                </nav>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script src="~/Scripts/jquery.unobtrusive-ajax.js"></script>
+}

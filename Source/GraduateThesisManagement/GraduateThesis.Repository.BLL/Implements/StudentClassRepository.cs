@@ -48,7 +48,7 @@ namespace GraduateThesis.Repository.BLL.Implements
                 Name = s.Name,
                 Description = s.Description,
                 StudentQuantity= s.StudentQuantity,
-                Notes= s.Notes,
+                //Notes= s.Notes,
             };
         }
 

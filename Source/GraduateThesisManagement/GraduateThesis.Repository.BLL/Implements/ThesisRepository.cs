@@ -49,17 +49,14 @@ namespace GraduateThesis.Repository.BLL.Implements
                 Description = s.Description,
                 MaxStudentNumber = s.MaxStudentNumber,
                 SourceCode= s.SourceCode,
-                GeneralComment= s.GeneralComment,
                 Year= s.Year,
                 Notes= s.Notes,
                 TopicId= s.TopicId,
-                CouncilId= s.CouncilId,
-                IsDeleted= s.IsDeleted,
                 TopicClass = new TopicOutput
                 {
                     Name= s.Topic.Name,
                     Description= s.Topic.Description,
-                    Notes= s.Topic.Notes,
+                    //Notes= s.Topic.Notes,
                     Id= s.Topic.Id,
                 }
             };

@@ -9,6 +9,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Remove="Areas\Lecture\Views\StudentManager\Details.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="Areas\Lecture\Views\StudentManager\Details.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="bootstrap" Version="5.2.2" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.17" />
@@ -42,10 +50,8 @@
     <Folder Include="Areas\Student\Data\" />
     <Folder Include="Areas\Student\Models\" />
     <Folder Include="Areas\Student\Views\StudentThesis\" />
-    <Folder Include="Areas\Teacher\Controllers\" />
-    <Folder Include="Areas\Teacher\Data\" />
-    <Folder Include="Areas\Teacher\Models\" />
-    <Folder Include="Areas\Teacher\Views\" />
+    <Folder Include="Areas\Lecture\Data\" />
+    <Folder Include="Areas\Lecture\Models\" />
     <Folder Include="wwwroot\images\" />
     <Folder Include="wwwroot\arsha\" />
   </ItemGroup>

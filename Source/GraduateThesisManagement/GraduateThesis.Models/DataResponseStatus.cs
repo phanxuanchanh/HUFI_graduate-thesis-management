@@ -9,6 +9,6 @@ namespace GraduateThesis.Models
 
     public enum DataResponseStatus
     {
-        Success, NotFound, AlreadyExists, Failed
+        Success, NotFound, AlreadyExists, InvalidData, Failed
     }
 }

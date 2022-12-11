@@ -11,7 +11,6 @@
   [Year] [int] NOT NULL,
   [Notes] [nvarchar](200) NOT NULL,
   [TopicId] [varchar](50) NOT NULL,
-  [CouncilId] [varchar](50) NOT NULL,
   [TrainingFormId] [varchar](50) NULL,
   [TrainingLevelId] [varchar](50) NOT NULL,
   [IsApproved] [bit] NOT NULL,

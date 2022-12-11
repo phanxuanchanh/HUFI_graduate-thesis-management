@@ -1,5 +1,5 @@
 ﻿CREATE TABLE [dbo].[MemberEvaluations] (
-  [CommitteeMemberId] [varchar](50) NOT NULL,
+  [ID] [varchar](50) NOT NULL,
   [EvalutionPatternId] [varchar](50) NOT NULL,
   [Name] [nvarchar](450) NOT NULL,
   [Point] [decimal] NOT NULL,
@@ -7,13 +7,9 @@
   [UpdatedAt] [datetime] NULL,
   [DeletedAt] [datetime] NULL,
   [IsDeleted] [bit] NOT NULL,
-  CONSTRAINT [PK_Evaluations_CommitteeMemberId] PRIMARY KEY CLUSTERED ([CommitteeMemberId], [EvalutionPatternId])
+  CONSTRAINT [PK_Evaluations_CommitteeMemberId] PRIMARY KEY CLUSTERED ([ID])
 )
 ON [PRIMARY]
-GO
-
-ALTER TABLE [dbo].[MemberEvaluations]
-  ADD CONSTRAINT [FK_MemberEvaluations_CommitteeMembers_ID] FOREIGN KEY ([CommitteeMemberId]) REFERENCES [dbo].[CommitteeMembers] ([ID])
 GO
 
 ALTER TABLE [dbo].[MemberEvaluations]
