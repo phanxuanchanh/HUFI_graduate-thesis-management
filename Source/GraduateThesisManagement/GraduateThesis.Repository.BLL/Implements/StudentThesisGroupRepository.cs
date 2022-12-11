@@ -59,7 +59,7 @@ namespace GraduateThesis.Repository.BLL.Implements
                     Notes = s.Thesis.Notes,
                     TopicId = s.Thesis.Notes,
                     MaxStudentNumber = s.Thesis.MaxStudentNumber,
-                    CouncilId = s.Thesis.CouncilId
+                    //CouncilId = s.Thesis.CouncilId
                 }
                 
             };

@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Areas\Lecture\ViewComponents\SidebarViewComponent.cs" />
     <Compile Remove="Controllers\StudentController.cs" />
   </ItemGroup>
 
@@ -39,13 +40,12 @@
     <Folder Include="Areas\Administrator\Models\" />
     <Folder Include="Areas\Administrator\Views\Dashboard\" />
     <Folder Include="Areas\Administrator\Views\Shared\" />
+    <Folder Include="Areas\Lecture\ViewComponents\" />
     <Folder Include="Areas\Student\Data\" />
     <Folder Include="Areas\Student\Models\" />
     <Folder Include="Areas\Student\Views\StudentThesis\" />
-    <Folder Include="Areas\Teacher\Controllers\" />
-    <Folder Include="Areas\Teacher\Data\" />
-    <Folder Include="Areas\Teacher\Models\" />
-    <Folder Include="Areas\Teacher\Views\" />
+    <Folder Include="Areas\Lecture\Data\" />
+    <Folder Include="Areas\Lecture\Models\" />
     <Folder Include="wwwroot\images\" />
     <Folder Include="wwwroot\arsha\" />
   </ItemGroup>

@@ -5,6 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\GraduateThesis.Generics\GraduateThesis.Generics.csproj" />
     <ProjectReference Include="..\GraduateThesis.Repository.DAL\GraduateThesis.Repository.DAL.csproj" />
     <ProjectReference Include="..\GraduateThesis.Repository.DTO\GraduateThesis.Repository.DTO.csproj" />
