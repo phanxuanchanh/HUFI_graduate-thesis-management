@@ -22,7 +22,7 @@ namespace GraduateThesis.RepositoryPatterns
         where TOutput : class 
         where T_ID : IConvertible
     {
-        Task<Pagination<TOutput>> GetPaginationAsync(int page, int pageSize, string orderBy, string keyword);
+        Task<Pagination<TOutput>> GetPaginationAsync(int page, int pageSize, string orderBy, OrderOptions orderOptions, string keyword);
         Task<List<TOutput>> GetListAsync(int count = 200);
         Task<TOutput> GetAsync(T_ID id);
         Task<DataResponse<TOutput>> CreateAsync(TInput input);
@@ -31,7 +31,7 @@ namespace GraduateThesis.RepositoryPatterns
         Task<DataResponse> ForceDeleteAsync(T_ID id);
         Task<int> CountAsync();
 
-        Pagination<TOutput> GetPagination(int page, int pageSize, string orderBy, string keyword);
+        Pagination<TOutput> GetPagination(int page, int pageSize, string orderBy, OrderOptions orderOptions, string keyword);
         List<TOutput> GetList(int count = 200);
         TOutput Get(T_ID id);
         DataResponse<TOutput> Create(TInput input);

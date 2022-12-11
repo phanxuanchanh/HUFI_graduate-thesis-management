@@ -45,6 +45,6 @@ namespace GraduateThesis.Repository.DTO
     }
     public class TopicOutput : TopicInput
     {
-
+        public List<ThesisOutput> Theses { get; set; }
     }
 }

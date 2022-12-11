@@ -77,11 +77,12 @@ namespace GraduateThesis.Generics
 
         [Route("get-pagination")]
         [HttpGet]
-        public virtual async Task<IActionResult> GetPagination(int page = 1, int pageSize = 10, string orderBy = null, string keyword = null)
+        public virtual async Task<IActionResult> GetPagination(int page = 1, int pageSize = 10, string orderBy = null, OrderOptions orderOptions = OrderOptions.ASC, string keyword = null)
         {
             try
             {
-                return await GetActionResultAsync<Pagination<TOutput>>("GetPaginationAsync", new object[] { page, pageSize, orderBy, keyword });
+
+                return await GetActionResultAsync<Pagination<TOutput>>("GetPaginationAsync", new object[] { page, pageSize, orderBy, orderOptions, keyword });
             }
             catch (Exception ex)
             {

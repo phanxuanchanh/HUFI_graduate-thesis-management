@@ -24,13 +24,15 @@ namespace GraduateThesis.Repository.DTO
         [Required(ErrorMessage = "{0} không được để trống")]
         public int MaxStudentNumber { get; set; }
 
-        [Display(Name = "Source Code đề tài")]
-        [Required(ErrorMessage = "{0} không được để trống")]
+        public string DocumentFile { get; set; }
+
+        public string PresentationFile { get; set; }
+
+        public string PdfFile { get; set; }
+
         public string SourceCode { get; set; }
-      
-        [Display(Name = "Nhận xét đề tài")]
-        [Required(ErrorMessage = "{0} không được để trống")]
-        public string GeneralComment { get; set; }
+
+        public int  Credits { get; set; }
 
         [Display(Name = "Năm làm đề tài")]
         [Required(ErrorMessage = "{0} không được để trống")]
@@ -40,11 +42,32 @@ namespace GraduateThesis.Repository.DTO
         public string Notes { get; set; }
 
         public string TopicId { get; set; }
+
         public string CouncilId { get; set; }
 
+        public string TrainingFormId { get; set; }
 
-        public bool IsDeleted { get; set; }
+        public string TrainingLevelId { get; set; }
 
+        public bool IsApproved { get; set; }
+
+        public bool IsNew { get; set; }
+
+        public bool InProgess { get; set; }
+
+        public bool Finished { get; set; }
+
+        public string SpecializationId { get; set; }
+
+        public DateTime DateFrom { get; set; }
+        
+        public DateTime DateTo { get; set; }
+
+        public string LectureId { get; set; }
+    
+    }
+    public class ThesisOutput : ThesisInput
+    {
         [Display(Name = "Ngày tạo")]
         [DataType(DataType.Date, ErrorMessage = "{0} có kiểu dữ liệu không hợp lệ")]
         public DateTime CreatedAt { get; set; }
@@ -56,13 +79,8 @@ namespace GraduateThesis.Repository.DTO
         [Display(Name = "Ngày xóa")]
         [DataType(DataType.Date, ErrorMessage = "{0} có kiểu dữ liệu không hợp lệ")]
         public DateTime DeletedAt { get; set; }
-    
-    }
-    public class ThesisOutput : ThesisInput
-    {
-        public TopicOutput TopicClass { get; set; }
-        public CouncilOutput CounciClass { get; set; }
 
+        public TopicOutput TopicClass { get; set; }
     }
 
     

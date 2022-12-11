@@ -49,17 +49,14 @@ namespace GraduateThesis.Repository.BLL.Implements
                 Description = s.Description,
                 MaxStudentNumber = s.MaxStudentNumber,
                 SourceCode= s.SourceCode,
-                GeneralComment= s.GeneralComment,
                 Year= s.Year,
                 Notes= s.Notes,
                 TopicId= s.TopicId,
-                CouncilId= s.CouncilId,
-                IsDeleted= s.IsDeleted,
                 TopicClass = new TopicOutput
                 {
                     Name= s.Topic.Name,
                     Description= s.Topic.Description,
-                    Notes= s.Topic.Notes,
+                    //Notes= s.Topic.Notes,
                     Id= s.Topic.Id,
                 }
             };
@@ -115,14 +112,14 @@ namespace GraduateThesis.Repository.BLL.Implements
             return  await _genericRepository.GetListAsync(count);
         }
 
-        public Pagination<ThesisOutput> GetPagination(int page, int pageSize, string orderBy, string keyword)
+        public Pagination<ThesisOutput> GetPagination(int page, int pageSize, string orderBy, OrderOptions orderOptions, string keyword)
         {
-            return _genericRepository.GetPagination(page, pageSize, orderBy, keyword);
+            return _genericRepository.GetPagination(page, pageSize, orderBy, orderOptions, keyword);
         }
 
-        public async Task<Pagination<ThesisOutput>> GetPaginationAsync(int page, int pageSize, string orderBy, string keyword)
+        public async Task<Pagination<ThesisOutput>> GetPaginationAsync(int page, int pageSize, string orderBy, OrderOptions orderOptions, string keyword)
         {
-            return await _genericRepository.GetPaginationAsync(page, pageSize, orderBy, keyword);
+            return await _genericRepository.GetPaginationAsync(page, pageSize, orderBy, orderOptions, keyword);
         }
 
         public DataResponse<ThesisOutput> Update(string id, ThesisInput input)

@@ -12,11 +12,9 @@ namespace GraduateThesis.Repository.BLL.Interfaces
         IStudentClassRepository StudentClassRepository { get; }
         IThesisRepository ThesisRepository { get; }
         ITopicRepository TopicRepository { get; }
-        ICouncilRepository CouncilRepository { get; }
-        ICouncilMemberRepository CouncilMemberRepository { get; }
+        IThesisCommitteeRepository ThesisCommitteeRepository { get; }
+        ICommitteeMemberRepository CommitteeMemberRepository { get; }
         IStudentThesisGroupRepository StudentThesisGroupRepository { get; }
         IFacultyRepository FacultyRepository { get; }
-        ILecturerRepository LecturerRepository { get; }
-
     }
 }

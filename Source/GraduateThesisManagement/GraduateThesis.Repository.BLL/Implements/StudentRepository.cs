@@ -4,6 +4,7 @@ using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DAL;
 using GraduateThesis.Repository.DTO;
 using GraduateThesis.RepositoryPatterns;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -51,16 +52,14 @@ namespace GraduateThesis.Repository.BLL.Implements
                 Address = s.Address,
                 Avatar = s.Avatar,
                 Birthday = s.Birthday,
-                Notes = s.Notes,
                 Email = s.Email,
-                StudentClass = new StudentClassOutput
-                {
-                    Id = s.StudentClass.Id,
-                    Name = s.StudentClass.Name,
-                    Description = s.StudentClass.Description,
-                    StudentQuantity = s.StudentClass.StudentQuantity,
-                    Notes = s.StudentClass.Notes
-                }
+                //StudentClass = new StudentClassOutput
+                //{
+                //    Id = s.StudentClass.Id,
+                //    Name = s.StudentClass.Name,
+                //    Description = s.StudentClass.Description,
+                //    StudentQuantity = s.StudentClass.StudentQuantity,
+                //}
             };
         }
 
@@ -134,14 +133,42 @@ namespace GraduateThesis.Repository.BLL.Implements
             return await _genericRepository.GetListAsync(count);
         }
 
-        public Pagination<StudentOutput> GetPagination(int page, int pageSize, string orderBy, string keyword)
+        public Pagination<StudentOutput> GetPagination(int page, int pageSize, string orderBy, OrderOptions orderOptions, string keyword)
         {
-            return _genericRepository.GetPagination(page, pageSize, orderBy, keyword);
+            return _genericRepository.GetPagination(page, pageSize, orderBy, orderOptions, keyword);
         }
 
-        public async Task<Pagination<StudentOutput>> GetPaginationAsync(int page, int pageSize, string orderBy, string keyword)
+        public async Task<Pagination<StudentOutput>> GetPaginationAsync(int page, int pageSize, string orderBy, OrderOptions orderOptions, string keyword)
         {
-            return await _genericRepository.GetPaginationAsync(page, pageSize, orderBy, keyword);
+            return await _genericRepository.GetPaginationAsync(page, pageSize, orderBy, orderOptions, keyword);
+        }
+
+        public SignInResultModel SignIn(SignInModel signInModel)
+        {
+            Student student = _context.Students.Find(signInModel.Code);
+            if (student == null)
+                return new SignInResultModel { Status = SignInStatus.NotFound };
+
+            string passwordAndSalt = $"{signInModel.Password}>>>{student.Password}";
+
+            if (!BCrypt.Net.BCrypt.Verify(passwordAndSalt, student.Password))
+                return new SignInResultModel { Status = SignInStatus.WrongPassword };
+
+            return new SignInResultModel { Status = SignInStatus.Success };
+        }
+
+        public async Task<SignInResultModel> SignInAsync(SignInModel signInModel)
+        {
+            Student student = await _context.Students.FindAsync(signInModel.Code);
+            if (student == null)
+                return new SignInResultModel { Status = SignInStatus.NotFound };
+
+            string passwordAndSalt = $"{signInModel.Password}>>>{student.Password}";
+
+            if (!BCrypt.Net.BCrypt.Verify(passwordAndSalt, student.Password))
+                return new SignInResultModel { Status = SignInStatus.WrongPassword };
+
+            return new SignInResultModel { Status = SignInStatus.Success };
         }
 
         public DataResponse<StudentOutput> Update(string id, StudentInput input)

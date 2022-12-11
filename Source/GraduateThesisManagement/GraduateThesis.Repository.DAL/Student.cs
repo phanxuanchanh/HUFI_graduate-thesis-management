@@ -19,9 +19,8 @@ namespace GraduateThesis.Repository.DAL
         public string Address { get; set; }
         public DateTime Birthday { get; set; }
         public string Avatar { get; set; }
-        public string Notes { get; set; }
+        public string Description { get; set; }
         public string StudentClassId { get; set; }
-        public string CourseTrainingId { get; set; }
         public string Password { get; set; }
         public string Salt { get; set; }
         public DateTime? CreatedAt { get; set; }

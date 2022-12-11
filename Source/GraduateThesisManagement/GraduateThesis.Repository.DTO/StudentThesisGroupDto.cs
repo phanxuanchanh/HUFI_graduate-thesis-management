@@ -14,14 +14,16 @@ namespace GraduateThesis.Repository.DTO
         public string Description { get; set; }
         public int StudentQuantity { get; set; }
         public string Notes { get; set; }
-        public DateTime? CreatedAt { get; set; }
-        public DateTime? UpdatedAt { get; set; }
-        public DateTime? DeletedAt { get; set; }
     }
 
     public class StudentThesisGroupOutput : StudentThesisGroupInput
     {
+        public DateTime? CreatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
+        public DateTime? DeletedAt { get; set; }
+
         public ThesisOutput Thesis { get; set; }
+        public List<StudentOutput> Students { get; set; }
     }
 
 }

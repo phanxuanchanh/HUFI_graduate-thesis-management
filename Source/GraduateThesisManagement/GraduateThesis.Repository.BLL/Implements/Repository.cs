@@ -26,16 +26,15 @@ namespace GraduateThesis.Repository.BLL.Implements
 
         public ITopicRepository TopicRepository => new TopicRepository(_context);
 
-        public ICouncilRepository CouncilRepository => new CouncilRepository(_context);
+        public IThesisCommitteeRepository CouncilRepository => new ThesisCommitteeRepository(_context);
 
         public IStudentThesisGroupRepository StudentThesisGroupRepository => new StudentThesisGroupRepository(_context);
 
         public IFacultyRepository FacultyRepository  => new FacultyRepository(_context);
 
-        public ICouncilMemberRepository CouncilMemberRepository => new CouncilMemberRepository(_context);
+        public ICommitteeMemberRepository CommitteeMemberRepository => new CommitteeMemberRepository(_context);
 
-        public ILecturerRepository LecturerRepository => new LecturerRepository(_context);
-
+        public IThesisCommitteeRepository ThesisCommitteeRepository => new ThesisCommitteeRepository(_context);
 
         protected virtual void Dispose(bool disposing)
         {
