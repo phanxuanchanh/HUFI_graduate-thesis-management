@@ -8,7 +8,7 @@
     <ConnectionModel>
       <PropertyValue Name="OverrideMFA">false</PropertyValue>
       <PropertyValue Name="Database">aa8afe9c-7d62-4564-b477-c12e62e0f440</PropertyValue>
-      <PropertyValue Name="ConnectionString" xml:space="preserve">Data Source=103.200.20.78;Integrated Security=False;User ID=HUFI_graduate-thesis</PropertyValue>
+      <PropertyValue Name="ConnectionString" xml:space="preserve">Data Source=103.200.20.78;Initial Catalog=HUFI_graduate-thesis;Integrated Security=False;User ID=HUFI_graduate-thesis</PropertyValue>
       <PropertyValue Name="ExecutionTimeout">0</PropertyValue>
     </ConnectionModel>
   </Connection>
@@ -78,8 +78,8 @@
               <Parent>0</Parent>
             </CustomProperties>
             <Location>
-              <X>990 px</X>
-              <Y>1070 px</Y>
+              <X>-500 px</X>
+              <Y>150 px</Y>
             </Location>
             <Size>
               <Width>205 px</Width>
@@ -147,8 +147,8 @@
               <Parent>0</Parent>
             </CustomProperties>
             <Location>
-              <X>770 px</X>
-              <Y>580 px</Y>
+              <X>800 px</X>
+              <Y>470 px</Y>
             </Location>
             <Size>
               <Width>172 px</Width>
@@ -193,12 +193,12 @@
               <Parent>0</Parent>
             </CustomProperties>
             <Location>
-              <X>51 px</X>
-              <Y>234 px</Y>
+              <X>260 px</X>
+              <Y>640 px</Y>
             </Location>
             <Size>
-              <Width>205 px</Width>
-              <Height>195 px</Height>
+              <Width>250 px</Width>
+              <Height>178 px</Height>
             </Size>
             <DbOid>
               <Path>[HUFI_graduate-thesis].dbo.Guide</Path>
@@ -213,29 +213,6 @@
           <Model xsi:type="TableModel">
             <CustomProperties>
               <OID>8</OID>
-              <Parent>0</Parent>
-            </CustomProperties>
-            <Location>
-              <X>-180 px</X>
-              <Y>490 px</Y>
-            </Location>
-            <Size>
-              <Width>172 px</Width>
-              <Height>263 px</Height>
-            </Size>
-            <DbOid>
-              <Path>[HUFI_graduate-thesis].dbo.Lecturers</Path>
-              <TypeName>Table</TypeName>
-            </DbOid>
-            <Compartments>
-              <ConstraintsCollapsed>True</ConstraintsCollapsed>
-              <IndexesCollapsed>True</IndexesCollapsed>
-              <TriggersCollapsed>True</TriggersCollapsed>
-            </Compartments>
-          </Model>
-          <Model xsi:type="TableModel">
-            <CustomProperties>
-              <OID>9</OID>
               <Parent>0</Parent>
             </CustomProperties>
             <Location>
@@ -258,12 +235,12 @@
           </Model>
           <Model xsi:type="TableModel">
             <CustomProperties>
-              <OID>10</OID>
+              <OID>9</OID>
               <Parent>0</Parent>
             </CustomProperties>
             <Location>
-              <X>1200 px</X>
-              <Y>560 px</Y>
+              <X>1290 px</X>
+              <Y>470 px</Y>
             </Location>
             <Size>
               <Width>203 px</Width>
@@ -281,12 +258,12 @@
           </Model>
           <Model xsi:type="TableModel">
             <CustomProperties>
-              <OID>11</OID>
+              <OID>10</OID>
               <Parent>0</Parent>
             </CustomProperties>
             <Location>
-              <X>350 px</X>
-              <Y>340 px</Y>
+              <X>370 px</X>
+              <Y>300 px</Y>
             </Location>
             <Size>
               <Width>221 px</Width>
@@ -304,12 +281,12 @@
           </Model>
           <Model xsi:type="TableModel">
             <CustomProperties>
-              <OID>12</OID>
+              <OID>11</OID>
               <Parent>0</Parent>
             </CustomProperties>
             <Location>
-              <X>980 px</X>
-              <Y>360 px</Y>
+              <X>1000 px</X>
+              <Y>270 px</Y>
             </Location>
             <Size>
               <Width>271 px</Width>
@@ -327,16 +304,16 @@
           </Model>
           <Model xsi:type="TableModel">
             <CustomProperties>
-              <OID>13</OID>
+              <OID>12</OID>
               <Parent>0</Parent>
             </CustomProperties>
             <Location>
-              <X>350 px</X>
-              <Y>-120 px</Y>
+              <X>-70 px</X>
+              <Y>-200 px</Y>
             </Location>
             <Size>
               <Width>224 px</Width>
-              <Height>314 px</Height>
+              <Height>365 px</Height>
             </Size>
             <DbOid>
               <Path>[HUFI_graduate-thesis].dbo.Theses</Path>
@@ -350,12 +327,12 @@
           </Model>
           <Model xsi:type="TableModel">
             <CustomProperties>
-              <OID>14</OID>
+              <OID>13</OID>
               <Parent>0</Parent>
             </CustomProperties>
             <Location>
-              <X>760 px</X>
-              <Y>-100 px</Y>
+              <X>290 px</X>
+              <Y>-280 px</Y>
             </Location>
             <Size>
               <Width>172 px</Width>
@@ -373,12 +350,12 @@
           </Model>
           <Model xsi:type="TableModel">
             <CustomProperties>
-              <OID>15</OID>
+              <OID>14</OID>
               <Parent>0</Parent>
             </CustomProperties>
             <Location>
-              <X>1490 px</X>
-              <Y>150 px</Y>
+              <X>1590 px</X>
+              <Y>70 px</Y>
             </Location>
             <Size>
               <Width>239 px</Width>
@@ -394,161 +371,9 @@
               <TriggersCollapsed>True</TriggersCollapsed>
             </Compartments>
           </Model>
-          <Model xsi:type="RelationLinkModel">
-            <CustomProperties>
-              <OID>16</OID>
-              <Comment>17</Comment>
-              <OutModel>13</OutModel>
-              <InModel>14</InModel>
-              <OutPort>18</OutPort>
-              <InPort>19</InPort>
-              <Parent>0</Parent>
-            </CustomProperties>
-            <PortAnchors>
-              <Port>
-                <Location>
-                  <X>0 px</X>
-                  <Y>190.625 px</Y>
-                </Location>
-                <Anchors>Top Bottom</Anchors>
-                <Align>Right</Align>
-                <CustomProperties>
-                  <OID>18</OID>
-                  <PortType>FloatAnchor</PortType>
-                </CustomProperties>
-              </Port>
-              <Port>
-                <Location>
-                  <X>0 px</X>
-                  <Y>170.625 px</Y>
-                </Location>
-                <Anchors>Top Bottom</Anchors>
-                <Align>Left</Align>
-                <CustomProperties>
-                  <OID>19</OID>
-                  <PortType>FloatAnchor</PortType>
-                </CustomProperties>
-              </Port>
-            </PortAnchors>
-            <IsManuallyRouted>false</IsManuallyRouted>
-            <DbOid>
-              <Path>[HUFI_graduate-thesis].dbo.Theses.FK_Theses_Topics_ID</Path>
-              <TypeName>ForeignKey</TypeName>
-            </DbOid>
-          </Model>
-          <Model xsi:type="RelationCommentModel">
-            <CustomProperties>
-              <OID>17</OID>
-              <HolderModel>16</HolderModel>
-              <Port>20</Port>
-              <Parent>0</Parent>
-            </CustomProperties>
-            <PortAnchors>
-              <Port xsi:type="LinkPort">
-                <Location>
-                  <X>-93 px</X>
-                  <Y>0 px</Y>
-                </Location>
-                <Anchors>None</Anchors>
-                <Align>Right</Align>
-                <CustomProperties>
-                  <OID>20</OID>
-                  <PortType>FixedAnchor</PortType>
-                </CustomProperties>
-                <LinkPortAnchor>OutPoint</LinkPortAnchor>
-              </Port>
-            </PortAnchors>
-            <CommentOffset>
-              <X>22 px</X>
-              <Y>2 px</Y>
-            </CommentOffset>
-          </Model>
-          <Model xsi:type="RelationLinkModel">
-            <CustomProperties>
-              <OID>21</OID>
-              <Comment>22</Comment>
-              <OutModel>13</OutModel>
-              <InModel>1</InModel>
-              <OutPort>23</OutPort>
-              <InPort>24</InPort>
-              <Parent>0</Parent>
-            </CustomProperties>
-            <PortAnchors>
-              <Port>
-                <Location>
-                  <X>209.9999777476 px</X>
-                  <Y>286.666660043929 px</Y>
-                </Location>
-                <Anchors>None</Anchors>
-                <Align>Right</Align>
-                <CustomProperties>
-                  <OID>23</OID>
-                  <PortType>FixedAnchor</PortType>
-                </CustomProperties>
-              </Port>
-              <Port>
-                <Location>
-                  <X>85.5555100352694 px</X>
-                  <Y>217.777772302981 px</Y>
-                </Location>
-                <Anchors>None</Anchors>
-                <Align>Bottom</Align>
-                <CustomProperties>
-                  <OID>24</OID>
-                  <PortType>FixedAnchor</PortType>
-                </CustomProperties>
-              </Port>
-            </PortAnchors>
-            <BendPoints>
-              <PointD>
-                <X>594 px</X>
-                <Y>166.666660043929 px</Y>
-              </PointD>
-              <PointD>
-                <X>594 px</X>
-                <Y>168 px</Y>
-              </PointD>
-              <PointD>
-                <X>1145.55551003527 px</X>
-                <Y>168 px</Y>
-              </PointD>
-            </BendPoints>
-            <IsManuallyRouted>false</IsManuallyRouted>
-            <DbOid>
-              <Path>[HUFI_graduate-thesis].dbo.Theses.FK_Theses_Councils_ID</Path>
-              <TypeName>ForeignKey</TypeName>
-            </DbOid>
-          </Model>
-          <Model xsi:type="RelationCommentModel">
-            <CustomProperties>
-              <OID>22</OID>
-              <HolderModel>21</HolderModel>
-              <Port>25</Port>
-              <Parent>0</Parent>
-            </CustomProperties>
-            <PortAnchors>
-              <Port xsi:type="LinkPort">
-                <Location>
-                  <X>-295.777770996094 px</X>
-                  <Y>-1.33333995607137 px</Y>
-                </Location>
-                <Anchors>None</Anchors>
-                <Align>Right</Align>
-                <CustomProperties>
-                  <OID>25</OID>
-                  <PortType>FixedAnchor</PortType>
-                </CustomProperties>
-                <LinkPortAnchor>OutPoint</LinkPortAnchor>
-              </Port>
-            </PortAnchors>
-            <CommentOffset>
-              <X>22 px</X>
-              <Y>2 px</Y>
-            </CommentOffset>
-          </Model>
           <Model xsi:type="TableModel">
             <CustomProperties>
-              <OID>26</OID>
+              <OID>15</OID>
               <Parent>0</Parent>
             </CustomProperties>
             <Location>
@@ -571,12 +396,12 @@
           </Model>
           <Model xsi:type="RelationLinkModel">
             <CustomProperties>
-              <OID>27</OID>
-              <Comment>28</Comment>
-              <OutModel>15</OutModel>
-              <InModel>10</InModel>
-              <OutPort>29</OutPort>
-              <InPort>30</InPort>
+              <OID>16</OID>
+              <Comment>17</Comment>
+              <OutModel>14</OutModel>
+              <InModel>9</InModel>
+              <OutPort>18</OutPort>
+              <InPort>19</InPort>
               <Parent>0</Parent>
             </CustomProperties>
             <PortAnchors>
@@ -588,7 +413,7 @@
                 <Anchors>None</Anchors>
                 <Align>Bottom</Align>
                 <CustomProperties>
-                  <OID>29</OID>
+                  <OID>18</OID>
                   <PortType>FixedAnchor</PortType>
                 </CustomProperties>
               </Port>
@@ -600,15 +425,15 @@
                 <Anchors>None</Anchors>
                 <Align>Right</Align>
                 <CustomProperties>
-                  <OID>30</OID>
+                  <OID>19</OID>
                   <PortType>FixedAnchor</PortType>
                 </CustomProperties>
               </Port>
             </PortAnchors>
             <BendPoints>
               <PointD>
-                <X>1618.88879394531 px</X>
-                <Y>725.555541992188 px</Y>
+                <X>1718.88879394531 px</X>
+                <Y>635.555541992188 px</Y>
               </PointD>
             </BendPoints>
             <IsManuallyRouted>false</IsManuallyRouted>
@@ -619,21 +444,21 @@
           </Model>
           <Model xsi:type="RelationCommentModel">
             <CustomProperties>
-              <OID>28</OID>
-              <HolderModel>27</HolderModel>
-              <Port>31</Port>
+              <OID>17</OID>
+              <HolderModel>16</HolderModel>
+              <Port>20</Port>
               <Parent>0</Parent>
             </CustomProperties>
             <PortAnchors>
               <Port xsi:type="LinkPort">
                 <Location>
-                  <X>3.06147142055124E-05 px</X>
-                  <Y>-122.277770996094 px</Y>
+                  <X>3.06147144328861E-05 px</X>
+                  <Y>-117.277770996094 px</Y>
                 </Location>
                 <Anchors>None</Anchors>
                 <Align>Bottom</Align>
                 <CustomProperties>
-                  <OID>31</OID>
+                  <OID>20</OID>
                   <PortType>FixedAnchor</PortType>
                 </CustomProperties>
                 <LinkPortAnchor>OutPoint</LinkPortAnchor>
@@ -646,12 +471,12 @@
           </Model>
           <Model xsi:type="RelationLinkModel">
             <CustomProperties>
-              <OID>32</OID>
-              <Comment>33</Comment>
-              <OutModel>10</OutModel>
+              <OID>21</OID>
+              <Comment>22</Comment>
+              <OutModel>9</OutModel>
               <InModel>5</InModel>
-              <OutPort>34</OutPort>
-              <InPort>35</InPort>
+              <OutPort>23</OutPort>
+              <InPort>24</InPort>
               <Parent>0</Parent>
             </CustomProperties>
             <PortAnchors>
@@ -663,7 +488,7 @@
                 <Anchors>Top Bottom</Anchors>
                 <Align>Left</Align>
                 <CustomProperties>
-                  <OID>34</OID>
+                  <OID>23</OID>
                   <PortType>FloatAnchor</PortType>
                 </CustomProperties>
               </Port>
@@ -675,11 +500,21 @@
                 <Anchors>Top Bottom</Anchors>
                 <Align>Right</Align>
                 <CustomProperties>
-                  <OID>35</OID>
+                  <OID>24</OID>
                   <PortType>FloatAnchor</PortType>
                 </CustomProperties>
               </Port>
             </PortAnchors>
+            <BendPoints>
+              <PointD>
+                <X>1270 px</X>
+                <Y>636.25 px</Y>
+              </PointD>
+              <PointD>
+                <X>1270 px</X>
+                <Y>616.25 px</Y>
+              </PointD>
+            </BendPoints>
             <IsManuallyRouted>false</IsManuallyRouted>
             <DbOid>
               <Path>[HUFI_graduate-thesis].dbo.StudentClasses.FK_StudentClasses_Faculties_ID</Path>
@@ -688,21 +523,21 @@
           </Model>
           <Model xsi:type="RelationCommentModel">
             <CustomProperties>
-              <OID>33</OID>
-              <HolderModel>32</HolderModel>
-              <Port>36</Port>
+              <OID>22</OID>
+              <HolderModel>21</HolderModel>
+              <Port>25</Port>
               <Parent>0</Parent>
             </CustomProperties>
             <PortAnchors>
               <Port xsi:type="LinkPort">
                 <Location>
-                  <X>129 px</X>
-                  <Y>0 px</Y>
+                  <X>169 px</X>
+                  <Y>20 px</Y>
                 </Location>
                 <Anchors>None</Anchors>
                 <Align>Left</Align>
                 <CustomProperties>
-                  <OID>36</OID>
+                  <OID>25</OID>
                   <PortType>FixedAnchor</PortType>
                 </CustomProperties>
                 <LinkPortAnchor>OutPoint</LinkPortAnchor>
@@ -715,91 +550,12 @@
           </Model>
           <Model xsi:type="RelationLinkModel">
             <CustomProperties>
-              <OID>37</OID>
-              <Comment>38</Comment>
+              <OID>26</OID>
+              <Comment>27</Comment>
               <OutModel>11</OutModel>
-              <InModel>13</InModel>
-              <OutPort>39</OutPort>
-              <InPort>40</InPort>
-              <Parent>0</Parent>
-            </CustomProperties>
-            <PortAnchors>
-              <Port>
-                <Location>
-                  <X>107 px</X>
-                  <Y>0 px</Y>
-                </Location>
-                <Anchors>Left Right</Anchors>
-                <Align>Top</Align>
-                <CustomProperties>
-                  <OID>39</OID>
-                  <PortType>FloatAnchor</PortType>
-                </CustomProperties>
-              </Port>
-              <Port>
-                <Location>
-                  <X>114.444425989081 px</X>
-                  <Y>313.333325650957 px</Y>
-                </Location>
-                <Anchors>None</Anchors>
-                <Align>Bottom</Align>
-                <CustomProperties>
-                  <OID>40</OID>
-                  <PortType>FixedAnchor</PortType>
-                </CustomProperties>
-              </Port>
-            </PortAnchors>
-            <BendPoints>
-              <PointD>
-                <X>457 px</X>
-                <Y>210 px</Y>
-              </PointD>
-              <PointD>
-                <X>464.444425989081 px</X>
-                <Y>210 px</Y>
-              </PointD>
-            </BendPoints>
-            <IsManuallyRouted>true</IsManuallyRouted>
-            <DbOid>
-              <Path>[HUFI_graduate-thesis].dbo.StudentThesisGroups.FK_StudentThesisGroups_Theses_ID</Path>
-              <TypeName>ForeignKey</TypeName>
-            </DbOid>
-          </Model>
-          <Model xsi:type="RelationCommentModel">
-            <CustomProperties>
-              <OID>38</OID>
-              <HolderModel>37</HolderModel>
-              <Port>41</Port>
-              <Parent>0</Parent>
-            </CustomProperties>
-            <PortAnchors>
-              <Port xsi:type="LinkPort">
-                <Location>
-                  <X>0 px</X>
-                  <Y>65 px</Y>
-                </Location>
-                <Anchors>None</Anchors>
-                <Align>Top</Align>
-                <CustomProperties>
-                  <OID>41</OID>
-                  <PortType>FixedAnchor</PortType>
-                </CustomProperties>
-                <LinkPortAnchor>OutPoint</LinkPortAnchor>
-              </Port>
-            </PortAnchors>
-            <CommentOffset>
-              <X>22 px</X>
-              <Y>2 px</Y>
-            </CommentOffset>
-          </Model>
-          <Model xsi:type="RelationLinkModel">
-            <CustomProperties>
-              <OID>42</OID>
-              <Comment>43</Comment>
-              <OutModel>12</OutModel>
-              <InModel>11</InModel>
-              <OutPort>44</OutPort>
-              <InPort>45</InPort>
+              <InModel>10</InModel>
+              <OutPort>28</OutPort>
+              <InPort>29</InPort>
               <Parent>0</Parent>
             </CustomProperties>
             <PortAnchors>
@@ -811,7 +567,7 @@
                 <Anchors>Top Bottom</Anchors>
                 <Align>Left</Align>
                 <CustomProperties>
-                  <OID>44</OID>
+                  <OID>28</OID>
                   <PortType>FloatAnchor</PortType>
                 </CustomProperties>
               </Port>
@@ -823,11 +579,21 @@
                 <Anchors>Top Bottom</Anchors>
                 <Align>Right</Align>
                 <CustomProperties>
-                  <OID>45</OID>
+                  <OID>29</OID>
                   <PortType>FloatAnchor</PortType>
                 </CustomProperties>
               </Port>
             </PortAnchors>
+            <BendPoints>
+              <PointD>
+                <X>980 px</X>
+                <Y>365.25 px</Y>
+              </PointD>
+              <PointD>
+                <X>980 px</X>
+                <Y>415.25 px</Y>
+              </PointD>
+            </BendPoints>
             <IsManuallyRouted>false</IsManuallyRouted>
             <DbOid>
               <Path>[HUFI_graduate-thesis].dbo.StudentThesisGroupDetails.FK_StudentThesisGroupDetails_StudentThesisGroups_ID</Path>
@@ -836,21 +602,21 @@
           </Model>
           <Model xsi:type="RelationCommentModel">
             <CustomProperties>
-              <OID>43</OID>
-              <HolderModel>42</HolderModel>
-              <Port>46</Port>
+              <OID>27</OID>
+              <HolderModel>26</HolderModel>
+              <Port>30</Port>
               <Parent>0</Parent>
             </CustomProperties>
             <PortAnchors>
               <Port xsi:type="LinkPort">
                 <Location>
-                  <X>204.5 px</X>
-                  <Y>0 px</Y>
+                  <X>214.5 px</X>
+                  <Y>-50 px</Y>
                 </Location>
                 <Anchors>None</Anchors>
                 <Align>Left</Align>
                 <CustomProperties>
-                  <OID>46</OID>
+                  <OID>30</OID>
                   <PortType>FixedAnchor</PortType>
                 </CustomProperties>
                 <LinkPortAnchor>OutPoint</LinkPortAnchor>
@@ -863,50 +629,40 @@
           </Model>
           <Model xsi:type="RelationLinkModel">
             <CustomProperties>
-              <OID>47</OID>
-              <Comment>48</Comment>
-              <OutModel>12</OutModel>
-              <InModel>15</InModel>
-              <OutPort>49</OutPort>
-              <InPort>50</InPort>
+              <OID>31</OID>
+              <Comment>32</Comment>
+              <OutModel>11</OutModel>
+              <InModel>14</InModel>
+              <OutPort>33</OutPort>
+              <InPort>34</InPort>
               <Parent>0</Parent>
             </CustomProperties>
             <PortAnchors>
               <Port>
                 <Location>
                   <X>0 px</X>
-                  <Y>55.5 px</Y>
+                  <Y>95.25 px</Y>
                 </Location>
                 <Anchors>Top Bottom</Anchors>
                 <Align>Right</Align>
                 <CustomProperties>
-                  <OID>49</OID>
+                  <OID>33</OID>
                   <PortType>FloatAnchor</PortType>
                 </CustomProperties>
               </Port>
               <Port>
                 <Location>
                   <X>0 px</X>
-                  <Y>275.5 px</Y>
+                  <Y>295.25 px</Y>
                 </Location>
                 <Anchors>Top Bottom</Anchors>
                 <Align>Left</Align>
                 <CustomProperties>
-                  <OID>50</OID>
+                  <OID>34</OID>
                   <PortType>FloatAnchor</PortType>
                 </CustomProperties>
               </Port>
             </PortAnchors>
-            <BendPoints>
-              <PointD>
-                <X>1271 px</X>
-                <Y>415.5 px</Y>
-              </PointD>
-              <PointD>
-                <X>1271 px</X>
-                <Y>425.5 px</Y>
-              </PointD>
-            </BendPoints>
             <IsManuallyRouted>false</IsManuallyRouted>
             <DbOid>
               <Path>[HUFI_graduate-thesis].dbo.StudentThesisGroupDetails.FK_StudentThesisGroupDetails_Students_ID</Path>
@@ -915,21 +671,21 @@
           </Model>
           <Model xsi:type="RelationCommentModel">
             <CustomProperties>
-              <OID>48</OID>
-              <HolderModel>47</HolderModel>
-              <Port>51</Port>
+              <OID>32</OID>
+              <HolderModel>31</HolderModel>
+              <Port>35</Port>
               <Parent>0</Parent>
             </CustomProperties>
             <PortAnchors>
               <Port xsi:type="LinkPort">
                 <Location>
-                  <X>-129.5 px</X>
-                  <Y>-10 px</Y>
+                  <X>-159.5 px</X>
+                  <Y>0 px</Y>
                 </Location>
                 <Anchors>None</Anchors>
                 <Align>Right</Align>
                 <CustomProperties>
-                  <OID>51</OID>
+                  <OID>35</OID>
                   <PortType>FixedAnchor</PortType>
                 </CustomProperties>
                 <LinkPortAnchor>OutPoint</LinkPortAnchor>
@@ -940,13 +696,234 @@
               <Y>2 px</Y>
             </CommentOffset>
           </Model>
+          <Model xsi:type="RelationLinkModel">
+            <CustomProperties>
+              <OID>36</OID>
+              <Comment>37</Comment>
+              <OutModel>15</OutModel>
+              <InModel>1</InModel>
+              <OutPort>38</OutPort>
+              <InPort>39</InPort>
+              <Parent>0</Parent>
+            </CustomProperties>
+            <PortAnchors>
+              <Port>
+                <Location>
+                  <X>0 px</X>
+                  <Y>62 px</Y>
+                </Location>
+                <Anchors>Top Bottom</Anchors>
+                <Align>Left</Align>
+                <CustomProperties>
+                  <OID>38</OID>
+                  <PortType>FloatAnchor</PortType>
+                </CustomProperties>
+              </Port>
+              <Port>
+                <Location>
+                  <X>0 px</X>
+                  <Y>62 px</Y>
+                </Location>
+                <Anchors>Top Bottom</Anchors>
+                <Align>Right</Align>
+                <CustomProperties>
+                  <OID>39</OID>
+                  <PortType>FloatAnchor</PortType>
+                </CustomProperties>
+              </Port>
+            </PortAnchors>
+            <IsManuallyRouted>false</IsManuallyRouted>
+            <DbOid>
+              <Path>[HUFI_graduate-thesis].dbo.CouncilMembers.FK_CouncilMembers_Councils_ID</Path>
+              <TypeName>ForeignKey</TypeName>
+            </DbOid>
+          </Model>
+          <Model xsi:type="RelationCommentModel">
+            <CustomProperties>
+              <OID>37</OID>
+              <HolderModel>36</HolderModel>
+              <Port>40</Port>
+              <Parent>0</Parent>
+            </CustomProperties>
+            <PortAnchors>
+              <Port xsi:type="LinkPort">
+                <Location>
+                  <X>71 px</X>
+                  <Y>0 px</Y>
+                </Location>
+                <Anchors>None</Anchors>
+                <Align>Left</Align>
+                <CustomProperties>
+                  <OID>40</OID>
+                  <PortType>FixedAnchor</PortType>
+                </CustomProperties>
+                <LinkPortAnchor>OutPoint</LinkPortAnchor>
+              </Port>
+            </PortAnchors>
+            <CommentOffset>
+              <X>22 px</X>
+              <Y>2 px</Y>
+            </CommentOffset>
+          </Model>
+          <Model xsi:type="RelationLinkModel">
+            <CustomProperties>
+              <OID>41</OID>
+              <Comment>42</Comment>
+              <OutModel>6</OutModel>
+              <InModel>5</InModel>
+              <OutPort>43</OutPort>
+              <InPort>44</InPort>
+              <Parent>0</Parent>
+            </CustomProperties>
+            <PortAnchors>
+              <Port>
+                <Location>
+                  <X>161 px</X>
+                  <Y>0 px</Y>
+                </Location>
+                <Anchors>Left Right</Anchors>
+                <Align>Top</Align>
+                <CustomProperties>
+                  <OID>43</OID>
+                  <PortType>FloatAnchor</PortType>
+                </CustomProperties>
+              </Port>
+              <Port>
+                <Location>
+                  <X>31 px</X>
+                  <Y>0 px</Y>
+                </Location>
+                <Anchors>Left Right</Anchors>
+                <Align>Bottom</Align>
+                <CustomProperties>
+                  <OID>44</OID>
+                  <PortType>FloatAnchor</PortType>
+                </CustomProperties>
+              </Port>
+            </PortAnchors>
+            <IsManuallyRouted>false</IsManuallyRouted>
+            <DbOid>
+              <Path>[HUFI_graduate-thesis].dbo.FacultyStaffs.FK_FacultyStaffs_Faculties_ID</Path>
+              <TypeName>ForeignKey</TypeName>
+            </DbOid>
+          </Model>
+          <Model xsi:type="RelationCommentModel">
+            <CustomProperties>
+              <OID>42</OID>
+              <HolderModel>41</HolderModel>
+              <Port>45</Port>
+              <Parent>0</Parent>
+            </CustomProperties>
+            <PortAnchors>
+              <Port xsi:type="LinkPort">
+                <Location>
+                  <X>0 px</X>
+                  <Y>212.5 px</Y>
+                </Location>
+                <Anchors>None</Anchors>
+                <Align>Top</Align>
+                <CustomProperties>
+                  <OID>45</OID>
+                  <PortType>FixedAnchor</PortType>
+                </CustomProperties>
+                <LinkPortAnchor>OutPoint</LinkPortAnchor>
+              </Port>
+            </PortAnchors>
+            <CommentOffset>
+              <X>22 px</X>
+              <Y>2 px</Y>
+            </CommentOffset>
+          </Model>
+          <Model xsi:type="RelationLinkModel">
+            <CustomProperties>
+              <OID>46</OID>
+              <Comment>47</Comment>
+              <OutModel>7</OutModel>
+              <InModel>6</InModel>
+              <OutPort>48</OutPort>
+              <InPort>49</InPort>
+              <Parent>0</Parent>
+            </CustomProperties>
+            <PortAnchors>
+              <Port>
+                <Location>
+                  <X>125 px</X>
+                  <Y>0 px</Y>
+                </Location>
+                <Anchors>Left Right</Anchors>
+                <Align>Bottom</Align>
+                <CustomProperties>
+                  <OID>48</OID>
+                  <PortType>FloatAnchor</PortType>
+                </CustomProperties>
+              </Port>
+              <Port>
+                <Location>
+                  <X>0 px</X>
+                  <Y>72 px</Y>
+                </Location>
+                <Anchors>Top Bottom</Anchors>
+                <Align>Left</Align>
+                <CustomProperties>
+                  <OID>49</OID>
+                  <PortType>FloatAnchor</PortType>
+                </CustomProperties>
+              </Port>
+            </PortAnchors>
+            <BendPoints>
+              <PointD>
+                <X>385 px</X>
+                <Y>838 px</Y>
+              </PointD>
+              <PointD>
+                <X>650 px</X>
+                <Y>838 px</Y>
+              </PointD>
+              <PointD>
+                <X>650 px</X>
+                <Y>1162 px</Y>
+              </PointD>
+            </BendPoints>
+            <IsManuallyRouted>false</IsManuallyRouted>
+            <DbOid>
+              <Path>[HUFI_graduate-thesis].dbo.Guide.FK_Guide_FacultyStaffs_ID</Path>
+              <TypeName>ForeignKey</TypeName>
+            </DbOid>
+          </Model>
+          <Model xsi:type="RelationCommentModel">
+            <CustomProperties>
+              <OID>47</OID>
+              <HolderModel>46</HolderModel>
+              <Port>50</Port>
+              <Parent>0</Parent>
+            </CustomProperties>
+            <PortAnchors>
+              <Port xsi:type="LinkPort">
+                <Location>
+                  <X>-265 px</X>
+                  <Y>-182 px</Y>
+                </Location>
+                <Anchors>None</Anchors>
+                <Align>Bottom</Align>
+                <CustomProperties>
+                  <OID>50</OID>
+                  <PortType>FixedAnchor</PortType>
+                </CustomProperties>
+                <LinkPortAnchor>OutPoint</LinkPortAnchor>
+              </Port>
+            </PortAnchors>
+            <CommentOffset>
+              <X>32 px</X>
+              <Y>35 px</Y>
+            </CommentOffset>
+          </Model>
         </Children>
         <ViewPort>
           <ScaleMode>Free</ScaleMode>
           <Scale>0.72</Scale>
           <Location>
-            <X>332.222209020898 px</X>
-            <Y>-166.666659337503 px</Y>
+            <X>-486.666647328272 px</X>
+            <Y>-246.666656158589 px</Y>
           </Location>
         </ViewPort>
       </Model>

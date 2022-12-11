@@ -9,5 +9,6 @@ namespace GraduateThesis.Repository.DAL
     {
         public string Id { get; set; }
         public string CouncilId { get; set; }
+        public bool IsDeleted { get; set; }
     }
 }

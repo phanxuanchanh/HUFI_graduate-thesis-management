@@ -48,7 +48,7 @@ namespace GraduateThesis.Repository.BLL.Implements
                 Id = s.Id,
                 Name = s.Name,
                 Phone = s.Phone,
-                Adress = s.Adress,
+                Address = s.Address,
                 Avatar = s.Avatar,
                 Birthday = s.Birthday,
                 Notes = s.Notes,

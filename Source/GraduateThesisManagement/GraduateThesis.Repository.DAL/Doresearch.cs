@@ -13,5 +13,6 @@ namespace GraduateThesis.Repository.DAL
         public string Notes { get; set; }
         public int DoresearchQuantiity { get; set; }
         public string PkResearchId { get; set; }
+        public bool IsDeleted { get; set; }
     }
 }

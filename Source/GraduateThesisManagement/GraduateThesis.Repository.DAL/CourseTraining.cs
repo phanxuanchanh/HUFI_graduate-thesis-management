@@ -12,5 +12,6 @@ namespace GraduateThesis.Repository.DAL
         public string Description { get; set; }
         public string Notes { get; set; }
         public int ShoolYear { get; set; }
+        public bool IsDeleted { get; set; }
     }
 }

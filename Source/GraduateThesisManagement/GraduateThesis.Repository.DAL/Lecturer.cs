@@ -19,5 +19,6 @@ namespace GraduateThesis.Repository.DAL
         public string Position { get; set; }
         public string Degree { get; set; }
         public string Notes { get; set; }
+        public bool IsDeleted { get; set; }
     }
 }
