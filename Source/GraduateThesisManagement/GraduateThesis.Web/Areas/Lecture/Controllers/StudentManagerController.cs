@@ -15,7 +15,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
     [Route("lecture/student-manager")]
     public class StudentManagerController: WebControllerBase
     {
-        public string PageName { get; set; }
+        public string PageName { get; set; } = "Quản lý sinh viên";
 
         private IStudentRepository _studentRepository;
 
@@ -38,6 +38,11 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
 
                 StaticPagedList<StudentOutput> pagedList = pagination.ToStaticPagedList();
                 ViewData["PagedList"] = pagedList;
+                ViewData["OrderBy"] = orderBy;
+                ViewData["OrderOptions"] = orderOptions;
+                ViewData["Keyword"] = keyword;
+
+                AddViewData(PageName);
 
                 return View();
             }
@@ -57,6 +62,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
                 if (studentOutput == null)
                     return RedirectToAction("Index");
 
+                AddViewData(PageName);
                 return View(studentOutput);
             }
             catch
@@ -69,7 +75,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
         [HttpGet]
         public IActionResult Create()
         {
-
+            AddViewData(PageName);
             return View();
         }
 
@@ -106,6 +112,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
                 if (studentOutput == null)
                     return RedirectToAction("Index");
 
+                AddViewData(PageName);
                 return View(studentOutput);
             }
             catch (Exception ex)
@@ -141,7 +148,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
             }
         }
 
-        [Route("edit/{id}")]
+        [Route("delete/{id}")]
         [HttpPost]
         public async Task<IActionResult> Delete([Required] string id)
         {

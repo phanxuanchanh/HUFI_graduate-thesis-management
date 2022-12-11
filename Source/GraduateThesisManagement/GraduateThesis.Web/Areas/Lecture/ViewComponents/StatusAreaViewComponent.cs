@@ -2,10 +2,10 @@
 
 namespace GraduateThesis.Web.Areas.Lecture.ViewComponents
 {
-    [ViewComponent(Name = "Sidebar")]
-    public class SidebarViewComponent : ViewComponent
+    [ViewComponent(Name = "StatusArea")]
+    public class StatusAreaViewComponent : ViewComponent
     {
-        public SidebarViewComponent()
+        public StatusAreaViewComponent()
         {
 
         }
