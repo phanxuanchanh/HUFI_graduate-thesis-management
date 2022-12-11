@@ -17,7 +17,6 @@ namespace GraduateThesis.Repository.DAL
         public string EvaluationId { get; set; }
 
         public virtual CommitteeMember CommitteeMember { get; set; }
-        public virtual MemberEvaluation Evaluation { get; set; }
         public virtual Thesis Thesis { get; set; }
     }
 }

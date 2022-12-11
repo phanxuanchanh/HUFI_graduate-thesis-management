@@ -20,7 +20,9 @@ namespace GraduateThesis.Repository.DAL
         public DateTime? UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
         public bool IsDeleted { get; set; }
+        public string CouncilId { get; set; }
 
+        public virtual Council Council { get; set; }
         public virtual ICollection<CommitteeMember> CommitteeMembers { get; set; }
         public virtual ICollection<ThesisCommitteeResult> ThesisCommitteeResults { get; set; }
     }

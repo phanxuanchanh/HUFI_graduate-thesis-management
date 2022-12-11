@@ -19,6 +19,7 @@ namespace GraduateThesis.Repository.DAL
 
         public virtual DbSet<CommitteeMember> CommitteeMembers { get; set; }
         public virtual DbSet<CommitteeMemberResult> CommitteeMemberResults { get; set; }
+        public virtual DbSet<Council> Councils { get; set; }
         public virtual DbSet<CounterArgumentResult> CounterArgumentResults { get; set; }
         public virtual DbSet<Faculty> Faculties { get; set; }
         public virtual DbSet<FacultyStaff> FacultyStaffs { get; set; }
@@ -125,17 +126,35 @@ namespace GraduateThesis.Repository.DAL
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_CommitteeMemberResults_CommitteeMembers_ID");
 
-                entity.HasOne(d => d.Evaluation)
-                    .WithMany(p => p.CommitteeMemberResults)
-                    .HasForeignKey(d => d.EvaluationId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_CommitteeMemberResults_MemberEvaluations_ID");
-
                 entity.HasOne(d => d.Thesis)
                     .WithMany(p => p.CommitteeMemberResults)
                     .HasForeignKey(d => d.ThesisId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_CommitteeMemberResults_Theses_ID");
+            });
+
+            modelBuilder.Entity<Council>(entity =>
+            {
+                entity.Property(e => e.Id)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("ID");
+
+                entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.Description).HasColumnType("ntext");
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.Property(e => e.Year)
+                    .IsRequired()
+                    .HasMaxLength(50);
             });
 
             modelBuilder.Entity<CounterArgumentResult>(entity =>
@@ -202,8 +221,7 @@ namespace GraduateThesis.Repository.DAL
 
                 entity.Property(e => e.Name)
                     .IsRequired()
-                    .HasMaxLength(50)
-                    .IsUnicode(false);
+                    .HasMaxLength(50);
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
             });
@@ -343,19 +361,20 @@ namespace GraduateThesis.Repository.DAL
 
             modelBuilder.Entity<MemberEvaluation>(entity =>
             {
-                entity.Property(e => e.Id)
+                entity.HasKey(e => new { e.CommitteeMemberResultId, e.EvalutionPatternId })
+                    .HasName("PK_Evaluations_CommitteeMemberId");
+
+                entity.Property(e => e.CommitteeMemberResultId)
                     .HasMaxLength(50)
-                    .IsUnicode(false)
-                    .HasColumnName("ID");
+                    .IsUnicode(false);
+
+                entity.Property(e => e.EvalutionPatternId)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
 
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.DeletedAt).HasColumnType("datetime");
-
-                entity.Property(e => e.EvalutionPatternId)
-                    .IsRequired()
-                    .HasMaxLength(50)
-                    .IsUnicode(false);
 
                 entity.Property(e => e.Name)
                     .IsRequired()
@@ -527,18 +546,7 @@ namespace GraduateThesis.Repository.DAL
 
                 entity.Property(e => e.Notes).HasColumnType("ntext");
 
-                entity.Property(e => e.ThesisId)
-                    .IsRequired()
-                    .HasMaxLength(50)
-                    .IsUnicode(false);
-
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
-
-                entity.HasOne(d => d.Thesis)
-                    .WithMany(p => p.StudentThesisGroups)
-                    .HasForeignKey(d => d.ThesisId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_StudentThesisGroups_Theses_ID");
             });
 
             modelBuilder.Entity<StudentThesisGroupDetail>(entity =>
@@ -628,6 +636,10 @@ namespace GraduateThesis.Repository.DAL
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
+                entity.Property(e => e.ThesisGroupId)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
                 entity.Property(e => e.TopicId)
                     .IsRequired()
                     .HasMaxLength(50)
@@ -644,6 +656,10 @@ namespace GraduateThesis.Repository.DAL
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
+                entity.Property(e => e.Year)
+                    .IsRequired()
+                    .HasMaxLength(100);
+
                 entity.HasOne(d => d.Lecture)
                     .WithMany(p => p.Theses)
                     .HasForeignKey(d => d.LectureId)
@@ -655,6 +671,11 @@ namespace GraduateThesis.Repository.DAL
                     .HasForeignKey(d => d.SpecializationId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Theses_Specializations_ID");
+
+                entity.HasOne(d => d.ThesisGroup)
+                    .WithMany(p => p.Theses)
+                    .HasForeignKey(d => d.ThesisGroupId)
+                    .HasConstraintName("FK_Theses_StudentThesisGroups_ID");
 
                 entity.HasOne(d => d.Topic)
                     .WithMany(p => p.Theses)
@@ -681,6 +702,11 @@ namespace GraduateThesis.Repository.DAL
                     .IsUnicode(false)
                     .HasColumnName("ID");
 
+                entity.Property(e => e.CouncilId)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
                 entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
                 entity.Property(e => e.DeletedAt).HasColumnType("datetime");
@@ -694,6 +720,12 @@ namespace GraduateThesis.Repository.DAL
                     .HasMaxLength(100);
 
                 entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Council)
+                    .WithMany(p => p.ThesisCommittees)
+                    .HasForeignKey(d => d.CouncilId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ThesisCommittees_Councils_ID");
             });
 
             modelBuilder.Entity<ThesisCommitteeResult>(entity =>

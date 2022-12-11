@@ -11,7 +11,6 @@ namespace GraduateThesis.Repository.DAL
         {
             CommitteeMemberResults = new HashSet<CommitteeMemberResult>();
             ImplementationPlans = new HashSet<ImplementationPlan>();
-            StudentThesisGroups = new HashSet<StudentThesisGroup>();
             ThesisRevisions = new HashSet<ThesisRevision>();
         }
 
@@ -24,7 +23,7 @@ namespace GraduateThesis.Repository.DAL
         public string PdfFile { get; set; }
         public string SourceCode { get; set; }
         public int Credits { get; set; }
-        public int Year { get; set; }
+        public string Year { get; set; }
         public string Notes { get; set; }
         public string TopicId { get; set; }
         public string TrainingFormId { get; set; }
@@ -41,9 +40,12 @@ namespace GraduateThesis.Repository.DAL
         public DateTime? DeletedAt { get; set; }
         public bool IsDeleted { get; set; }
         public string LectureId { get; set; }
+        public int Semester { get; set; }
+        public string ThesisGroupId { get; set; }
 
         public virtual FacultyStaff Lecture { get; set; }
         public virtual Specialization Specialization { get; set; }
+        public virtual StudentThesisGroup ThesisGroup { get; set; }
         public virtual Topic Topic { get; set; }
         public virtual TrainingForm TrainingForm { get; set; }
         public virtual TrainingLevel TrainingLevel { get; set; }
@@ -52,7 +54,6 @@ namespace GraduateThesis.Repository.DAL
         public virtual ThesisSupervisor ThesisSupervisor { get; set; }
         public virtual ICollection<CommitteeMemberResult> CommitteeMemberResults { get; set; }
         public virtual ICollection<ImplementationPlan> ImplementationPlans { get; set; }
-        public virtual ICollection<StudentThesisGroup> StudentThesisGroups { get; set; }
         public virtual ICollection<ThesisRevision> ThesisRevisions { get; set; }
     }
 }

@@ -49,7 +49,7 @@ namespace GraduateThesis.Repository.BLL.Implements
                 Description = s.Description,
                 MaxStudentNumber = s.MaxStudentNumber,
                 SourceCode= s.SourceCode,
-                Year= s.Year,
+                //Year= s.Year,
                 Notes= s.Notes,
                 TopicId= s.TopicId,
                 TopicClass = new TopicOutput

@@ -7,12 +7,7 @@ namespace GraduateThesis.Repository.DAL
 {
     public partial class MemberEvaluation
     {
-        public MemberEvaluation()
-        {
-            CommitteeMemberResults = new HashSet<CommitteeMemberResult>();
-        }
-
-        public string Id { get; set; }
+        public string CommitteeMemberResultId { get; set; }
         public string EvalutionPatternId { get; set; }
         public string Name { get; set; }
         public decimal Point { get; set; }
@@ -22,6 +17,5 @@ namespace GraduateThesis.Repository.DAL
         public bool IsDeleted { get; set; }
 
         public virtual MemberEvalutionPattern EvalutionPattern { get; set; }
-        public virtual ICollection<CommitteeMemberResult> CommitteeMemberResults { get; set; }
     }
 }
