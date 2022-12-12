@@ -37,7 +37,7 @@ namespace GraduateThesis.Repository.BLL.Implements
 
         public void ConfigureIncludes()
         {
-            
+            _genericRepository.IncludeMany(i => i.Theses);
         }
 
         public void ConfigureSelectors()
@@ -96,12 +96,12 @@ namespace GraduateThesis.Repository.BLL.Implements
 
         public TopicOutput Get(string id)
         {
-            return _genericRepository.GetById(id);
+            return _genericRepository.Get("Id", id);
         }
 
         public async Task<TopicOutput> GetAsync(string id)
         {
-            return await _genericRepository.GetByIdAsync(id);
+            return await _genericRepository.GetAsync("Id", id);
         }
 
         public List<TopicOutput> GetList(int count = 200)

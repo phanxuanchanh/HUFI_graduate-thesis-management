@@ -50,6 +50,9 @@ namespace GraduateThesis.Web.Areas.Student.Controllers
 
                 StaticPagedList<ThesisOutput> pagedList = pagination.ToStaticPagedList();
                 ViewData["PagedList"] = pagedList;
+                ViewData["OrderBy"] = orderBy;
+                ViewData["OrderOptions"] = orderOptions;
+                ViewData["Keyword"] = keyword;
 
                 return View();
             }

@@ -45,7 +45,7 @@ namespace GraduateThesis.Generics
 
             foreach (PropertyInfo property in properties)
             {
-                PropertyInfo inputProperty = inputType!.GetProperty(property.Name);
+                PropertyInfo inputProperty = inputType.GetProperty(property.Name);
                 if (inputProperty != null)
                 {
                     property.SetValue(output, inputProperty.GetValue(input));
@@ -274,7 +274,7 @@ namespace GraduateThesis.Generics
             if (string.IsNullOrEmpty(valueInExpression))
                 return null;
 
-            string expression = $"x => (x.{propertyName} == {valueInExpression}) && x => x.IsDeleted == false";
+            string expression = $"x => (x.{propertyName} == {valueInExpression}) && x.IsDeleted == false";
 
             return _dbSet.IncludeMultiple(_navigationPropertyPaths)
                 .Where(expression).Select(SingleSelector).SingleOrDefault();
@@ -292,7 +292,7 @@ namespace GraduateThesis.Generics
             if (string.IsNullOrEmpty(valueInExpression))
                 return null;
 
-            string expression = $"x => (x.{propertyName} == {valueInExpression}) && x => x.IsDeleted == false";
+            string expression = $"x => (x.{propertyName} == {valueInExpression}) && x.IsDeleted == false";
 
             return await _dbSet.IncludeMultiple(_navigationPropertyPaths)
                 .Where(expression).Select(SingleSelector).SingleOrDefaultAsync();
