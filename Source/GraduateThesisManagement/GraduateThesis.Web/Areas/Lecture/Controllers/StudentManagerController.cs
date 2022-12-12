@@ -121,6 +121,8 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
         {
             try
             {
+                List<StudentClassOutput> studentClasses = await _studentClassRepository.GetListAsync();
+                ViewData["StudentClassList"] = new SelectList(studentClasses, "Id", "Name");
                 StudentOutput studentOutput = await _studentRepository.GetAsync(id);
                 if (studentOutput == null)
                     return RedirectToAction("Index");
@@ -140,6 +142,8 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
         {
             try
             {
+                List<StudentClassOutput> studentClasses = await _studentClassRepository.GetListAsync();
+                ViewData["StudentClassList"] = new SelectList(studentClasses, "Id", "Name");
                 if (ModelState.IsValid)
                 {
                     StudentOutput studentOutput = await _studentRepository.GetAsync(id);
