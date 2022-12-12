@@ -45,7 +45,19 @@ namespace GraduateThesis.Repository.BLL.Implements
 
         public void ConfigureSelectors()
         {
-            _genericRepository.Selector = s => new StudentOutput
+            _genericRepository.PaginationSelector = s => new StudentOutput
+            {
+                Id = s.Id,
+                Name = s.Name,
+                Phone = s.Phone,
+                Email = s.Email,
+                CreatedAt = s.StudentClass.CreatedAt,
+                UpdatedAt = s.StudentClass.UpdatedAt,
+                DeletedAt = s.StudentClass.DeletedAt
+            };
+
+            _genericRepository.ListSelector = _genericRepository.PaginationSelector;
+            _genericRepository.SingleSelector = s => new StudentOutput
             {
                 Id = s.Id,
                 Name = s.Name,

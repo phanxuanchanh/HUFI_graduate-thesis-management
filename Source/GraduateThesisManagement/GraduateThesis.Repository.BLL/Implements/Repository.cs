@@ -34,6 +34,8 @@ namespace GraduateThesis.Repository.BLL.Implements
 
         public IThesisCommitteeRepository ThesisCommitteeRepository => new ThesisCommitteeRepository(_context);
 
+        public IFacultyStaffRepository FacultyStaffRepository => new FacultyStaffRepository(_context);
+
         protected virtual void Dispose(bool disposing)
         {
             if (!disposedValue)

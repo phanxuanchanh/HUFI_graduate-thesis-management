@@ -42,12 +42,25 @@ namespace GraduateThesis.Repository.BLL.Implements
 
         public void ConfigureSelectors()
         {
-            _genericRepository.Selector = s => new TopicOutput
+            _genericRepository.PaginationSelector = s => new TopicOutput
             {
                Id= s.Id,
                Name= s.Name,
                Description= s.Description,
-               //Notes= s.Notes,
+               CreatedAt = s.CreatedAt,
+               UpdatedAt = s.UpdatedAt,
+               DeletedAt = s.DeletedAt
+            };
+
+            _genericRepository.ListSelector = _genericRepository.PaginationSelector;
+            _genericRepository.SingleSelector = s => new TopicOutput
+            {
+                Id = s.Id,
+                Name = s.Name,
+                Description = s.Description,
+                CreatedAt = s.CreatedAt,
+                UpdatedAt = s.UpdatedAt,
+                DeletedAt = s.DeletedAt
             };
         }
 
