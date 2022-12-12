@@ -34,12 +34,13 @@ namespace GraduateThesis.Repository.DTO
         [Display(Name = "Ảnh nhân viên")]
         public string Avatar { get; set; }
 
-        [Display(Name = "Ghi chú")]
-        public string Notes { get; set; }
+        [Display(Name = "Mật khẩu")]
+        public string Password { get; set; }
 
-        [Display(Name = "Giới tính")]
-        public string Sex { get; set; }
+        [Display(Name = "Mô tả")]
+        public string Description { get; set; }
 
+        [Display(Name = "Lớp")]
         public string StudentClassId { get; set; }
     }
 

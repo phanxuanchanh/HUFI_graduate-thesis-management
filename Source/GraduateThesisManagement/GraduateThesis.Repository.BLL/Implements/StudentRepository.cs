@@ -1,9 +1,11 @@
-﻿using GraduateThesis.Generics;
+﻿using GraduateThesis.Common;
+using GraduateThesis.Generics;
 using GraduateThesis.Models;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DAL;
 using GraduateThesis.Repository.DTO;
 using GraduateThesis.RepositoryPatterns;
+using MathNet.Numerics.Distributions;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 using System;
 using System.Collections.Generic;
@@ -75,6 +77,11 @@ namespace GraduateThesis.Repository.BLL.Implements
 
         public DataResponse<StudentOutput> Create(StudentInput input)
         {
+            string salt = HashFunctions.GetMD5($"{input.Id}|{input.Name}|{DateTime.Now}");
+            string passwordAndSalt = $"{input.Password}>>>{salt}";
+            
+            input.Password = BCrypt.Net.BCrypt.HashPassword(passwordAndSalt);
+            input.sa
             return _genericRepository.Create(input, GenerateUIDOptions.None);
         }
 
