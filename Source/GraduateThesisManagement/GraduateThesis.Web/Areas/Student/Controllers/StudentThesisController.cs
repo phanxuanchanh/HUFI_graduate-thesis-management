@@ -1,4 +1,5 @@
-﻿using GraduateThesis.Common.WebAttributes;
+﻿using GraduateThesis.Common.Authorization;
+using GraduateThesis.Common.WebAttributes;
 using GraduateThesis.Generics;
 using GraduateThesis.Models;
 using GraduateThesis.Repository.BLL.Interfaces;
@@ -14,6 +15,7 @@ namespace GraduateThesis.Web.Areas.Student.Controllers
 {
     [Area("Student")]
     [Route("student/thesis")]
+    [WebAuthorize(AccountRole.Student)]
     public class StudentThesisController : WebControllerBase
     {
         private IThesisRepository _thesisRepository;
@@ -26,6 +28,7 @@ namespace GraduateThesis.Web.Areas.Student.Controllers
         [Route("overview")]
         [HttpGet]
         [PageName(Name = "Trang tổng quan")]
+        [WebAuthorize(AccountRole.Student)]
         public IActionResult Index()
         {
             return View();
@@ -34,6 +37,7 @@ namespace GraduateThesis.Web.Areas.Student.Controllers
         [Route("list")]
         [HttpGet]
         [PageName(Name = "Danh sách đề tài khóa luận")]
+        [WebAuthorize(AccountRole.Student)]
         public async Task<IActionResult> GetList(int page = 1, int pageSize = 10, string orderBy = null, string orderOptions = null, string keyword = null)
         {
             try
@@ -59,6 +63,7 @@ namespace GraduateThesis.Web.Areas.Student.Controllers
         [Route("details/{id}")]
         [HttpGet]
         [PageName(Name = "Xem chi tiết đề tài")]
+        [WebAuthorize(AccountRole.Student)]
         public async Task<IActionResult> Details([Required] string id)
         {
             try
@@ -78,6 +83,7 @@ namespace GraduateThesis.Web.Areas.Student.Controllers
         [Route("do-thesis-register/{studentId}/{thesisId}")]
         [HttpPost]
         [PageName(Name = "Đăng ký đề tài")]
+        [WebAuthorize(AccountRole.Student)]
         public IActionResult DoThesisRegister([Required] string studentId, [Required] string thesisId)
         {
             try
@@ -93,6 +99,7 @@ namespace GraduateThesis.Web.Areas.Student.Controllers
         [Route("submit-thesis")]
         [HttpPost]
         [PageName(Name = "Nộp đề tài")]
+        [WebAuthorize(AccountRole.Student)]
         public IActionResult SubmitThesis()
         {
             try

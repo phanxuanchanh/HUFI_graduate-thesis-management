@@ -184,7 +184,7 @@ namespace GraduateThesis.Repository.BLL.Implements
             if (student == null)
                 return new SignInResultModel { Status = SignInStatus.NotFound };
 
-            string passwordAndSalt = $"{signInModel.Password}>>>{student.Password}";
+            string passwordAndSalt = $"{signInModel.Password}>>>{student.Salt}";
 
             if (!BCrypt.Net.BCrypt.Verify(passwordAndSalt, student.Password))
                 return new SignInResultModel { Status = SignInStatus.WrongPassword };
@@ -198,7 +198,7 @@ namespace GraduateThesis.Repository.BLL.Implements
             if (student == null)
                 return new SignInResultModel { Status = SignInStatus.NotFound };
 
-            string passwordAndSalt = $"{signInModel.Password}>>>{student.Password}";
+            string passwordAndSalt = $"{signInModel.Password}>>>{student.Salt}";
 
             if (!BCrypt.Net.BCrypt.Verify(passwordAndSalt, student.Password))
                 return new SignInResultModel { Status = SignInStatus.WrongPassword };
