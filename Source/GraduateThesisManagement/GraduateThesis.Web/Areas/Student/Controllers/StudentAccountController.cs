@@ -1,7 +1,15 @@
-﻿using GraduateThesis.Generics;
+﻿using GraduateThesis.Common.Authorization;
+using GraduateThesis.Common.WebAttributes;
+using GraduateThesis.Generics;
 using GraduateThesis.Models;
 using GraduateThesis.Repository.BLL.Interfaces;
+using GraduateThesis.Repository.DTO;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
+using Newtonsoft.Json;
+using Org.BouncyCastle.Asn1.Mozilla;
+using System;
 using System.Threading.Tasks;
 
 namespace GraduateThesis.Web.Areas.Student.Controllers
@@ -19,9 +27,9 @@ namespace GraduateThesis.Web.Areas.Student.Controllers
 
         [Route("sign-in-view")]
         [HttpGet]
+        [PageName(Name = "Trang đăng nhập dành cho sinh viên")]
         public IActionResult LoadSignInView()
         {
-            AddViewData("Trang đăng nhập dành cho sinh viên");
             return View(new SignInModel());
         }
 
@@ -35,7 +43,19 @@ namespace GraduateThesis.Web.Areas.Student.Controllers
                 SignInResultModel signInResultModel = await _studentRepository.SignInAsync(signInModel);
 
                 if (signInResultModel.Status == SignInStatus.Success)
-                    return RedirectToAction("Index");
+                {
+                    StudentOutput student =  await _studentRepository.GetAsync(signInModel.Code);
+                    string accountSession = JsonConvert.SerializeObject(new AccountSession
+                    {
+                        AccountModel = student,
+                        Role = "Student",
+                        LastSignInTime = DateTime.Now
+                    });
+
+                    HttpContext.Session.SetString("account-session", accountSession);
+
+                    return RedirectToAction("Index", "StudentThesis");
+                }
 
                 AddTempData(pageName, signInResultModel);
                 return RedirectToAction("LoadSignInView");
@@ -46,9 +66,18 @@ namespace GraduateThesis.Web.Areas.Student.Controllers
         }
 
         [Route("forgot-password-view")]
+        [HttpGet]
         public IActionResult ForgotPasswordView()
         {
             return View();
+        }
+
+        [Route("sign-out")]
+        [HttpGet]
+        public IActionResult SignOutAccount()
+        {
+            HttpContext.Session.SetString("account-session", "");
+            return RedirectToAction("Index", "Home");
         }
     }
 }

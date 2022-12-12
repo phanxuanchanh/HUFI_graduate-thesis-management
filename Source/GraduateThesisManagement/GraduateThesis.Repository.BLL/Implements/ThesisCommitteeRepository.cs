@@ -42,16 +42,19 @@ namespace GraduateThesis.Repository.BLL.Implements
 
         public void ConfigureSelectors()
         {
-            _genericRepository.Selector = s => new ThesisCommitteeOutput
+            _genericRepository.PaginationSelector = s => new ThesisCommitteeOutput
+            {
+                Id = s.Id,
+                Name = s.Name,
+                Description = s.Description,  
+            };
+
+            _genericRepository.ListSelector = _genericRepository.ListSelector;
+            _genericRepository.SingleSelector = s => new ThesisCommitteeOutput
             {
                 Id = s.Id,
                 Name = s.Name,
                 Description = s.Description,
-                //Notes = s.Notes,
-                //Chairman = s.Chairman,
-                //CouncilPoint = s.CouncilPoint,    
-
-
             };
         }
 

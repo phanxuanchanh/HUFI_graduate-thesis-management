@@ -37,18 +37,41 @@ namespace GraduateThesis.Repository.BLL.Implements
 
         public void ConfigureIncludes()
         {
-            
+            _genericRepository.IncludeMany(i => i.Faculty);
         }
 
         public void ConfigureSelectors()
         {
-            _genericRepository.Selector = s => new StudentClassOutput
+            _genericRepository.PaginationSelector = s => new StudentClassOutput
             {
                 Id = s.Id,
                 Name = s.Name,
                 Description = s.Description,
                 StudentQuantity= s.StudentQuantity,
-                //Notes= s.Notes,
+                CreatedAt = s.CreatedAt,
+                UpdatedAt = s.UpdatedAt,
+                DeletedAt = s.DeletedAt
+            };
+
+            _genericRepository.ListSelector = _genericRepository.PaginationSelector;
+            _genericRepository.SingleSelector = s => new StudentClassOutput
+            {
+                Id = s.Id,
+                Name = s.Name,
+                Description = s.Description,
+                StudentQuantity = s.StudentQuantity,
+                Faculty = new FacultyOutput
+                {
+                    Id = s.Faculty.Id,
+                    Name = s.Faculty.Name,
+                    Description = s.Faculty.Description,
+                    CreatedAt = s.CreatedAt,
+                    UpdatedAt = s.UpdatedAt,
+                    DeletedAt = s.DeletedAt
+                },
+                CreatedAt = s.CreatedAt,
+                UpdatedAt = s.UpdatedAt,
+                DeletedAt = s.DeletedAt
             };
         }
 
