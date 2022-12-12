@@ -17,9 +17,5 @@ ALTER TABLE [dbo].[CommitteeMemberResults]
 GO
 
 ALTER TABLE [dbo].[CommitteeMemberResults]
-  ADD CONSTRAINT [FK_CommitteeMemberResults_MemberEvaluations_ID] FOREIGN KEY ([EvaluationId]) REFERENCES [dbo].[MemberEvaluations] ([ID])
-GO
-
-ALTER TABLE [dbo].[CommitteeMemberResults]
   ADD CONSTRAINT [FK_CommitteeMemberResults_Theses_ID] FOREIGN KEY ([ThesisId]) REFERENCES [dbo].[Theses] ([ID])
 GO

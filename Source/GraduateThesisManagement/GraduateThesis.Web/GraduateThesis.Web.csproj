@@ -37,11 +37,8 @@
   <ItemGroup>
     <Folder Include="Areas\Administrator\Data\" />
     <Folder Include="Areas\Administrator\Models\" />
-    <Folder Include="Areas\Administrator\Views\Dashboard\" />
-    <Folder Include="Areas\Administrator\Views\Shared\" />
     <Folder Include="Areas\Student\Data\" />
     <Folder Include="Areas\Student\Models\" />
-    <Folder Include="Areas\Student\Views\StudentThesis\" />
     <Folder Include="wwwroot\images\" />
     <Folder Include="wwwroot\arsha\" />
   </ItemGroup>

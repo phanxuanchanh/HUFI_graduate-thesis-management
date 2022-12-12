@@ -1,6 +1,6 @@
 ﻿CREATE TABLE [dbo].[Faculties] (
   [ID] [varchar](50) NOT NULL,
-  [Name] [varchar](50) NOT NULL,
+  [Name] [nvarchar](50) NOT NULL,
   [Description] [nvarchar](50) NULL,
   [CreatedAt] [datetime] NULL,
   [UpdatedAt] [datetime] NULL,

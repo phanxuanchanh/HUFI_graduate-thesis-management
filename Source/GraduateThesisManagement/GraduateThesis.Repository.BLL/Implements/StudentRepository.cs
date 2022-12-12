@@ -1,4 +1,5 @@
-﻿using GraduateThesis.Generics;
+﻿using GraduateThesis.Common;
+using GraduateThesis.Generics;
 using GraduateThesis.Models;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DAL;
@@ -49,17 +50,23 @@ namespace GraduateThesis.Repository.BLL.Implements
                 Id = s.Id,
                 Name = s.Name,
                 Phone = s.Phone,
+                Email = s.Email,
                 Address = s.Address,
                 Avatar = s.Avatar,
                 Birthday = s.Birthday,
-                Email = s.Email,
-                //StudentClass = new StudentClassOutput
-                //{
-                //    Id = s.StudentClass.Id,
-                //    Name = s.StudentClass.Name,
-                //    Description = s.StudentClass.Description,
-                //    StudentQuantity = s.StudentClass.StudentQuantity,
-                //}
+                Description = s.Description,
+                StudentClass = new StudentClassOutput
+                {
+                    Id = s.StudentClass.Id,
+                    Name = s.StudentClass.Name,
+                    Description = s.StudentClass.Description,
+                    CreatedAt = s.StudentClass.CreatedAt,
+                    UpdatedAt = s.StudentClass.UpdatedAt,
+                    DeletedAt = s.StudentClass.DeletedAt
+                },
+                CreatedAt = s.StudentClass.CreatedAt,
+                UpdatedAt = s.StudentClass.UpdatedAt,
+                DeletedAt = s.StudentClass.DeletedAt
             };
         }
 
@@ -75,12 +82,40 @@ namespace GraduateThesis.Repository.BLL.Implements
 
         public DataResponse<StudentOutput> Create(StudentInput input)
         {
-            return _genericRepository.Create(input, GenerateUIDOptions.None);
+            Student student = _genericRepository.ToEntity(input);
+            student.Salt = HashFunctions.GetMD5($"{input.Id}|{input.Name}|{DateTime.Now}");
+            student.Password = BCrypt.Net.BCrypt.HashPassword($"{input.Password}>>>{student.Salt}");
+
+            _context.Students.Add(student);
+            int affected = _context.SaveChanges();
+
+            if (affected == 0)
+                return new DataResponse<StudentOutput> { Status = DataResponseStatus.Failed };
+
+            return new DataResponse<StudentOutput>
+            {
+                Status = DataResponseStatus.Success,
+                Data = _genericRepository.ToOutput(student)
+            };
         }
 
         public async Task<DataResponse<StudentOutput>> CreateAsync(StudentInput input)
         {
-            return await _genericRepository.CreateAsync(input, GenerateUIDOptions.None);
+            Student student = _genericRepository.ToEntity(input);
+            student.Salt = HashFunctions.GetMD5($"{input.Id}|{input.Name}|{DateTime.Now}");
+            student.Password = BCrypt.Net.BCrypt.HashPassword($"{input.Password}>>>{student.Salt}");
+
+            await _context.Students.AddAsync(student);
+            int affected = await _context.SaveChangesAsync();
+
+            if (affected == 0)
+                return new DataResponse<StudentOutput> { Status = DataResponseStatus.Failed };
+
+            return new DataResponse<StudentOutput>
+            {
+                Status = DataResponseStatus.Success,
+                Data = _genericRepository.ToOutput(student)
+            };
         }
 
         public ForgotPasswordModel CreateNewPassword(NewPasswordModel newPasswordModel)

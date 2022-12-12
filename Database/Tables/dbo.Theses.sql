@@ -8,7 +8,7 @@
   [PdfFile] [nvarchar](50) NOT NULL,
   [SourceCode] [nvarchar](50) NOT NULL,
   [Credits] [int] NOT NULL,
-  [Year] [int] NOT NULL,
+  [Year] [nvarchar](100) NOT NULL,
   [Notes] [nvarchar](200) NOT NULL,
   [TopicId] [varchar](50) NOT NULL,
   [TrainingFormId] [varchar](50) NULL,
@@ -25,6 +25,8 @@
   [DeletedAt] [datetime] NULL,
   [IsDeleted] [bit] NOT NULL,
   [LectureId] [varchar](50) NOT NULL,
+  [Semester] [int] NOT NULL,
+  [ThesisGroupId] [varchar](50) NULL,
   CONSTRAINT [PK_Thesis_ID] PRIMARY KEY CLUSTERED ([ID])
 )
 ON [PRIMARY]
@@ -36,6 +38,10 @@ GO
 
 ALTER TABLE [dbo].[Theses]
   ADD CONSTRAINT [FK_Theses_Specializations_ID] FOREIGN KEY ([SpecializationId]) REFERENCES [dbo].[Specializations] ([ID])
+GO
+
+ALTER TABLE [dbo].[Theses]
+  ADD CONSTRAINT [FK_Theses_StudentThesisGroups_ID] FOREIGN KEY ([ThesisGroupId]) REFERENCES [dbo].[StudentThesisGroups] ([ID])
 GO
 
 ALTER TABLE [dbo].[Theses]
