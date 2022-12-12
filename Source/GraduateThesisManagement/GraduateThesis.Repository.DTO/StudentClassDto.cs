@@ -12,11 +12,16 @@ namespace GraduateThesis.Repository.DTO
         public string Name { get; set; }
         public string Description { get; set; }
         public int StudentQuantity { get; set; }
-        public string Notes { get; set; }
+        public string FacultyId { get; set; }
     }
 
     public class StudentClassOutput : StudentClassInput
     {
+        public DateTime? CreatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
+        public DateTime? DeletedAt { get; set; }
+
+        public FacultyOutput Faculty { get; set; }
         public List<StudentOutput> Students { get; set; }
     }
 }

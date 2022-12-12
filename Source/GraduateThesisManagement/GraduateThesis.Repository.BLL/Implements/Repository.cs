@@ -26,8 +26,6 @@ namespace GraduateThesis.Repository.BLL.Implements
 
         public ITopicRepository TopicRepository => new TopicRepository(_context);
 
-        public IThesisCommitteeRepository CouncilRepository => new ThesisCommitteeRepository(_context);
-
         public IStudentThesisGroupRepository StudentThesisGroupRepository => new StudentThesisGroupRepository(_context);
 
         public IFacultyRepository FacultyRepository  => new FacultyRepository(_context);
