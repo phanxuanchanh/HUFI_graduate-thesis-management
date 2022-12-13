@@ -38,14 +38,14 @@ namespace GraduateThesis.Repository.DTO
 
         public TopicOutput TopicClass { get; set; }
 
-        public StudentThesisGroupOutput StudentThesisGroupClass { get; set; }
+        public StudentThesisGroupOutput StudentThesisGroup { get; set; }
 
-        public TrainingLevelOutput TrainingLevelClass { get; set; }
+        public TrainingLevelOutput TrainingLevel { get; set; }
 
-        public TrainingFormOutput TrainingFormClass { get; set; }
+        public TrainingFormOutput TrainingForm { get; set; }
 
-        public FacultyStaffOutput FacultyStafClass { get; set; }
+        public FacultyStaffOutput FacultyStaf { get; set; }
 
-        public SpecializationOutput SpecializationClass { get; set; }
+        public SpecializationOutput Specialization { get; set; }
     }
 }

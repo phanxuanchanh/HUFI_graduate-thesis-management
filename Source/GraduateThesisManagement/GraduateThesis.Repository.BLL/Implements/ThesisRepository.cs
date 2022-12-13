@@ -37,7 +37,7 @@ namespace GraduateThesis.Repository.BLL.Implements
 
         public void ConfigureIncludes()
         {
-            _genericRepository.IncludeMany(i => i.Topic, i => i.ThesisGroup);
+            _genericRepository.IncludeMany(i => i.Topic, i => i.ThesisGroup, i => i.ThesisGroup, i => i.TrainingForm, i => i.TrainingLevel, i => i.Specialization);
         }
 
         public void ConfigureSelectors()
@@ -73,6 +73,21 @@ namespace GraduateThesis.Repository.BLL.Implements
                     Name = s.ThesisGroup!.Name,
                     Description = s.ThesisGroup!.Description,
                     StudentQuantity = s.ThesisGroup!.StudentQuantity
+                },
+                TrainingForm = (s.TrainingForm == null) ? null : new TrainingFormOutput
+                {
+                    Id = s.TrainingForm.Id,
+                    Name = s.TrainingForm!.Name,                 
+                },
+                TrainingLevel =  new TrainingLevelOutput
+                {
+                    Id = s.TrainingLevel.Id,
+                    Name = s.TrainingLevel!.Name,
+                },
+                Specialization = (s.Specialization == null) ? null : new SpecializationOutput
+                {
+                    Id = s.Specialization.Id,
+                    Name = s.Specialization!.Name,
                 },
                 CreatedAt = s.CreatedAt,
                 UpdatedAt = s.UpdatedAt,
