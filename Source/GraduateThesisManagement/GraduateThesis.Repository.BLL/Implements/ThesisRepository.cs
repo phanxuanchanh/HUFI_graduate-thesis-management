@@ -37,28 +37,46 @@ namespace GraduateThesis.Repository.BLL.Implements
 
         public void ConfigureIncludes()
         {
-            _genericRepository.IncludeMany(i => i.Topic);
+            _genericRepository.IncludeMany(i => i.Topic, i => i.ThesisGroup);
         }
 
         public void ConfigureSelectors()
         {
-            _genericRepository.Selector = s => new ThesisOutput
+            _genericRepository.PaginationSelector = s => new ThesisOutput
             {
                 Id = s.Id,
                 Name = s.Name,
                 Description = s.Description,
                 MaxStudentNumber = s.MaxStudentNumber,
-                SourceCode= s.SourceCode,
-                //Year= s.Year,
-                Notes= s.Notes,
-                TopicId= s.TopicId,
+                ThesisGroupId = s.ThesisGroupId
+            };
+
+            _genericRepository.ListSelector = _genericRepository.PaginationSelector;
+            _genericRepository.SingleSelector = s => new ThesisOutput
+            {
+                Id = s.Id,
+                Name = s.Name,
+                Description = s.Description,
+                MaxStudentNumber = s.MaxStudentNumber,
+                SourceCode = s.SourceCode,
+                Notes = s.Notes,
+                TopicId = s.TopicId,
                 TopicClass = new TopicOutput
                 {
-                    Name= s.Topic.Name,
-                    Description= s.Topic.Description,
-                    //Notes= s.Topic.Notes,
-                    Id= s.Topic.Id,
-                }
+                    Name = s.Topic.Name,
+                    Description = s.Topic.Description,
+                    Id = s.Topic.Id,
+                },
+                StudentThesisGroup = (s.ThesisGroup == null ) ? null : new StudentThesisGroupOutput
+                {
+                    Id = s.ThesisGroup.Id,
+                    Name = s.ThesisGroup!.Name,
+                    Description = s.ThesisGroup!.Description,
+                    StudentQuantity = s.ThesisGroup!.StudentQuantity
+                },
+                CreatedAt = s.CreatedAt,
+                UpdatedAt = s.UpdatedAt,
+                DeletedAt = s.DeletedAt
             };
         }
 
@@ -94,12 +112,12 @@ namespace GraduateThesis.Repository.BLL.Implements
 
         public ThesisOutput Get(string id)
         {
-            return _genericRepository.GetById(id);
+            return _genericRepository.Get("Id", id);
         }
 
-        public Task<ThesisOutput> GetAsync(string id)
+        public async Task<ThesisOutput> GetAsync(string id)
         {
-            return _genericRepository.GetByIdAsync(id);
+            return await _genericRepository.GetAsync("Id", id);
         }
 
         public List<ThesisOutput> GetList(int count = 200)

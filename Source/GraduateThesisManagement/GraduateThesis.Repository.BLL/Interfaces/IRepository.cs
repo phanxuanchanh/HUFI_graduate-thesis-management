@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GraduateThesis.Repository.BLL.Interfaces
 {
@@ -16,5 +12,6 @@ namespace GraduateThesis.Repository.BLL.Interfaces
         ICommitteeMemberRepository CommitteeMemberRepository { get; }
         IStudentThesisGroupRepository StudentThesisGroupRepository { get; }
         IFacultyRepository FacultyRepository { get; }
+        IFacultyStaffRepository FacultyStaffRepository { get; }
     }
 }

@@ -24,7 +24,10 @@ namespace GraduateThesis.Generics
         private Type _contextType;
         private DbSet<TEntity> _dbSet;
         private Expression<Func<TEntity, object>>[] _navigationPropertyPaths;
-        public Expression<Func<TEntity, TOutput>> Selector { get; set; }
+
+        public Expression<Func<TEntity, TOutput>> PaginationSelector { get; set; }
+        public Expression<Func<TEntity, TOutput>> ListSelector { get; set; }
+        public Expression<Func<TEntity, TOutput>> SingleSelector { get; set; }
 
         public GenericRepository(TContext context, DbSet<TEntity> dbSet)
         {
@@ -42,7 +45,7 @@ namespace GraduateThesis.Generics
 
             foreach (PropertyInfo property in properties)
             {
-                PropertyInfo inputProperty = inputType!.GetProperty(property.Name);
+                PropertyInfo inputProperty = inputType.GetProperty(property.Name);
                 if (inputProperty != null)
                 {
                     property.SetValue(output, inputProperty.GetValue(input));
@@ -149,7 +152,7 @@ namespace GraduateThesis.Generics
                 queryable = queryable.Where(GetWhereExpressionForPagination("p", keyword));
             }
 
-            List<TOutput> onePageOfData = queryable.Skip(n).Take(pageSize).Select(Selector).ToList();
+            List<TOutput> onePageOfData = queryable.Skip(n).Take(pageSize).Select(PaginationSelector).ToList();
 
             return new Pagination<TOutput>
             {
@@ -218,7 +221,7 @@ namespace GraduateThesis.Generics
                     .OrderBy(GetOrderByForPagination("p", "Id"));
             }
 
-            List<TOutput> onePageOfData = await queryable.Skip(n).Take(pageSize).Select(Selector).ToListAsync();
+            List<TOutput> onePageOfData = await queryable.Skip(n).Take(pageSize).Select(PaginationSelector).ToListAsync();
 
             return new Pagination<TOutput>
             {
@@ -232,13 +235,13 @@ namespace GraduateThesis.Generics
         public List<TOutput> GetList(int count = 200)
         {
             return _dbSet.Take(count).IncludeMultiple(_navigationPropertyPaths)
-                .Where("x => x.IsDeleted == false").Select(Selector).ToList();
+                .Where("x => x.IsDeleted == false").Select(ListSelector).ToList();
         }
 
         public async Task<List<TOutput>> GetListAsync(int count = 200)
         {
             return await _dbSet.Take(count).IncludeMultiple(_navigationPropertyPaths)
-                .Where("x => x.IsDeleted == false").Select(Selector).ToListAsync();
+                .Where("x => x.IsDeleted == false").Select(ListSelector).ToListAsync();
         }
 
         public TOutput GetById(object id)
@@ -257,6 +260,42 @@ namespace GraduateThesis.Generics
                 return default(TOutput)!;
 
             return ToOutput(entity);
+        }
+
+        public TOutput Get(string propertyName, string value)
+        {
+            string valueInExpression = null;
+            if (value.IsString())
+                valueInExpression = $"\"{value}\"";
+
+            if (value.IsNumber() || value.IsBool())
+                valueInExpression = value.ToString();
+
+            if (string.IsNullOrEmpty(valueInExpression))
+                return null;
+
+            string expression = $"x => (x.{propertyName} == {valueInExpression}) && x.IsDeleted == false";
+
+            return _dbSet.IncludeMultiple(_navigationPropertyPaths)
+                .Where(expression).Select(SingleSelector).SingleOrDefault();
+        }
+
+        public async Task<TOutput> GetAsync(string propertyName, object value)
+        {
+            string valueInExpression = null;
+            if (value.IsString())
+                valueInExpression = $"\"{value}\"";
+            
+            if (value.IsNumber() || value.IsBool())
+                valueInExpression = value.ToString();
+
+            if (string.IsNullOrEmpty(valueInExpression))
+                return null;
+
+            string expression = $"x => (x.{propertyName} == {valueInExpression}) && x.IsDeleted == false";
+
+            return await _dbSet.IncludeMultiple(_navigationPropertyPaths)
+                .Where(expression).Select(SingleSelector).SingleOrDefaultAsync();
         }
 
         #endregion

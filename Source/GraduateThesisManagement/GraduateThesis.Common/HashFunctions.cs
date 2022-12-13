@@ -6,7 +6,7 @@ namespace GraduateThesis.Common
 {
     public class HashFunctions
     {
-        public string GetSHA256(string input)
+        public static string GetSHA256(string input)
         {
             using (SHA256 sha256 = SHA256.Create())
             {
@@ -20,7 +20,7 @@ namespace GraduateThesis.Common
             }
         }
 
-        public string GetSHA384(string input)
+        public static string GetSHA384(string input)
         {
             using (SHA384 sha384 = SHA384.Create())
             {
@@ -34,7 +34,7 @@ namespace GraduateThesis.Common
             }
         }
 
-        public string GetSHA512(string input)
+        public static string GetSHA512(string input)
         {
             using (SHA512 sha512 = SHA512.Create())
             {
@@ -48,7 +48,7 @@ namespace GraduateThesis.Common
             }
         }
 
-        public string GetMD5(string input)
+        public static string GetMD5(string input)
         {
             using (MD5 md5 = MD5.Create())
             {

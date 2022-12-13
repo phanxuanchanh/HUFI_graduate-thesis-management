@@ -1,6 +1,5 @@
 ﻿CREATE TABLE [dbo].[StudentThesisGroups] (
   [ID] [varchar](50) NOT NULL,
-  [ThesisId] [varchar](50) NOT NULL,
   [Name] [nvarchar](100) NOT NULL,
   [Description] [ntext] NULL,
   [StudentQuantity] [int] NOT NULL,
@@ -13,8 +12,4 @@
 )
 ON [PRIMARY]
 TEXTIMAGE_ON [PRIMARY]
-GO
-
-ALTER TABLE [dbo].[StudentThesisGroups]
-  ADD CONSTRAINT [FK_StudentThesisGroups_Theses_ID] FOREIGN KEY ([ThesisId]) REFERENCES [dbo].[Theses] ([ID])
 GO

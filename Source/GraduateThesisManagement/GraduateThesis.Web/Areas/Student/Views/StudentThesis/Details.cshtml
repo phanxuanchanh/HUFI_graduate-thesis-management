@@ -1,0 +1,32 @@
+﻿@model ThesisOutput;
+
+<div class="row">
+    <div class="col-lg-12 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title">@ViewData["PageName"]</h4>
+                <p class="card-description">
+
+                </p>
+                <div class="">
+
+                </div>
+
+                <div class="">
+                    @if (Model.StudentThesisGroup == null)
+                    {
+                        <a type="button" class="btn btn-primary btn-icon-text" asp-action="DoThesisRegister" asp-controller="StudentThesis" asp-route-studentId="1" asp-route-thesisId="@Model.Id">
+                            <i class="mdi mdi-file-check btn-icon-prepend"></i>
+                            Đăng ký đề tài này
+                        </a>
+                    }
+                    
+                    <button type="button" class="btn btn-info btn-icon-text">
+                        Print
+                        <i class="mdi mdi-printer btn-icon-append"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

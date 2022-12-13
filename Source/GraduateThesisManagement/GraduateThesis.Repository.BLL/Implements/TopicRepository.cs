@@ -37,17 +37,30 @@ namespace GraduateThesis.Repository.BLL.Implements
 
         public void ConfigureIncludes()
         {
-            
+            _genericRepository.IncludeMany(i => i.Theses);
         }
 
         public void ConfigureSelectors()
         {
-            _genericRepository.Selector = s => new TopicOutput
+            _genericRepository.PaginationSelector = s => new TopicOutput
             {
                Id= s.Id,
                Name= s.Name,
                Description= s.Description,
-               //Notes= s.Notes,
+               CreatedAt = s.CreatedAt,
+               UpdatedAt = s.UpdatedAt,
+               DeletedAt = s.DeletedAt
+            };
+
+            _genericRepository.ListSelector = _genericRepository.PaginationSelector;
+            _genericRepository.SingleSelector = s => new TopicOutput
+            {
+                Id = s.Id,
+                Name = s.Name,
+                Description = s.Description,
+                CreatedAt = s.CreatedAt,
+                UpdatedAt = s.UpdatedAt,
+                DeletedAt = s.DeletedAt
             };
         }
 
@@ -83,12 +96,12 @@ namespace GraduateThesis.Repository.BLL.Implements
 
         public TopicOutput Get(string id)
         {
-            return _genericRepository.GetById(id);
+            return _genericRepository.Get("Id", id);
         }
 
         public async Task<TopicOutput> GetAsync(string id)
         {
-            return await _genericRepository.GetByIdAsync(id);
+            return await _genericRepository.GetAsync("Id", id);
         }
 
         public List<TopicOutput> GetList(int count = 200)

@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GraduateThesis.Repository.DTO
 {
@@ -15,6 +12,10 @@ namespace GraduateThesis.Repository.DTO
 
     public class FacultyOutput : FacultyInput
     {
+        public DateTime? CreatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
+        public DateTime? DeletedAt { get; set; }
+
         public List<FacultyStaffOutput> FacultyStaffs { get; set; }
         public List<StudentClassOutput> StudentClasses { get; set; }
     }

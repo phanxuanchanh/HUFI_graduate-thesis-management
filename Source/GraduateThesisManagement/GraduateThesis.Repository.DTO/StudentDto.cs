@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace GraduateThesis.Repository.DTO
@@ -34,17 +35,23 @@ namespace GraduateThesis.Repository.DTO
         [Display(Name = "Ảnh nhân viên")]
         public string Avatar { get; set; }
 
-        [Display(Name = "Ghi chú")]
-        public string Notes { get; set; }
+        [Display(Name = "Mật khẩu")]
+        [DataType(DataType.Password, ErrorMessage = "{0} có kiểu dữ liệu không hợp lệ")]
+        public string Password { get; set; }
 
-        [Display(Name = "Giới tính")]
-        public string Sex { get; set; }
+        [Display(Name = "Mô tả")]
+        public string Description { get; set; }
 
+        [Display(Name = "Lớp")]
         public string StudentClassId { get; set; }
     }
 
     public class StudentOutput : StudentInput
     {
+        public DateTime? CreatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
+        public DateTime? DeletedAt { get; set; }
+
         public StudentClassOutput StudentClass { get; set; }
         public List<StudentThesisGroupOutput> StudentThesisGroups { get; set; }
     }

@@ -42,7 +42,7 @@ namespace GraduateThesis.Repository.BLL.Implements
 
         public void ConfigureSelectors()
         {
-            _genericRepository.Selector = s => new StudentThesisGroupOutput
+            _genericRepository.PaginationSelector = s => new StudentThesisGroupOutput
             {
                 //Id = s.Id,
                 //ThesisId = s.ThesisId,
@@ -62,6 +62,12 @@ namespace GraduateThesis.Repository.BLL.Implements
                 //    //CouncilId = s.Thesis.CouncilId
                 //}
                 
+            };
+
+            _genericRepository.ListSelector = _genericRepository.PaginationSelector;
+            _genericRepository.SingleSelector = s => new StudentThesisGroupOutput
+            {
+
             };
         }
 

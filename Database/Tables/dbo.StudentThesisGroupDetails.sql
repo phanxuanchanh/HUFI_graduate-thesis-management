@@ -2,6 +2,7 @@
   [StudentThesisGroupId] [varchar](50) NOT NULL,
   [StudentId] [varchar](50) NOT NULL,
   [Notes] [ntext] NULL,
+  [IsApproved] [bit] NOT NULL,
   [CreatedAt] [datetime] NULL,
   [UpdatedAt] [datetime] NULL,
   [DeletedAt] [datetime] NULL,
