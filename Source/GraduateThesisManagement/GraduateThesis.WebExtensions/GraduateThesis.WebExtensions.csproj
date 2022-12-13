@@ -1,16 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
   </PropertyGroup>
-
-  <ItemGroup>
-    <None Remove="Views\Authorization\ShowUnauthorize.cshtml" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="Views\Authorization\ShowUnauthorize.cshtml" />
-  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\GraduateThesis.Common\GraduateThesis.Common.csproj" />
