@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace GraduateThesis.Web.Controllers
 {
+    [Route("")]
     public class HomeController : Controller
     {
 
@@ -17,6 +18,7 @@ namespace GraduateThesis.Web.Controllers
 
         }
 
+        [Route("")]
         public IActionResult Index()
         {
             return View();
