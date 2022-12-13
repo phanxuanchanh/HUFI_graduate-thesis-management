@@ -602,9 +602,7 @@ namespace GraduateThesis.Repository.DAL
                     .IsRequired()
                     .HasMaxLength(100);
 
-                entity.Property(e => e.DocumentFile)
-                    .IsRequired()
-                    .HasMaxLength(50);
+                entity.Property(e => e.DocumentFile).HasMaxLength(50);
 
                 entity.Property(e => e.LectureId)
                     .IsRequired()
@@ -615,21 +613,13 @@ namespace GraduateThesis.Repository.DAL
                     .IsRequired()
                     .HasMaxLength(100);
 
-                entity.Property(e => e.Notes)
-                    .IsRequired()
-                    .HasMaxLength(200);
+                entity.Property(e => e.Notes).HasMaxLength(200);
 
-                entity.Property(e => e.PdfFile)
-                    .IsRequired()
-                    .HasMaxLength(50);
+                entity.Property(e => e.PdfFile).HasMaxLength(50);
 
-                entity.Property(e => e.PresentationFile)
-                    .IsRequired()
-                    .HasMaxLength(50);
+                entity.Property(e => e.PresentationFile).HasMaxLength(50);
 
-                entity.Property(e => e.SourceCode)
-                    .IsRequired()
-                    .HasMaxLength(50);
+                entity.Property(e => e.SourceCode).HasMaxLength(50);
 
                 entity.Property(e => e.SpecializationId)
                     .IsRequired()

@@ -9,7 +9,6 @@ namespace GraduateThesis.Repository.DTO
     public class StudentThesisGroupInput
     {
         public string Id { get; set; }
-        public string ThesisId { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
         public int StudentQuantity { get; set; }
@@ -23,7 +22,6 @@ namespace GraduateThesis.Repository.DTO
         public DateTime? DeletedAt { get; set; }
 
         public ThesisOutput Thesis { get; set; }
-        public List<StudentOutput> Students { get; set; }
     }
 
 }

@@ -9,15 +9,16 @@
             <div class="card-body">
                 <h4 class="card-title">@ViewData["PageName"]</h4>
                 <p class="card-description">
-
+                    
                 </p>
-                <div class="table-responsive table-hover">
-                    <table class="table">
+                <div class="table-responsive">
+                    <table class="table table-hover">
                         <thead>
                             <tr>
                                 <th style="width:10%">#</th>
                                 <th style="width:10%">@Html.DisplayNameFor(model => model.Id)</th>
-                                <th style="width:50%">@Html.DisplayNameFor(model => model.Name)</th>
+                                <th style="width:30%">@Html.DisplayNameFor(model => model.Name)</th>
+                                <th style="width:20%">@Html.DisplayNameFor(model => model.MaxStudentNumber)</th>
                                 <th style="width:20%">Trạng thái khóa luận</th>
                                 <th style="width:10%">Thao tác</th>
                             </tr>
@@ -31,8 +32,9 @@
                                     <td>@count</td>
                                     <td>@thesis.Id</td>
                                     <td>@thesis.Name</td>
+                                    <td>@thesis.MaxStudentNumber</td>
                                     <td>
-                                        @if (thesis.ThesisGroupId == null)
+                                        @if (string.IsNullOrEmpty(thesis.ThesisGroupId))
                                         {
                                             <label class="badge badge-success">Cho phép đăng ký</label>
                                         }
@@ -42,39 +44,38 @@
                                         }
                                     </td> 
                                     <td>
-                                        <a asp-action="Details" asp-controller="StudentThesis" asp-route-id="@thesis.Id">Xem chi tiết</a>
+                                        <a class="btn btn-inverse-info btn-fw" asp-action="Details" asp-controller="StudentThesis" asp-route-id="@thesis.Id">Xem</a>
                                     </td>
                                 </tr>
-                        
+                                count++;
                             }
                         </tbody>
                     </table>
                 </div>
 
-                <nav class="dataTable-pagination">
-                    <ul class="dataTable-pagination-list">
-                        @Html.PagedListPager(
-                            (IPagedList)ViewData["PagedList"],
-                            p => Url.Action("Index", new {
-                                page = p,
-                                pageSize = pagedInfo.PageSize,
-                                orderBy = @ViewData["OrderBy"],
-                                orderOptions = @ViewData["OrderOptions"],
-                                keyword = @ViewData["Keyword"]
-                            }),
-                            PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing(new PagedListRenderOptions
-                            {
-                                LiElementClasses = new string[] { "page-item" },
-                                PageClasses = new string[] { "page-link" }
-                            },
-                            ajaxOptions: new AjaxOptions
-                            {
-                                UpdateTargetId = "dataTable",
-                                InsertionMode = InsertionMode.Replace,
-                                HttpMethod = "GET"
-                            }))
-                    </ul>
-                </nav>
+                <div class="row m-2">
+                    @Html.PagedListPager(
+                        (IPagedList)ViewData["PagedList"],
+                        p => Url.Action("GetList", new {
+                            page = p,
+                            pageSize = pagedInfo.PageSize,
+                            orderBy = @ViewData["OrderBy"],
+                            orderOptions = @ViewData["OrderOptions"],
+                            keyword = @ViewData["Keyword"]
+                        }),
+                        PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing(new PagedListRenderOptions
+                        {
+                            UlElementClasses =  new string[] { "pagination", "custom-pagination" },
+                            LiElementClasses = new string[] { "page-item" },
+                            PageClasses = new string[] { "page-link" }
+                        },
+                        ajaxOptions: new AjaxOptions
+                        {
+                            UpdateTargetId = "dataTable",
+                            InsertionMode = InsertionMode.Replace,
+                            HttpMethod = "GET"
+                        }))
+                </div>
             </div>
         </div>
     </div>
