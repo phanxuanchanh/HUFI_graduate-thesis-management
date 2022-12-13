@@ -103,6 +103,72 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
                 return View(viewName: "_Error", model: ex.Message);
             }
         }
+        [Route("edit/{id}")]
+        [HttpGet]
+        public async Task<IActionResult> Edit([Required] string id)
+        {
+            try
+            {            
+                TopicOutput topicOutput = await _topicRepository.GetAsync(id);
+                if (topicOutput == null)
+                    return RedirectToAction("Index");
+
+                AddViewData(PageName);
+                return View(topicOutput);
+            }
+            catch (Exception ex)
+            {
+                return View(viewName: "_Error", model: ex.Message);
+            }
+        }
+
+        [Route("edit/{id}")]
+        [HttpPost]
+        public async Task<IActionResult> Edit([Required] string id, TopicInput topicInput)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    TopicOutput topicOutput = await _topicRepository.GetAsync(id);
+                    if (topicOutput == null)
+                        return RedirectToAction("Index");
+
+                    DataResponse<TopicOutput> dataResponse = await _topicRepository.UpdateAsync(id, topicInput);
+
+                    AddViewData(PageName, dataResponse);
+                    return View(topicInput);
+                }
+
+                AddViewData(PageName, DataResponseStatus.InvalidData);
+                return View(topicInput);
+            }
+            catch (Exception ex)
+            {
+                return View(viewName: "_Error", model: ex.Message);
+            }
+        }
+
+        [Route("delete/{id}")]
+        [HttpPost]
+        public async Task<IActionResult> Delete([Required] string id)
+        {
+            try
+            {
+                TopicOutput topicOutput = await _topicRepository.GetAsync(id);
+                if (topicOutput == null)
+                    return RedirectToAction("Index");
+
+                DataResponse dataResponse = await _topicRepository.BatchDeleteAsync(id);
+
+                AddTempData(PageName, dataResponse);
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                return View(viewName: "_Error", model: ex.Message);
+            }
+        }
 
 
     }

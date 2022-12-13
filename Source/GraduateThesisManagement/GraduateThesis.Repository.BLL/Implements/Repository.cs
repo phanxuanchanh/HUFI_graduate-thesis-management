@@ -1,6 +1,7 @@
 ﻿using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DAL;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualBasic.FileIO;
 using System;
 
 namespace GraduateThesis.Repository.BLL.Implements
@@ -35,6 +36,13 @@ namespace GraduateThesis.Repository.BLL.Implements
         public IThesisCommitteeRepository ThesisCommitteeRepository => new ThesisCommitteeRepository(_context);
 
         public IFacultyStaffRepository FacultyStaffRepository => new FacultyStaffRepository(_context);
+
+        public ITrainingFormRepository TrainingFormRepository => new TrainingFormRepository(_context);
+
+        public ITrainingLevelRepository TrainingLevelRepository => new TrainingLevelRepository(_context);
+
+        public ISpecializationRepository SpecializationRepository => new SpecialDirectories(_context);
+
 
         protected virtual void Dispose(bool disposing)
         {

@@ -13,5 +13,9 @@ namespace GraduateThesis.Repository.BLL.Interfaces
         IStudentThesisGroupRepository StudentThesisGroupRepository { get; }
         IFacultyRepository FacultyRepository { get; }
         IFacultyStaffRepository FacultyStaffRepository { get; }
+        ITrainingFormRepository TrainingFormRepository { get; }
+        ITrainingLevelRepository TrainingLevelRepository { get; }
+        ISpecializationRepository SpecializationRepository { get; }
+
     }
 }

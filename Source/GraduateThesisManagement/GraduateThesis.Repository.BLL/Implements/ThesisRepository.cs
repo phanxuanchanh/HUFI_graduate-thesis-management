@@ -65,6 +65,12 @@ namespace GraduateThesis.Repository.BLL.Implements
                     Name = s.Topic.Name,
                     Description = s.Topic.Description,
                     Id = s.Topic.Id,
+                },
+                StudentThesisGroupClass = new StudentThesisGroupOutput
+                {
+                    Name = s.Topic.Name,
+                    Description = s.Topic.Description,
+                    Id = s.Topic.Id,
                 }
             };
         }
@@ -116,7 +122,7 @@ namespace GraduateThesis.Repository.BLL.Implements
 
         public async Task<List<ThesisOutput>> GetListAsync(int count = 200)
         {
-            return  await _genericRepository.GetListAsync(count);
+            return await _genericRepository.GetListAsync(count);
         }
 
         public Pagination<ThesisOutput> GetPagination(int page, int pageSize, string orderBy, OrderOptions orderOptions, string keyword)

@@ -37,5 +37,15 @@ namespace GraduateThesis.Repository.DTO
         public DateTime? DeletedAt { get; set; }
 
         public TopicOutput TopicClass { get; set; }
+
+        public StudentThesisGroupOutput StudentThesisGroupClass { get; set; }
+
+        public TrainingLevelOutput TrainingLevelClass { get; set; }
+
+        public TrainingFormOutput TrainingFormClass { get; set; }
+
+        public FacultyStaffOutput FacultyStafClass { get; set; }
+
+        public SpecializationOutput SpecializationClass { get; set; }
     }
 }
