@@ -1,0 +1,129 @@
+﻿@model GraduateThesis.Repository.DTO.ThesisInput
+<h1 class="mt-4">@ViewData["PageName"]</h1>
+<ol class="breadcrumb mb-4">
+    <li class="breadcrumb-item active"></li>
+</ol>
+
+@await Component.InvokeAsync("StatusArea")
+
+<div class="card mb-4">
+
+    <div class="card-header">
+        <svg class="svg-inline--fa fa-table me-1" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="table" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg=""><path fill="currentColor" d="M448 32C483.3 32 512 60.65 512 96V416C512 451.3 483.3 480 448 480H64C28.65 480 0 451.3 0 416V96C0 60.65 28.65 32 64 32H448zM224 256V160H64V256H224zM64 320V416H224V320H64zM288 416H448V320H288V416zM448 256V160H288V256H448z"></path></svg><!-- <i class="fas fa-table me-1"></i> Font Awesome fontawesome.com -->
+        @ViewData["PageName"]
+    </div>
+    <div class="card-body">
+        <form asp-action="Edit" asp-controller="ThesisManager" method="post">
+            <div class="form-group row my-3">
+                @Html.LabelFor(model => model.Id, htmlAttributes: new { @class = "col-sm-2 col-form-label" })
+                <div class="col-smy-30">
+                    @Html.EditorFor(model => model.Id, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Id, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group row my-3">
+                @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "col-sm-2 col-form-label" })
+                <div class="col-smy-30">
+                    @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group row my-3">
+                @Html.LabelFor(model => model.Description, htmlAttributes: new { @class = "col-sm-2 col-form-label" })
+                <div class="col-smy-30">
+                    @Html.EditorFor(model => model.Description, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group row my-3">
+                @Html.LabelFor(model => model.MaxStudentNumber, htmlAttributes: new { @class = "col-sm-2 col-form-label" })
+                <div class="col-smy-30">
+                    @Html.EditorFor(model => model.MaxStudentNumber, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.MaxStudentNumber, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group row my-3">
+                @Html.LabelFor(model => model.Year, htmlAttributes: new { @class = "col-sm-2 col-form-label" })
+                <div class="col-smy-30">
+                    @Html.EditorFor(model => model.Year, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Year, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group row my-3">
+                @Html.LabelFor(model => model.Notes, htmlAttributes: new { @class = "col-sm-2 col-form-label" })
+                <div class="col-smy-30">
+                    @Html.EditorFor(model => model.Notes, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Notes, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group row my-3">
+                @Html.LabelFor(model => model.TopicId, htmlAttributes: new { @class = "col-sm-2 col-form-label" })
+                <div class="col-smy-30">
+                    @Html.DropDownListFor(model => model.TopicId, (SelectList)ViewData["TopicList"], htmlAttributes: new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.TopicId, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group row my-3">
+                @Html.LabelFor(model => model.TrainingFormId, htmlAttributes: new { @class = "col-sm-2 col-form-label" })
+                <div class="col-smy-30">
+                    @Html.DropDownListFor(model => model.TrainingFormId, (SelectList)ViewData["TrainingFormList"], htmlAttributes: new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.TrainingFormId, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group row my-3">
+                @Html.LabelFor(model => model.TrainingLevelId, htmlAttributes: new { @class = "col-sm-2 col-form-label" })
+                <div class="col-smy-30">
+                    @Html.DropDownListFor(model => model.TrainingLevelId, (SelectList)ViewData["TrainingLevelList"], htmlAttributes: new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.TrainingLevelId, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group row my-3">
+                @Html.LabelFor(model => model.LectureId, htmlAttributes: new { @class = "col-sm-2 col-form-label" })
+                <div class="col-smy-30">
+                    @Html.DropDownListFor(model => model.LectureId, (SelectList)ViewData["FacultyStaffList"], htmlAttributes: new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.LectureId, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group row my-3">
+                @Html.LabelFor(model => model.ThesisGroupId, htmlAttributes: new { @class = "col-sm-2 col-form-label" })
+                <div class="col-smy-30">
+                    @Html.DropDownListFor(model => model.ThesisGroupId, (SelectList)ViewData["StudentThesisGrouList"], htmlAttributes: new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.ThesisGroupId, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group row my-3">
+                @Html.LabelFor(model => model.SpecializationId, htmlAttributes: new { @class = "col-sm-2 col-form-label" })
+                <div class="col-smy-30">
+                    @Html.DropDownListFor(model => model.SpecializationId, (SelectList)ViewData["SpecializationsClass"], htmlAttributes: new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.SpecializationId, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group row my-3">
+                @Html.LabelFor(model => model.Semester, htmlAttributes: new { @class = "col-sm-2 col-form-label" })
+                <div class="col-smy-30">
+                    @Html.EditorFor(model => model.Semester, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Semester, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group row my-3">
+                <div class="col-smy-30">
+                    <button type="submit" class="btn btn-primary">Lưu</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+</div>
+
+@section Scripts{
+
+}
