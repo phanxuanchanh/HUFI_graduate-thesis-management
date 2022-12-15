@@ -38,7 +38,7 @@ namespace GraduateThesis.Web.Areas.Student.Controllers
         [HttpGet]
         [PageName(Name = "Danh sách đề tài khóa luận")]
         [WebAuthorize(AccountRole.Student)]
-        public async Task<IActionResult> GetList(int page = 1, int pageSize = 10, string orderBy = null, string orderOptions = null, string keyword = null)
+        public async Task<IActionResult> GetList(int page = 1, int pageSize = 10, string orderBy = "", string orderOptions = "ASC", string keyword = "")
         {
             try
             {

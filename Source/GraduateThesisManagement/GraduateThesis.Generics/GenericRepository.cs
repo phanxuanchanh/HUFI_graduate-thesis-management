@@ -28,6 +28,7 @@ namespace GraduateThesis.Generics
         public Expression<Func<TEntity, TOutput>> PaginationSelector { get; set; }
         public Expression<Func<TEntity, TOutput>> ListSelector { get; set; }
         public Expression<Func<TEntity, TOutput>> SingleSelector { get; set; }
+        public Func<TInput, TEntity> BulkSelector { get; set;}
 
         public GenericRepository(TContext context, DbSet<TEntity> dbSet)
         {
@@ -369,6 +370,35 @@ namespace GraduateThesis.Generics
                 Status = DataResponseStatus.Success,
                 Data = ToOutput(entity)
             };
+        }
+
+        public DataResponse BulkInsert(IEnumerable<TInput> input)
+        {
+            IEnumerable<TEntity> entities = input.Select(BulkSelector);
+            _dbSet.BulkInsert(entities);
+
+            MethodInfo saveChangesMethodInfo = _contextType.GetMethod("SaveChanges", new Type[] {  });
+            int affected = (int)saveChangesMethodInfo.Invoke(_context, null);
+
+            if (affected == 0)
+                return new DataResponse { Status = DataResponseStatus.Failed };
+
+            return new DataResponse { Status = DataResponseStatus.Success };
+        }
+
+        public async Task<DataResponse> BulkInsertAsync(IEnumerable<TInput> input)
+        {
+            IEnumerable<TEntity> entities = input.Select(BulkSelector);
+            await _dbSet.BulkInsertAsync(entities);
+
+            MethodInfo saveChangesMethodInfo = _contextType.GetMethod("SaveChangesAsync", new Type[] { typeof(CancellationToken) });
+            Task<int> resultAsync = (Task<int>)saveChangesMethodInfo.Invoke(_context, new object[] { default(CancellationToken) });
+
+            int affected = await resultAsync;
+            if (affected == 0)
+                return new DataResponse<TOutput> { Status = DataResponseStatus.Failed };
+
+            return new DataResponse { Status = DataResponseStatus.Success };
         }
 
         #endregion

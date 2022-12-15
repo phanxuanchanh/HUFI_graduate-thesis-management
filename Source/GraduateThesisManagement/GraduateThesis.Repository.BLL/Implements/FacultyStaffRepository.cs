@@ -23,6 +23,8 @@ namespace GraduateThesis.Repository.BLL.Implements
 
             ConfigureIncludes();
             ConfigureSelectors();
+
+            _context.Faculties.
         }
 
         public DataResponse BatchDelete(string id)
