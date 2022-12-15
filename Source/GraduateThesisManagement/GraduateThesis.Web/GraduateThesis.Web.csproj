@@ -16,15 +16,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Areas\" />
     <Folder Include="Areas\Administrator\Controllers\" />
     <Folder Include="Areas\Administrator\Data\" />
     <Folder Include="Areas\Administrator\Models\" />
     <Folder Include="Areas\Administrator\Views\" />
-    <Folder Include="Areas\Lecture\Controllers\" />
     <Folder Include="Areas\Lecture\Data\" />
     <Folder Include="Areas\Lecture\Models\" />
-    <Folder Include="Areas\Lecture\Views\" />
     <Folder Include="Areas\Student\Controllers\" />
     <Folder Include="Areas\Student\Data\" />
     <Folder Include="Areas\Student\Models\" />

@@ -65,9 +65,6 @@
                                 <a href="#" class="">STT</a>
                             </th>
                             <th data-sortable="">
-                                <a href="#" class="dataTable-sorter">ID</a>
-                            </th>
-                            <th data-sortable="">
                                 <a href="#" class="dataTable-sorter">@Html.DisplayNameFor(model => model.Name)</a>
                             </th>
                             <th data-sortable="">
@@ -98,7 +95,7 @@
                                 <td>
                                     @topic.Description
                                 </td>
-                               
+
                                 <td class="project-actions text-right">
                                     <a class="btn btn-success btn-sm" asp-action="Details" asp-controller="TopicManager" asp-route-id="@topic.Id">
                                         <i class="fas fa-folder"></i> Chi tiết

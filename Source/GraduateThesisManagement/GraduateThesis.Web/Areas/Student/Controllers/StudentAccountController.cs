@@ -4,13 +4,8 @@ using GraduateThesis.Generics;
 using GraduateThesis.Models;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DTO;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
-using Org.BouncyCastle.Asn1.Mozilla;
-using System;
-using System.Threading.Tasks;
 
 namespace GraduateThesis.Web.Areas.Student.Controllers
 {
@@ -37,36 +32,43 @@ namespace GraduateThesis.Web.Areas.Student.Controllers
         [HttpPost]
         public async Task<IActionResult> SignIn(SignInModel signInModel)
         {
-            string pageName = "Trang đăng nhập dành cho sinh viên";
-            if (ModelState.IsValid)
+            try
             {
-                SignInResultModel signInResultModel = await _studentRepository.SignInAsync(signInModel);
-
-                if (signInResultModel.Status == SignInStatus.Success)
+                if (ModelState.IsValid)
                 {
-                    StudentOutput student =  await _studentRepository.GetAsync(signInModel.Code);
-                    string accountSession = JsonConvert.SerializeObject(new AccountSession
+                    SignInResultModel signInResultModel = await _studentRepository.SignInAsync(signInModel);
+
+                    if (signInResultModel.Status == SignInStatus.Success)
                     {
-                        AccountModel = student,
-                        Role = "Student",
-                        LastSignInTime = DateTime.Now
-                    });
+                        StudentOutput student = await _studentRepository.GetAsync(signInModel.Code);
+                        string accountSession = JsonConvert.SerializeObject(new AccountSession
+                        {
+                            AccountModel = student,
+                            Role = "Student",
+                            LastSignInTime = DateTime.Now
+                        });
 
-                    HttpContext.Session.SetString("account-session", accountSession);
+                        HttpContext.Session.SetString("account-session", accountSession);
 
-                    return RedirectToAction("Index", "StudentThesis");
+                        return RedirectToAction("Index", "StudentThesis");
+                    }
+
+                    AddTempData(signInResultModel);
+                    return RedirectToAction("LoadSignInView");
                 }
 
-                AddTempData(pageName, signInResultModel);
+                AddTempData(SignInStatus.InvalidData);
                 return RedirectToAction("LoadSignInView");
             }
-
-            AddTempData(pageName, SignInStatus.InvalidData);
-            return RedirectToAction("LoadSignInView");
+            catch (Exception)
+            {
+                return View(viewName: "_Error");
+            }
         }
 
         [Route("forgot-password-view")]
         [HttpGet]
+        [PageName(Name = "Trang lấy lại mật khẩu sinh viên")]
         public IActionResult ForgotPasswordView()
         {
             return View();
