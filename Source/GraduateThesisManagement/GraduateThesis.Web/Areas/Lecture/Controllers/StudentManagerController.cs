@@ -1,4 +1,5 @@
-﻿using GraduateThesis.Generics;
+﻿using GraduateThesis.Common.WebAttributes;
+using GraduateThesis.Generics;
 using GraduateThesis.Models;
 using GraduateThesis.Repository.BLL.Implements;
 using GraduateThesis.Repository.BLL.Interfaces;
@@ -19,11 +20,8 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
     [Route("lecture/student-manager")]
     public class StudentManagerController : WebControllerBase
     {
-        public string PageName { get; set; } = "Quản lý sinh viên";
-
         private IStudentRepository _studentRepository;
         private IStudentClassRepository _studentClassRepository;
-
 
         public StudentManagerController(IRepository repository)
         {
@@ -33,6 +31,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
 
         [Route("list")]
         [HttpGet]
+        [PageName(Name = "Danh sách sinh viên của khoa")]
         public async Task<IActionResult> Index(int page = 1, int pageSize = 10, string orderBy = null, string orderOptions = "ASC", string keyword = null)
         {
             try
@@ -49,8 +48,6 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
                 ViewData["OrderOptions"] = orderOptions;
                 ViewData["Keyword"] = keyword;
 
-                AddViewData(PageName);
-
                 return View();
             }
             catch (Exception ex)
@@ -61,6 +58,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
 
         [Route("details/{id}")]
         [HttpGet]
+        [PageName(Name = "Chi tiết sinh viên của khoa")]
         public async Task<IActionResult> Details([Required] string id)
         {
             try
@@ -69,7 +67,6 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
                 if (studentOutput == null)
                     return RedirectToAction("Index");
 
-                AddViewData(PageName);
                 return View(studentOutput);
             }
             catch
@@ -80,16 +77,17 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
 
         [Route("create")]
         [HttpGet]
+        [PageName(Name = "Tạo mới sinh viên của khoa")]
         public async Task<ActionResult> Create()
         {
             List<StudentClassOutput> studentClasses = await _studentClassRepository.GetListAsync();
             ViewData["StudentClassList"] = new SelectList(studentClasses, "Id", "Name");
-            AddViewData(PageName);
             return View();
         }
 
         [Route("create")]
         [HttpPost]
+        [PageName(Name = "Tạo mới sinh viên của khoa")]
         public async Task<IActionResult> Create(StudentInput studentInput)
         {
             try
@@ -100,12 +98,12 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
                 if (ModelState.IsValid)
                 {
                     DataResponse<StudentOutput> dataResponse = await _studentRepository.CreateAsync(studentInput);
-                    AddViewData(PageName, dataResponse);
+                    AddViewData(dataResponse);
 
                     return View(studentInput);
                 }
 
-                AddViewData(PageName, DataResponseStatus.InvalidData);
+                AddViewData(DataResponseStatus.InvalidData);
                 return View(studentInput);
             }
             catch (Exception ex)
@@ -116,6 +114,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
 
         [Route("edit/{id}")]
         [HttpGet]
+        [PageName(Name = "Chỉnh sửa thông tin sinh viên của khoa")]
         public async Task<IActionResult> Edit([Required] string id)
         {
             try
@@ -126,7 +125,6 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
                 if (studentOutput == null)
                     return RedirectToAction("Index");
 
-                AddViewData(PageName);
                 return View(studentOutput);
             }
             catch (Exception ex)
@@ -137,6 +135,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
 
         [Route("edit/{id}")]
         [HttpPost]
+        [PageName(Name = "Chỉnh sửa thông tin sinh viên của khoa")]
         public async Task<IActionResult> Edit([Required] string id, StudentInput studentInput)
         {
             try
@@ -151,11 +150,11 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
 
                     DataResponse<StudentOutput> dataResponse = await _studentRepository.UpdateAsync(id, studentInput);
 
-                    AddViewData(PageName, dataResponse);
+                    AddViewData(dataResponse);
                     return View(studentInput);
                 }
 
-                AddViewData(PageName, DataResponseStatus.InvalidData);
+                AddViewData(DataResponseStatus.InvalidData);
                 return View(studentInput);
             }
             catch (Exception ex)
@@ -176,7 +175,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
 
                 DataResponse dataResponse = await _studentRepository.BatchDeleteAsync(id);
 
-                AddTempData(PageName, dataResponse);
+                AddTempData(dataResponse);
                 return RedirectToAction("Index");
             }
             catch (Exception ex)

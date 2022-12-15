@@ -1,16 +1,13 @@
 ﻿using GraduateThesis.Generics;
 using GraduateThesis.Models;
-using GraduateThesis.Repository.BLL.Implements;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DTO;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
-using System;
 using X.PagedList;
 using GraduateThesis.WebExtensions;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using GraduateThesis.Common.WebAttributes;
 
 namespace GraduateThesis.Web.Areas.Lecture.Controllers
 {
@@ -18,8 +15,6 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
     [Route("lecture/thesis-manager")]
     public class ThesisManagerController : WebControllerBase
     {
-        public string PageName { get; set; } = "Quản lý đề tài";
-
         private ITopicRepository _topicRepository;
         private IStudentThesisGroupRepository _studentThesisGroupRepository;
         private ITrainingFormRepository _trainingFormRepository;
@@ -42,6 +37,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
 
         [Route("list")]
         [HttpGet]
+        [PageName(Name = "Danh sách các đề tài khóa luận")]
         public async Task<IActionResult> Index(int page = 1, int pageSize = 10, string orderBy = null, string orderOptions = "ASC", string keyword = null)
         {
             try
@@ -58,8 +54,6 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
                 ViewData["OrderOptions"] = orderOptions;
                 ViewData["Keyword"] = keyword;
 
-                AddViewData(PageName);
-
                 return View();
             }
             catch (Exception ex)
@@ -67,8 +61,10 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
                 return View(viewName: "_Error", model: ex.Message);
             }
         }
+
         [Route("details/{id}")]
         [HttpGet]
+        [PageName(Name = "Chi tiết đề tài khóa luận")]
         public async Task<IActionResult> Details([Required] string id)
         {
             try
@@ -77,7 +73,6 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
                 if (thesisOutput == null)
                     return RedirectToAction("Index");
 
-                AddViewData(PageName);
                 return View(thesisOutput);
             }
             catch
@@ -88,6 +83,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
 
         [Route("create")]
         [HttpGet]
+        [PageName(Name = "Tạo mới đề tài khóa luận")]
         public async Task<ActionResult> Create()
         {
             List<TopicOutput> topicClasses = await _topicRepository.GetListAsync();
@@ -108,17 +104,16 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
             List<SpecializationOutput> specializationsClass = await _specializationRepository.GetListAsync();
             ViewData["SpecializationsClass"] = new SelectList(specializationsClass, "Id", "Name");
 
-            AddViewData(PageName);
             return View();
         }
 
         [Route("create")]
         [HttpPost]
+        [PageName(Name = "Tạo mới đề tài khóa luận")]
         public async Task<IActionResult> Create(ThesisInput thesisInput)
         {
             try
             {
-
                 List<TopicOutput> topicClasses = await _topicRepository.GetListAsync();
                 ViewData["TopicList"] = new SelectList(topicClasses, "Id", "Name");
 
@@ -140,12 +135,12 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
                 if (ModelState.IsValid)
                 {
                     DataResponse<ThesisOutput> dataResponse = await _thesisRepository.CreateAsync(thesisInput);
-                    AddViewData(PageName, dataResponse);
+                    AddViewData(dataResponse);
 
                     return View(thesisInput);
                 }
 
-                AddViewData(PageName, DataResponseStatus.InvalidData);
+                AddViewData(DataResponseStatus.InvalidData);
                 return View(thesisInput);
             }
             catch (Exception ex)
@@ -153,8 +148,10 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
                 return View(viewName: "_Error", model: ex.Message);
             }
         }
+
         [Route("edit/{id}")]
         [HttpGet]
+        [PageName(Name = "Chỉnh sửa đề tài khóa luận")]
         public async Task<IActionResult> Edit([Required] string id)
         {
             try
@@ -181,7 +178,6 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
                 if (thesisOutput == null)
                     return RedirectToAction("Index");
 
-                AddViewData(PageName);
                 return View(thesisOutput);
             }
             catch (Exception ex)
@@ -192,6 +188,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
 
         [Route("edit/{id}")]
         [HttpPost]
+        [PageName(Name = "Chỉnh sửa đề tài khóa luận")]
         public async Task<IActionResult> Edit([Required] string id, ThesisInput thesisInput)
         {
             try
@@ -222,11 +219,11 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
 
                     DataResponse<ThesisOutput> dataResponse = await _thesisRepository.UpdateAsync(id, thesisInput);
 
-                    AddViewData(PageName, dataResponse);
+                    AddViewData(dataResponse);
                     return View(thesisInput);
                 }
 
-                AddViewData(PageName, DataResponseStatus.InvalidData);
+                AddViewData(DataResponseStatus.InvalidData);
                 return View(thesisInput);
             }
             catch (Exception ex)
@@ -247,7 +244,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
 
                 DataResponse dataResponse = await _thesisRepository.BatchDeleteAsync(id);
 
-                AddTempData(PageName, dataResponse);
+                AddTempData(dataResponse);
                 return RedirectToAction("Index");
             }
             catch (Exception ex)

@@ -6,29 +6,8 @@ namespace GraduateThesis.Generics
     public class WebControllerBase : Controller
     {
         [NonAction]
-        protected void AddViewData(string pageName)
+        protected void AddViewData(DataResponse dataResponse)
         {
-            ViewData["PageName"] = pageName;
-        }
-
-        [NonAction]
-        protected void AddViewData(string statusCode, string message)
-        {
-            ViewData["StatusCode"] = statusCode;
-            ViewData["Message"] = message;
-        }
-
-        [NonAction]
-        protected void AddViewData(string pageName, string statusCode, string message)
-        {
-            ViewData["PageName"] = pageName;
-            AddViewData(statusCode, message);
-        }
-
-        [NonAction]
-        protected void AddViewData(string pageName, DataResponse dataResponse)
-        {
-            ViewData["PageName"] = pageName;
             ViewData["Status"] = dataResponse.Status.ToString();
 
             if (string.IsNullOrEmpty(dataResponse.Message))
@@ -49,9 +28,8 @@ namespace GraduateThesis.Generics
         }
 
         [NonAction]
-        protected void AddViewData(string pageName, DataResponseStatus dataResponseStatus)
+        protected void AddViewData(DataResponseStatus dataResponseStatus)
         {
-            ViewData["PageName"] = pageName;
             ViewData["Status"] = dataResponseStatus.ToString();
 
             if (dataResponseStatus == DataResponseStatus.Success)
@@ -65,9 +43,8 @@ namespace GraduateThesis.Generics
         }
 
         [NonAction]
-        protected void AddViewData(string pageName, SignInResultModel signInResultModel)
+        protected void AddViewData(SignInResultModel signInResultModel)
         {
-            ViewData["PageName"] = pageName;
             ViewData["Status"] = signInResultModel.Status.ToString();
 
             if (string.IsNullOrEmpty(signInResultModel.Message))
@@ -88,9 +65,8 @@ namespace GraduateThesis.Generics
         }
 
         [NonAction]
-        protected void AddTempData(string pageName, SignInStatus signInStatus)
+        protected void AddTempData(SignInStatus signInStatus)
         {
-            TempData["PageName"] = pageName;
             TempData["Status"] = signInStatus.ToString();
 
             if (signInStatus == SignInStatus.Success)
@@ -104,9 +80,8 @@ namespace GraduateThesis.Generics
         }
 
         [NonAction]
-        protected void AddTempData(string pageName, SignInResultModel signInResultModel)
+        protected void AddTempData(SignInResultModel signInResultModel)
         {
-            TempData["PageName"] = pageName;
             TempData["Status"] = signInResultModel.Status.ToString();
 
             if (string.IsNullOrEmpty(signInResultModel.Message))
@@ -127,9 +102,8 @@ namespace GraduateThesis.Generics
         }
 
         [NonAction]
-        protected void AddTempData(string pageName, DataResponse dataResponse)
+        protected void AddTempData(DataResponse dataResponse)
         {
-            TempData["PageName"] = pageName;
             TempData["Status"] = dataResponse.Status.ToString();
 
             if (string.IsNullOrEmpty(dataResponse.Message))

@@ -4,13 +4,8 @@ using GraduateThesis.Generics;
 using GraduateThesis.Models;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DTO;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
-using Org.BouncyCastle.Asn1.Mozilla;
-using System;
-using System.Threading.Tasks;
 
 namespace GraduateThesis.Web.Areas.Student.Controllers
 {
@@ -39,7 +34,6 @@ namespace GraduateThesis.Web.Areas.Student.Controllers
         {
             try
             {
-                string pageName = "Trang đăng nhập dành cho sinh viên";
                 if (ModelState.IsValid)
                 {
                     SignInResultModel signInResultModel = await _studentRepository.SignInAsync(signInModel);
@@ -59,11 +53,11 @@ namespace GraduateThesis.Web.Areas.Student.Controllers
                         return RedirectToAction("Index", "StudentThesis");
                     }
 
-                    AddTempData(pageName, signInResultModel);
+                    AddTempData(signInResultModel);
                     return RedirectToAction("LoadSignInView");
                 }
 
-                AddTempData(pageName, SignInStatus.InvalidData);
+                AddTempData(SignInStatus.InvalidData);
                 return RedirectToAction("LoadSignInView");
             }
             catch (Exception)
@@ -74,6 +68,7 @@ namespace GraduateThesis.Web.Areas.Student.Controllers
 
         [Route("forgot-password-view")]
         [HttpGet]
+        [PageName(Name = "Trang lấy lại mật khẩu sinh viên")]
         public IActionResult ForgotPasswordView()
         {
             return View();
