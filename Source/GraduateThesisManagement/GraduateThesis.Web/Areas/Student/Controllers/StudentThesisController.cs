@@ -60,7 +60,6 @@ namespace GraduateThesis.Web.Areas.Student.Controllers
             {
                 return View(viewName: "_Error");
             }
-            
         }
 
         [Route("details/{id}")]

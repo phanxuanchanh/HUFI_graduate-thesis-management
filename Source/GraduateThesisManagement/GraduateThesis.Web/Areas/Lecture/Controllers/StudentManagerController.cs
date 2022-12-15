@@ -29,7 +29,6 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
         {
             _studentRepository = repository.StudentRepository;
             _studentClassRepository = repository.StudentClassRepository;
-
         }
 
         [Route("list")]

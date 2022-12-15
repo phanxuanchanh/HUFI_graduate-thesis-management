@@ -37,32 +37,39 @@ namespace GraduateThesis.Web.Areas.Student.Controllers
         [HttpPost]
         public async Task<IActionResult> SignIn(SignInModel signInModel)
         {
-            string pageName = "Trang đăng nhập dành cho sinh viên";
-            if (ModelState.IsValid)
+            try
             {
-                SignInResultModel signInResultModel = await _studentRepository.SignInAsync(signInModel);
-
-                if (signInResultModel.Status == SignInStatus.Success)
+                string pageName = "Trang đăng nhập dành cho sinh viên";
+                if (ModelState.IsValid)
                 {
-                    StudentOutput student =  await _studentRepository.GetAsync(signInModel.Code);
-                    string accountSession = JsonConvert.SerializeObject(new AccountSession
+                    SignInResultModel signInResultModel = await _studentRepository.SignInAsync(signInModel);
+
+                    if (signInResultModel.Status == SignInStatus.Success)
                     {
-                        AccountModel = student,
-                        Role = "Student",
-                        LastSignInTime = DateTime.Now
-                    });
+                        StudentOutput student = await _studentRepository.GetAsync(signInModel.Code);
+                        string accountSession = JsonConvert.SerializeObject(new AccountSession
+                        {
+                            AccountModel = student,
+                            Role = "Student",
+                            LastSignInTime = DateTime.Now
+                        });
 
-                    HttpContext.Session.SetString("account-session", accountSession);
+                        HttpContext.Session.SetString("account-session", accountSession);
 
-                    return RedirectToAction("Index", "StudentThesis");
+                        return RedirectToAction("Index", "StudentThesis");
+                    }
+
+                    AddTempData(pageName, signInResultModel);
+                    return RedirectToAction("LoadSignInView");
                 }
 
-                AddTempData(pageName, signInResultModel);
+                AddTempData(pageName, SignInStatus.InvalidData);
                 return RedirectToAction("LoadSignInView");
             }
-
-            AddTempData(pageName, SignInStatus.InvalidData);
-            return RedirectToAction("LoadSignInView");
+            catch (Exception)
+            {
+                return View(viewName: "_Error");
+            }
         }
 
         [Route("forgot-password-view")]
