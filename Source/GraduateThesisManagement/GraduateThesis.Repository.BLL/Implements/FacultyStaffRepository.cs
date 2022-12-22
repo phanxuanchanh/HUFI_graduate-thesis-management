@@ -1,11 +1,16 @@
-﻿using GraduateThesis.Generics;
+﻿using GraduateThesis.ExtensionMethods;
+using GraduateThesis.Generics;
 using GraduateThesis.Models;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DAL;
 using GraduateThesis.Repository.DTO;
+using MathNet.Numerics.Statistics.Mcmc;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Dynamic.Core;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -23,8 +28,6 @@ namespace GraduateThesis.Repository.BLL.Implements
 
             ConfigureIncludes();
             ConfigureSelectors();
-
-            _context.Faculties.
         }
 
         public DataResponse BatchDelete(string id)
@@ -132,6 +135,12 @@ namespace GraduateThesis.Repository.BLL.Implements
             return await _genericRepository.GetListAsync(count);
         }
 
+        public async Task<List<FacultyStaffOutput>> GetListByRoleIdAsync(string roleId, int count = 200)
+        {
+            return await _genericRepository
+                .GetListByConditionAsync($"{nameof(FacultyStaff.FacultyRoleId)} == {roleId}", count);
+        }
+
         public Pagination<FacultyStaffOutput> GetPagination(int page, int pageSize, string orderBy, OrderOptions orderOptions, string keyword)
         {
             return _genericRepository.GetPagination(page, pageSize, orderBy, orderOptions, keyword);
@@ -140,6 +149,12 @@ namespace GraduateThesis.Repository.BLL.Implements
         public async Task<Pagination<FacultyStaffOutput>> GetPaginationAsync(int page, int pageSize, string orderBy, OrderOptions orderOptions, string keyword)
         {
             return await _genericRepository.GetPaginationAsync(page, pageSize, orderBy, orderOptions, keyword);
+        }
+
+        public async Task<Pagination<FacultyStaffOutput>> GetPaginationByRoleIdAsync(string roleId, int page, int pageSize, string orderBy, OrderOptions orderOptions, string keyword)
+        {
+            return await _genericRepository
+                .GetConditionalPaginationAsync($"{nameof(FacultyStaff.FacultyRoleId)} == {roleId}", page, pageSize, orderBy, orderOptions, keyword);
         }
 
         public SignInResultModel SignIn(SignInModel signInModel)

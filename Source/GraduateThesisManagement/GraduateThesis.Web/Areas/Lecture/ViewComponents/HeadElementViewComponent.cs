@@ -2,7 +2,7 @@
 
 namespace GraduateThesis.Web.Areas.Lecture.ViewComponents
 {
-    [ViewComponent(Name = "HeadElement")]
+    [ViewComponent(Name = "LectureLayout_HeadElement")]
     public class HeadElementViewComponent : ViewComponent
     {
         public HeadElementViewComponent()

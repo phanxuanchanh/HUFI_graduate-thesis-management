@@ -7,6 +7,14 @@ using System.Threading.Tasks;
 
 namespace GraduateThesis.Generics
 {
+    /// <summary>
+    /// Author: phanxuanchanh.com (phanchanhvn)
+    /// </summary>
+    /// <typeparam name="TSubRepository"></typeparam>
+    /// <typeparam name="TInput"></typeparam>
+    /// <typeparam name="TOutput"></typeparam>
+    /// <typeparam name="T_ID"></typeparam>
+    
     public class ApiControllerBase<TSubRepository, TInput, TOutput, T_ID> : ControllerBase
         where TSubRepository : class
         where TInput : class

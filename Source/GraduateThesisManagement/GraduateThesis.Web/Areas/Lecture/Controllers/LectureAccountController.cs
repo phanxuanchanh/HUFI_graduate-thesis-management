@@ -1,28 +1,65 @@
-﻿using GraduateThesis.Common.WebAttributes;
+﻿using GraduateThesis.Common.Authorization;
+using GraduateThesis.Common.WebAttributes;
+using GraduateThesis.Generics;
 using GraduateThesis.Models;
+using GraduateThesis.Repository.BLL.Implements;
+using GraduateThesis.Repository.BLL.Interfaces;
+using GraduateThesis.Repository.DTO;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace GraduateThesis.Web.Areas.Lecture.Controllers
 {
     [Area("Lecture")]
     [Route("lecture/account")]
-    public class LectureAccountController : Controller
+    public class LectureAccountController : WebControllerBase
     {
+        private IFacultyStaffRepository _facultyStaffRepository;
+
+        public LectureAccountController(IRepository repository)
+        {
+            _facultyStaffRepository = repository.FacultyStaffRepository;
+        }
+
         [Route("sign-in-view")]
         [HttpGet]
-        [PageName(Name = "Trang đăng nhập dành cho giảng viên,...")]
+        [PageName(Name = "Trang đăng nhập dành cho giảng viên")]
         public IActionResult LoadSignInView()
         {
-            return View();
+            return View(new SignInModel());
         }
 
         [Route("sign-in")]
         [HttpPost]
-        public IActionResult SignIn(SignInModel signInModel)
+        public async Task<IActionResult> SignIn(SignInModel signInModel)
         {
             try
             {
-                return View();
+                if (!ModelState.IsValid)
+                {
+                    AddTempData(SignInStatus.InvalidData);
+                    return RedirectToAction("LoadSignInView");
+                }
+
+                SignInResultModel signInResultModel = await _facultyStaffRepository.SignInAsync(signInModel);
+
+                if (signInResultModel.Status == SignInStatus.Success)
+                {
+                    FacultyStaffOutput facultyStaff = await _facultyStaffRepository.GetAsync(signInModel.Code);
+                    string accountSession = JsonConvert.SerializeObject(new AccountSession
+                    {
+                        AccountModel = facultyStaff,
+                        Role = facultyStaff.FacultyStaffRole.Name,
+                        LastSignInTime = DateTime.Now
+                    });
+
+                    HttpContext.Session.SetString("account-session", accountSession);
+
+                    return RedirectToAction("Index", "LectureDashboard");
+                }
+
+                AddTempData(signInResultModel);
+                return RedirectToAction("LoadSignInView");
             }
             catch (Exception)
             {
