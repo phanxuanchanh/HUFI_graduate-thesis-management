@@ -1,12 +1,25 @@
-﻿using GraduateThesis.Models;
+﻿using GraduateThesis.Common.File;
+using GraduateThesis.Models;
 using Microsoft.AspNetCore.Mvc;
+using NPOI.SS.UserModel;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Net.Mime;
 using System.Reflection;
 using System.Threading.Tasks;
 
 namespace GraduateThesis.Generics
 {
+    /// <summary>
+    /// Author: phanxuanchanh.com (phanchanhvn)
+    /// </summary>
+    /// <typeparam name="TSubRepository"></typeparam>
+    /// <typeparam name="TInput"></typeparam>
+    /// <typeparam name="TOutput"></typeparam>
+    /// <typeparam name="T_ID"></typeparam>
+    
     public class ApiControllerBase<TSubRepository, TInput, TOutput, T_ID> : ControllerBase
         where TSubRepository : class
         where TInput : class
@@ -153,6 +166,39 @@ namespace GraduateThesis.Generics
             try
             {
                 return await GetActionResultAsync<DataResponse>("BatchDeleteAsync", new object[] { id });
+            }
+            catch (Exception ex)
+            {
+                return GetActionResult(ex);
+            }
+        }
+
+        [Route("export-to-spreadsheet")]
+        [HttpPost]
+        public virtual async Task<IActionResult> ExportToSpreadsheet([FromBody] string[] includeProperties)
+        {
+            try
+            {
+                MethodInfo methodInfo = _subRepositoryType.GetMethod("ExportToSpreadsheetAsync");
+
+                if (methodInfo == null)
+                    return StatusCode(500);
+
+                Task<IWorkbook> resultAsync = (Task<IWorkbook>)methodInfo.Invoke(_subRepository, new object[] {
+                    SpreadsheetTypeOptions.XLSX,
+                    "Default",
+                    includeProperties
+                })!;
+
+                IWorkbook workbook = await resultAsync;
+
+                string fileName = $"Thesis_{DateTime.Now.ToString("ddMMyyyy_hhmmss")}.xlsx";
+                using (MemoryStream memoryStream = new MemoryStream())
+                {
+                    workbook.Write(memoryStream, true);
+                    byte[] bytes = memoryStream.ToArray();
+                    return File(bytes, ContentTypeConsts.XLSX, fileName);
+                }
             }
             catch (Exception ex)
             {

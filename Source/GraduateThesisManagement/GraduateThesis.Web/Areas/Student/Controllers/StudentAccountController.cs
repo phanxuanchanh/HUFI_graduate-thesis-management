@@ -34,30 +34,30 @@ namespace GraduateThesis.Web.Areas.Student.Controllers
         {
             try
             {
-                if (ModelState.IsValid)
+                if (!ModelState.IsValid)
                 {
-                    SignInResultModel signInResultModel = await _studentRepository.SignInAsync(signInModel);
-
-                    if (signInResultModel.Status == SignInStatus.Success)
-                    {
-                        StudentOutput student = await _studentRepository.GetAsync(signInModel.Code);
-                        string accountSession = JsonConvert.SerializeObject(new AccountSession
-                        {
-                            AccountModel = student,
-                            Role = "Student",
-                            LastSignInTime = DateTime.Now
-                        });
-
-                        HttpContext.Session.SetString("account-session", accountSession);
-
-                        return RedirectToAction("Index", "StudentThesis");
-                    }
-
-                    AddTempData(signInResultModel);
+                    AddTempData(SignInStatus.InvalidData);
                     return RedirectToAction("LoadSignInView");
                 }
 
-                AddTempData(SignInStatus.InvalidData);
+                SignInResultModel signInResultModel = await _studentRepository.SignInAsync(signInModel);
+
+                if (signInResultModel.Status == SignInStatus.Success)
+                {
+                    StudentOutput student = await _studentRepository.GetAsync(signInModel.Code);
+                    string accountSession = JsonConvert.SerializeObject(new AccountSession
+                    {
+                        AccountModel = student,
+                        Role = "Student",
+                        LastSignInTime = DateTime.Now
+                    });
+
+                    HttpContext.Session.SetString("account-session", accountSession);
+
+                    return RedirectToAction("Index", "StudentThesis");
+                }
+
+                AddTempData(signInResultModel);
                 return RedirectToAction("LoadSignInView");
             }
             catch (Exception)

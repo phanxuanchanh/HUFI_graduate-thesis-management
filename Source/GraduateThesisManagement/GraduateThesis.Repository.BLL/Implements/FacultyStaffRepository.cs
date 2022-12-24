@@ -1,11 +1,17 @@
-﻿using GraduateThesis.Generics;
+﻿using GraduateThesis.ExtensionMethods;
+using GraduateThesis.Generics;
 using GraduateThesis.Models;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DAL;
 using GraduateThesis.Repository.DTO;
+using MathNet.Numerics.Statistics.Mcmc;
+using Microsoft.EntityFrameworkCore;
+using NPOI.SS.UserModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Dynamic.Core;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -13,13 +19,13 @@ namespace GraduateThesis.Repository.BLL.Implements
 {
     public class FacultyStaffRepository : IFacultyStaffRepository
     {
-        private HUFI_graduatethesisContext _context;
-        private GenericRepository<HUFI_graduatethesisContext, FacultyStaff, FacultyStaffInput, FacultyStaffOutput> _genericRepository;
+        private HufiGraduateThesisContext _context;
+        private GenericRepository<HufiGraduateThesisContext, FacultyStaff, FacultyStaffInput, FacultyStaffOutput> _genericRepository;
 
-        internal FacultyStaffRepository(HUFI_graduatethesisContext context)
+        internal FacultyStaffRepository(HufiGraduateThesisContext context)
         {
             _context = context;
-            _genericRepository = new GenericRepository<HUFI_graduatethesisContext, FacultyStaff, FacultyStaffInput, FacultyStaffOutput>(context, context.FacultyStaffs);
+            _genericRepository = new GenericRepository<HufiGraduateThesisContext, FacultyStaff, FacultyStaffInput, FacultyStaffOutput>(context, context.FacultyStaffs);
 
             ConfigureIncludes();
             ConfigureSelectors();
@@ -90,6 +96,17 @@ namespace GraduateThesis.Repository.BLL.Implements
             throw new NotImplementedException();
         }
 
+        public IWorkbook ExportToSpreadsheet(SpreadsheetTypeOptions spreadsheetTypeOptions, string sheetName, string[] includeProperties)
+        {
+            return _genericRepository.ExportToSpreadsheet(spreadsheetTypeOptions, sheetName, includeProperties);
+        }
+
+        public async Task<IWorkbook> ExportToSpreadsheetAsync(SpreadsheetTypeOptions spreadsheetTypeOptions, string sheetName, string[] includeProperties)
+        {
+            return await _genericRepository
+                .ExportToSpreadsheetAsync(spreadsheetTypeOptions, sheetName, includeProperties);
+        }
+
         public DataResponse ForceDelete(string id)
         {
             throw new NotImplementedException();
@@ -130,6 +147,12 @@ namespace GraduateThesis.Repository.BLL.Implements
             return await _genericRepository.GetListAsync(count);
         }
 
+        public async Task<List<FacultyStaffOutput>> GetListByRoleIdAsync(string roleId, int count = 200)
+        {
+            return await _genericRepository
+                .GetListByConditionAsync($"{nameof(FacultyStaff.FacultyRoleId)} == {roleId}", count);
+        }
+
         public Pagination<FacultyStaffOutput> GetPagination(int page, int pageSize, string orderBy, OrderOptions orderOptions, string keyword)
         {
             return _genericRepository.GetPagination(page, pageSize, orderBy, orderOptions, keyword);
@@ -138,6 +161,12 @@ namespace GraduateThesis.Repository.BLL.Implements
         public async Task<Pagination<FacultyStaffOutput>> GetPaginationAsync(int page, int pageSize, string orderBy, OrderOptions orderOptions, string keyword)
         {
             return await _genericRepository.GetPaginationAsync(page, pageSize, orderBy, orderOptions, keyword);
+        }
+
+        public async Task<Pagination<FacultyStaffOutput>> GetPaginationByRoleIdAsync(string roleId, int page, int pageSize, string orderBy, OrderOptions orderOptions, string keyword)
+        {
+            return await _genericRepository
+                .GetConditionalPaginationAsync($"{nameof(FacultyStaff.FacultyRoleId)} == {roleId}", page, pageSize, orderBy, orderOptions, keyword);
         }
 
         public SignInResultModel SignIn(SignInModel signInModel)
