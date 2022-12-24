@@ -854,10 +854,12 @@ namespace GraduateThesis.Generics
         {
             int rowIndex = 1;
             int cellIndex = 0;
+            Type outputType = typeof(TOutput);
+            PropertyInfo[] outputProperties = outputType.GetProperties();
+
             foreach (TOutput output in outputs)
             {
                 IRow row = sheet.CreateRow(rowIndex);
-                PropertyInfo[] outputProperties = typeof(TOutput).GetProperties();
                 cellIndex = 0;
                 foreach (PropertyInfo propertyInfo in outputProperties)
                 {
@@ -870,13 +872,12 @@ namespace GraduateThesis.Generics
                         cellIndex++;
                     }
                 }
-
-                for (int i = 0; i < outputProperties.Length; i++)
-                {
-                    sheet.AutoSizeColumn(i);
-                }
-
                 rowIndex++;
+            }
+
+            for (int i = 0; i < outputProperties.Length; i++)
+            {
+                sheet.AutoSizeColumn(i);
             }
         }
 
