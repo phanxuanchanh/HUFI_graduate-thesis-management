@@ -11,6 +11,7 @@ namespace GraduateThesis.Web.Areas.Student.Controllers
 {
     [Area("Student")]
     [Route("student/account")]
+    [HandleException]
     public class StudentAccountController : WebControllerBase
     {
         private IStudentRepository _studentRepository;
@@ -32,38 +33,31 @@ namespace GraduateThesis.Web.Areas.Student.Controllers
         [HttpPost]
         public async Task<IActionResult> SignIn(SignInModel signInModel)
         {
-            try
+            if (!ModelState.IsValid)
             {
-                if (!ModelState.IsValid)
-                {
-                    AddTempData(SignInStatus.InvalidData);
-                    return RedirectToAction("LoadSignInView");
-                }
-
-                SignInResultModel signInResultModel = await _studentRepository.SignInAsync(signInModel);
-
-                if (signInResultModel.Status == SignInStatus.Success)
-                {
-                    StudentOutput student = await _studentRepository.GetAsync(signInModel.Code);
-                    string accountSession = JsonConvert.SerializeObject(new AccountSession
-                    {
-                        AccountModel = student,
-                        Role = "Student",
-                        LastSignInTime = DateTime.Now
-                    });
-
-                    HttpContext.Session.SetString("account-session", accountSession);
-
-                    return RedirectToAction("Index", "StudentThesis");
-                }
-
-                AddTempData(signInResultModel);
+                AddTempData(SignInStatus.InvalidData);
                 return RedirectToAction("LoadSignInView");
             }
-            catch (Exception)
+
+            SignInResultModel signInResultModel = await _studentRepository.SignInAsync(signInModel);
+
+            if (signInResultModel.Status == SignInStatus.Success)
             {
-                return View(viewName: "_Error");
+                StudentOutput student = await _studentRepository.GetAsync(signInModel.Code);
+                string accountSession = JsonConvert.SerializeObject(new AccountSession
+                {
+                    AccountModel = student,
+                    Role = "Student",
+                    LastSignInTime = DateTime.Now
+                });
+
+                HttpContext.Session.SetString("account-session", accountSession);
+
+                return RedirectToAction("Index", "StudentThesis");
             }
+
+            AddTempData(signInResultModel);
+            return RedirectToAction("LoadSignInView");
         }
 
         [Route("forgot-password-view")]
