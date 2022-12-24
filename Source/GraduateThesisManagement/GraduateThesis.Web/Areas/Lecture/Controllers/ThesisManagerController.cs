@@ -8,6 +8,12 @@ using GraduateThesis.WebExtensions;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
 using GraduateThesis.Common.WebAttributes;
+using NPOI.SS.UserModel;
+using NPOI.OpenXmlFormats.Spreadsheet;
+using System.Net;
+using GraduateThesis.Common.File;
+using NPOI.HPSF;
+using System.Net.Mime;
 
 namespace GraduateThesis.Web.Areas.Lecture.Controllers
 {
@@ -253,5 +259,37 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
             }
         }
 
+        [Route("export-to-spreadsheet")]
+        [HttpGet]
+        public async Task<IActionResult> ExportToSpreadsheet()
+        {
+            try
+            {
+                IWorkbook workbook = await _thesisRepository.ExportToSpreadsheetAsync(
+                    SpreadsheetTypeOptions.XLSX, 
+                    "Danh sách đề tài",
+                    new string[] { "Id", "Name", "Description", "MaxStudentNumber", "Semester" }
+                );
+
+                ContentDisposition contentDisposition = new ContentDisposition
+                {
+                    FileName = $"Thesis_{DateTime.Now.ToString("ddMMyyyy_hhmmss")}.xlsx",
+                    Inline = true,
+                };
+
+                Response.Headers.Append("Content-Disposition", contentDisposition.ToString());
+
+                using (MemoryStream memoryStream = new MemoryStream())
+                {
+                    workbook.Write(memoryStream, true);
+                    byte[] bytes = memoryStream.ToArray();
+                    return File(bytes, ContentTypeConsts.XLSX);
+                }
+            }
+            catch (Exception ex)
+            {
+                return View(viewName: "_Error", model: ex.Message);
+            }
+        }
     }
 }

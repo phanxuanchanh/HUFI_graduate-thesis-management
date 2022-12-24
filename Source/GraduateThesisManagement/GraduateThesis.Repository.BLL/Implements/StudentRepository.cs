@@ -7,6 +7,8 @@ using GraduateThesis.Repository.DTO;
 using GraduateThesis.RepositoryPatterns;
 using MathNet.Numerics.Distributions;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
+using NPOI.OpenXmlFormats.Dml;
+using NPOI.SS.UserModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,13 +19,13 @@ namespace GraduateThesis.Repository.BLL.Implements
 {
     public class StudentRepository : IStudentRepository
     {
-        private HUFI_graduatethesisContext _context;
-        private GenericRepository<HUFI_graduatethesisContext, Student, StudentInput, StudentOutput> _genericRepository;
+        private HufiGraduateThesisContext _context;
+        private GenericRepository<HufiGraduateThesisContext, Student, StudentInput, StudentOutput> _genericRepository;
 
-        internal StudentRepository(HUFI_graduatethesisContext context)
+        internal StudentRepository(HufiGraduateThesisContext context)
         {
             _context = context;
-            _genericRepository = new GenericRepository<HUFI_graduatethesisContext, Student, StudentInput, StudentOutput>(_context, _context.Students);
+            _genericRepository = new GenericRepository<HufiGraduateThesisContext, Student, StudentInput, StudentOutput>(_context, _context.Students);
 
             ConfigureIncludes();
             ConfigureSelectors();
@@ -139,6 +141,17 @@ namespace GraduateThesis.Repository.BLL.Implements
         public Task<ForgotPasswordModel> CreateNewPasswordAsync(NewPasswordModel newPasswordModel)
         {
             throw new NotImplementedException();
+        }
+
+        public IWorkbook ExportToSpreadsheet(SpreadsheetTypeOptions spreadsheetTypeOptions, string sheetName, string[] includeProperties)
+        {
+            return _genericRepository.ExportToSpreadsheet(spreadsheetTypeOptions, sheetName, includeProperties);
+        }
+
+        public async Task<IWorkbook> ExportToSpreadsheetAsync(SpreadsheetTypeOptions spreadsheetTypeOptions, string sheetName, string[] includeProperties)
+        {
+            return await _genericRepository
+                .ExportToSpreadsheetAsync(spreadsheetTypeOptions, sheetName, includeProperties);
         }
 
         public DataResponse ForceDelete(string id)

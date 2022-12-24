@@ -2,8 +2,14 @@
 using GraduateThesis.ExtensionMethods;
 using GraduateThesis.Models;
 using Microsoft.EntityFrameworkCore;
+using NPOI.HSSF.UserModel;
+using NPOI.OpenXmlFormats.Dml;
+using NPOI.OpenXmlFormats.Spreadsheet;
+using NPOI.SS.UserModel;
+using NPOI.XSSF.UserModel;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Linq.Expressions;
@@ -11,6 +17,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Z.EntityFramework.Extensions;
 
 namespace GraduateThesis.Generics
 {
@@ -797,15 +804,137 @@ namespace GraduateThesis.Generics
         #endregion
 
         #region export to files
-        
-        public void ExportToXLS(string filePath)
-        {
 
+        private ICellStyle SetDefaultCellStyle(IWorkbook workbook, bool isHeaderStyle)
+        {
+            ICellStyle cellStyle = workbook.CreateCellStyle();
+            IFont font = workbook.CreateFont();
+
+            font.FontName = "Time New Roman";
+            font.FontHeight = 30 * 20;
+            font.FontHeightInPoints = 14;
+
+            if (isHeaderStyle)
+                font.IsBold = true;
+
+            cellStyle.SetFont(font);
+
+            return cellStyle;
         }
 
-        public async void ExportToXLSAsync(string filePath)
+        private void SetSheetHeader(ISheet sheet, ICellStyle cellStyle, string[] includeProperties)
         {
+            IRow headerRow = sheet.CreateRow(0);
 
+            PropertyInfo[] outputProperties = typeof(TOutput).GetProperties();
+            int cellIndex = 0;
+            foreach (PropertyInfo propertyInfo in outputProperties)
+            {
+                if (includeProperties.Any(i => i == propertyInfo.Name))
+                {
+                    ICell cell = headerRow.CreateCell(cellIndex);
+                    DisplayAttribute displayAttribute = propertyInfo.GetCustomAttribute<DisplayAttribute>();
+                    if (displayAttribute == null)
+                        cell.SetCellValue(propertyInfo.Name);
+                    else
+                        cell.SetCellValue(displayAttribute.Name);
+
+                    cell.CellStyle = cellStyle;
+                    cellIndex++;
+                }
+            }
+
+            for (int i = 0; i < outputProperties.Length; i++)
+            {
+                sheet.AutoSizeColumn(i);
+            }
+        }
+
+        private void SetDataToSheet(ISheet sheet, ICellStyle cellStyle, List<TOutput> outputs, string[] includeProperties)
+        {
+            int rowIndex = 1;
+            int cellIndex = 0;
+            foreach (TOutput output in outputs)
+            {
+                IRow row = sheet.CreateRow(rowIndex);
+                PropertyInfo[] outputProperties = typeof(TOutput).GetProperties();
+                cellIndex = 0;
+                foreach (PropertyInfo propertyInfo in outputProperties)
+                {
+                    if (includeProperties.Any(i => i == propertyInfo.Name))
+                    {
+                        ICell cell = row.CreateCell(cellIndex);
+                        cell.CellStyle = cellStyle;
+                        SetCellValue(cell, propertyInfo.GetValue(output));
+
+                        cellIndex++;
+                    }
+                }
+
+                for (int i = 0; i < outputProperties.Length; i++)
+                {
+                    sheet.AutoSizeColumn(i);
+                }
+
+                rowIndex++;
+            }
+        }
+
+        private void SetCellValue(ICell cell, object value)
+        {
+            if (value.IsString())
+                cell.SetCellValue(value.ToString());
+            else if (value.IsBool())
+                cell.SetCellValue((bool)value);
+            else if (value.IsNumber())
+                cell.SetCellValue(value.ToString());
+            else
+                cell.SetCellValue(value.ToString());
+        }
+        
+        public IWorkbook ExportToSpreadsheet(SpreadsheetTypeOptions spreadsheetTypeOptions, string sheetName, string[] includeProperties)
+        {
+            List<TOutput> outputs = _dbSet
+                .IncludeMultiple(_navigationPropertyPaths).Select(ListSelector).ToList();
+
+            IWorkbook workbook;
+            if (spreadsheetTypeOptions == SpreadsheetTypeOptions.XLS)
+                workbook = new HSSFWorkbook();
+            else
+                workbook = new XSSFWorkbook();
+
+            ICellStyle headerCellStyle = SetDefaultCellStyle(workbook, true);
+            ICellStyle cellStyle = SetDefaultCellStyle(workbook, false);
+            ISheet sheet = workbook.CreateSheet(sheetName);
+
+            SetSheetHeader(sheet, headerCellStyle, includeProperties);
+            SetDataToSheet(sheet, cellStyle, outputs, includeProperties);
+            
+            return workbook;
+        }
+
+        public async Task<IWorkbook> ExportToSpreadsheetAsync(SpreadsheetTypeOptions spreadsheetTypeOptions, string sheetName, string[] includeProperties)
+        {
+            List<TOutput> outputs = await _dbSet
+                .IncludeMultiple(_navigationPropertyPaths).Select(ListSelector).ToListAsync();
+
+            IWorkbook workbook;
+            if (spreadsheetTypeOptions == SpreadsheetTypeOptions.XLS)
+                workbook = new HSSFWorkbook();
+            else
+                workbook = new XSSFWorkbook();
+
+            ICellStyle headerCellStyle = SetDefaultCellStyle(workbook, true);
+            ICellStyle cellStyle = SetDefaultCellStyle(workbook, false);
+            ISheet sheet = workbook.CreateSheet(sheetName);
+
+            await Task.Run(() =>
+            {
+                SetSheetHeader(sheet, headerCellStyle, includeProperties);
+                SetDataToSheet(sheet, cellStyle, outputs, includeProperties);
+            });
+
+            return workbook;
         }
 
         #endregion

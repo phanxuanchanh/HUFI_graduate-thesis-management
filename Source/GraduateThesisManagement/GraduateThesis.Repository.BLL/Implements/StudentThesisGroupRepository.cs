@@ -3,6 +3,7 @@ using GraduateThesis.Models;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DAL;
 using GraduateThesis.Repository.DTO;
+using NPOI.SS.UserModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,13 +14,13 @@ namespace GraduateThesis.Repository.BLL.Implements
 {
     public class StudentThesisGroupRepository : IStudentThesisGroupRepository
     {
-        private HUFI_graduatethesisContext _context;
-        private GenericRepository<HUFI_graduatethesisContext, StudentThesisGroup, StudentThesisGroupInput, StudentThesisGroupOutput> _genericRepository;
+        private HufiGraduateThesisContext _context;
+        private GenericRepository<HufiGraduateThesisContext, StudentThesisGroup, StudentThesisGroupInput, StudentThesisGroupOutput> _genericRepository;
 
-        public StudentThesisGroupRepository(HUFI_graduatethesisContext context)
+        public StudentThesisGroupRepository(HufiGraduateThesisContext context)
         {
             _context = context;
-            _genericRepository = new GenericRepository<HUFI_graduatethesisContext, StudentThesisGroup, StudentThesisGroupInput, StudentThesisGroupOutput>(context, context.StudentThesisGroups);
+            _genericRepository = new GenericRepository<HufiGraduateThesisContext, StudentThesisGroup, StudentThesisGroupInput, StudentThesisGroupOutput>(context, context.StudentThesisGroups);
 
             ConfigureIncludes();
             ConfigureSelectors();
@@ -89,6 +90,17 @@ namespace GraduateThesis.Repository.BLL.Implements
         public async Task<DataResponse<StudentThesisGroupOutput>> CreateAsync(StudentThesisGroupInput input)
         {
             return await _genericRepository.CreateAsync(input, GenerateUIDOptions.ShortUID);
+        }
+
+        public IWorkbook ExportToSpreadsheet(SpreadsheetTypeOptions spreadsheetTypeOptions, string sheetName, string[] includeProperties)
+        {
+            return _genericRepository.ExportToSpreadsheet(spreadsheetTypeOptions, sheetName, includeProperties);
+        }
+
+        public async Task<IWorkbook> ExportToSpreadsheetAsync(SpreadsheetTypeOptions spreadsheetTypeOptions, string sheetName, string[] includeProperties)
+        {
+            return await _genericRepository
+                .ExportToSpreadsheetAsync(spreadsheetTypeOptions, sheetName, includeProperties);
         }
 
         public DataResponse ForceDelete(string id)

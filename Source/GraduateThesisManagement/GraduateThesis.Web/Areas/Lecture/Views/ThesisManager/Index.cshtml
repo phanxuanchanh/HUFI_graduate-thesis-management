@@ -2,7 +2,7 @@
 @using X.PagedList.Web.Common
 @model IEnumerable<ThesisOutput>
 @{
-    IPagedList pagedInfo = (IPagedList)ViewData["PagedList"];
+    IPagedList pagedInfo = (IPagedList)ViewData["PagedList"]!;
 }
 
 <h1 class="mt-4">@ViewData["PageName"]</h1>
@@ -16,7 +16,7 @@
     <div class="card-body">
         <a asp-action="Create" class="btn btn-primary">Tạo mới</a>
         <a asp-action="Create" class="btn btn-primary">Nhập từ XLS</a>
-        <a asp-action="Create" class="btn btn-primary">Xuất XLS</a>
+        <a asp-action="ExportToSpreadsheet" class="btn btn-primary">Xuất XLSX</a>
         <a asp-action="Create" class="btn btn-primary">Thùng rác</a>
     </div>
 </div>
@@ -40,11 +40,11 @@
                                 {
                                     if (i == pagedInfo.PageSize)
                                     {
-                                                    <option value="@i" selected>@i</option>
+                                        <option value="@i" selected>@i</option>
                                     }
                                     else
                                     {
-                                                    <option value="@i">@i</option>
+                                        <option value="@i">@i</option>
                                     }
                                 }
                                 </select> dòng trên 1 trang
@@ -86,7 +86,7 @@
                         @{
                             int count = 1;
                         }
-                        @foreach (ThesisOutput thesis in (IEnumerable<ThesisOutput>)ViewData["PagedList"])
+                        @foreach (ThesisOutput thesis in (IEnumerable<ThesisOutput>)ViewData["PagedList"]!)
                         {
                                 <tr>
                                     <td>
@@ -126,7 +126,7 @@
                 <nav class="dataTable-pagination">
                     <ul class="dataTable-pagination-list">
                         @Html.PagedListPager(
-                            (IPagedList)ViewData["PagedList"], 
+                            (IPagedList)ViewData["PagedList"]!, 
                             p => Url.Action("Index", new { 
                                 page = p, 
                                 pageSize = pagedInfo.PageSize,

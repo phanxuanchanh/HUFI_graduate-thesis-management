@@ -1,8 +1,7 @@
 ﻿using GraduateThesis.Models;
+using NPOI.SS.UserModel;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 
@@ -30,6 +29,7 @@ namespace GraduateThesis.RepositoryPatterns
         Task<DataResponse> BatchDeleteAsync(T_ID id);
         Task<DataResponse> ForceDeleteAsync(T_ID id);
         Task<int> CountAsync();
+        Task<IWorkbook> ExportToSpreadsheetAsync(SpreadsheetTypeOptions spreadsheetTypeOptions, string sheetName, string[] includeProperties);
 
         Pagination<TOutput> GetPagination(int page, int pageSize, string orderBy, OrderOptions orderOptions, string keyword);
         List<TOutput> GetList(int count = 200);
@@ -39,5 +39,6 @@ namespace GraduateThesis.RepositoryPatterns
         DataResponse BatchDelete(T_ID id);
         DataResponse ForceDelete(T_ID id);
         int Count();
+        IWorkbook ExportToSpreadsheet(SpreadsheetTypeOptions spreadsheetTypeOptions, string sheetName, string[] includeProperties);
     }
 }
