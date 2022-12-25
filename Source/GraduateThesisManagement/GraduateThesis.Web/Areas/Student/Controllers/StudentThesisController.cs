@@ -15,6 +15,7 @@ namespace GraduateThesis.Web.Areas.Student.Controllers
     [Route("student/thesis")]
     [HandleException]
     [WebAuthorize(AccountRole.Student)]
+    [AccountInfo(typeof(StudentOutput))]
     public class StudentThesisController : WebControllerBase
     {
         private IThesisRepository _thesisRepository;
@@ -67,12 +68,61 @@ namespace GraduateThesis.Web.Areas.Student.Controllers
             return View(thesis);
         }
 
+        [Route("check-thesis-available/{id}")]
+        [HttpGet]
+        [WebAuthorize(AccountRole.Student)]
+        public async Task<IActionResult> CheckThesisAvailable([Required] string id)
+        {
+            ThesisOutput thesis = await _thesisRepository.GetAsync(id);
+            if (thesis == null)
+                return Json(new DataResponse<ThesisOutput> { Status = DataResponseStatus.NotFound });
+
+            if(string.IsNullOrEmpty(thesis.ThesisGroupId))
+                return Json(new DataResponse<string> { Status = DataResponseStatus.Success, Data = "Available" });
+
+            return Json(new DataResponse<string> { Status = DataResponseStatus.Success, Data = "Unavailable" });
+        }
+
         [Route("do-thesis-register/{studentId}/{thesisId}")]
-        [HttpPost]
+        [HttpGet]
         [PageName(Name = "Đăng ký đề tài")]
         [WebAuthorize(AccountRole.Student)]
         public IActionResult DoThesisRegister([Required] string studentId, [Required] string thesisId)
         {
+            return View(new ThesisRegisterInput());
+        }
+
+        [Route("do-thesis-register/{studentId}/{thesisId}")]
+        [HttpPost]
+        [PageName(Name = "Đăng ký đề tài")]
+        [WebAuthorize(AccountRole.Student)]
+        public async Task<IActionResult> DoThesisRegister(ThesisRegisterInput thesisRegisterInput)
+        {
+            if (ModelState.IsValid)
+            {
+                DataResponse dataResponse = await _thesisRepository.DoThesisRegisterAsync(thesisRegisterInput);
+                AddTempData(dataResponse);
+                if(dataResponse.Status == DataResponseStatus.Success)
+                    return RedirectToAction("YourThesis");
+
+                AddViewData(dataResponse);
+                return View(thesisRegisterInput);
+            }
+
+            AddViewData(DataResponseStatus.InvalidData);
+            return View(thesisRegisterInput);
+        }
+
+        [Route("my-thesis/{thesisId}")]
+        [HttpPost]
+        [PageName(Name = "Đề tài khóa luận của bạn")]
+        [WebAuthorize(AccountRole.Student)]
+        public async Task<IActionResult> GetYourThesis([Required] string thesisId)
+        {
+            //StudentThesisOutput studentThesis = await _thesisRepository.GetStudentThesisAsync(thesisId);
+            //if (studentThesis == null)
+            //    return RedirectToAction("GetList");
+
             return View();
         }
 
@@ -84,5 +134,7 @@ namespace GraduateThesis.Web.Areas.Student.Controllers
         {
             return View();
         }
+
+        
     }
 }

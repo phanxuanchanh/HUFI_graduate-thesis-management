@@ -44,6 +44,9 @@ namespace GraduateThesis.Web.Areas.Student.Controllers
             if (signInResultModel.Status == SignInStatus.Success)
             {
                 StudentOutput student = await _studentRepository.GetAsync(signInModel.Code);
+                if (string.IsNullOrEmpty(student.Avatar))
+                    student.Avatar = "default-male-profile.png";
+
                 string accountSession = JsonConvert.SerializeObject(new AccountSession
                 {
                     AccountModel = student,

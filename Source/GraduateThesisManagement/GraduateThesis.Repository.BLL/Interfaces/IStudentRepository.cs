@@ -11,6 +11,6 @@ namespace GraduateThesis.Repository.BLL.Interfaces
 {
     public interface IStudentRepository : ICrudPattern<Student, StudentInput, StudentOutput, string>, IAccountPattern, IRepositoryConfiguration
     {
-
+        Task<StudentThesisOutput> GetStudentThesisAsync(string studentId);
     }
 }

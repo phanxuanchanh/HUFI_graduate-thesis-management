@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace GraduateThesis.Repository.DTO
-{
+{ 
     public class StudentThesisGroupInput
     {
         public string Id { get; set; }
@@ -23,5 +23,4 @@ namespace GraduateThesis.Repository.DTO
 
         public ThesisOutput Thesis { get; set; }
     }
-
 }
