@@ -20,7 +20,6 @@
     <Folder Include="Areas\Administrator\Data\" />
     <Folder Include="Areas\Administrator\Models\" />
     <Folder Include="Areas\Administrator\Views\" />
-    <Folder Include="Areas\Lecture\Controllers\" />
     <Folder Include="Areas\Lecture\Data\" />
     <Folder Include="Areas\Lecture\Models\" />
     <Folder Include="Areas\Student\Controllers\" />
@@ -31,7 +30,7 @@
 
   <ItemGroup>
     <PackageReference Include="bootstrap" Version="5.2.3" />
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.10" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.11" />
     <PackageReference Include="X.PagedList.Mvc.Core" Version="8.4.3" />
   </ItemGroup>
 

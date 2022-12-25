@@ -1,6 +1,6 @@
 ﻿@using X.PagedList.Mvc.Core
 @using X.PagedList.Web.Common
-@model IEnumerable<StudentOutput>
+@model IEnumerable<FacultyStaffOutput>
 @{
     IPagedList pagedInfo = (IPagedList)ViewData["PagedList"];
 }
@@ -28,36 +28,33 @@
     </div>
     <div class="card-body">
         <div class="dataTable-wrapper dataTable-loading no-footer sortable searchable fixed-columns">
-            <form asp-action="Index" asp-controller="StudentManager" method="get">
+            <form asp-action="Index" asp-controller="FacultyStaffManager" method="get">
                 <input type="hidden" name="page" value="1" />
                 <input type="hidden" name="orderBy" value="@ViewData["OrderBy"]" />
                 <input type="hidden" name="orderOptions" value="@ViewData["OrderOptions"]" />
                 <div class="dataTable-top">
                     <div class="dataTable-dropdown">
                         <label>
-                                <select class="dataTable-selector" name="pageSize" onchange="this.form.submit();">
-                                    @for (int i = 5; i <= 50; i++)
+                            <select class="dataTable-selector" name="pageSize" onchange="this.form.submit();">
+                                @for (int i = 5; i <= 50; i++)
+                                {
+                                    if (i == pagedInfo.PageSize)
                                     {
-                                        if (i == pagedInfo.PageSize)
-                                        {
-                                            <option value="@i" selected>@i</option>
-                                        }
-                                        else
-                                        {
-                                            <option value="@i">@i</option>
-                                        }
+                                        <option value="@i" selected>@i</option>
                                     }
-                                </select> dòng trên 1 trang
+                                    else
+                                    {
+                                        <option value="@i">@i</option>
+                                    }
+                                }
+                            </select> dòng trên 1 trang
 
-                        
+
                         </label>
-                    </div>
-                    <div class="dataTable">
-                        @Html.DropDownList("Id",(IEnumerable<SelectListItem>)ViewData["StudentList"], htmlAttributes: new { @class = "form-control" })
                     </div>
                     <div class="dataTable-search">
                         <input class="dataTable-input" placeholder="Tìm kiếm..." type="text" name="keyword" value="@ViewData["Keyword"]">
-                        </div>
+                    </div>
                 </div>
             </form>
             <div class="dataTable-container">
@@ -71,7 +68,7 @@
                                 <a href="#" class="dataTable-sorter">ID</a>
                             </th>
                             <th data-sortable="">
-                                <a href="#" class="dataTable-sorter">@Html.DisplayNameFor(model => model.Name)</a>
+                                <a href="#" class="dataTable-sorter">@Html.DisplayNameFor(model => model.FullName)</a>
                             </th>
                             <th data-sortable="">
                                 <a href="#" class="dataTable-sorter">@Html.DisplayNameFor(model => model.Phone)</a>
@@ -89,7 +86,7 @@
                         @{
                             int count = 1;
                         }
-                        @foreach (StudentOutput student in (IEnumerable<StudentOutput>)ViewData["PagedList"])
+                        @foreach (FacultyStaffOutput student in (IEnumerable<FacultyStaffOutput>)ViewData["PagedList"])
                         {
                             <tr>
                                 <td>
@@ -99,7 +96,7 @@
                                     @student.Id
                                 </td>
                                 <td>
-                                    @student.Name
+                                    @student.FullName
                                 </td>
                                 <td>
                                     @student.Phone
@@ -108,14 +105,14 @@
                                     @student.Email
                                 </td>
                                 <td class="project-actions text-right">
-                                    <a class="btn btn-success btn-sm" asp-action="Details" asp-controller="StudentManager" asp-route-id="@student.Id">
+                                    <a class="btn btn-success btn-sm" asp-action="Details" asp-controller="FacultyStaffManager" asp-route-id="@student.Id">
                                         <i class="fas fa-folder"></i> Chi tiết
                                     </a>
-                                    <a class="btn btn-primary btn-sm" asp-action="Edit" asp-controller="StudentManager" asp-route-id="@student.Id">
+                                    <a class="btn btn-primary btn-sm" asp-action="Edit" asp-controller="FacultyStaffManager" asp-route-id="@student.Id">
                                         <i class="fas fa-folder"></i> Sửa
                                     </a>
                                     <button type="submit" form="deleteStudent_@count" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i> Xóa</button>
-                                    <form asp-action="Delete" asp-controller="StudentManager" asp-route-id="@student.Id" id="deleteStudent_@count">
+                                    <form asp-action="Delete" asp-controller="FacultyStaffManager" asp-route-id="@student.Id" id="deleteStudent_@count">
                                     </form>
                                 </td>
                             </tr>
@@ -129,25 +126,25 @@
                 <nav class="dataTable-pagination">
                     <ul class="dataTable-pagination-list">
                         @Html.PagedListPager(
-                            (IPagedList)ViewData["PagedList"], 
-                            p => Url.Action("Index", new { 
-                                page = p, 
-                                pageSize = pagedInfo.PageSize,
-                                orderBy = @ViewData["OrderBy"],
-                                orderOptions = @ViewData["OrderOptions"],
-                                keyword = @ViewData["Keyword"]
-                            }),
-                            PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing(new PagedListRenderOptions
-                            {
-                                LiElementClasses = new string[] { "page-item" },
-                                PageClasses = new string[] { "page-link" }
-                            },
-                            ajaxOptions: new AjaxOptions
-                            {
-                                UpdateTargetId = "dataTable",
-                                InsertionMode = InsertionMode.Replace,
-                                HttpMethod = "GET"
-                            }))
+                        (IPagedList)ViewData["PagedList"],
+                        p => Url.Action("Index", new {
+                        page = p,
+                        pageSize = pagedInfo.PageSize,
+                        orderBy = @ViewData["OrderBy"],
+                        orderOptions = @ViewData["OrderOptions"],
+                        keyword = @ViewData["Keyword"]
+                        }),
+                        PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing(new PagedListRenderOptions
+                        {
+                        LiElementClasses = new string[] { "page-item" },
+                        PageClasses = new string[] { "page-link" }
+                        },
+                        ajaxOptions: new AjaxOptions
+                        {
+                        UpdateTargetId = "dataTable",
+                        InsertionMode = InsertionMode.Replace,
+                        HttpMethod = "GET"
+                        }))
                     </ul>
                 </nav>
 

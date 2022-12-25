@@ -43,6 +43,7 @@ namespace GraduateThesis.Repository.BLL.Implements
 
         public ISpecializationRepository SpecializationRepository => new SpecializationRepository(_context);
 
+        public IFacultyStaffRoleRepository FacultyStaffRoleRepository =>  new FacultyStaffRoleRepository(_context);
 
         protected virtual void Dispose(bool disposing)
         {
