@@ -1,13 +1,22 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace GraduateThesis.Repository.DTO
 {
     public class ThesisInput
     {
+        [Display(Name = "Mã khóa luận")]
         public string Id { get; set; }
+
+        [Display(Name = "Tên khóa luận")]
         public string Name { get; set; }
+
+        [Display(Name = "Các mô tả, yêu cầu")]
         public string Description { get; set; }
+
+        [Display(Name = "Số sinh viên tối đa")]
         public int MaxStudentNumber { get; set; }
+
         public string DocumentFile { get; set; }
         public string PresentationFile { get; set; }
         public string PdfFile { get; set; }
@@ -26,6 +35,8 @@ namespace GraduateThesis.Repository.DTO
         public DateTime DateFrom { get; set; }
         public DateTime DateTo { get; set; }
         public string LectureId { get; set; }
+
+        [Display(Name = "Học kỳ")]
         public int Semester { get; set; }
         public string ThesisGroupId { get; set; }
     }

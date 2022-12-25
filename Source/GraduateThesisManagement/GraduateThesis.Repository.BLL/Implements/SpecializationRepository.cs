@@ -3,6 +3,7 @@ using GraduateThesis.Models;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DAL;
 using GraduateThesis.Repository.DTO;
+using NPOI.SS.UserModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,13 +14,13 @@ namespace GraduateThesis.Repository.BLL.Implements
 {
     public class SpecializationRepository : ISpecializationRepository
     {
-        private HUFI_graduatethesisContext _context;
-        private GenericRepository<HUFI_graduatethesisContext, Specialization, SpecializationInput, SpecializationOutput> _genericRepository;
+        private HufiGraduateThesisContext _context;
+        private GenericRepository<HufiGraduateThesisContext, Specialization, SpecializationInput, SpecializationOutput> _genericRepository;
 
-        internal SpecializationRepository(HUFI_graduatethesisContext context)
+        internal SpecializationRepository(HufiGraduateThesisContext context)
         {
             _context = context;
-            _genericRepository = new GenericRepository<HUFI_graduatethesisContext, Specialization, SpecializationInput, SpecializationOutput>(context, context.Specializations);
+            _genericRepository = new GenericRepository<HufiGraduateThesisContext, Specialization, SpecializationInput, SpecializationOutput>(context, context.Specializations);
 
             ConfigureIncludes();
             ConfigureSelectors();
@@ -84,6 +85,17 @@ namespace GraduateThesis.Repository.BLL.Implements
             throw new NotImplementedException();
         }
 
+        public IWorkbook ExportToSpreadsheet(SpreadsheetTypeOptions spreadsheetTypeOptions, string sheetName, string[] includeProperties)
+        {
+            return _genericRepository.ExportToSpreadsheet(spreadsheetTypeOptions, sheetName, includeProperties);
+        }
+
+        public async Task<IWorkbook> ExportToSpreadsheetAsync(SpreadsheetTypeOptions spreadsheetTypeOptions, string sheetName, string[] includeProperties)
+        {
+            return await _genericRepository
+                .ExportToSpreadsheetAsync(spreadsheetTypeOptions, sheetName, includeProperties);
+        }
+
         public DataResponse ForceDelete(string id)
         {
             throw new NotImplementedException();
@@ -122,6 +134,7 @@ namespace GraduateThesis.Repository.BLL.Implements
         {
             return await _genericRepository.GetPaginationAsync(page, pageSize, orderBy, orderOptions, keyword);
         }
+
         public DataResponse<SpecializationOutput> Update(string id, SpecializationInput input)
         {
             throw new NotImplementedException();

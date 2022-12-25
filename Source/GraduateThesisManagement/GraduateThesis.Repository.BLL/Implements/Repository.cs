@@ -8,13 +8,13 @@ namespace GraduateThesis.Repository.BLL.Implements
 {
     public class Repository : IRepository
     {
-        private HUFI_graduatethesisContext _context;
+        private HufiGraduateThesisContext _context;
 
         public Repository(Action<DbContextOptionsBuilder> optionsAction)
         {
-            DbContextOptionsBuilder<HUFI_graduatethesisContext> dbContextOptionsBuilder = new DbContextOptionsBuilder<HUFI_graduatethesisContext>();
+            DbContextOptionsBuilder<HufiGraduateThesisContext> dbContextOptionsBuilder = new DbContextOptionsBuilder<HufiGraduateThesisContext>();
             optionsAction.Invoke(dbContextOptionsBuilder);
-            _context = new HUFI_graduatethesisContext(dbContextOptionsBuilder.Options);
+            _context = new HufiGraduateThesisContext(dbContextOptionsBuilder.Options);
         }
 
         private bool disposedValue;

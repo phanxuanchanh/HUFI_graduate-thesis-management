@@ -3,6 +3,7 @@ using GraduateThesis.Models;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DAL;
 using GraduateThesis.Repository.DTO;
+using NPOI.SS.UserModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,13 +14,13 @@ namespace GraduateThesis.Repository.BLL.Implements
 {
     public class FacultyRepository : IFacultyRepository
     {
-        private HUFI_graduatethesisContext context;
-        private GenericRepository<HUFI_graduatethesisContext, Faculty, FacultyInput, FacultyOutput> _genericRepository;
+        private HufiGraduateThesisContext context;
+        private GenericRepository<HufiGraduateThesisContext, Faculty, FacultyInput, FacultyOutput> _genericRepository;
 
-        public FacultyRepository(HUFI_graduatethesisContext context)
+        public FacultyRepository(HufiGraduateThesisContext context)
         {
             this.context = context;
-            _genericRepository = new GenericRepository<HUFI_graduatethesisContext, Faculty, FacultyInput, FacultyOutput>(context, context.Faculties);
+            _genericRepository = new GenericRepository<HufiGraduateThesisContext, Faculty, FacultyInput, FacultyOutput>(context, context.Faculties);
 
             ConfigureIncludes();
             ConfigureSelectors();
@@ -87,6 +88,17 @@ namespace GraduateThesis.Repository.BLL.Implements
         public async Task<DataResponse<FacultyOutput>> CreateAsync(FacultyInput input)
         {
             return await _genericRepository.CreateAsync(input, GenerateUIDOptions.ShortUID);
+        }
+
+        public IWorkbook ExportToSpreadsheet(SpreadsheetTypeOptions spreadsheetTypeOptions, string sheetName, string[] includeProperties)
+        {
+            return _genericRepository.ExportToSpreadsheet(spreadsheetTypeOptions, sheetName, includeProperties);
+        }
+
+        public async Task<IWorkbook> ExportToSpreadsheetAsync(SpreadsheetTypeOptions spreadsheetTypeOptions, string sheetName, string[] includeProperties)
+        {
+            return await _genericRepository
+                .ExportToSpreadsheetAsync(spreadsheetTypeOptions, sheetName, includeProperties);
         }
 
         public DataResponse ForceDelete(string id)

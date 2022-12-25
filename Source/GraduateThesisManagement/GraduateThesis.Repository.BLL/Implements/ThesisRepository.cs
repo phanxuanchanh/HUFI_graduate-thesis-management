@@ -3,6 +3,7 @@ using GraduateThesis.Models;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DAL;
 using GraduateThesis.Repository.DTO;
+using NPOI.SS.UserModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,13 +14,13 @@ namespace GraduateThesis.Repository.BLL.Implements
 {
     public class ThesisRepository : IThesisRepository
     {
-        private HUFI_graduatethesisContext _context;
-        private GenericRepository<HUFI_graduatethesisContext, Thesis, ThesisInput, ThesisOutput> _genericRepository;
+        private HufiGraduateThesisContext _context;
+        private GenericRepository<HufiGraduateThesisContext, Thesis, ThesisInput, ThesisOutput> _genericRepository;
 
-        internal ThesisRepository(HUFI_graduatethesisContext context)
+        internal ThesisRepository(HufiGraduateThesisContext context)
         {
             _context = context;
-            _genericRepository = new GenericRepository<HUFI_graduatethesisContext, Thesis, ThesisInput, ThesisOutput>(context, context.Theses);
+            _genericRepository = new GenericRepository<HufiGraduateThesisContext, Thesis, ThesisInput, ThesisOutput>(context, context.Theses);
 
             ConfigureIncludes();
             ConfigureSelectors();
@@ -113,6 +114,17 @@ namespace GraduateThesis.Repository.BLL.Implements
         public async Task<DataResponse<ThesisOutput>> CreateAsync(ThesisInput input)
         {
             return await _genericRepository.CreateAsync(input, GenerateUIDOptions.ShortUID);
+        }
+
+        public IWorkbook ExportToSpreadsheet(SpreadsheetTypeOptions spreadsheetTypeOptions, string sheetName, string[] includeProperties)
+        {
+            return _genericRepository.ExportToSpreadsheet(spreadsheetTypeOptions, sheetName, includeProperties);
+        }
+
+        public async Task<IWorkbook> ExportToSpreadsheetAsync(SpreadsheetTypeOptions spreadsheetTypeOptions, string sheetName, string[] includeProperties)
+        {
+            return await _genericRepository
+                .ExportToSpreadsheetAsync(spreadsheetTypeOptions, sheetName, includeProperties);
         }
 
         public DataResponse ForceDelete(string id)

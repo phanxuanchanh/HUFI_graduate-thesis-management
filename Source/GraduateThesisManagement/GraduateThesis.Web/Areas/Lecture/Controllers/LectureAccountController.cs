@@ -2,27 +2,28 @@
 using GraduateThesis.Common.WebAttributes;
 using GraduateThesis.Generics;
 using GraduateThesis.Models;
+using GraduateThesis.Repository.BLL.Implements;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DTO;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
-namespace GraduateThesis.Web.Areas.Student.Controllers
+namespace GraduateThesis.Web.Areas.Lecture.Controllers
 {
-    [Area("Student")]
-    [Route("student/account")]
-    public class StudentAccountController : WebControllerBase
+    [Area("Lecture")]
+    [Route("lecture/account")]
+    public class LectureAccountController : WebControllerBase
     {
-        private IStudentRepository _studentRepository;
+        private IFacultyStaffRepository _facultyStaffRepository;
 
-        public StudentAccountController(IRepository repository)
+        public LectureAccountController(IRepository repository)
         {
-            _studentRepository = repository.StudentRepository;
+            _facultyStaffRepository = repository.FacultyStaffRepository;
         }
 
         [Route("sign-in-view")]
         [HttpGet]
-        [PageName(Name = "Trang đăng nhập dành cho sinh viên")]
+        [PageName(Name = "Trang đăng nhập dành cho giảng viên")]
         public IActionResult LoadSignInView()
         {
             return View(new SignInModel());
@@ -40,21 +41,21 @@ namespace GraduateThesis.Web.Areas.Student.Controllers
                     return RedirectToAction("LoadSignInView");
                 }
 
-                SignInResultModel signInResultModel = await _studentRepository.SignInAsync(signInModel);
+                SignInResultModel signInResultModel = await _facultyStaffRepository.SignInAsync(signInModel);
 
                 if (signInResultModel.Status == SignInStatus.Success)
                 {
-                    StudentOutput student = await _studentRepository.GetAsync(signInModel.Code);
+                    FacultyStaffOutput facultyStaff = await _facultyStaffRepository.GetAsync(signInModel.Code);
                     string accountSession = JsonConvert.SerializeObject(new AccountSession
                     {
-                        AccountModel = student,
-                        Role = "Student",
+                        AccountModel = facultyStaff,
+                        Role = facultyStaff.FacultyStaffRole.Name,
                         LastSignInTime = DateTime.Now
                     });
 
                     HttpContext.Session.SetString("account-session", accountSession);
 
-                    return RedirectToAction("Index", "StudentThesis");
+                    return RedirectToAction("Index", "LectureDashboard");
                 }
 
                 AddTempData(signInResultModel);
@@ -68,7 +69,7 @@ namespace GraduateThesis.Web.Areas.Student.Controllers
 
         [Route("forgot-password-view")]
         [HttpGet]
-        [PageName(Name = "Trang lấy lại mật khẩu sinh viên")]
+        [PageName(Name = "Lấy lại mật khẩu")]
         public IActionResult ForgotPasswordView()
         {
             return View();

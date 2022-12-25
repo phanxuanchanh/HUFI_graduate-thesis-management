@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace GraduateThesis.Web.Areas.Student.ViewComponents
+namespace GraduateThesis.Web.Areas.Lecture.ViewComponents
 {
-    [ViewComponent(Name = "StudentLayout_HeadElement")]
+    [ViewComponent(Name = "LectureLayout_HeadElement")]
     public class HeadElementViewComponent : ViewComponent
     {
         public HeadElementViewComponent()

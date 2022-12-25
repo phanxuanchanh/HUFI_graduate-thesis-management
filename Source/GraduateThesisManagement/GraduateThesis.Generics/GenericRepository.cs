@@ -2,8 +2,14 @@
 using GraduateThesis.ExtensionMethods;
 using GraduateThesis.Models;
 using Microsoft.EntityFrameworkCore;
+using NPOI.HSSF.UserModel;
+using NPOI.OpenXmlFormats.Dml;
+using NPOI.OpenXmlFormats.Spreadsheet;
+using NPOI.SS.UserModel;
+using NPOI.XSSF.UserModel;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Linq.Expressions;
@@ -11,9 +17,18 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Z.EntityFramework.Extensions;
 
 namespace GraduateThesis.Generics
 {
+    /// <summary>
+    /// Author: phanxuanchanh.com (phanchanhvn)
+    /// </summary>
+    /// <typeparam name="TContext"></typeparam>
+    /// <typeparam name="TEntity"></typeparam>
+    /// <typeparam name="TInput"></typeparam>
+    /// <typeparam name="TOutput"></typeparam>
+    
     public class GenericRepository<TContext, TEntity, TInput, TOutput>
         where TContext : class
         where TEntity : class
@@ -71,7 +86,7 @@ namespace GraduateThesis.Generics
                 _navigationPropertyPaths = navigationPropertyPaths;
         }
 
-        private string GetWhereExpressionForPagination(string prefix, string keyword)
+        private string GetWhereExpForPagination(string prefix, string keyword)
         {
             StringBuilder expStringBuilder = new StringBuilder($"{prefix} => (");
             foreach(PropertyInfo property in typeof(TEntity).GetProperties())
@@ -82,6 +97,19 @@ namespace GraduateThesis.Generics
 
             string expression = expStringBuilder.ToString().TrimEnd(' ').TrimEnd('|').TrimEnd('|');
             return $"{expression}) && {prefix}.IsDeleted == false";
+        }
+
+        private string GetWhereExpForConditionalPagination(string prefix, string condition, string keyword)
+        {
+            StringBuilder expStringBuilder = new StringBuilder($"{prefix} => (");
+            foreach (PropertyInfo property in typeof(TEntity).GetProperties())
+            {
+                if (property.PropertyType == typeof(string))
+                    expStringBuilder.Append($"{prefix}.{property.Name}.Contains(\"{keyword}\") || ");
+            }
+
+            string expression = expStringBuilder.ToString().TrimEnd(' ').TrimEnd('|').TrimEnd('|');
+            return $"{expression}) && {prefix}.{condition} && {prefix}.IsDeleted == false";
         }
 
         private string GetOrderByForPagination(string prefix, string propertyName)
@@ -103,16 +131,16 @@ namespace GraduateThesis.Generics
             if (string.IsNullOrEmpty(orderBy) && string.IsNullOrEmpty(keyword))
             {
                 totalItemCount = _dbSet.Count();
-                queryable = queryable.Where(GetWhereExpressionForPagination("p", keyword))
+                queryable = queryable.Where(GetWhereExpForPagination("p", keyword))
                         .OrderBy(GetOrderByForPagination("p", "Id"));
             }
 
             if (!string.IsNullOrEmpty(orderBy) && !string.IsNullOrEmpty(keyword))
             {
-                totalItemCount = _dbSet.Where(GetWhereExpressionForPagination("p", keyword)).Count();
+                totalItemCount = _dbSet.Where(GetWhereExpForPagination("p", keyword)).Count();
                 if (orderOptions == OrderOptions.ASC)
                 {
-                    queryable = queryable.Where(GetWhereExpressionForPagination("p", keyword))
+                    queryable = queryable.Where(GetWhereExpForPagination("p", keyword))
                         .OrderBy(GetOrderByForPagination("p", orderBy));
                 }
                 else
@@ -122,7 +150,7 @@ namespace GraduateThesis.Generics
                         true,
                         GetOrderByForPagination("p", orderBy)
                     );
-                    queryable = queryable.Where(GetWhereExpressionForPagination("p", keyword))
+                    queryable = queryable.Where(GetWhereExpForPagination("p", keyword))
                         .OrderByDescending(orderExpression);
 
                 }     
@@ -148,8 +176,8 @@ namespace GraduateThesis.Generics
 
             if (!string.IsNullOrEmpty(keyword))
             {
-                totalItemCount = _dbSet.Where(GetWhereExpressionForPagination("p", keyword)).Count();
-                queryable = queryable.Where(GetWhereExpressionForPagination("p", keyword));
+                totalItemCount = _dbSet.Where(GetWhereExpForPagination("p", keyword)).Count();
+                queryable = queryable.Where(GetWhereExpForPagination("p", keyword));
             }
 
             List<TOutput> onePageOfData = queryable.Skip(n).Take(pageSize).Select(PaginationSelector).ToList();
@@ -172,16 +200,16 @@ namespace GraduateThesis.Generics
             if(string.IsNullOrEmpty(orderBy) && string.IsNullOrEmpty(keyword))
             {
                 totalItemCount = await _dbSet.CountAsync();
-                queryable = queryable.Where(GetWhereExpressionForPagination("p", keyword))
+                queryable = queryable.Where(GetWhereExpForPagination("p", keyword))
                         .OrderBy(GetOrderByForPagination("p", "Id"));
             }
 
             if (!string.IsNullOrEmpty(orderBy) && !string.IsNullOrEmpty(keyword))
             {
-                totalItemCount = await _dbSet.Where(GetWhereExpressionForPagination("p", keyword)).CountAsync();
+                totalItemCount = await _dbSet.Where(GetWhereExpForPagination("p", keyword)).CountAsync();
                 if (orderOptions == OrderOptions.ASC)
                 {
-                    queryable = queryable.Where(GetWhereExpressionForPagination("p", keyword))
+                    queryable = queryable.Where(GetWhereExpForPagination("p", keyword))
                         .OrderBy(GetOrderByForPagination("p", orderBy));
                 }
                 else
@@ -191,7 +219,7 @@ namespace GraduateThesis.Generics
                         true,
                         GetOrderByForPagination("p", orderBy)
                     );
-                    queryable = queryable.Where(GetWhereExpressionForPagination("p", keyword))
+                    queryable = queryable.Where(GetWhereExpForPagination("p", keyword))
                         .OrderByDescending(orderExpression);
 
                 }
@@ -216,9 +244,147 @@ namespace GraduateThesis.Generics
 
             if (!string.IsNullOrEmpty(keyword))
             {
-                totalItemCount = await _dbSet.Where(GetWhereExpressionForPagination("p", keyword)).CountAsync();
-                queryable = queryable.Where(GetWhereExpressionForPagination("p", keyword))
+                totalItemCount = await _dbSet.Where(GetWhereExpForPagination("p", keyword)).CountAsync();
+                queryable = queryable.Where(GetWhereExpForPagination("p", keyword))
                     .OrderBy(GetOrderByForPagination("p", "Id"));
+            }
+
+            List<TOutput> onePageOfData = await queryable.Skip(n).Take(pageSize).Select(PaginationSelector).ToListAsync();
+
+            return new Pagination<TOutput>
+            {
+                Page = page,
+                PageSize = pageSize,
+                TotalItemCount = totalItemCount,
+                Items = onePageOfData
+            };
+        }
+
+        public Pagination<TOutput> GetConditionalPagination(string condition, int page, int pageSize, string orderBy, OrderOptions orderOptions, string keyword)
+        {
+            int n = (page - 1) * pageSize;
+            int totalItemCount = 0;
+            IQueryable<TEntity> queryable = _dbSet.IncludeMultiple(_navigationPropertyPaths);
+
+            if (string.IsNullOrEmpty(orderBy) && string.IsNullOrEmpty(keyword))
+            {
+                totalItemCount = _dbSet.Count();
+                queryable = queryable.Where(GetWhereExpForConditionalPagination("p", condition, keyword))
+                        .OrderBy(GetOrderByForPagination("p", "Id"));
+            }
+
+            if (!string.IsNullOrEmpty(orderBy) && !string.IsNullOrEmpty(keyword))
+            {
+                totalItemCount = _dbSet.Where(GetWhereExpForConditionalPagination("p", condition, keyword)).Count();
+                if (orderOptions == OrderOptions.ASC)
+                {
+                    queryable = queryable.Where(GetWhereExpForConditionalPagination("p", condition, keyword))
+                        .OrderBy(GetOrderByForPagination("p", orderBy));
+                }
+                else
+                {
+                    Expression<Func<TEntity, object>> orderExpression = DynamicExpressionParser.ParseLambda<TEntity, object>(
+                        new ParsingConfig(),
+                        true,
+                        GetOrderByForPagination("p", orderBy)
+                    );
+                    queryable = queryable.Where(GetWhereExpForConditionalPagination("p", condition, keyword))
+                        .OrderByDescending(orderExpression);
+
+                }
+            }
+
+            if (!string.IsNullOrEmpty(orderBy))
+            {
+                if (orderOptions == OrderOptions.ASC)
+                {
+                    queryable = queryable.OrderBy(GetOrderByForPagination("p", orderBy));
+                }
+                else
+                {
+                    Expression<Func<TEntity, object>> orderExpression = DynamicExpressionParser.ParseLambda<TEntity, object>(
+                        new ParsingConfig(),
+                        true,
+                        GetOrderByForPagination("p", orderBy)
+                    );
+                    queryable = queryable.OrderByDescending(orderExpression);
+
+                }
+            }
+
+            if (!string.IsNullOrEmpty(keyword))
+            {
+                totalItemCount = _dbSet.Where(GetWhereExpForConditionalPagination("p", condition, keyword)).Count();
+                queryable = queryable.Where(GetWhereExpForConditionalPagination("p", condition, keyword));
+            }
+
+            List<TOutput> onePageOfData = queryable.Skip(n).Take(pageSize).Select(PaginationSelector).ToList();
+
+            return new Pagination<TOutput>
+            {
+                Page = page,
+                PageSize = pageSize,
+                TotalItemCount = totalItemCount,
+                Items = onePageOfData
+            };
+        }
+
+        public async Task<Pagination<TOutput>> GetConditionalPaginationAsync(string condition, int page, int pageSize, string orderBy, OrderOptions orderOptions, string keyword)
+        {
+            int n = (page - 1) * pageSize;
+            int totalItemCount = 0;
+            IQueryable<TEntity> queryable = _dbSet.IncludeMultiple(_navigationPropertyPaths);
+
+            if (string.IsNullOrEmpty(orderBy) && string.IsNullOrEmpty(keyword))
+            {
+                totalItemCount = await _dbSet.CountAsync();
+                queryable = queryable.Where(GetWhereExpForConditionalPagination("p", condition, keyword))
+                        .OrderBy(GetOrderByForPagination("p", "Id"));
+            }
+
+            if (!string.IsNullOrEmpty(orderBy) && !string.IsNullOrEmpty(keyword))
+            {
+                totalItemCount = await _dbSet.Where(GetWhereExpForConditionalPagination("p", condition, keyword)).CountAsync();
+                if (orderOptions == OrderOptions.ASC)
+                {
+                    queryable = queryable.Where(GetWhereExpForConditionalPagination("p", condition, keyword))
+                        .OrderBy(GetOrderByForPagination("p", orderBy));
+                }
+                else
+                {
+                    Expression<Func<TEntity, object>> orderExpression = DynamicExpressionParser.ParseLambda<TEntity, object>(
+                        new ParsingConfig(),
+                        true,
+                        GetOrderByForPagination("p", orderBy)
+                    );
+                    queryable = queryable.Where(GetWhereExpForConditionalPagination("p", condition, keyword))
+                        .OrderByDescending(orderExpression);
+
+                }
+            }
+
+            if (!string.IsNullOrEmpty(orderBy))
+            {
+                if (orderOptions == OrderOptions.ASC)
+                {
+                    queryable = queryable.OrderBy(GetOrderByForPagination("p", orderBy));
+                }
+                else
+                {
+                    Expression<Func<TEntity, object>> orderExpression = DynamicExpressionParser.ParseLambda<TEntity, object>(
+                        new ParsingConfig(),
+                        true,
+                        GetOrderByForPagination("p", orderBy)
+                    );
+                    queryable = queryable.OrderByDescending(orderExpression);
+
+                }
+            }
+
+            if (!string.IsNullOrEmpty(keyword))
+            {
+                totalItemCount = await _dbSet.Where(GetWhereExpForConditionalPagination("p", condition, keyword)).CountAsync();
+                queryable = queryable.Where(GetWhereExpForConditionalPagination("p", condition, keyword));
             }
 
             List<TOutput> onePageOfData = await queryable.Skip(n).Take(pageSize).Select(PaginationSelector).ToListAsync();
@@ -242,6 +408,30 @@ namespace GraduateThesis.Generics
         {
             return await _dbSet.Take(count).IncludeMultiple(_navigationPropertyPaths)
                 .Where("x => x.IsDeleted == false").Select(ListSelector).ToListAsync();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="condition">Example: name == 'abc' => x.name == 'abc' </param>
+        /// <param name="count"></param>
+        /// <returns></returns>
+        public List<TOutput> GetListByCondition(string condition, int count = 200)
+        {
+            return _dbSet.Take(count).IncludeMultiple(_navigationPropertyPaths)
+                .Where($"x => x.{condition} && x.IsDeleted == false").Select(ListSelector).ToList();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="condition">Example: name == 'abc' => x.name == 'abc' </param>
+        /// <param name="count"></param>
+        /// <returns></returns>
+        public async Task<List<TOutput>> GetListByConditionAsync(string condition, int count = 200)
+        {
+            return await _dbSet.Take(count).IncludeMultiple(_navigationPropertyPaths)
+                .Where($"x => x.{condition} && x.IsDeleted == false").Select(ListSelector).ToListAsync();
         }
 
         public TOutput GetById(object id)
@@ -305,8 +495,9 @@ namespace GraduateThesis.Generics
         public DataResponse<TOutput> Create(TInput input, GenerateUIDOptions generateUIDOptions)
         {
             TEntity entity = ToEntity(input);
+            Type entityType = entity.GetType();
 
-            PropertyInfo idPropertyInfo = entity.GetType().GetProperty("Id");
+            PropertyInfo idPropertyInfo = entityType.GetProperty("Id");
             if (idPropertyInfo == null)
                 return new DataResponse<TOutput>
                 {
@@ -320,6 +511,10 @@ namespace GraduateThesis.Generics
 
             if (id is string && generateUIDOptions == GenerateUIDOptions.MicrosoftUID)
                 idPropertyInfo.SetValue(entity, UID.GetUUID());
+
+            PropertyInfo createdAtPropertyInfo = entityType.GetProperty("CreatedAt");
+            if (createdAtPropertyInfo != null)
+                createdAtPropertyInfo.SetValue(entity, DateTime.Now);
 
             _dbSet.Add(entity);
 
@@ -339,8 +534,9 @@ namespace GraduateThesis.Generics
         public async Task<DataResponse<TOutput>> CreateAsync(TInput input, GenerateUIDOptions generateUIDOptions)
         {
             TEntity entity = ToEntity(input);
+            Type entityType = entity.GetType();
 
-            PropertyInfo idPropertyInfo = entity.GetType().GetProperty("Id");
+            PropertyInfo idPropertyInfo = entityType.GetProperty("Id");
             if (idPropertyInfo == null)
                 return new DataResponse<TOutput>
                 {
@@ -354,6 +550,10 @@ namespace GraduateThesis.Generics
 
             if (id is string && generateUIDOptions == GenerateUIDOptions.MicrosoftUID)
                 idPropertyInfo.SetValue(entity, UID.GetUUID());
+
+            PropertyInfo createdAtPropertyInfo = entityType.GetProperty("CreatedAt");
+            if (createdAtPropertyInfo != null)
+                createdAtPropertyInfo.SetValue(entity, DateTime.Now);
 
             _dbSet.Add(entity);
 
@@ -369,6 +569,81 @@ namespace GraduateThesis.Generics
                 Status = DataResponseStatus.Success,
                 Data = ToOutput(entity)
             };
+        }
+
+        public DataResponse BulkInsert(IEnumerable<TInput> input, GenerateUIDOptions generateUIDOptions)
+        {
+            DateTime currentDateTime = DateTime.Now;
+            
+            IEnumerable<TEntity> entities = input.Select(s => {
+                TEntity entity = ToEntity(s);
+                Type entityType = entity.GetType();
+
+                PropertyInfo idPropertyInfo = entityType.GetProperty("Id");
+                if (idPropertyInfo != null)
+                {
+                    object id = idPropertyInfo.GetValue(s, null);
+                    if (id is string && generateUIDOptions == GenerateUIDOptions.ShortUID)
+                        idPropertyInfo.SetValue(entity, UID.GetShortUID());
+
+                    if (id is string && generateUIDOptions == GenerateUIDOptions.MicrosoftUID)
+                        idPropertyInfo.SetValue(entity, UID.GetUUID());
+                }
+
+                PropertyInfo createdAtPropertyInfo = entityType.GetProperty("CreatedAt");
+                if (createdAtPropertyInfo != null)
+                    createdAtPropertyInfo.SetValue(entity, currentDateTime);
+
+                return entity;
+            });
+
+            _dbSet.BulkInsert(entities);
+
+            MethodInfo saveChangesMethodInfo = _contextType.GetMethod("BulkSaveChanges", new Type[] {  });
+            int affected = (int)saveChangesMethodInfo.Invoke(_context, null);
+
+            if (affected == 0)
+                return new DataResponse { Status = DataResponseStatus.Failed };
+
+            return new DataResponse { Status = DataResponseStatus.Success };
+        }
+
+        public async Task<DataResponse> BulkInsertAsync(IEnumerable<TInput> input, GenerateUIDOptions generateUIDOptions)
+        {
+            DateTime currentDateTime = DateTime.Now;
+
+            IEnumerable<TEntity> entities = input.Select(s => {
+                TEntity entity = ToEntity(s);
+                Type entityType = entity.GetType();
+
+                PropertyInfo idPropertyInfo = entityType.GetProperty("Id");
+                if (idPropertyInfo != null)
+                {
+                    object id = idPropertyInfo.GetValue(s, null);
+                    if (id is string && generateUIDOptions == GenerateUIDOptions.ShortUID)
+                        idPropertyInfo.SetValue(entity, UID.GetShortUID());
+
+                    if (id is string && generateUIDOptions == GenerateUIDOptions.MicrosoftUID)
+                        idPropertyInfo.SetValue(entity, UID.GetUUID());
+                }
+
+                PropertyInfo createdAtPropertyInfo = entityType.GetProperty("CreatedAt");
+                if (createdAtPropertyInfo != null)
+                    createdAtPropertyInfo.SetValue(entity, currentDateTime);
+
+                return entity;
+            });
+
+            await _dbSet.BulkInsertAsync(entities);
+
+            MethodInfo saveChangesMethodInfo = _contextType.GetMethod("BulkSaveChangesAsync", new Type[] { typeof(CancellationToken) });
+            Task<int> resultAsync = (Task<int>)saveChangesMethodInfo.Invoke(_context, new object[] { default(CancellationToken) });
+
+            int affected = await resultAsync;
+            if (affected == 0)
+                return new DataResponse<TOutput> { Status = DataResponseStatus.Failed };
+
+            return new DataResponse { Status = DataResponseStatus.Success };
         }
 
         #endregion
@@ -388,6 +663,10 @@ namespace GraduateThesis.Generics
                 if (entityPropertyInfo != null)
                     entityPropertyInfo.SetValue(entity_fromDb, inputProperty.GetValue(input));
             }
+
+            PropertyInfo updatedAtPropertyInfo = entityType.GetProperty("UpdatedAt");
+            if (updatedAtPropertyInfo != null)
+                updatedAtPropertyInfo.SetValue(entity_fromDb, DateTime.Now);
 
             MethodInfo saveChangesMethodInfo = _contextType.GetMethod("SaveChanges", new Type[] { })!;
             int affected = (int)saveChangesMethodInfo.Invoke(_context, null)!;
@@ -415,6 +694,10 @@ namespace GraduateThesis.Generics
                     entityPropertyInfo.SetValue(entity_fromDb, inputProperty.GetValue(input));
             }
 
+            PropertyInfo updatedAtPropertyInfo = entityType.GetProperty("UpdatedAt");
+            if (updatedAtPropertyInfo != null)
+                updatedAtPropertyInfo.SetValue(entity_fromDb, DateTime.Now);
+
             MethodInfo saveChangesMethodInfo = _contextType.GetMethod("SaveChangesAsync", new Type[] { typeof(CancellationToken) });
             Task<int> resultAsync = (Task<int>)saveChangesMethodInfo.Invoke(_context, new object[] { default(CancellationToken) });
 
@@ -429,7 +712,6 @@ namespace GraduateThesis.Generics
             };
         }
 
-
         #endregion
 
         #region delete records method
@@ -440,7 +722,8 @@ namespace GraduateThesis.Generics
             if (entity == null)
                 return new DataResponse { Status = DataResponseStatus.NotFound };
 
-            PropertyInfo isDeletedPropertyInfo = entity.GetType().GetProperty("IsDeleted");
+            Type entityType = entity.GetType();
+            PropertyInfo isDeletedPropertyInfo = entityType.GetProperty("IsDeleted");
             if (isDeletedPropertyInfo == null)
                 return new DataResponse<TOutput>
                 {
@@ -449,6 +732,10 @@ namespace GraduateThesis.Generics
                 };
 
             isDeletedPropertyInfo.SetValue(entity, true);
+
+            PropertyInfo deletedAtPropertyInfo = entityType.GetProperty("DeletedAt");
+            if (deletedAtPropertyInfo != null)
+                deletedAtPropertyInfo.SetValue(entity, DateTime.Now);
 
             MethodInfo saveChangesMethodInfo = _contextType.GetMethod("SaveChanges", new Type[] { })!;
             int affected = (int)saveChangesMethodInfo.Invoke(_context, null)!;
@@ -461,11 +748,12 @@ namespace GraduateThesis.Generics
 
         public async Task<DataResponse> BatchDeleteAsync(object id)
         {
-            TEntity entity = await _dbSet.FindAsync(id);
+            TEntity entity = _dbSet.Find(id);
             if (entity == null)
                 return new DataResponse { Status = DataResponseStatus.NotFound };
 
-            PropertyInfo isDeletedPropertyInfo = entity.GetType().GetProperty("IsDeleted");
+            Type entityType = entity.GetType();
+            PropertyInfo isDeletedPropertyInfo = entityType.GetProperty("IsDeleted");
             if (isDeletedPropertyInfo == null)
                 return new DataResponse<TOutput>
                 {
@@ -474,6 +762,10 @@ namespace GraduateThesis.Generics
                 };
 
             isDeletedPropertyInfo.SetValue(entity, true);
+
+            PropertyInfo deletedAtPropertyInfo = entityType.GetProperty("DeletedAt");
+            if (deletedAtPropertyInfo != null)
+                deletedAtPropertyInfo.SetValue(entity, DateTime.Now);
 
             MethodInfo saveChangesMethodInfo = _contextType.GetMethod("SaveChangesAsync", new Type[] { typeof(CancellationToken) });
             Task<int> resultAsync = (Task<int>)saveChangesMethodInfo.Invoke(_context, new object[] { default(CancellationToken) });
@@ -507,6 +799,142 @@ namespace GraduateThesis.Generics
         public async Task<int> CountAsync(Expression<Func<TEntity, bool>> where)
         {
             return await _dbSet.CountAsync(where);
+        }
+
+        #endregion
+
+        #region export to files
+
+        private ICellStyle SetDefaultCellStyle(IWorkbook workbook, bool isHeaderStyle)
+        {
+            ICellStyle cellStyle = workbook.CreateCellStyle();
+            IFont font = workbook.CreateFont();
+
+            font.FontName = "Time New Roman";
+            font.FontHeight = 30 * 20;
+            font.FontHeightInPoints = 14;
+
+            if (isHeaderStyle)
+                font.IsBold = true;
+
+            cellStyle.SetFont(font);
+
+            return cellStyle;
+        }
+
+        private void SetSheetHeader(ISheet sheet, ICellStyle cellStyle, string[] includeProperties)
+        {
+            IRow headerRow = sheet.CreateRow(0);
+
+            PropertyInfo[] outputProperties = typeof(TOutput).GetProperties();
+            int cellIndex = 0;
+            foreach (PropertyInfo propertyInfo in outputProperties)
+            {
+                if (includeProperties.Any(i => i == propertyInfo.Name))
+                {
+                    ICell cell = headerRow.CreateCell(cellIndex);
+                    DisplayAttribute displayAttribute = propertyInfo.GetCustomAttribute<DisplayAttribute>();
+                    if (displayAttribute == null)
+                        cell.SetCellValue(propertyInfo.Name);
+                    else
+                        cell.SetCellValue(displayAttribute.Name);
+
+                    cell.CellStyle = cellStyle;
+                    cellIndex++;
+                }
+            }
+
+            for (int i = 0; i < outputProperties.Length; i++)
+            {
+                sheet.AutoSizeColumn(i);
+            }
+        }
+
+        private void SetDataToSheet(ISheet sheet, ICellStyle cellStyle, List<TOutput> outputs, string[] includeProperties)
+        {
+            int rowIndex = 1;
+            int cellIndex = 0;
+            foreach (TOutput output in outputs)
+            {
+                IRow row = sheet.CreateRow(rowIndex);
+                PropertyInfo[] outputProperties = typeof(TOutput).GetProperties();
+                cellIndex = 0;
+                foreach (PropertyInfo propertyInfo in outputProperties)
+                {
+                    if (includeProperties.Any(i => i == propertyInfo.Name))
+                    {
+                        ICell cell = row.CreateCell(cellIndex);
+                        cell.CellStyle = cellStyle;
+                        SetCellValue(cell, propertyInfo.GetValue(output));
+
+                        cellIndex++;
+                    }
+                }
+
+                for (int i = 0; i < outputProperties.Length; i++)
+                {
+                    sheet.AutoSizeColumn(i);
+                }
+
+                rowIndex++;
+            }
+        }
+
+        private void SetCellValue(ICell cell, object value)
+        {
+            if (value.IsString())
+                cell.SetCellValue(value.ToString());
+            else if (value.IsBool())
+                cell.SetCellValue((bool)value);
+            else if (value.IsNumber())
+                cell.SetCellValue(value.ToString());
+            else
+                cell.SetCellValue(value.ToString());
+        }
+        
+        public IWorkbook ExportToSpreadsheet(SpreadsheetTypeOptions spreadsheetTypeOptions, string sheetName, string[] includeProperties)
+        {
+            List<TOutput> outputs = _dbSet
+                .IncludeMultiple(_navigationPropertyPaths).Select(ListSelector).ToList();
+
+            IWorkbook workbook;
+            if (spreadsheetTypeOptions == SpreadsheetTypeOptions.XLS)
+                workbook = new HSSFWorkbook();
+            else
+                workbook = new XSSFWorkbook();
+
+            ICellStyle headerCellStyle = SetDefaultCellStyle(workbook, true);
+            ICellStyle cellStyle = SetDefaultCellStyle(workbook, false);
+            ISheet sheet = workbook.CreateSheet(sheetName);
+
+            SetSheetHeader(sheet, headerCellStyle, includeProperties);
+            SetDataToSheet(sheet, cellStyle, outputs, includeProperties);
+            
+            return workbook;
+        }
+
+        public async Task<IWorkbook> ExportToSpreadsheetAsync(SpreadsheetTypeOptions spreadsheetTypeOptions, string sheetName, string[] includeProperties)
+        {
+            List<TOutput> outputs = await _dbSet
+                .IncludeMultiple(_navigationPropertyPaths).Select(ListSelector).ToListAsync();
+
+            IWorkbook workbook;
+            if (spreadsheetTypeOptions == SpreadsheetTypeOptions.XLS)
+                workbook = new HSSFWorkbook();
+            else
+                workbook = new XSSFWorkbook();
+
+            ICellStyle headerCellStyle = SetDefaultCellStyle(workbook, true);
+            ICellStyle cellStyle = SetDefaultCellStyle(workbook, false);
+            ISheet sheet = workbook.CreateSheet(sheetName);
+
+            await Task.Run(() =>
+            {
+                SetSheetHeader(sheet, headerCellStyle, includeProperties);
+                SetDataToSheet(sheet, cellStyle, outputs, includeProperties);
+            });
+
+            return workbook;
         }
 
         #endregion

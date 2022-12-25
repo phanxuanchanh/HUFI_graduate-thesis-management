@@ -3,6 +3,7 @@ using GraduateThesis.Models;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DAL;
 using GraduateThesis.Repository.DTO;
+using NPOI.SS.UserModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,13 +14,13 @@ namespace GraduateThesis.Repository.BLL.Implements
 {
     public class TrainingLevelRepository : ITrainingLevelRepository
     {
-        private HUFI_graduatethesisContext _context;
-        private GenericRepository<HUFI_graduatethesisContext, TrainingLevel, TrainingLevelInput, TrainingLevelOutput> _genericRepository;
+        private HufiGraduateThesisContext _context;
+        private GenericRepository<HufiGraduateThesisContext, TrainingLevel, TrainingLevelInput, TrainingLevelOutput> _genericRepository;
 
-        internal TrainingLevelRepository(HUFI_graduatethesisContext context)
+        internal TrainingLevelRepository(HufiGraduateThesisContext context)
         {
             _context = context;
-            _genericRepository = new GenericRepository<HUFI_graduatethesisContext, TrainingLevel, TrainingLevelInput, TrainingLevelOutput>(context, context.TrainingLevels);
+            _genericRepository = new GenericRepository<HufiGraduateThesisContext, TrainingLevel, TrainingLevelInput, TrainingLevelOutput>(context, context.TrainingLevels);
 
             ConfigureIncludes();
             ConfigureSelectors();
@@ -80,6 +81,17 @@ namespace GraduateThesis.Repository.BLL.Implements
         public Task<DataResponse<TrainingLevelOutput>> CreateAsync(TrainingLevelInput input)
         {
             throw new NotImplementedException();
+        }
+
+        public IWorkbook ExportToSpreadsheet(SpreadsheetTypeOptions spreadsheetTypeOptions, string sheetName, string[] includeProperties)
+        {
+            return _genericRepository.ExportToSpreadsheet(spreadsheetTypeOptions, sheetName, includeProperties);
+        }
+
+        public async Task<IWorkbook> ExportToSpreadsheetAsync(SpreadsheetTypeOptions spreadsheetTypeOptions, string sheetName, string[] includeProperties)
+        {
+            return await _genericRepository
+                .ExportToSpreadsheetAsync(spreadsheetTypeOptions, sheetName, includeProperties);
         }
 
         public DataResponse ForceDelete(string id)
