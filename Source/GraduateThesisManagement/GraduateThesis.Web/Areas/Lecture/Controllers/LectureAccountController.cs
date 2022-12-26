@@ -2,7 +2,6 @@
 using GraduateThesis.Common.WebAttributes;
 using GraduateThesis.Generics;
 using GraduateThesis.Models;
-using GraduateThesis.Repository.BLL.Implements;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DTO;
 using Microsoft.AspNetCore.Mvc;
@@ -12,6 +11,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
 {
     [Area("Lecture")]
     [Route("lecture/account")]
+    [HandleException]
     public class LectureAccountController : WebControllerBase
     {
         private IFacultyStaffRepository _facultyStaffRepository;
@@ -33,38 +33,31 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
         [HttpPost]
         public async Task<IActionResult> SignIn(SignInModel signInModel)
         {
-            try
+            if (!ModelState.IsValid)
             {
-                if (!ModelState.IsValid)
-                {
-                    AddTempData(SignInStatus.InvalidData);
-                    return RedirectToAction("LoadSignInView");
-                }
-
-                SignInResultModel signInResultModel = await _facultyStaffRepository.SignInAsync(signInModel);
-
-                if (signInResultModel.Status == SignInStatus.Success)
-                {
-                    FacultyStaffOutput facultyStaff = await _facultyStaffRepository.GetAsync(signInModel.Code);
-                    string accountSession = JsonConvert.SerializeObject(new AccountSession
-                    {
-                        AccountModel = facultyStaff,
-                        Role = facultyStaff.FacultyStaffRole.Name,
-                        LastSignInTime = DateTime.Now
-                    });
-
-                    HttpContext.Session.SetString("account-session", accountSession);
-
-                    return RedirectToAction("Index", "LectureDashboard");
-                }
-
-                AddTempData(signInResultModel);
+                AddTempData(SignInStatus.InvalidData);
                 return RedirectToAction("LoadSignInView");
             }
-            catch (Exception)
+
+            SignInResultModel signInResultModel = await _facultyStaffRepository.SignInAsync(signInModel);
+
+            if (signInResultModel.Status == SignInStatus.Success)
             {
-                return View(viewName: "_Error");
+                FacultyStaffOutput facultyStaff = await _facultyStaffRepository.GetAsync(signInModel.Code);
+                string accountSession = JsonConvert.SerializeObject(new AccountSession
+                {
+                    AccountModel = facultyStaff,
+                    Role = facultyStaff.FacultyStaffRole.Name,
+                    LastSignInTime = DateTime.Now
+                });
+
+                HttpContext.Session.SetString("account-session", accountSession);
+
+                return RedirectToAction("Index", "LectureDashboard");
             }
+
+            AddTempData(signInResultModel);
+            return RedirectToAction("LoadSignInView");
         }
 
         [Route("forgot-password-view")]

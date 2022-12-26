@@ -1,4 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using GraduateThesis.Common.Authorization;
+using GraduateThesis.Common.WebAttributes;
+using GraduateThesis.Repository.DTO;
+using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace GraduateThesis.Web.Areas.Student.ViewComponents
 {
@@ -10,6 +14,7 @@ namespace GraduateThesis.Web.Areas.Student.ViewComponents
 
         }
 
+        [AccountInfo(typeof(StudentOutput))]
         public IViewComponentResult Invoke()
         {
             return View();
