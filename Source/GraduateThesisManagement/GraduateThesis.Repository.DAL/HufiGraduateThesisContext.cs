@@ -23,7 +23,7 @@ public partial class HufiGraduateThesisContext : DbContext
 
     public virtual DbSet<FacultyStaff> FacultyStaffs { get; set; }
 
-    public virtual DbSet<FacultyStaffRole> FacultyStaffRoles { get; set; }
+    public virtual DbSet<AppRoles> AppRoles { get; set; }
 
     public virtual DbSet<ImplementationPlan> ImplementationPlans { get; set; }
 
@@ -256,7 +256,7 @@ public partial class HufiGraduateThesisContext : DbContext
                 .HasConstraintName("FK_FacultyStaffs_FacultyStaffRoles_ID ");
         });
 
-        modelBuilder.Entity<FacultyStaffRole>(entity =>
+        modelBuilder.Entity<AppRoles>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK_FacultyRoles_ID ");
 

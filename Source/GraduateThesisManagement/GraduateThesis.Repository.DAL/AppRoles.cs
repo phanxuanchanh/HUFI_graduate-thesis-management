@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace GraduateThesis.Repository.DAL;
 
-public partial class FacultyStaffRole
+public partial class AppRoles
 {
     public string Id { get; set; }
 

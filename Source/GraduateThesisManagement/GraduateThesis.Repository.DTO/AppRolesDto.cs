@@ -6,14 +6,14 @@ using System.Threading.Tasks;
 
 namespace GraduateThesis.Repository.DTO
 {
-    public class FacultyStaffRoleInput
+    public class AppRolesInput
     {
         public string Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
     }
 
-    public class FacultyStaffRoleOutput : FacultyStaffRoleInput
+    public class AppRolesOutput : AppRolesInput
     {
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }

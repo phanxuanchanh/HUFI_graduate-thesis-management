@@ -21,7 +21,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
 
         private IFacultyStaffRepository _facultyStaffRepository;
         private IFacultyRepository _facultyRepository;
-        private IFacultyStaffRoleRepository _facultyStaffRoleRepository;
+        private IAppRolesRepository _appRolesRepository;
 
 
 
@@ -29,7 +29,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
         {
             _facultyStaffRepository = repository.FacultyStaffRepository;
             _facultyRepository = repository.FacultyRepository;
-            _facultyStaffRoleRepository= repository.FacultyStaffRoleRepository;
+            _appRolesRepository= repository.AppRolesRepository;
 
         }
 
@@ -89,7 +89,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
             List<FacultyOutput> faculties = await _facultyRepository.GetListAsync();
             ViewData["FacultyList"] = new SelectList(faculties, "Id", "Name");
 
-            List<FacultyStaffRoleOutput> facultyStaffRoles = await _facultyStaffRoleRepository.GetListAsync();
+            List<AppRolesOutput> facultyStaffRoles = await _appRolesRepository.GetListAsync();
             ViewData["facultyStaffRolesList"] = new SelectList(facultyStaffRoles, "Id", "Name");
 
             AddViewData(DataResponseStatus.InvalidData);
@@ -105,7 +105,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
                 List<FacultyOutput> faculties = await _facultyRepository.GetListAsync();
                 ViewData["FacultyList"] = new SelectList(faculties, "Id", "Name");
 
-                List<FacultyStaffRoleOutput> facultyStaffRoles = await _facultyStaffRoleRepository.GetListAsync();
+                List<AppRolesOutput> facultyStaffRoles = await _appRolesRepository.GetListAsync();
                 ViewData["facultyStaffRolesList"] = new SelectList(facultyStaffRoles, "Id", "Name");
 
                 if (ModelState.IsValid)
@@ -135,7 +135,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
                 List<FacultyOutput> faculties = await _facultyRepository.GetListAsync();
                 ViewData["FacultyList"] = new SelectList(faculties, "Id", "Name");
 
-                List<FacultyStaffRoleOutput> facultyStaffRoles = await _facultyStaffRoleRepository.GetListAsync();
+                List<AppRolesOutput> facultyStaffRoles = await _appRolesRepository.GetListAsync();
                 ViewData["facultyStaffRolesList"] = new SelectList(facultyStaffRoles, "Id", "Name");
 
                 FacultyStaffOutput facultyStaffOutput = await _facultyStaffRepository.GetAsync(id);
@@ -160,7 +160,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
                 List<FacultyOutput> faculties = await _facultyRepository.GetListAsync();
                 ViewData["FacultyList"] = new SelectList(faculties, "Id", "Name");
 
-                List<FacultyStaffRoleOutput> facultyStaffRoles = await _facultyStaffRoleRepository.GetListAsync();
+                List<AppRolesOutput> facultyStaffRoles = await _appRolesRepository.GetListAsync();
                 ViewData["facultyStaffRolesList"] = new SelectList(facultyStaffRoles, "Id", "Name");
                 if (ModelState.IsValid)
                 {

@@ -12,15 +12,15 @@ using System.Threading.Tasks;
 
 namespace GraduateThesis.Repository.BLL.Implements
 {
-    public class FacultyStaffRoleRepository : IFacultyStaffRoleRepository
+    public class AppRolesRepository : IAppRolesRepository
     {
         private HufiGraduateThesisContext context;
-        private GenericRepository<HufiGraduateThesisContext, FacultyStaffRole, FacultyStaffRoleInput, FacultyStaffRoleOutput> _genericRepository;
+        private GenericRepository<HufiGraduateThesisContext, AppRoles, AppRolesInput, AppRolesOutput> _genericRepository;
 
-        public FacultyStaffRoleRepository(HufiGraduateThesisContext context)
+        public AppRolesRepository(HufiGraduateThesisContext context)
         {
             this.context = context;
-            _genericRepository = new GenericRepository<HufiGraduateThesisContext, FacultyStaffRole, FacultyStaffRoleInput, FacultyStaffRoleOutput>(context, context.FacultyStaffRoles);
+            _genericRepository = new GenericRepository<HufiGraduateThesisContext, AppRoles, AppRolesInput, AppRolesOutput>(context, context.AppRoles);
 
             ConfigureIncludes();
             ConfigureSelectors();
@@ -43,7 +43,7 @@ namespace GraduateThesis.Repository.BLL.Implements
 
         public void ConfigureSelectors()
         {
-            _genericRepository.PaginationSelector = s => new FacultyStaffRoleOutput
+            _genericRepository.PaginationSelector = s => new AppRolesOutput
             {
                 Id = s.Id,
                 Name = s.Name,
@@ -54,7 +54,7 @@ namespace GraduateThesis.Repository.BLL.Implements
             };
 
             _genericRepository.ListSelector = _genericRepository.PaginationSelector;
-            _genericRepository.SingleSelector = s => new FacultyStaffRoleOutput
+            _genericRepository.SingleSelector = s => new AppRolesOutput
             {
                 Id = s.Id,
                 Name = s.Name,
@@ -75,12 +75,12 @@ namespace GraduateThesis.Repository.BLL.Implements
             throw new NotImplementedException();
         }
 
-        public DataResponse<FacultyStaffRoleOutput> Create(FacultyStaffRoleInput input)
+        public DataResponse<AppRolesOutput> Create(AppRolesInput input)
         {
             throw new NotImplementedException();
         }
 
-        public Task<DataResponse<FacultyStaffRoleOutput>> CreateAsync(FacultyStaffRoleInput input)
+        public Task<DataResponse<AppRolesOutput>> CreateAsync(AppRolesInput input)
         {
             throw new NotImplementedException();
         }
@@ -105,43 +105,43 @@ namespace GraduateThesis.Repository.BLL.Implements
             throw new NotImplementedException();
         }
 
-        public FacultyStaffRoleOutput Get(string id)
+        public AppRolesOutput Get(string id)
         {
             return _genericRepository.GetById(id);
         }
 
-        public Task<FacultyStaffRoleOutput> GetAsync(string id)
+        public Task<AppRolesOutput> GetAsync(string id)
         {
             return _genericRepository.GetByIdAsync(id);
         }
 
-        public List<FacultyStaffRoleOutput> GetList(int count = 200)
+        public List<AppRolesOutput> GetList(int count = 200)
         {
             return _genericRepository.GetList(count);
         }
 
-        public Task<List<FacultyStaffRoleOutput>> GetListAsync(int count = 200)
+        public Task<List<AppRolesOutput>> GetListAsync(int count = 200)
         {
             return _genericRepository.GetListAsync(count);
         }
 
-        public Pagination<FacultyStaffRoleOutput> GetPagination(int page, int pageSize, string orderBy, OrderOptions orderOptions, string keyword)
+        public Pagination<AppRolesOutput> GetPagination(int page, int pageSize, string orderBy, OrderOptions orderOptions, string keyword)
         {
             return _genericRepository.GetPagination(page, pageSize, orderBy, orderOptions, keyword);
         }
 
-        public async Task<Pagination<FacultyStaffRoleOutput>> GetPaginationAsync(int page, int pageSize, string orderBy, OrderOptions orderOptions, string keyword)
+        public async Task<Pagination<AppRolesOutput>> GetPaginationAsync(int page, int pageSize, string orderBy, OrderOptions orderOptions, string keyword)
         {
             return await _genericRepository.GetPaginationAsync(page, pageSize, orderBy, orderOptions, keyword);
         }
 
 
-        public DataResponse<FacultyStaffRoleOutput> Update(string id, FacultyStaffRoleInput input)
+        public DataResponse<AppRolesOutput> Update(string id, AppRolesInput input)
         {
             throw new NotImplementedException();
         }
 
-        public Task<DataResponse<FacultyStaffRoleOutput>> UpdateAsync(string id, FacultyStaffRoleInput input)
+        public Task<DataResponse<AppRolesOutput>> UpdateAsync(string id, AppRolesInput input)
         {
             throw new NotImplementedException();
         }
