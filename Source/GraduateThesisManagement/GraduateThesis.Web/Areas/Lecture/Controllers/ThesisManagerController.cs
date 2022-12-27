@@ -299,5 +299,14 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
                 return View(viewName: "_Error", model: ex.Message);
             }
         }
+
+        [Route("import")]
+        [HttpGet]
+        [PageName(Name = "Import")]
+        public async Task<IActionResult> Import()
+        {
+                return View();
+        
+        }
     }
 }
