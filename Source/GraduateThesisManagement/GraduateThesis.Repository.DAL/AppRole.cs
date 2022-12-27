@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace GraduateThesis.Repository.DAL;
 
-public partial class Faculty
+public partial class AppRole
 {
     public string Id { get; set; }
 
@@ -19,9 +19,7 @@ public partial class Faculty
 
     public bool IsDeleted { get; set; }
 
-    public virtual AppUserRole AppUserRole { get; set; }
+    public virtual ICollection<AppUserRole> AppUserRoles { get; } = new List<AppUserRole>();
 
     public virtual ICollection<FacultyStaff> FacultyStaffs { get; } = new List<FacultyStaff>();
-
-    public virtual ICollection<StudentClass> StudentClasses { get; } = new List<StudentClass>();
 }

@@ -6,8 +6,7 @@ using GraduateThesis.Repository.DTO;
 using NPOI.SS.UserModel;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace GraduateThesis.Repository.BLL.Implements
@@ -128,6 +127,16 @@ namespace GraduateThesis.Repository.BLL.Implements
         public async Task<Pagination<ThesisCommitteeOutput>> GetPaginationAsync(int page, int pageSize, string orderBy, OrderOptions orderOptions, string keyword)
         {
             return await _genericRepository.GetPaginationAsync(page, pageSize, orderBy, orderOptions, keyword);
+        }
+
+        public DataResponse ImportFromSpreadsheet(Stream stream, SpreadsheetTypeOptions spreadsheetTypeOptions, string sheetName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<DataResponse> ImportFromSpreadsheetAsync(Stream stream, SpreadsheetTypeOptions spreadsheetTypeOptions, string sheetName)
+        {
+            throw new NotImplementedException();
         }
 
         public DataResponse<ThesisCommitteeOutput> Update(string id, ThesisCommitteeInput input)
