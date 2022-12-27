@@ -98,9 +98,9 @@ namespace GraduateThesis.Repository.BLL.Implements
             throw new NotImplementedException();
         }
 
-        public CommitteeMemberOutput Get(string id)
+        public async CommitteeMemberOutput Get(string id)
         {
-            return _genericRepository.GetById(id);
+            return _genericRepository.GetById("Id", id);
         }
 
         public Task<CommitteeMemberOutput> GetAsync(string id)
