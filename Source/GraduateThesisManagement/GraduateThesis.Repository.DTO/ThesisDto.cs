@@ -64,12 +64,12 @@ namespace GraduateThesis.Repository.DTO
 
         [Display(Name = "Từ ngày")]
         [Range(typeof(DateTime), "1/2/2004", "3/4/2004",
-        ErrorMessage = "chọn 1 hoặc 2)]
+        ErrorMessage = "chọn 1 hoặc 2")]
         public DateTime DateFrom { get; set; }
 
         [Display(Name = "Đến ngày")]
         [Range(typeof(DateTime), "1/2/2004", "3/4/2004",
-        ErrorMessage = "chọn 1 hoặc 2)]
+        ErrorMessage = "chọn 1 hoặc 2")]
         public DateTime DateTo { get; set; }
 
         public string LectureId { get; set; }
