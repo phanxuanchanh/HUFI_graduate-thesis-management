@@ -6,16 +6,16 @@ using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DTO;
 using GraduateThesis.WebExtensions;
 using Microsoft.AspNetCore.Mvc;
-using System;
 using System.ComponentModel.DataAnnotations;
-using System.Threading.Tasks;
 using X.PagedList;
 
 namespace GraduateThesis.Web.Areas.Student.Controllers
 {
     [Area("Student")]
     [Route("student/thesis")]
+    [HandleException]
     [WebAuthorize(AccountRole.Student)]
+    [AccountInfo(typeof(StudentOutput))]
     public class StudentThesisController : WebControllerBase
     {
         private IThesisRepository _thesisRepository;
@@ -40,26 +40,19 @@ namespace GraduateThesis.Web.Areas.Student.Controllers
         [WebAuthorize(AccountRole.Student)]
         public async Task<IActionResult> GetList(int page = 1, int pageSize = 10, string orderBy = "", string orderOptions = "ASC", string keyword = "")
         {
-            try
-            {
-                Pagination<ThesisOutput> pagination;
-                if (orderOptions == "ASC")
-                    pagination = await _thesisRepository.GetPaginationAsync(page, pageSize, orderBy, OrderOptions.ASC, keyword);
-                else
-                    pagination = await _thesisRepository.GetPaginationAsync(page, pageSize, orderBy, OrderOptions.ASC, keyword);
+            Pagination<ThesisOutput> pagination;
+            if (orderOptions == "ASC")
+                pagination = await _thesisRepository.GetPaginationAsync(page, pageSize, orderBy, OrderOptions.ASC, keyword);
+            else
+                pagination = await _thesisRepository.GetPaginationAsync(page, pageSize, orderBy, OrderOptions.ASC, keyword);
 
-                StaticPagedList<ThesisOutput> pagedList = pagination.ToStaticPagedList();
-                ViewData["PagedList"] = pagedList;
-                ViewData["OrderBy"] = orderBy;
-                ViewData["OrderOptions"] = orderOptions;
-                ViewData["Keyword"] = keyword;
+            StaticPagedList<ThesisOutput> pagedList = pagination.ToStaticPagedList();
+            ViewData["PagedList"] = pagedList;
+            ViewData["OrderBy"] = orderBy;
+            ViewData["OrderOptions"] = orderOptions;
+            ViewData["Keyword"] = keyword;
 
-                return View();
-            }
-            catch(Exception)
-            {
-                return View(viewName: "_Error");
-            }
+            return View();
         }
 
         [Route("details/{id}")]
@@ -68,34 +61,69 @@ namespace GraduateThesis.Web.Areas.Student.Controllers
         [WebAuthorize(AccountRole.Student)]
         public async Task<IActionResult> Details([Required] string id)
         {
-            try
-            {
-                ThesisOutput thesis = await _thesisRepository.GetAsync(id);
-                if (thesis == null)
-                    return RedirectToAction("GetList");
+            ThesisOutput thesis = await _thesisRepository.GetAsync(id);
+            if (thesis == null)
+                return RedirectToAction("GetList");
 
-                return View(thesis);
-            }
-            catch (Exception)
-            {
-                return View(viewName: "_Error");
-            }
+            return View(thesis);
+        }
+
+        [Route("check-thesis-available/{id}")]
+        [HttpGet]
+        [WebAuthorize(AccountRole.Student)]
+        public async Task<IActionResult> CheckThesisAvailable([Required] string id)
+        {
+            ThesisOutput thesis = await _thesisRepository.GetAsync(id);
+            if (thesis == null)
+                return Json(new DataResponse<ThesisOutput> { Status = DataResponseStatus.NotFound });
+
+            if(string.IsNullOrEmpty(thesis.ThesisGroupId))
+                return Json(new DataResponse<string> { Status = DataResponseStatus.Success, Data = "Available" });
+
+            return Json(new DataResponse<string> { Status = DataResponseStatus.Success, Data = "Unavailable" });
+        }
+
+        [Route("do-thesis-register/{studentId}/{thesisId}")]
+        [HttpGet]
+        [PageName(Name = "Đăng ký đề tài")]
+        [WebAuthorize(AccountRole.Student)]
+        public IActionResult DoThesisRegister([Required] string studentId, [Required] string thesisId)
+        {
+            return View(new ThesisRegisterInput());
         }
 
         [Route("do-thesis-register/{studentId}/{thesisId}")]
         [HttpPost]
         [PageName(Name = "Đăng ký đề tài")]
         [WebAuthorize(AccountRole.Student)]
-        public IActionResult DoThesisRegister([Required] string studentId, [Required] string thesisId)
+        public async Task<IActionResult> DoThesisRegister(ThesisRegisterInput thesisRegisterInput)
         {
-            try
+            if (ModelState.IsValid)
             {
-                return View();
+                DataResponse dataResponse = await _thesisRepository.DoThesisRegisterAsync(thesisRegisterInput);
+                AddTempData(dataResponse);
+                if(dataResponse.Status == DataResponseStatus.Success)
+                    return RedirectToAction("YourThesis");
+
+                AddViewData(dataResponse);
+                return View(thesisRegisterInput);
             }
-            catch (Exception)
-            {
-                return View(viewName: "_Error");
-            }
+
+            AddViewData(DataResponseStatus.InvalidData);
+            return View(thesisRegisterInput);
+        }
+
+        [Route("my-thesis/{thesisId}")]
+        [HttpPost]
+        [PageName(Name = "Đề tài khóa luận của bạn")]
+        [WebAuthorize(AccountRole.Student)]
+        public async Task<IActionResult> GetYourThesis([Required] string thesisId)
+        {
+            //StudentThesisOutput studentThesis = await _thesisRepository.GetStudentThesisAsync(thesisId);
+            //if (studentThesis == null)
+            //    return RedirectToAction("GetList");
+
+            return View();
         }
 
         [Route("submit-thesis")]
@@ -104,14 +132,9 @@ namespace GraduateThesis.Web.Areas.Student.Controllers
         [WebAuthorize(AccountRole.Student)]
         public IActionResult SubmitThesis()
         {
-            try
-            {
-                return View();
-            }
-            catch (Exception)
-            {
-                return View(viewName: "_Error");
-            }
+            return View();
         }
+
+        
     }
 }

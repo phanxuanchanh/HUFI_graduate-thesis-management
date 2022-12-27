@@ -1,11 +1,16 @@
-﻿using GraduateThesis.Generics;
+﻿using GraduateThesis.Common;
+using GraduateThesis.Generics;
 using GraduateThesis.Models;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DAL;
 using GraduateThesis.Repository.DTO;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
+using NPOI.OpenXmlFormats.Dml;
 using NPOI.SS.UserModel;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -114,6 +119,62 @@ namespace GraduateThesis.Repository.BLL.Implements
         public async Task<DataResponse<ThesisOutput>> CreateAsync(ThesisInput input)
         {
             return await _genericRepository.CreateAsync(input, GenerateUIDOptions.ShortUID);
+        }
+
+        public async Task<DataResponse> DoThesisRegisterAsync(ThesisRegisterInput thesisRegisterInput)
+        {
+            IDbContextTransaction dbContextTransaction = null;
+            try
+            {
+                dbContextTransaction = _context.Database.BeginTransaction();
+
+                Thesis thesis = await _context.Theses.FindAsync(thesisRegisterInput.ThesisId);
+                if (thesis == null)
+                    return new DataResponse { Status = DataResponseStatus.NotFound };
+
+                string groupId = UID.GetShortUID();
+
+                StudentThesisGroup studentThesisGroup = new StudentThesisGroup
+                {
+                    Id = groupId,
+                    Name = thesisRegisterInput.GroupName,
+                    Description = thesisRegisterInput.GroupDescription,
+                    StudentQuantity = 0
+                };
+
+                await _context.StudentThesisGroups.AddAsync(studentThesisGroup);
+                await _context.SaveChangesAsync();
+
+                thesis.ThesisGroupId = groupId;
+                await _context.SaveChangesAsync();
+
+                List<StudentThesisGroupDetail> thesisGroupDetails = new List<StudentThesisGroupDetail>();
+                string[] studentIdList = thesisRegisterInput.StudentIdList.Split(';');
+
+                foreach (string studentId in studentIdList)
+                {
+                    thesisGroupDetails.Add(new StudentThesisGroupDetail
+                    {
+                        StudentThesisGroupId = groupId,
+                        StudentId = studentId,
+                        IsApproved = false
+                    });
+                }
+
+                await _context.StudentThesisGroupDetails.AddRangeAsync(thesisGroupDetails);
+                await _context.SaveChangesAsync();
+
+                await dbContextTransaction.CommitAsync();
+
+                return new DataResponse { Status = DataResponseStatus.Success };
+            }
+            catch (Exception ex)
+            {
+                if (dbContextTransaction != null)
+                    await dbContextTransaction.RollbackAsync();
+
+                throw new Exception("The process was aborted because of an error!", ex);
+            }
         }
 
         public IWorkbook ExportToSpreadsheet(SpreadsheetTypeOptions spreadsheetTypeOptions, string sheetName, string[] includeProperties)

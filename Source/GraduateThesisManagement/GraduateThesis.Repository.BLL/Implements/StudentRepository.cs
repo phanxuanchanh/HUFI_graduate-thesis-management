@@ -4,15 +4,11 @@ using GraduateThesis.Models;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DAL;
 using GraduateThesis.Repository.DTO;
-using GraduateThesis.RepositoryPatterns;
-using MathNet.Numerics.Distributions;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
-using NPOI.OpenXmlFormats.Dml;
+using Microsoft.EntityFrameworkCore;
 using NPOI.SS.UserModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace GraduateThesis.Repository.BLL.Implements
@@ -202,6 +198,30 @@ namespace GraduateThesis.Repository.BLL.Implements
         public async Task<Pagination<StudentOutput>> GetPaginationAsync(int page, int pageSize, string orderBy, OrderOptions orderOptions, string keyword)
         {
             return await _genericRepository.GetPaginationAsync(page, pageSize, orderBy, orderOptions, keyword);
+        }
+
+        public async Task<StudentThesisOutput> GetStudentThesisAsync(string studentId)
+        {
+            //ThesisOutput thesisOutput = await _genericRepository.GetAsync("Id", thesisId);
+            //if (thesisOutput == null)
+            //    return null;
+
+            //StudentThesisGroupOutput studentThesisGroup = thesisOutput.StudentThesisGroup;
+
+            List<StudentOutput> students = await _context.StudentThesisGroupDetails
+                .Where(s => s.StudentId == studentId).Include(i => i.Student)
+                .Select(s => new StudentOutput
+                {
+                    Id = s.Student.Id,
+                    Name = s.Student.Name
+                }).ToListAsync();
+
+            return new StudentThesisOutput
+            {
+                //Thesis = thesisOutput,
+                //StudentThesisGroup = studentThesisGroup,
+                Students = students
+            };
         }
 
         public SignInResultModel SignIn(SignInModel signInModel)

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 
 namespace GraduateThesis.Repository.DTO
-{
+{ 
     public class StudentThesisGroupInput
     {
         [Display(Name = "Mã nhóm sinh viên")]
@@ -35,5 +35,4 @@ namespace GraduateThesis.Repository.DTO
 
         public ThesisOutput Thesis { get; set; }
     }
-
 }
