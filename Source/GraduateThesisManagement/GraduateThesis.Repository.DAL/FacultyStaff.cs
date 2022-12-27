@@ -51,7 +51,7 @@ public partial class FacultyStaff
 
     public virtual Faculty Faculty { get; set; }
 
-    public virtual FacultyStaffRole FacultyRole { get; set; }
+    public virtual AppRole FacultyRole { get; set; }
 
     public virtual ICollection<Thesis> Theses { get; } = new List<Thesis>();
 

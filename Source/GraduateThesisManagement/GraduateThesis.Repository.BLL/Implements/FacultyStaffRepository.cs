@@ -9,10 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using NPOI.SS.UserModel;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Dynamic.Core;
-using System.Linq.Expressions;
-using System.Text;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace GraduateThesis.Repository.BLL.Implements
@@ -166,7 +163,17 @@ namespace GraduateThesis.Repository.BLL.Implements
         public async Task<Pagination<FacultyStaffOutput>> GetPaginationByRoleIdAsync(string roleId, int page, int pageSize, string orderBy, OrderOptions orderOptions, string keyword)
         {
             return await _genericRepository
-                .GetConditionalPaginationAsync($"{nameof(FacultyStaff.FacultyRoleId)} == {roleId}", page, pageSize, orderBy, orderOptions, keyword);
+                .GetPaginationAsync(page, pageSize, orderBy, orderOptions, new string[] { $"{nameof(FacultyStaff.FacultyRoleId)} == {roleId}" }, keyword);
+        }
+
+        public DataResponse ImportFromSpreadsheet(Stream stream, SpreadsheetTypeOptions spreadsheetTypeOptions, string sheetName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<DataResponse> ImportFromSpreadsheetAsync(Stream stream, SpreadsheetTypeOptions spreadsheetTypeOptions, string sheetName)
+        {
+            throw new NotImplementedException();
         }
 
         public SignInResultModel SignIn(SignInModel signInModel)

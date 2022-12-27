@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using NPOI.SS.UserModel;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -222,6 +223,16 @@ namespace GraduateThesis.Repository.BLL.Implements
                 //StudentThesisGroup = studentThesisGroup,
                 Students = students
             };
+        }
+
+        public DataResponse ImportFromSpreadsheet(Stream stream, SpreadsheetTypeOptions spreadsheetTypeOptions, string sheetName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<DataResponse> ImportFromSpreadsheetAsync(Stream stream, SpreadsheetTypeOptions spreadsheetTypeOptions, string sheetName)
+        {
+            throw new NotImplementedException();
         }
 
         public SignInResultModel SignIn(SignInModel signInModel)
