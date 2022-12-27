@@ -368,7 +368,7 @@ namespace GraduateThesis.Generics
                 .Where($"x => x.{condition} && x.IsDeleted == false").Select(ListSelector).ToListAsync();
         }
 
-        public TOutput GetById(object id, string id1)
+        public TOutput GetById(object id)
         {
             TEntity entity = _dbSet.Find(id);
             if (entity == null)
