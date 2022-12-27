@@ -1,4 +1,5 @@
-﻿using GraduateThesis.Generics;
+﻿using GraduateThesis.Common.WebAttributes;
+using GraduateThesis.Generics;
 using GraduateThesis.Models;
 using GraduateThesis.Repository.BLL.Implements;
 using GraduateThesis.Repository.BLL.Interfaces;
@@ -7,6 +8,7 @@ using GraduateThesis.WebExtensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
+using System.Runtime.InteropServices;
 using X.PagedList;
 
 namespace GraduateThesis.Web.Areas.Lecture.Controllers
@@ -33,6 +35,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
 
         [Route("list")]
         [HttpGet]
+        [PageName(Name = "Danh sách giảng viên")]
         public async Task<IActionResult> Index(int page = 1, int pageSize = 10, string orderBy = null, string orderOptions = "ASC", string keyword = null)
         {
             try
@@ -49,8 +52,6 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
                 ViewData["OrderOptions"] = orderOptions;
                 ViewData["Keyword"] = keyword;
 
-                AddViewData(PageName);
-
                 return View();
             }
             catch (Exception ex)
@@ -62,6 +63,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
 
         [Route("details/{id}")]
         [HttpGet]
+        [PageName(Name = "Chỉnh sửa giảng viên")]
         public async Task<IActionResult> Details([Required] string id)
         {
             try
@@ -70,7 +72,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
                 if (facultyStaffOutput == null)
                     return RedirectToAction("Index");
 
-                AddViewData(PageName);
+               
                 return View(facultyStaffOutput);
             }
             catch
@@ -81,6 +83,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
 
         [Route("create")]
         [HttpGet]
+        [PageName(Name = "Tạo mới giảng viên")]
         public async Task<ActionResult> Create()
         {
             List<FacultyOutput> faculties = await _facultyRepository.GetListAsync();
@@ -89,7 +92,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
             List<FacultyStaffRoleOutput> facultyStaffRoles = await _facultyStaffRoleRepository.GetListAsync();
             ViewData["facultyStaffRolesList"] = new SelectList(facultyStaffRoles, "Id", "Name");
 
-            AddViewData(PageName);
+            AddViewData(DataResponseStatus.InvalidData);
             return View();
         }
 
@@ -108,12 +111,12 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
                 if (ModelState.IsValid)
                 {
                     DataResponse<FacultyStaffOutput> dataResponse = await _facultyStaffRepository.CreateAsync(facultyStaffInput);
-                    AddViewData(PageName, dataResponse);
+                    AddViewData(DataResponseStatus.InvalidData);
 
                     return View(facultyStaffInput);
                 }
 
-                AddViewData(PageName, DataResponseStatus.InvalidData);
+                AddViewData(DataResponseStatus.InvalidData);
                 return View(facultyStaffInput);
             }
             catch (Exception ex)
@@ -124,6 +127,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
 
         [Route("edit/{id}")]
         [HttpGet]
+        [PageName(Name = "Chỉnh sửa giảng viên")]
         public async Task<IActionResult> Edit([Required] string id)
         {
             try
@@ -138,7 +142,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
                 if (facultyStaffOutput == null)
                     return RedirectToAction("Index");
 
-                AddViewData(PageName);
+              AddViewData(DataResponseStatus.InvalidData);
                 return View(facultyStaffOutput);
             }
             catch (Exception ex)
@@ -166,11 +170,11 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
 
                     DataResponse<FacultyStaffOutput> dataResponse = await _facultyStaffRepository.UpdateAsync(id, facultyStaffInput);
 
-                    AddViewData(PageName, dataResponse);
+                    AddViewData(DataResponseStatus.InvalidData);
                     return View(facultyStaffInput);
                 }
 
-                AddViewData(PageName, DataResponseStatus.InvalidData);
+                AddViewData(DataResponseStatus.InvalidData);
                 return View(facultyStaffInput);
             }
             catch (Exception ex)
@@ -191,7 +195,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
 
                 DataResponse dataResponse = await _facultyStaffRepository.BatchDeleteAsync(id);
 
-                AddTempData(PageName, dataResponse);
+                AddTempData(dataResponse);
                 return RedirectToAction("Index");
             }
             catch (Exception ex)

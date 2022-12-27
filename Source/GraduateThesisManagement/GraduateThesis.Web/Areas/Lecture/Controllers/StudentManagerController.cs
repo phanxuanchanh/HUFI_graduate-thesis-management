@@ -37,7 +37,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
             try
             {
                 List<StudentOutput> students = await _studentRepository.GetListAsync();
-                ViewData["StudentList"] = new SelectList(students, "Id", "Address");
+                ViewData["StudentList"] = new SelectList(students, "Id", "Address"); 
 
                 Pagination<StudentOutput> pagination;
                 if (orderOptions == "ASC")

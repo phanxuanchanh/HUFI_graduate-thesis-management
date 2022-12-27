@@ -52,9 +52,18 @@
 
                         </label>
                     </div>
-                    <div class="dataTable-search">
-                        <input class="dataTable-input" placeholder="Tìm kiếm..." type="text" name="keyword" value="@ViewData["Keyword"]">
+                    <div class="card mb-4">
+                        <div class="card-body">
                         </div>
+                    </div>
+                    <div class="dataTable-search" style="display: flex">
+                        <select asp-items="@((SelectList)ViewData["thesesName"]!)" class="dataTable-input" style="margin-right: 5px"></select>
+                        <select asp-items="@((SelectList)ViewData["thesesMaxStudentNumber"]!)" class="dataTable-input" style="margin-right: 5px"></select>
+                        <select asp-items="@((SelectList)ViewData["thesesList"]!)" class="dataTable-input" style="margin-right: 5px"></select>
+                        <select asp-items="@((SelectList)ViewData["thesesList"]!)" class="dataTable-input" style="margin-right: 5px"></select>
+
+                        <input class="dataTable-input" placeholder="Tìm kiếm..." type="text" name="keyword" value="@ViewData["Keyword"]">
+                    </div>
                 </div>
             </form>
             <div class="dataTable-container">
@@ -75,6 +84,9 @@
                             </th>
                             <th data-sortable="">
                                 <a href="#" class="dataTable-sorter">@Html.DisplayNameFor(model => model.Semester)</a>
+                            </th>
+                            <th data-sortable="">
+                                <a href="#" class="dataTable-sorter">@Html.DisplayNameFor(model => model.IsApproved)</a>
                             </th>
                             <th data-sortable="">
                                 <a href="#" class="dataTable-sorter">Công cụ</a>
@@ -104,6 +116,9 @@
                                     <td>
                                     @thesis.Semester
                                     </td>
+                                <td>
+                                    @thesis.IsApproved
+                                </td>
                                     <td class="project-actions text-right">
                                                 <a class="btn btn-success btn-sm" asp-action="Details" asp-controller="ThesisManager" asp-route-id="@thesis.Id">
                                             <i class="fas fa-folder"></i> Chi tiết

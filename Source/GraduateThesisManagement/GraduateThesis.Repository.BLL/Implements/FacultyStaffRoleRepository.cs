@@ -3,6 +3,7 @@ using GraduateThesis.Models;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DAL;
 using GraduateThesis.Repository.DTO;
+using NPOI.SS.UserModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,13 +14,13 @@ namespace GraduateThesis.Repository.BLL.Implements
 {
     public class FacultyStaffRoleRepository : IFacultyStaffRoleRepository
     {
-        private HUFI_graduatethesisContext context;
-        private GenericRepository<HUFI_graduatethesisContext, FacultyStaffRole, FacultyStaffRoleInput, FacultyStaffRoleOutput> _genericRepository;
+        private HufiGraduateThesisContext context;
+        private GenericRepository<HufiGraduateThesisContext, FacultyStaffRole, FacultyStaffRoleInput, FacultyStaffRoleOutput> _genericRepository;
 
-        public FacultyStaffRoleRepository(HUFI_graduatethesisContext context)
+        public FacultyStaffRoleRepository(HufiGraduateThesisContext context)
         {
             this.context = context;
-            _genericRepository = new GenericRepository<HUFI_graduatethesisContext, FacultyStaffRole, FacultyStaffRoleInput, FacultyStaffRoleOutput>(context, context.FacultyStaffRoles);
+            _genericRepository = new GenericRepository<HufiGraduateThesisContext, FacultyStaffRole, FacultyStaffRoleInput, FacultyStaffRoleOutput>(context, context.FacultyStaffRoles);
 
             ConfigureIncludes();
             ConfigureSelectors();
@@ -80,6 +81,16 @@ namespace GraduateThesis.Repository.BLL.Implements
         }
 
         public Task<DataResponse<FacultyStaffRoleOutput>> CreateAsync(FacultyStaffRoleInput input)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IWorkbook ExportToSpreadsheet(SpreadsheetTypeOptions spreadsheetTypeOptions, string sheetName, string[] includeProperties)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IWorkbook> ExportToSpreadsheetAsync(SpreadsheetTypeOptions spreadsheetTypeOptions, string sheetName, string[] includeProperties)
         {
             throw new NotImplementedException();
         }

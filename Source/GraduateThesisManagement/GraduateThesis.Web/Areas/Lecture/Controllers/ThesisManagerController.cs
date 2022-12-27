@@ -14,6 +14,7 @@ using System.Net;
 using GraduateThesis.Common.File;
 using NPOI.HPSF;
 using System.Net.Mime;
+using GraduateThesis.Repository.BLL.Implements;
 
 namespace GraduateThesis.Web.Areas.Lecture.Controllers
 {
@@ -48,6 +49,13 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
         {
             try
             {
+                
+                List<ThesisOutput> thesesName = await _thesisRepository.GetListAsync();
+                ViewData["thesesName"] = new SelectList(thesesName, "Id", "Name");
+                List<ThesisOutput> thesesMaxStudentNumber = await _thesisRepository.GetListAsync();
+                ViewData["thesesMaxStudentNumber"] = new SelectList(thesesName, "Id", "MaxStudentNumber");
+                List<ThesisOutput> thesesSemester = await _thesisRepository.GetListAsync();
+                ViewData["thesesSemester"] = new SelectList(thesesName, "Id", "Semester");  
                 Pagination<ThesisOutput> pagination;
                 if (orderOptions == "ASC")
                     pagination = await _thesisRepository.GetPaginationAsync(page, pageSize, orderBy, OrderOptions.ASC, keyword);
