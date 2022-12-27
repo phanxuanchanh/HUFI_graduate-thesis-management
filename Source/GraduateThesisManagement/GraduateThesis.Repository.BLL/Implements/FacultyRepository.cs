@@ -113,7 +113,7 @@ namespace GraduateThesis.Repository.BLL.Implements
 
         public FacultyOutput Get(string id)
         {
-            return _genericRepository.GetById(id);
+            return _genericRepository.GetById("Id", id);
         }
 
         public Task<FacultyOutput> GetAsync(string id)
