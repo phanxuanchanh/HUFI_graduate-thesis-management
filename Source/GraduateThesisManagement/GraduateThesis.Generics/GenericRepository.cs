@@ -3,7 +3,6 @@ using GraduateThesis.ExtensionMethods;
 using GraduateThesis.Models;
 using Microsoft.EntityFrameworkCore;
 using NPOI.HSSF.UserModel;
-using NPOI.SS.Formula.Functions;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 using System;
@@ -14,10 +13,7 @@ using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace GraduateThesis.Generics
@@ -86,6 +82,11 @@ namespace GraduateThesis.Generics
         }
 
         #region get records method
+
+        private string GetWhereExpString(string prefix)
+        {
+            return $"{prefix}.IsDeleted == false";
+        }
 
         private string GetWhereExpString(string prefix, string[] conditions, string keyword)
         {
@@ -216,9 +217,9 @@ namespace GraduateThesis.Generics
         {
             IQueryable<TEntity> queryable = _dbSet.IncludeMultiple(_navigationPropertyPaths);
             if (!string.IsNullOrEmpty(keyword))
-            {
                 queryable = queryable.Where(GetWhereExpString("p", keyword));
-            }
+            else
+                queryable = queryable.Where(GetWhereExpString("p"));
 
             queryable = GetOrderedQueryable(queryable, orderBy, orderOptions);
 
@@ -229,9 +230,9 @@ namespace GraduateThesis.Generics
         {
             IQueryable<TEntity> queryable = _dbSet.IncludeMultiple(_navigationPropertyPaths);
             if (!string.IsNullOrEmpty(filterBy))
-            {
                 queryable = queryable.Where(GetWhereExpString("p", filterBy, filterValue));
-            }
+            else
+                queryable = queryable.Where(GetWhereExpString("p"));
 
             queryable = GetOrderedQueryable(queryable, orderBy, orderOptions);
 
