@@ -85,7 +85,7 @@ namespace GraduateThesis.Generics
 
         private string GetWhereExpString(string prefix)
         {
-            return $"{prefix}.IsDeleted == false";
+            return $"{prefix} => {prefix}.IsDeleted == false";
         }
 
         private string GetWhereExpString(string prefix, string[] conditions, string keyword)
@@ -482,7 +482,7 @@ namespace GraduateThesis.Generics
             if (idPropertyInfo.PropertyType == typeof(string) && generateUIDOptions == GenerateUIDOptions.ShortUID)
                 idPropertyInfo.SetValue(entity, UID.GetShortUID());
 
-            if (idPropertyInfo.PropertyType == typeof(string) && generateUIDOptions == GenerateUIDOptions.MicrosoftUID)
+            if (id is string && generateUIDOptions == GenerateUIDOptions.MicrosoftUID)
                 idPropertyInfo.SetValue(entity, UID.GetUUID());
 
             PropertyInfo createdAtPropertyInfo = entityType.GetProperty("CreatedAt");

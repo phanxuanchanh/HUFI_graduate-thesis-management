@@ -19,6 +19,7 @@ namespace GraduateThesis.Repository.DTO
 
         [Display(Name = "Mô tả đề tài")]
         public string Description { get; set; }
+     
     }
 
     public class TopicOutput : TopicInput

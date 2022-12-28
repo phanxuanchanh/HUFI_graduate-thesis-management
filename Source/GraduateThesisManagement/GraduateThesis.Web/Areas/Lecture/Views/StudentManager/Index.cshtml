@@ -35,26 +35,32 @@
                 <div class="dataTable-top">
                     <div class="dataTable-dropdown">
                         <label>
-                                <select class="dataTable-selector" name="pageSize" onchange="this.form.submit();">
-                                    @for (int i = 5; i <= 50; i++)
+                            <select class="dataTable-selector" name="pageSize" onchange="this.form.submit();">
+                                @for (int i = 5; i <= 50; i++)
+                                {
+                                    if (i == pagedInfo.PageSize)
                                     {
-                                        if (i == pagedInfo.PageSize)
-                                        {
-                                            <option value="@i" selected>@i</option>
-                                        }
-                                        else
-                                        {
-                                            <option value="@i">@i</option>
-                                        }
+                                        <option value="@i" selected>@i</option>
                                     }
-                                </select> dòng trên 1 trang
+                                    else
+                                    {
+                                        <option value="@i">@i</option>
+                                    }
+                                }
+                            </select> dòng trên 1 trang
 
-                        
+
                         </label>
                     </div>
-                    <div class="dataTable-search">
+
+                    <div class="dataTable-dropdown">
+                       
+                    </div>
+                    <div class="dataTable-search" style="display: flex">
+                        <select asp-items="@((SelectList)ViewData["StudentList"]!)" class="dataTable-input" style="margin-right: 5px"></select>
                         <input class="dataTable-input" placeholder="Tìm kiếm..." type="text" name="keyword" value="@ViewData["Keyword"]">
-                        </div>
+                    </div>
+
                 </div>
             </form>
             <div class="dataTable-container">
@@ -126,25 +132,25 @@
                 <nav class="dataTable-pagination">
                     <ul class="dataTable-pagination-list">
                         @Html.PagedListPager(
-                            (IPagedList)ViewData["PagedList"], 
-                            p => Url.Action("Index", new { 
-                                page = p, 
-                                pageSize = pagedInfo.PageSize,
-                                orderBy = @ViewData["OrderBy"],
-                                orderOptions = @ViewData["OrderOptions"],
-                                keyword = @ViewData["Keyword"]
-                            }),
-                            PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing(new PagedListRenderOptions
-                            {
-                                LiElementClasses = new string[] { "page-item" },
-                                PageClasses = new string[] { "page-link" }
-                            },
-                            ajaxOptions: new AjaxOptions
-                            {
-                                UpdateTargetId = "dataTable",
-                                InsertionMode = InsertionMode.Replace,
-                                HttpMethod = "GET"
-                            }))
+                        (IPagedList)ViewData["PagedList"],
+                        p => Url.Action("Index", new {
+                        page = p,
+                        pageSize = pagedInfo.PageSize,
+                        orderBy = @ViewData["OrderBy"],
+                        orderOptions = @ViewData["OrderOptions"],
+                        keyword = @ViewData["Keyword"]
+                        }),
+                        PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing(new PagedListRenderOptions
+                        {
+                        LiElementClasses = new string[] { "page-item" },
+                        PageClasses = new string[] { "page-link" }
+                        },
+                        ajaxOptions: new AjaxOptions
+                        {
+                        UpdateTargetId = "dataTable",
+                        InsertionMode = InsertionMode.Replace,
+                        HttpMethod = "GET"
+                        }))
                     </ul>
                 </nav>
 

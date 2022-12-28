@@ -16,10 +16,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Areas\Administrator\Controllers\" />
     <Folder Include="Areas\Administrator\Data\" />
     <Folder Include="Areas\Administrator\Models\" />
-    <Folder Include="Areas\Administrator\Views\" />
     <Folder Include="Areas\Lecture\Data\" />
     <Folder Include="Areas\Lecture\Models\" />
     <Folder Include="Areas\Student\Controllers\" />
@@ -38,10 +36,8 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.10" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.11" />
     <PackageReference Include="X.PagedList.Mvc.Core" Version="8.4.3" />
   </ItemGroup>
-
-  <ProjectExtensions><VisualStudio><UserProperties appsettings_1development_1json__JsonSchema="https://beaujs.com/schema.json" /></VisualStudio></ProjectExtensions>
 
 </Project>

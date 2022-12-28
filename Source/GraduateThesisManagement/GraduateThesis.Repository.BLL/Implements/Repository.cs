@@ -29,7 +29,7 @@ namespace GraduateThesis.Repository.BLL.Implements
 
         public IStudentThesisGroupRepository StudentThesisGroupRepository => new StudentThesisGroupRepository(_context);
 
-        public IFacultyRepository FacultyRepository  => new FacultyRepository(_context);
+        public IFacultyRepository FacultyRepository => new FacultyRepository(_context);
 
         public ICommitteeMemberRepository CommitteeMemberRepository => new CommitteeMemberRepository(_context);
 
@@ -43,6 +43,9 @@ namespace GraduateThesis.Repository.BLL.Implements
 
         public ISpecializationRepository SpecializationRepository => new SpecializationRepository(_context);
 
+        public IAppRolesRepository AppRolesRepository => new AppRolesRepository(_context);
+
+        public IAppUserRolesRepository AppUserRolesRepository => new AppUserRolesRepository(_context);
 
         protected virtual void Dispose(bool disposing)
         {
@@ -50,7 +53,7 @@ namespace GraduateThesis.Repository.BLL.Implements
             {
                 if (disposing)
                 {
-                    
+
                 }
 
                 this._context.Dispose();

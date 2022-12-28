@@ -5,14 +5,14 @@
   [FullName] [nvarchar](100) NOT NULL,
   [Description] [ntext] NULL,
   [Gender] [nvarchar](10) NOT NULL,
-  [Phone] [int] NOT NULL,
+  [Phone] [varchar](20) NOT NULL,
   [Address] [nvarchar](50) NOT NULL,
   [Email] [nvarchar](50) NOT NULL,
   [Birthday] [date] NOT NULL,
-  [Avatar] [nvarchar](50) NOT NULL,
-  [Position] [nvarchar](50) NOT NULL,
+  [Avatar] [nvarchar](50) NULL,
+  [Position] [nvarchar](50) NULL,
   [Degree] [nvarchar](50) NOT NULL,
-  [Notes] [nvarchar](200) NOT NULL,
+  [Notes] [nvarchar](200) NULL,
   [Password] [nvarchar](100) NOT NULL,
   [Salt] [nvarchar](100) NOT NULL,
   [CreatedAt] [datetime] NULL,
@@ -26,9 +26,9 @@ TEXTIMAGE_ON [PRIMARY]
 GO
 
 ALTER TABLE [dbo].[FacultyStaffs]
-  ADD CONSTRAINT [FK_FacultyStaffs_Faculties_ID] FOREIGN KEY ([FacultyId]) REFERENCES [dbo].[Faculties] ([ID])
+  ADD CONSTRAINT [FK_FacultyStaffs_AppRoles_ID ] FOREIGN KEY ([FacultyRoleId]) REFERENCES [dbo].[AppRoles] ([ID ])
 GO
 
 ALTER TABLE [dbo].[FacultyStaffs]
-  ADD CONSTRAINT [FK_FacultyStaffs_FacultyStaffRoles_ID ] FOREIGN KEY ([FacultyRoleId]) REFERENCES [dbo].[FacultyStaffRoles] ([ID ])
+  ADD CONSTRAINT [FK_FacultyStaffs_Faculties_ID] FOREIGN KEY ([FacultyId]) REFERENCES [dbo].[Faculties] ([ID])
 GO

@@ -11,12 +11,16 @@ using GraduateThesis.Common.WebAttributes;
 using NPOI.SS.UserModel;
 using GraduateThesis.Common.File;
 using System.Net.Mime;
+using GraduateThesis.Repository.BLL.Implements;
+using GraduateThesis.Common.Authorization;
 
 namespace GraduateThesis.Web.Areas.Lecture.Controllers
 {
     [Area("Lecture")]
     [Route("lecture/thesis-manager")]
     [HandleException]
+    [WebAuthorize(AccountRole.Lecture)]
+    [AccountInfo(typeof(FacultyStaffOutput))]
     public class ThesisManagerController : WebControllerBase
     {
         private ITopicRepository _topicRepository;
@@ -41,26 +45,42 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
         [Route("list")]
         [HttpGet]
         [PageName(Name = "Danh sách các đề tài khóa luận")]
+        [WebAuthorize(AccountRole.Lecture)]
         public async Task<IActionResult> Index(int page = 1, int pageSize = 10, string orderBy = "", string orderOptions = "ASC", string keyword = "")
         {
-            Pagination<ThesisOutput> pagination;
-            if (orderOptions == "ASC")
-                pagination = await _thesisRepository.GetPaginationAsync(page, pageSize, orderBy, OrderOptions.ASC, keyword);
-            else
-                pagination = await _thesisRepository.GetPaginationAsync(page, pageSize, orderBy, OrderOptions.DESC, keyword);
+            try
+            {
 
-            StaticPagedList<ThesisOutput> pagedList = pagination.ToStaticPagedList();
-            ViewData["PagedList"] = pagedList;
-            ViewData["OrderBy"] = orderBy;
-            ViewData["OrderOptions"] = orderOptions;
-            ViewData["Keyword"] = keyword;
+                List<ThesisOutput> thesesName = await _thesisRepository.GetListAsync();
+                ViewData["thesesName"] = new SelectList(thesesName, "Id", "Name");
+                List<ThesisOutput> thesesMaxStudentNumber = await _thesisRepository.GetListAsync();
+                ViewData["thesesMaxStudentNumber"] = new SelectList(thesesName, "Id", "MaxStudentNumber");
+                List<ThesisOutput> thesesSemester = await _thesisRepository.GetListAsync();
+                ViewData["thesesSemester"] = new SelectList(thesesName, "Id", "Semester");
+                Pagination<ThesisOutput> pagination;
+                if (orderOptions == "ASC")
+                    pagination = await _thesisRepository.GetPaginationAsync(page, pageSize, orderBy, OrderOptions.ASC, keyword);
+                else
+                    pagination = await _thesisRepository.GetPaginationAsync(page, pageSize, orderBy, OrderOptions.DESC, keyword);
 
-            return View();
+                StaticPagedList<ThesisOutput> pagedList = pagination.ToStaticPagedList();
+                ViewData["PagedList"] = pagedList;
+                ViewData["OrderBy"] = orderBy;
+                ViewData["OrderOptions"] = orderOptions;
+                ViewData["Keyword"] = keyword;
+
+                return View();
+            }
+            catch (Exception ex)
+            {
+                return View(viewName: "_Error", model: ex.Message);
+            }
         }
 
         [Route("details/{id}")]
         [HttpGet]
         [PageName(Name = "Chi tiết đề tài khóa luận")]
+        [WebAuthorize(AccountRole.Lecture)]
         public async Task<IActionResult> Details([Required] string id)
         {
             ThesisOutput thesisOutput = await _thesisRepository.GetAsync(id);
@@ -73,6 +93,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
         [Route("create")]
         [HttpGet]
         [PageName(Name = "Tạo mới đề tài khóa luận")]
+        [WebAuthorize(AccountRole.Lecture)]
         public async Task<ActionResult> Create()
         {
             List<TopicOutput> topicClasses = await _topicRepository.GetListAsync();
@@ -99,6 +120,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
         [Route("create")]
         [HttpPost]
         [PageName(Name = "Tạo mới đề tài khóa luận")]
+        [WebAuthorize(AccountRole.Lecture)]
         public async Task<IActionResult> Create(ThesisInput thesisInput)
         {
             List<TopicOutput> topicClasses = await _topicRepository.GetListAsync();
@@ -134,6 +156,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
         [Route("edit/{id}")]
         [HttpGet]
         [PageName(Name = "Chỉnh sửa đề tài khóa luận")]
+        [WebAuthorize(AccountRole.Lecture)]
         public async Task<IActionResult> Edit([Required] string id)
         {
             List<TopicOutput> topicClasses = await _topicRepository.GetListAsync();
@@ -164,6 +187,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
         [Route("edit/{id}")]
         [HttpPost]
         [PageName(Name = "Chỉnh sửa đề tài khóa luận")]
+        [WebAuthorize(AccountRole.Lecture)]
         public async Task<IActionResult> Edit([Required] string id, ThesisInput thesisInput)
         {
             List<TopicOutput> topicClasses = await _topicRepository.GetListAsync();
@@ -202,6 +226,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
 
         [Route("delete/{id}")]
         [HttpPost]
+        [WebAuthorize(AccountRole.Lecture)]
         public async Task<IActionResult> Delete([Required] string id)
         {
             ThesisOutput thesisOutput = await _thesisRepository.GetAsync(id);
@@ -216,28 +241,39 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
 
         [Route("export-to-spreadsheet")]
         [HttpGet]
+        [WebAuthorize(AccountRole.Lecture)]
         public async Task<IActionResult> ExportToSpreadsheet()
         {
-            IWorkbook workbook = await _thesisRepository.ExportToSpreadsheetAsync(
-                SpreadsheetTypeOptions.XLSX,
-                "Danh sách đề tài",
-                new string[] { "Id", "Name", "Description", "MaxStudentNumber", "Semester" }
-            );
-
-            ContentDisposition contentDisposition = new ContentDisposition
+            try
             {
-                FileName = $"Thesis_{DateTime.Now.ToString("ddMMyyyy_hhmmss")}.xlsx",
-                Inline = true,
-            };
+                IWorkbook workbook = await _thesisRepository.ExportToSpreadsheetAsync(
+                    SpreadsheetTypeOptions.XLSX,
+                    "Danh sách đề tài",
+                    new string[] { "Id", "Name", "Description", "MaxStudentNumber", "Semester" }
+                );
 
-            Response.Headers.Append("Content-Disposition", contentDisposition.ToString());
+                ContentDisposition contentDisposition = new ContentDisposition
+                {
+                    FileName = $"Thesis_{DateTime.Now.ToString("ddMMyyyy_hhmmss")}.xlsx",
+                    Inline = true,
+                };
 
-            using (MemoryStream memoryStream = new MemoryStream())
+                Response.Headers.Append("Content-Disposition", contentDisposition.ToString());
+
+                using (MemoryStream memoryStream = new MemoryStream())
+                {
+                    workbook.Write(memoryStream, true);
+                    byte[] bytes = memoryStream.ToArray();
+                    return File(bytes, ContentTypeConsts.XLSX);
+                }
+            }
+            catch (Exception ex)
             {
-                workbook.Write(memoryStream, true);
-                byte[] bytes = memoryStream.ToArray();
-                return File(bytes, ContentTypeConsts.XLSX);
+                return View(viewName: "_Error", model: ex.Message);
             }
         }
     }
 }
+
+
+

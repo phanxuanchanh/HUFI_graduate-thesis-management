@@ -75,7 +75,7 @@ namespace GraduateThesis.Repository.DTO
         public DateTime? DeletedAt { get; set; }
 
         public FacultyOutput Faculty { get; set; }
-        public FacultyStaffRoleInput FacultyStaffRole { get; set; }
+        public AppRolesInput FacultyStaffRole { get; set; }
     }
 
 }

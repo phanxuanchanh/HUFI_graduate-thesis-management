@@ -51,6 +51,7 @@ namespace GraduateThesis.Repository.BLL.Implements
                 Name = s.Name,
                 Phone = s.Phone,
                 Email = s.Email,
+                Address = s.Address,
                 CreatedAt = s.StudentClass.CreatedAt,
                 UpdatedAt = s.StudentClass.UpdatedAt,
                 DeletedAt = s.StudentClass.DeletedAt

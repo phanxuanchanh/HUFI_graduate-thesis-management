@@ -1,4 +1,5 @@
-﻿using GraduateThesis.Common.File;
+﻿using GraduateThesis.Common.Authorization;
+using GraduateThesis.Common.File;
 using GraduateThesis.Common.WebAttributes;
 using GraduateThesis.Generics;
 using GraduateThesis.Models;
@@ -16,6 +17,8 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
 {
     [Area("Lecture")]
     [Route("lecture/student-manager")]
+    [WebAuthorize(AccountRole.Lecture)]
+    [AccountInfo(typeof(FacultyStaffOutput))]
     [HandleException]
     public class StudentManagerController : WebControllerBase
     {
@@ -31,6 +34,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
         [Route("list")]
         [HttpGet]
         [PageName(Name = "Danh sách sinh viên của khoa")]
+        [WebAuthorize(AccountRole.Lecture)]
         public async Task<IActionResult> Index(int page = 1, int pageSize = 10, string orderBy = "", string orderOptions = "ASC", string keyword = "")
         {
             Pagination<StudentOutput> pagination;
@@ -51,6 +55,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
         [Route("details/{id}")]
         [HttpGet]
         [PageName(Name = "Chi tiết sinh viên của khoa")]
+        [WebAuthorize(AccountRole.Lecture)]
         public async Task<IActionResult> Details([Required] string id)
         {
             StudentOutput studentOutput = await _studentRepository.GetAsync(id);
@@ -63,6 +68,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
         [Route("create")]
         [HttpGet]
         [PageName(Name = "Tạo mới sinh viên của khoa")]
+        [WebAuthorize(AccountRole.Lecture)]
         public async Task<ActionResult> Create()
         {
             List<StudentClassOutput> studentClasses = await _studentClassRepository.GetListAsync();
@@ -73,6 +79,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
         [Route("create")]
         [HttpPost]
         [PageName(Name = "Tạo mới sinh viên của khoa")]
+        [WebAuthorize(AccountRole.Lecture)]
         public async Task<IActionResult> Create(StudentInput studentInput)
         {
             List<StudentClassOutput> studentClasses = await _studentClassRepository.GetListAsync();
@@ -93,6 +100,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
         [Route("edit/{id}")]
         [HttpGet]
         [PageName(Name = "Chỉnh sửa thông tin sinh viên của khoa")]
+        [WebAuthorize(AccountRole.Lecture)]
         public async Task<IActionResult> Edit([Required] string id)
         {
             List<StudentClassOutput> studentClasses = await _studentClassRepository.GetListAsync();
@@ -107,6 +115,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
         [Route("edit/{id}")]
         [HttpPost]
         [PageName(Name = "Chỉnh sửa thông tin sinh viên của khoa")]
+        [WebAuthorize(AccountRole.Lecture)]
         public async Task<IActionResult> Edit([Required] string id, StudentInput studentInput)
         {
             List<StudentClassOutput> studentClasses = await _studentClassRepository.GetListAsync();
@@ -129,6 +138,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
 
         [Route("delete/{id}")]
         [HttpPost]
+        [WebAuthorize(AccountRole.Lecture)]
         public async Task<IActionResult> Delete([Required] string id)
         {
             StudentOutput studentOutput = await _studentRepository.GetAsync(id);
@@ -143,6 +153,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
 
         [Route("export-to-spreadsheet")]
         [HttpGet]
+        [WebAuthorize(AccountRole.Lecture)]
         public async Task<IActionResult> ExportToSpreadsheet()
         {
             IWorkbook workbook = await _studentRepository.ExportToSpreadsheetAsync(

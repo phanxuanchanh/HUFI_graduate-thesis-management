@@ -8,6 +8,7 @@ namespace GraduateThesis.Web.Areas.Administrator.Controllers
     [HandleException]
     public class DashboardController : Controller
     {
+        [Route("Index")]
         public IActionResult Index()
         {
             return View();

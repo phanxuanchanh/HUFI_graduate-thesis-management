@@ -7,6 +7,7 @@ using NPOI.SS.UserModel;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace GraduateThesis.Repository.BLL.Implements
@@ -44,24 +45,24 @@ namespace GraduateThesis.Repository.BLL.Implements
         {
             _genericRepository.PaginationSelector = s => new StudentThesisGroupOutput
             {
-                //Id = s.Id,
-                //ThesisId = s.ThesisId,
-                //Name = s.Name,
-                //Description = s.Description,
-                //StudentQuantity = s.StudentQuantity,
-                //Notes = s.Notes,
-                //Thesis = new ThesisOutput
-                //{
-                //    Id = s.Thesis.Id,
-                //    Name = s.Thesis.Name,
-                //    Description = s.Thesis.Description,
-                //    SourceCode = s.Thesis.SourceCode,
-                //    Notes = s.Thesis.Notes,
-                //    TopicId = s.Thesis.Notes,
-                //    MaxStudentNumber = s.Thesis.MaxStudentNumber,
-                //    //CouncilId = s.Thesis.CouncilId
-                //}
+                Id = s.Id,
+                Name = s.Name,
+                Description = s.Description,
+                StudentQuantity = s.StudentQuantity,
+                Notes = s.Notes,
+                Thesis = s.Theses.Select(ts=> new ThesisOutput
+                {
+                    Id = ts.Id,
+                    Name = ts.Name,
+                    Description = ts.Description,
+                    SourceCode = ts.SourceCode,
+                    Notes = ts.Notes,
+                    TopicId = ts.Notes,
+                    MaxStudentNumber = ts.MaxStudentNumber,
+                   
+                }).FirstOrDefault()
                 
+
             };
 
             _genericRepository.ListSelector = _genericRepository.PaginationSelector;

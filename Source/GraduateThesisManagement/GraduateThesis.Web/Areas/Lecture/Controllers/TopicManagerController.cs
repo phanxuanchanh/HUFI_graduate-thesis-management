@@ -10,11 +10,14 @@ using GraduateThesis.Common.WebAttributes;
 using GraduateThesis.Common.File;
 using NPOI.SS.UserModel;
 using System.Net.Mime;
+using GraduateThesis.Common.Authorization;
 
 namespace GraduateThesis.Web.Areas.Lecture.Controllers
 {
     [Area("Lecture")]
     [Route("lecture/topic-manager")]
+    [WebAuthorize(AccountRole.Lecture)]
+    [AccountInfo(typeof(FacultyStaffOutput))]
     [HandleException]
     public class TopicManagerController : WebControllerBase
     {
@@ -27,6 +30,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
         [Route("list")]
         [HttpGet]
         [PageName(Name = "Danh sách các chủ đề khóa luận")]
+        [WebAuthorize(AccountRole.Lecture)]
         public async Task<IActionResult> Index(int page = 1, int pageSize = 10, string orderBy = "", string orderOptions = "ASC", string keyword = "")
         {
             Pagination<TopicOutput> pagination;
@@ -47,6 +51,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
         [Route("details/{id}")]
         [HttpGet]
         [PageName(Name = "Chi tiết chủ đề khóa luận")]
+        [WebAuthorize(AccountRole.Lecture)]
         public async Task<IActionResult> Details([Required] string id)
         {
             TopicOutput topicOutput = await _topicRepository.GetAsync(id);
@@ -59,6 +64,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
         [Route("create")]
         [HttpGet]
         [PageName(Name = "Tạo mới chủ đề khóa luận")]
+        [WebAuthorize(AccountRole.Lecture)]
         public ActionResult Create()
         {
             return View();
@@ -67,6 +73,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
         [Route("create")]
         [HttpPost]
         [PageName(Name = "Tạo mới chủ đề khóa luận")]
+        [WebAuthorize(AccountRole.Lecture)]
         public async Task<IActionResult> Create(TopicInput topicInput)
         {
             if (ModelState.IsValid)
@@ -84,6 +91,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
         [Route("edit/{id}")]
         [HttpGet]
         [PageName(Name = "Chỉnh sửa chủ đề khóa luận")]
+        [WebAuthorize(AccountRole.Lecture)]
         public async Task<IActionResult> Edit([Required] string id)
         {
             TopicOutput topicOutput = await _topicRepository.GetAsync(id);
@@ -96,6 +104,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
         [Route("edit/{id}")]
         [HttpPost]
         [PageName(Name = "Chỉnh sửa chủ đề khóa luận")]
+        [WebAuthorize(AccountRole.Lecture)]
         public async Task<IActionResult> Edit([Required] string id, TopicInput topicInput)
         {
             if (ModelState.IsValid)
@@ -116,6 +125,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
 
         [Route("delete/{id}")]
         [HttpPost]
+        [WebAuthorize(AccountRole.Lecture)]
         public async Task<IActionResult> Delete([Required] string id)
         {
             TopicOutput topicOutput = await _topicRepository.GetAsync(id);
@@ -130,6 +140,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
 
         [Route("export-to-spreadsheet")]
         [HttpGet]
+        [WebAuthorize(AccountRole.Lecture)]
         public async Task<IActionResult> ExportToSpreadsheet()
         {
             IWorkbook workbook = await _topicRepository.ExportToSpreadsheetAsync(

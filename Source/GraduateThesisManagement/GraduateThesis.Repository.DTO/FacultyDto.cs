@@ -27,5 +27,7 @@ namespace GraduateThesis.Repository.DTO
 
         public List<FacultyStaffOutput> FacultyStaffs { get; set; }
         public List<StudentClassOutput> StudentClasses { get; set; }
+
+        public AppRolesOutput FacultyStaffRole { get; set; }
     }
 }

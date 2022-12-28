@@ -300,7 +300,24 @@ public partial class HufiGraduateThesisContext : DbContext
             entity.HasOne(d => d.FacultyRole).WithMany(p => p.FacultyStaffs)
                 .HasForeignKey(d => d.FacultyRoleId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_FacultyStaffs_AppRoles_ID ");
+                .HasConstraintName("FK_FacultyStaffs_FacultyStaffRoles_ID ");
+        });
+
+        modelBuilder.Entity<AppRole>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK_FacultyRoles_ID ");
+
+            entity.Property(e => e.Id)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("ID ");
+            entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+            entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+            entity.Property(e => e.Description).HasColumnType("ntext");
+            entity.Property(e => e.Name)
+                .IsRequired()
+                .HasMaxLength(100);
+            entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
         });
 
         modelBuilder.Entity<ImplementationPlan>(entity =>
