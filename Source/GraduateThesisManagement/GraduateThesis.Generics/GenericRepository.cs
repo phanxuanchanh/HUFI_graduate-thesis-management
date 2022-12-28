@@ -85,7 +85,7 @@ namespace GraduateThesis.Generics
 
         private string GetWhereExpString(string prefix)
         {
-            return $"{prefix}.IsDeleted == false";
+            return $"{prefix} => {prefix}.IsDeleted == false";
         }
 
         private string GetWhereExpString(string prefix, string[] conditions, string keyword)
