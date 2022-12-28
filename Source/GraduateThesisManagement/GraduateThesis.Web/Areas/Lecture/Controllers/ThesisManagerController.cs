@@ -9,10 +9,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
 using GraduateThesis.Common.WebAttributes;
 using NPOI.SS.UserModel;
-using NPOI.OpenXmlFormats.Spreadsheet;
-using System.Net;
 using GraduateThesis.Common.File;
-using NPOI.HPSF;
 using System.Net.Mime;
 using GraduateThesis.Repository.BLL.Implements;
 
@@ -20,6 +17,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
 {
     [Area("Lecture")]
     [Route("lecture/thesis-manager")]
+    [HandleException]
     public class ThesisManagerController : WebControllerBase
     {
         private ITopicRepository _topicRepository;
@@ -39,7 +37,6 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
             _facultyStaffRepository = repository.FacultyStaffRepository;
             _topicRepository = repository.TopicRepository;
             _specializationRepository = repository.SpecializationRepository;
-
         }
 
         [Route("list")]
@@ -62,18 +59,13 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
                 else
                     pagination = await _thesisRepository.GetPaginationAsync(page, pageSize, orderBy, OrderOptions.DESC, keyword);
 
-                StaticPagedList<ThesisOutput> pagedList = pagination.ToStaticPagedList();
-                ViewData["PagedList"] = pagedList;
-                ViewData["OrderBy"] = orderBy;
-                ViewData["OrderOptions"] = orderOptions;
-                ViewData["Keyword"] = keyword;
+            StaticPagedList<ThesisOutput> pagedList = pagination.ToStaticPagedList();
+            ViewData["PagedList"] = pagedList;
+            ViewData["OrderBy"] = orderBy;
+            ViewData["OrderOptions"] = orderOptions;
+            ViewData["Keyword"] = keyword;
 
-                return View();
-            }
-            catch (Exception ex)
-            {
-                return View(viewName: "_Error", model: ex.Message);
-            }
+            return View();
         }
 
         [Route("details/{id}")]
@@ -81,18 +73,11 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
         [PageName(Name = "Chi tiết đề tài khóa luận")]
         public async Task<IActionResult> Details([Required] string id)
         {
-            try
-            {
-                ThesisOutput thesisOutput = await _thesisRepository.GetAsync(id);
-                if (thesisOutput == null)
-                    return RedirectToAction("Index");
+            ThesisOutput thesisOutput = await _thesisRepository.GetAsync(id);
+            if (thesisOutput == null)
+                return RedirectToAction("Index");
 
-                return View(thesisOutput);
-            }
-            catch
-            {
-                return View(viewName: "_Error");
-            }
+            return View(thesisOutput);
         }
 
         [Route("create")]
@@ -126,41 +111,34 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
         [PageName(Name = "Tạo mới đề tài khóa luận")]
         public async Task<IActionResult> Create(ThesisInput thesisInput)
         {
-            try
+            List<TopicOutput> topicClasses = await _topicRepository.GetListAsync();
+            ViewData["TopicList"] = new SelectList(topicClasses, "Id", "Name");
+
+            List<StudentThesisGroupOutput> StudentThesisGrouClasses = await _studentThesisGroupRepository.GetListAsync();
+            ViewData["StudentThesisGrouList"] = new SelectList(StudentThesisGrouClasses, "Id", "Name");
+
+            List<TrainingFormOutput> trainingFormsClass = await _trainingFormRepository.GetListAsync();
+            ViewData["TrainingFormList"] = new SelectList(trainingFormsClass, "Id", "Name");
+
+            List<TrainingLevelOutput> trainingLevelsClass = await _trainingLevelRepository.GetListAsync();
+            ViewData["TrainingLevelList"] = new SelectList(trainingLevelsClass, "Id", "Name");
+
+            List<FacultyStaffOutput> facultyStaffClass = await _facultyStaffRepository.GetListAsync();
+            ViewData["FacultyStaffList"] = new SelectList(facultyStaffClass, "Id", "FullName");
+
+            List<SpecializationOutput> specializationsClass = await _specializationRepository.GetListAsync();
+            ViewData["SpecializationsClass"] = new SelectList(specializationsClass, "Id", "Name");
+
+            if (ModelState.IsValid)
             {
-                List<TopicOutput> topicClasses = await _topicRepository.GetListAsync();
-                ViewData["TopicList"] = new SelectList(topicClasses, "Id", "Name");
+                DataResponse<ThesisOutput> dataResponse = await _thesisRepository.CreateAsync(thesisInput);
+                AddViewData(dataResponse);
 
-                List<StudentThesisGroupOutput> StudentThesisGrouClasses = await _studentThesisGroupRepository.GetListAsync();
-                ViewData["StudentThesisGrouList"] = new SelectList(StudentThesisGrouClasses, "Id", "Name");
-
-                List<TrainingFormOutput> trainingFormsClass = await _trainingFormRepository.GetListAsync();
-                ViewData["TrainingFormList"] = new SelectList(trainingFormsClass, "Id", "Name");
-
-                List<TrainingLevelOutput> trainingLevelsClass = await _trainingLevelRepository.GetListAsync();
-                ViewData["TrainingLevelList"] = new SelectList(trainingLevelsClass, "Id", "Name");
-
-                List<FacultyStaffOutput> facultyStaffClass = await _facultyStaffRepository.GetListAsync();
-                ViewData["FacultyStaffList"] = new SelectList(facultyStaffClass, "Id", "FullName");
-
-                List<SpecializationOutput> specializationsClass = await _specializationRepository.GetListAsync();
-                ViewData["SpecializationsClass"] = new SelectList(specializationsClass, "Id", "Name");
-
-                if (ModelState.IsValid)
-                {
-                    DataResponse<ThesisOutput> dataResponse = await _thesisRepository.CreateAsync(thesisInput);
-                    AddViewData(dataResponse);
-
-                    return View(thesisInput);
-                }
-
-                AddViewData(DataResponseStatus.InvalidData);
                 return View(thesisInput);
             }
-            catch (Exception ex)
-            {
-                return View(viewName: "_Error", model: ex.Message);
-            }
+
+            AddViewData(DataResponseStatus.InvalidData);
+            return View(thesisInput);
         }
 
         [Route("edit/{id}")]
@@ -168,36 +146,29 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
         [PageName(Name = "Chỉnh sửa đề tài khóa luận")]
         public async Task<IActionResult> Edit([Required] string id)
         {
-            try
-            {
-                List<TopicOutput> topicClasses = await _topicRepository.GetListAsync();
-                ViewData["TopicList"] = new SelectList(topicClasses, "Id", "Name");
+            List<TopicOutput> topicClasses = await _topicRepository.GetListAsync();
+            ViewData["TopicList"] = new SelectList(topicClasses, "Id", "Name");
 
-                List<StudentThesisGroupOutput> StudentThesisGrouClasses = await _studentThesisGroupRepository.GetListAsync();
-                ViewData["StudentThesisGrouList"] = new SelectList(StudentThesisGrouClasses, "Id", "Name");
+            List<StudentThesisGroupOutput> StudentThesisGrouClasses = await _studentThesisGroupRepository.GetListAsync();
+            ViewData["StudentThesisGrouList"] = new SelectList(StudentThesisGrouClasses, "Id", "Name");
 
-                List<TrainingFormOutput> trainingFormsClass = await _trainingFormRepository.GetListAsync();
-                ViewData["TrainingFormList"] = new SelectList(trainingFormsClass, "Id", "Name");
+            List<TrainingFormOutput> trainingFormsClass = await _trainingFormRepository.GetListAsync();
+            ViewData["TrainingFormList"] = new SelectList(trainingFormsClass, "Id", "Name");
 
-                List<TrainingLevelOutput> trainingLevelsClass = await _trainingLevelRepository.GetListAsync();
-                ViewData["TrainingLevelList"] = new SelectList(trainingLevelsClass, "Id", "Name");
+            List<TrainingLevelOutput> trainingLevelsClass = await _trainingLevelRepository.GetListAsync();
+            ViewData["TrainingLevelList"] = new SelectList(trainingLevelsClass, "Id", "Name");
 
-                List<FacultyStaffOutput> facultyStaffClass = await _facultyStaffRepository.GetListAsync();
-                ViewData["FacultyStaffList"] = new SelectList(facultyStaffClass, "Id", "FullName");
+            List<FacultyStaffOutput> facultyStaffClass = await _facultyStaffRepository.GetListAsync();
+            ViewData["FacultyStaffList"] = new SelectList(facultyStaffClass, "Id", "FullName");
 
-                List<SpecializationOutput> specializationsClass = await _specializationRepository.GetListAsync();
-                ViewData["SpecializationsClass"] = new SelectList(specializationsClass, "Id", "Name");
+            List<SpecializationOutput> specializationsClass = await _specializationRepository.GetListAsync();
+            ViewData["SpecializationsClass"] = new SelectList(specializationsClass, "Id", "Name");
 
-                ThesisOutput thesisOutput = await _thesisRepository.GetAsync(id);
-                if (thesisOutput == null)
-                    return RedirectToAction("Index");
+            ThesisOutput thesisOutput = await _thesisRepository.GetAsync(id);
+            if (thesisOutput == null)
+                return RedirectToAction("Index");
 
-                return View(thesisOutput);
-            }
-            catch (Exception ex)
-            {
-                return View(viewName: "_Error", model: ex.Message);
-            }
+            return View(thesisOutput);
         }
 
         [Route("edit/{id}")]
@@ -205,87 +176,71 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
         [PageName(Name = "Chỉnh sửa đề tài khóa luận")]
         public async Task<IActionResult> Edit([Required] string id, ThesisInput thesisInput)
         {
-            try
+            List<TopicOutput> topicClasses = await _topicRepository.GetListAsync();
+            ViewData["TopicList"] = new SelectList(topicClasses, "Id", "Name");
+
+            List<StudentThesisGroupOutput> StudentThesisGrouClasses = await _studentThesisGroupRepository.GetListAsync();
+            ViewData["StudentThesisGrouList"] = new SelectList(StudentThesisGrouClasses, "Id", "Name");
+
+            List<TrainingFormOutput> trainingFormsClass = await _trainingFormRepository.GetListAsync();
+            ViewData["TrainingFormList"] = new SelectList(trainingFormsClass, "Id", "Name");
+
+            List<TrainingLevelOutput> trainingLevelsClass = await _trainingLevelRepository.GetListAsync();
+            ViewData["TrainingLevelList"] = new SelectList(trainingLevelsClass, "Id", "Name");
+
+            List<FacultyStaffOutput> facultyStaffClass = await _facultyStaffRepository.GetListAsync();
+            ViewData["FacultyStaffList"] = new SelectList(facultyStaffClass, "Id", "FullName");
+
+            List<SpecializationOutput> specializationsClass = await _specializationRepository.GetListAsync();
+            ViewData["SpecializationsClass"] = new SelectList(specializationsClass, "Id", "Name");
+
+            if (ModelState.IsValid)
             {
-                List<TopicOutput> topicClasses = await _topicRepository.GetListAsync();
-                ViewData["TopicList"] = new SelectList(topicClasses, "Id", "Name");
+                ThesisOutput thesisOutput = await _thesisRepository.GetAsync(id);
+                if (thesisOutput == null)
+                    return RedirectToAction("Index");
 
-                List<StudentThesisGroupOutput> StudentThesisGrouClasses = await _studentThesisGroupRepository.GetListAsync();
-                ViewData["StudentThesisGrouList"] = new SelectList(StudentThesisGrouClasses, "Id", "Name");
+                DataResponse<ThesisOutput> dataResponse = await _thesisRepository.UpdateAsync(id, thesisInput);
 
-                List<TrainingFormOutput> trainingFormsClass = await _trainingFormRepository.GetListAsync();
-                ViewData["TrainingFormList"] = new SelectList(trainingFormsClass, "Id", "Name");
-
-                List<TrainingLevelOutput> trainingLevelsClass = await _trainingLevelRepository.GetListAsync();
-                ViewData["TrainingLevelList"] = new SelectList(trainingLevelsClass, "Id", "Name");
-
-                List<FacultyStaffOutput> facultyStaffClass = await _facultyStaffRepository.GetListAsync();
-                ViewData["FacultyStaffList"] = new SelectList(facultyStaffClass, "Id", "FullName");
-
-                List<SpecializationOutput> specializationsClass = await _specializationRepository.GetListAsync();
-                ViewData["SpecializationsClass"] = new SelectList(specializationsClass, "Id", "Name");
-
-                if (ModelState.IsValid)
-                {
-                    ThesisOutput thesisOutput = await _thesisRepository.GetAsync(id);
-                    if (thesisOutput == null)
-                        return RedirectToAction("Index");
-
-                    DataResponse<ThesisOutput> dataResponse = await _thesisRepository.UpdateAsync(id, thesisInput);
-
-                    AddViewData(dataResponse);
-                    return View(thesisInput);
-                }
-
-                AddViewData(DataResponseStatus.InvalidData);
+                AddViewData(dataResponse);
                 return View(thesisInput);
             }
-            catch (Exception ex)
-            {
-                return View(viewName: "_Error", model: ex.Message);
-            }
+
+            AddViewData(DataResponseStatus.InvalidData);
+            return View(thesisInput);
         }
 
         [Route("delete/{id}")]
         [HttpPost]
         public async Task<IActionResult> Delete([Required] string id)
         {
-            try
-            {
-                ThesisOutput thesisOutput = await _thesisRepository.GetAsync(id);
-                if (thesisOutput == null)
-                    return RedirectToAction("Index");
-
-                DataResponse dataResponse = await _thesisRepository.BatchDeleteAsync(id);
-
-                AddTempData(dataResponse);
+            ThesisOutput thesisOutput = await _thesisRepository.GetAsync(id);
+            if (thesisOutput == null)
                 return RedirectToAction("Index");
-            }
-            catch (Exception ex)
-            {
-                return View(viewName: "_Error", model: ex.Message);
-            }
+
+            DataResponse dataResponse = await _thesisRepository.BatchDeleteAsync(id);
+
+            AddTempData(dataResponse);
+            return RedirectToAction("Index");
         }
 
         [Route("export-to-spreadsheet")]
         [HttpGet]
         public async Task<IActionResult> ExportToSpreadsheet()
         {
-            try
+            IWorkbook workbook = await _thesisRepository.ExportToSpreadsheetAsync(
+                SpreadsheetTypeOptions.XLSX,
+                "Danh sách đề tài",
+                new string[] { "Id", "Name", "Description", "MaxStudentNumber", "Semester" }
+            );
+
+            ContentDisposition contentDisposition = new ContentDisposition
             {
-                IWorkbook workbook = await _thesisRepository.ExportToSpreadsheetAsync(
-                    SpreadsheetTypeOptions.XLSX, 
-                    "Danh sách đề tài",
-                    new string[] { "Id", "Name", "Description", "MaxStudentNumber", "Semester" }
-                );
+                FileName = $"Thesis_{DateTime.Now.ToString("ddMMyyyy_hhmmss")}.xlsx",
+                Inline = true,
+            };
 
-                ContentDisposition contentDisposition = new ContentDisposition
-                {
-                    FileName = $"Thesis_{DateTime.Now.ToString("ddMMyyyy_hhmmss")}.xlsx",
-                    Inline = true,
-                };
-
-                Response.Headers.Append("Content-Disposition", contentDisposition.ToString());
+            Response.Headers.Append("Content-Disposition", contentDisposition.ToString());
 
                 using (MemoryStream memoryStream = new MemoryStream())
                 {

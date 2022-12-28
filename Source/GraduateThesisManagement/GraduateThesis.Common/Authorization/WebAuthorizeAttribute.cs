@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Newtonsoft.Json;
@@ -22,7 +21,7 @@ namespace GraduateThesis.Common.Authorization
             AccountSession accountSession = GetSession(context.HttpContext, "account-session");
             if (accountSession == null)
                 context.Result = new RedirectToActionResult("ShowUnauthorize", "Authorization", null);
-
+            
             if (accountSession != null && _role != accountSession.Role)
                 context.Result = new RedirectToActionResult("ShowUnauthorize", "Authorization", null);
         }

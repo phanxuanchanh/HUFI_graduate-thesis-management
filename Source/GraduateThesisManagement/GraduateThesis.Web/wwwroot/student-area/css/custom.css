@@ -1,0 +1,14 @@
+﻿.custom-brand-logo img {
+    width: 160px !important;
+    height: 60px !important;
+}
+
+.custom-brand-logo-mini img {
+    width: 140px !important;
+    height: 40px !important;
+}
+
+.avatar-resize {
+    width: 60px !important;
+    height: 60px !important;
+}

@@ -7,11 +7,15 @@ using X.PagedList;
 using GraduateThesis.WebExtensions;
 using System.ComponentModel.DataAnnotations;
 using GraduateThesis.Common.WebAttributes;
+using GraduateThesis.Common.File;
+using NPOI.SS.UserModel;
+using System.Net.Mime;
 
 namespace GraduateThesis.Web.Areas.Lecture.Controllers
 {
     [Area("Lecture")]
     [Route("lecture/topic-manager")]
+    [HandleException]
     public class TopicManagerController : WebControllerBase
     {
         private ITopicRepository _topicRepository;
@@ -25,26 +29,19 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
         [PageName(Name = "Danh sách các chủ đề khóa luận")]
         public async Task<IActionResult> Index(int page = 1, int pageSize = 10, string orderBy = "", string orderOptions = "ASC", string keyword = "")
         {
-            try
-            {
-                Pagination<TopicOutput> pagination;
-                if (orderOptions == "ASC")
-                    pagination = await _topicRepository.GetPaginationAsync(page, pageSize, orderBy, OrderOptions.ASC, keyword);
-                else
-                    pagination = await _topicRepository.GetPaginationAsync(page, pageSize, orderBy, OrderOptions.DESC, keyword);
+            Pagination<TopicOutput> pagination;
+            if (orderOptions == "ASC")
+                pagination = await _topicRepository.GetPaginationAsync(page, pageSize, orderBy, OrderOptions.ASC, keyword);
+            else
+                pagination = await _topicRepository.GetPaginationAsync(page, pageSize, orderBy, OrderOptions.DESC, keyword);
 
-                StaticPagedList<TopicOutput> pagedList = pagination.ToStaticPagedList();
-                ViewData["PagedList"] = pagedList;
-                ViewData["OrderBy"] = orderBy;
-                ViewData["OrderOptions"] = orderOptions;
-                ViewData["Keyword"] = keyword;
+            StaticPagedList<TopicOutput> pagedList = pagination.ToStaticPagedList();
+            ViewData["PagedList"] = pagedList;
+            ViewData["OrderBy"] = orderBy;
+            ViewData["OrderOptions"] = orderOptions;
+            ViewData["Keyword"] = keyword;
 
-                return View();
-            }
-            catch (Exception ex)
-            {
-                return View(viewName: "_Error", model: ex.Message);
-            }
+            return View();
         }
 
         [Route("details/{id}")]
@@ -52,18 +49,11 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
         [PageName(Name = "Chi tiết chủ đề khóa luận")]
         public async Task<IActionResult> Details([Required] string id)
         {
-            try
-            {
-                TopicOutput topicOutput = await _topicRepository.GetAsync(id);
-                if (topicOutput == null)
-                    return RedirectToAction("Index");
-;
-                return View(topicOutput);
-            }
-            catch
-            {
-                return View(viewName: "_Error");
-            }
+            TopicOutput topicOutput = await _topicRepository.GetAsync(id);
+            if (topicOutput == null)
+                return RedirectToAction("Index");
+            ;
+            return View(topicOutput);
         }
 
         [Route("create")]
@@ -79,41 +69,28 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
         [PageName(Name = "Tạo mới chủ đề khóa luận")]
         public async Task<IActionResult> Create(TopicInput topicInput)
         {
-            try
+            if (ModelState.IsValid)
             {
-                if (ModelState.IsValid)
-                {
-                    DataResponse<TopicOutput> dataResponse = await _topicRepository.CreateAsync(topicInput);
-                    AddViewData(dataResponse);
+                DataResponse<TopicOutput> dataResponse = await _topicRepository.CreateAsync(topicInput);
+                AddViewData(dataResponse);
 
-                    return View(topicInput);
-                }
-
-                AddViewData(DataResponseStatus.InvalidData);
                 return View(topicInput);
             }
-            catch (Exception ex)
-            {
-                return View(viewName: "_Error", model: ex.Message);
-            }
+
+            AddViewData(DataResponseStatus.InvalidData);
+            return View(topicInput);
         }
+
         [Route("edit/{id}")]
         [HttpGet]
         [PageName(Name = "Chỉnh sửa chủ đề khóa luận")]
         public async Task<IActionResult> Edit([Required] string id)
         {
-            try
-            {            
-                TopicOutput topicOutput = await _topicRepository.GetAsync(id);
-                if (topicOutput == null)
-                    return RedirectToAction("Index");
+            TopicOutput topicOutput = await _topicRepository.GetAsync(id);
+            if (topicOutput == null)
+                return RedirectToAction("Index");
 
-                return View(topicOutput);
-            }
-            catch (Exception ex)
-            {
-                return View(viewName: "_Error", model: ex.Message);
-            }
+            return View(topicOutput);
         }
 
         [Route("edit/{id}")]
@@ -121,50 +98,60 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
         [PageName(Name = "Chỉnh sửa chủ đề khóa luận")]
         public async Task<IActionResult> Edit([Required] string id, TopicInput topicInput)
         {
-            try
+            if (ModelState.IsValid)
             {
-                if (ModelState.IsValid)
-                {
-                    TopicOutput topicOutput = await _topicRepository.GetAsync(id);
-                    if (topicOutput == null)
-                        return RedirectToAction("Index");
+                TopicOutput topicOutput = await _topicRepository.GetAsync(id);
+                if (topicOutput == null)
+                    return RedirectToAction("Index");
 
-                    DataResponse<TopicOutput> dataResponse = await _topicRepository.UpdateAsync(id, topicInput);
+                DataResponse<TopicOutput> dataResponse = await _topicRepository.UpdateAsync(id, topicInput);
 
-                    AddViewData(dataResponse);
-                    return View(topicInput);
-                }
-
-                AddViewData(DataResponseStatus.InvalidData);
+                AddViewData(dataResponse);
                 return View(topicInput);
             }
-            catch (Exception ex)
-            {
-                return View(viewName: "_Error", model: ex.Message);
-            }
+
+            AddViewData(DataResponseStatus.InvalidData);
+            return View(topicInput);
         }
 
         [Route("delete/{id}")]
         [HttpPost]
         public async Task<IActionResult> Delete([Required] string id)
         {
-            try
-            {
-                TopicOutput topicOutput = await _topicRepository.GetAsync(id);
-                if (topicOutput == null)
-                    return RedirectToAction("Index");
-
-                DataResponse dataResponse = await _topicRepository.BatchDeleteAsync(id);
-
-                AddTempData(dataResponse);
+            TopicOutput topicOutput = await _topicRepository.GetAsync(id);
+            if (topicOutput == null)
                 return RedirectToAction("Index");
-            }
-            catch (Exception ex)
-            {
-                return View(viewName: "_Error", model: ex.Message);
-            }
+
+            DataResponse dataResponse = await _topicRepository.BatchDeleteAsync(id);
+
+            AddTempData(dataResponse);
+            return RedirectToAction("Index");
         }
 
+        [Route("export-to-spreadsheet")]
+        [HttpGet]
+        public async Task<IActionResult> ExportToSpreadsheet()
+        {
+            IWorkbook workbook = await _topicRepository.ExportToSpreadsheetAsync(
+                SpreadsheetTypeOptions.XLSX,
+                "Danh sách đề tài",
+                new string[] { "Id", "Name" }
+            );
 
+            ContentDisposition contentDisposition = new ContentDisposition
+            {
+                FileName = $"Thesis_{DateTime.Now.ToString("ddMMyyyy_hhmmss")}.xlsx",
+                Inline = true,
+            };
+
+            Response.Headers.Append("Content-Disposition", contentDisposition.ToString());
+
+            using (MemoryStream memoryStream = new MemoryStream())
+            {
+                workbook.Write(memoryStream, true);
+                byte[] bytes = memoryStream.ToArray();
+                return File(bytes, ContentTypeConsts.XLSX);
+            }
+        }
     }
 }

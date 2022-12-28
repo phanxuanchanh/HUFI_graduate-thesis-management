@@ -1,5 +1,4 @@
-﻿
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 	<!-- Required meta tags -->
@@ -17,6 +16,8 @@
 	<!-- endinject -->
     <link rel="shortcut icon" href="~/kapella-free/template/images/favicon.png" />
     <link href="~/student-area/student-thesis.css" rel="stylesheet" />
+    <link href="~/student-area/css/custom.css" rel="stylesheet" />
+	@await RenderSectionAsync("Styles", required: false)
 </head>
 <body>
 	<div class="container-scroller">

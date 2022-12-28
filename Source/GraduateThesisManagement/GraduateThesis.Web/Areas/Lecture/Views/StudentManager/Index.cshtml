@@ -2,7 +2,7 @@
 @using X.PagedList.Web.Common
 @model IEnumerable<StudentOutput>
 @{
-    IPagedList pagedInfo = (IPagedList)ViewData["PagedList"];
+    IPagedList pagedInfo = (IPagedList)ViewData["PagedList"]!;
 }
 
 <h1 class="mt-4">@ViewData["PageName"]</h1>
@@ -92,7 +92,7 @@
                         @{
                             int count = 1;
                         }
-                        @foreach (StudentOutput student in (IEnumerable<StudentOutput>)ViewData["PagedList"])
+                        @foreach (StudentOutput student in (IEnumerable<StudentOutput>)ViewData["PagedList"]!)
                         {
                             <tr>
                                 <td>

@@ -1,4 +1,8 @@
-﻿<nav class="navbar top-navbar col-lg-12 col-12 p-0">
+﻿@{
+	StudentOutput student = (ViewData["AccountModel"] as StudentOutput)!;
+}
+
+<nav class="navbar top-navbar col-lg-12 col-12 p-0">
 	<div class="container-fluid">
 		<div class="navbar-menu-wrapper d-flex align-items-center justify-content-between">
 			<ul class="navbar-nav navbar-nav-left">
@@ -116,8 +120,8 @@
 				</li>
 			</ul>
 			<div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">
-				<a class="navbar-brand brand-logo" href="index.html"><img src="images/logo.svg" alt="logo" /></a>
-				<a class="navbar-brand brand-logo-mini" href="index.html"><img src="images/logo-mini.svg" alt="logo" /></a>
+                <a class="navbar-brand brand-logo custom-brand-logo" href="#"><img src="~/images/logo-hufi-new-v6.png" alt="logo" /></a>
+				<a class="navbar-brand brand-logo-mini custom-brand-logo-mini" href="#"><img src="~/images/logo-hufi-new-v6.png" alt="logo" /></a>
 			</div>
 			<ul class="navbar-nav navbar-nav-right">
 				<li class="nav-item dropdown  d-lg-flex d-none">
@@ -144,9 +148,9 @@
 				</li>
 				<li class="nav-item nav-profile dropdown">
 					<a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" id="profileDropdown">
-						<span class="nav-profile-name">Johnson</span>
+						<span class="nav-profile-name">@student.Name</span>
 						<span class="online-status"></span>
-						<img src="images/faces/face28.png" alt="profile" />
+						<img class="avatar-resize" src="~/images/@student.Avatar" alt="profile" />
 					</a>
 					<div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="profileDropdown">
 						<a class="dropdown-item">
