@@ -10,16 +10,17 @@ namespace GraduateThesis.Repository.DTO
     public class ThesisCommitteeInput
     {
         [Display(Name = "Mã hội đồng")]
+        [Required(ErrorMessage = "{0} không được để trống")]
         public string Id { get; set; }
 
-        [Display(Name = "Tên hội đồng")]
+        [Display(Name = "Tên ủy ban")]
         [Required(ErrorMessage = "{0} không được để trống")]
         public string Name { get; set; }
 
-        [Display(Name = "Mô tả hội đồng")]
+        [Display(Name = "Mô tả")]
         public string Description { get; set; }
 
-        [Display(Name = "Ghi chú hội đồng")]
+        [Display(Name = "Ghi chú ")]
         public string Notes { get; set; }
 
 

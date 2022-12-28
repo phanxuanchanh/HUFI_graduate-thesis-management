@@ -6,8 +6,7 @@ using GraduateThesis.Repository.DTO;
 using NPOI.SS.UserModel;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace GraduateThesis.Repository.BLL.Implements
@@ -119,12 +118,12 @@ namespace GraduateThesis.Repository.BLL.Implements
 
         public StudentClassOutput Get(string id)
         {
-            return _genericRepository.GetById(id);
+            return _genericRepository.Get("Id", id);
         }
 
         public async Task<StudentClassOutput> GetAsync(string id)
         {
-            return await _genericRepository.GetByIdAsync(id);
+            return await _genericRepository.GetAsync("Id", id);
         }
 
         public List<StudentClassOutput> GetList(int count = 200)
@@ -145,6 +144,16 @@ namespace GraduateThesis.Repository.BLL.Implements
         public async Task<Pagination<StudentClassOutput>> GetPaginationAsync(int page, int pageSize, string orderBy, OrderOptions orderOptions, string keyword)
         {
             return await _genericRepository.GetPaginationAsync(page, pageSize, orderBy, orderOptions, keyword);
+        }
+
+        public DataResponse ImportFromSpreadsheet(Stream stream, SpreadsheetTypeOptions spreadsheetTypeOptions, string sheetName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<DataResponse> ImportFromSpreadsheetAsync(Stream stream, SpreadsheetTypeOptions spreadsheetTypeOptions, string sheetName)
+        {
+            throw new NotImplementedException();
         }
 
         public DataResponse<StudentClassOutput> Update(string id, StudentClassInput input)

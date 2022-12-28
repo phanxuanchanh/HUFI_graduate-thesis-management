@@ -6,6 +6,7 @@ using GraduateThesis.Repository.DTO;
 using NPOI.SS.UserModel;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,12 +16,12 @@ namespace GraduateThesis.Repository.BLL.Implements
     public class AppRolesRepository : IAppRolesRepository
     {
         private HufiGraduateThesisContext context;
-        private GenericRepository<HufiGraduateThesisContext, AppRoles, AppRolesInput, AppRolesOutput> _genericRepository;
+        private GenericRepository<HufiGraduateThesisContext, AppRole, AppRolesInput, AppRolesOutput> _genericRepository;
 
         public AppRolesRepository(HufiGraduateThesisContext context)
         {
             this.context = context;
-            _genericRepository = new GenericRepository<HufiGraduateThesisContext, AppRoles, AppRolesInput, AppRolesOutput>(context, context.AppRoles);
+            _genericRepository = new GenericRepository<HufiGraduateThesisContext, AppRole, AppRolesInput, AppRolesOutput>(context, context.AppRoles);
 
             ConfigureIncludes();
             ConfigureSelectors();
@@ -28,12 +29,12 @@ namespace GraduateThesis.Repository.BLL.Implements
 
         public DataResponse BatchDelete(string id)
         {
-            throw new NotImplementedException();
+            return _genericRepository.BatchDelete(id);
         }
 
         public Task<DataResponse> BatchDeleteAsync(string id)
         {
-            throw new NotImplementedException();
+            return _genericRepository.BatchDeleteAsync(id);
         }
 
         public void ConfigureIncludes()
@@ -77,12 +78,12 @@ namespace GraduateThesis.Repository.BLL.Implements
 
         public DataResponse<AppRolesOutput> Create(AppRolesInput input)
         {
-            throw new NotImplementedException();
+            return _genericRepository.Create(input, GenerateUIDOptions.ShortUID);
         }
 
-        public Task<DataResponse<AppRolesOutput>> CreateAsync(AppRolesInput input)
+        public async Task<DataResponse<AppRolesOutput>> CreateAsync(AppRolesInput input)
         {
-            throw new NotImplementedException();
+            return await _genericRepository.CreateAsync(input, GenerateUIDOptions.ShortUID);
         }
 
         public IWorkbook ExportToSpreadsheet(SpreadsheetTypeOptions spreadsheetTypeOptions, string sheetName, string[] includeProperties)
@@ -135,15 +136,24 @@ namespace GraduateThesis.Repository.BLL.Implements
             return await _genericRepository.GetPaginationAsync(page, pageSize, orderBy, orderOptions, keyword);
         }
 
-
-        public DataResponse<AppRolesOutput> Update(string id, AppRolesInput input)
+        public DataResponse ImportFromSpreadsheet(Stream stream, SpreadsheetTypeOptions spreadsheetTypeOptions, string sheetName)
         {
             throw new NotImplementedException();
         }
 
-        public Task<DataResponse<AppRolesOutput>> UpdateAsync(string id, AppRolesInput input)
+        public Task<DataResponse> ImportFromSpreadsheetAsync(Stream stream, SpreadsheetTypeOptions spreadsheetTypeOptions, string sheetName)
         {
             throw new NotImplementedException();
+        }
+
+        public DataResponse<AppRolesOutput> Update(string id, AppRolesInput input)
+        {
+            return _genericRepository.Update(id, input);
+        }
+
+        public async Task<DataResponse<AppRolesOutput>> UpdateAsync(string id, AppRolesInput input)
+        {
+            return await _genericRepository.UpdateAsync(id, input);
         }
     }
 }

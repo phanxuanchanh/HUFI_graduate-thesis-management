@@ -36,6 +36,7 @@ namespace GraduateThesis.Repository.DTO
         public string Avatar { get; set; }
 
         [Display(Name = "Mật khẩu")]
+        [Required(ErrorMessage = "{0} bắt buộc nhập ")]
         [DataType(DataType.Password, ErrorMessage = "{0} có kiểu dữ liệu không hợp lệ")]
         public string Password { get; set; }
 

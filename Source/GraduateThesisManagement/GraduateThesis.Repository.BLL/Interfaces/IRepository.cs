@@ -17,6 +17,7 @@ namespace GraduateThesis.Repository.BLL.Interfaces
         ITrainingLevelRepository TrainingLevelRepository { get; }
         ISpecializationRepository SpecializationRepository { get; }
         IAppRolesRepository AppRolesRepository { get; }
+        IAppUserRolesRepository AppUserRolesRepository { get; }
 
     }
 }

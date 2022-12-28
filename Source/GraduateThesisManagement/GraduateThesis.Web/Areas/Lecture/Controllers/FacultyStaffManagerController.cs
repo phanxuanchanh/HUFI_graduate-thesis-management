@@ -1,4 +1,5 @@
-﻿using GraduateThesis.Common.WebAttributes;
+﻿using GraduateThesis.Common.Authorization;
+using GraduateThesis.Common.WebAttributes;
 using GraduateThesis.Generics;
 using GraduateThesis.Models;
 using GraduateThesis.Repository.BLL.Implements;
@@ -15,6 +16,9 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
 {
     [Area("Lecture")]
     [Route("lecture/facutlystaff-manager")]
+    [WebAuthorize(AccountRole.Lecture)]
+    [AccountInfo(typeof(FacultyStaffOutput))]
+    [HandleException]
     public class FacultyStaffManagerController : WebControllerBase
     {
         public string PageName { get; set; } = "Quản lý giảng viên";
@@ -36,6 +40,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
         [Route("list")]
         [HttpGet]
         [PageName(Name = "Danh sách giảng viên")]
+        [WebAuthorize(AccountRole.Lecture)]
         public async Task<IActionResult> Index(int page = 1, int pageSize = 10, string orderBy = null, string orderOptions = "ASC", string keyword = null)
         {
             try
@@ -64,6 +69,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
         [Route("details/{id}")]
         [HttpGet]
         [PageName(Name = "Chỉnh sửa giảng viên")]
+        [WebAuthorize(AccountRole.Lecture)]
         public async Task<IActionResult> Details([Required] string id)
         {
             try
@@ -84,6 +90,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
         [Route("create")]
         [HttpGet]
         [PageName(Name = "Tạo mới giảng viên")]
+        [WebAuthorize(AccountRole.Lecture)]
         public async Task<ActionResult> Create()
         {
             List<FacultyOutput> faculties = await _facultyRepository.GetListAsync();
@@ -98,6 +105,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
 
         [Route("create")]
         [HttpPost]
+        [WebAuthorize(AccountRole.Lecture)]
         public async Task<IActionResult> Create(FacultyStaffInput facultyStaffInput)
         {
             try
@@ -128,6 +136,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
         [Route("edit/{id}")]
         [HttpGet]
         [PageName(Name = "Chỉnh sửa giảng viên")]
+        [WebAuthorize(AccountRole.Lecture)]
         public async Task<IActionResult> Edit([Required] string id)
         {
             try
@@ -153,6 +162,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
 
         [Route("edit/{id}")]
         [HttpPost]
+        [WebAuthorize(AccountRole.Lecture)]
         public async Task<IActionResult> Edit([Required] string id, FacultyStaffInput facultyStaffInput)
         {
             try
@@ -185,6 +195,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
 
         [Route("delete/{id}")]
         [HttpPost]
+        [WebAuthorize(AccountRole.Lecture)]
         public async Task<IActionResult> Delete([Required] string id)
         {
             try

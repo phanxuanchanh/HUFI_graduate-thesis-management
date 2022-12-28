@@ -1,4 +1,5 @@
-﻿using GraduateThesis.Common.WebAttributes;
+﻿using GraduateThesis.Common.Authorization;
+using GraduateThesis.Common.WebAttributes;
 using GraduateThesis.Generics;
 using GraduateThesis.Models;
 using GraduateThesis.Repository.BLL.Implements;
@@ -15,6 +16,9 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
 {
     [Area("Lecture")]
     [Route("lecture/thesisgroup-manager")]
+    [WebAuthorize(AccountRole.Lecture)]
+    [AccountInfo(typeof(FacultyStaffOutput))]
+    [HandleException]
     public class ThesisGroupManagerController : WebControllerBase
     {
         private IStudentThesisGroupRepository _studentThesisGroupRepository;
@@ -28,12 +32,9 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
         [Route("list")]
         [HttpGet]
         [PageName(Name = "Danh sách nhóm sinh viên làm khóa luận")]
+        [WebAuthorize(AccountRole.Lecture)]
         public async Task<IActionResult> Index(int page = 1, int pageSize = 10, string orderBy = "", string orderOptions = "ASC", string keyword = "")
         {
-            try
-            {
-                
-
                 Pagination<StudentThesisGroupOutput> pagination;
                 if (orderOptions == "ASC")
                     pagination = await _studentThesisGroupRepository.GetPaginationAsync(page, pageSize, orderBy, OrderOptions.ASC, keyword);
@@ -46,48 +47,10 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
                 ViewData["OrderOptions"] = orderOptions;
                 ViewData["Keyword"] = keyword;
 
-                return View();
-            }
-            catch (Exception ex)
-            {
-                return View(viewName: "_Error", model: ex.Message);
-            }
+                return View();          
         }
 
-        [Route("create")]
-        [HttpGet]
-        [PageName(Name = "Tạo mới nhóm đề tài khóa luận")]
-        public async Task<ActionResult> Create()
-        {
-
-            return View();
-        }
-
-        [Route("create")]
-        [HttpPost]
-        [PageName(Name = "Tạo mới đề tài khóa luận")]
-        public async Task<IActionResult> Create(StudentThesisGroupInput studentThesisGroupInput)
-        {
-            try
-            {
-                
-
-                if (ModelState.IsValid)
-                {
-                    DataResponse<StudentThesisGroupOutput> dataResponse = await _studentThesisGroupRepository.CreateAsync(studentThesisGroupInput);
-                    AddViewData(dataResponse);
-
-                    return View(studentThesisGroupInput);
-                }
-
-                AddViewData(DataResponseStatus.InvalidData);
-                return View(studentThesisGroupInput);
-            }
-            catch (Exception ex)
-            {
-                return View(viewName: "_Error", model: ex.Message);
-            }
-        }
+       
 
     }
 }

@@ -1,0 +1,158 @@
+﻿@using GraduateThesis.Repository.DTO;
+@using X.PagedList.Mvc.Core
+@using X.PagedList.Web.Common
+@using X.PagedList;
+@model IEnumerable<AppRolesOutput>
+@{
+    IPagedList pagedInfo = (IPagedList)ViewData["PagedList"]!;
+}
+
+
+
+<div class="card mb-4">
+    <div class="card-body">
+        <a asp-action="Create" class="btn btn-primary">Tạo mới</a>
+        <a asp-action="Create" class="btn btn-primary">Nhập từ XLS</a>
+        <a asp-action="Create" class="btn btn-primary">Xuất XLS</a>
+        <a asp-action="Create" class="btn btn-primary">Thùng rác</a>
+    </div>
+</div>
+
+<div class="row" id="table-bordered">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title"> @ViewData["PageName"]</h4>
+               
+            </div>
+            <div class="card-content">
+                <div class="card-body">
+                    <div class="dataTable-wrapper dataTable-loading no-footer sortable searchable fixed-columns">
+                        <form asp-action="Index" asp-controller="AppRoleManager" method="get">
+                            <input type="hidden" name="page" value="1" />
+                            <input type="hidden" name="orderBy" value="@ViewData["OrderBy"]" />
+                            <input type="hidden" name="orderOptions" value="@ViewData["OrderOptions"]" />
+                            <div class="dataTable-top">
+                                <div class="dataTable-dropdown">
+                                    <label>
+                                        <select class="dataTable-selector" name="pageSize" onchange="this.form.submit();">
+                                            @for (int i = 5; i <= 50; i++)
+                                            {
+                                                if (i == pagedInfo.PageSize)
+                                                {
+                                                    <option value="@i" selected>@i</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value="@i">@i</option>
+                                                }
+                                            }
+                                        </select> dòng trên 1 trang
+
+
+                                    </label>
+                                </div>
+
+                                <div class="dataTable-search">
+                                    <input class="dataTable-input" placeholder="Tìm kiếm..." type="text" name="keyword" value="@ViewData["Keyword"]">
+                                </div>
+
+                            </div>
+                        </form>
+                        <div class="table-responsive">
+                            <table class="table table-bordered mb-0">
+                                <thead>
+                                    <tr>
+                                        <th data-sortable="">
+                                            <a href="#" class="">STT</a>
+                                        </th>
+                                        <th data-sortable="">
+                                            <a href="#" class="dataTable-sorter">@Html.DisplayNameFor(model => model.Id)</a>
+                                        </th>
+                                        <th data-sortable="">
+                                            <a href="#" class="dataTable-sorter">@Html.DisplayNameFor(model => model.Name)</a>
+                                        </th>
+                                        <th data-sortable="">
+                                            <a href="#" class="dataTable-sorter">@Html.DisplayNameFor(model => model.Description)</a>
+                                        </th>
+                                        <th data-sortable="">
+                                            <a href="#" class="dataTable-sorter">Công cụ</a>
+                                        </th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    @{
+                                        int count = 1;
+                                    }
+                                    @foreach (AppRolesOutput appRoles in (IEnumerable<AppRolesOutput>)ViewData["PagedList"]!)
+                                    {
+                                        <tr>
+                                            <td class="text-bold-500">
+                                                @count
+                                            </td>
+                                            <td class="text-bold-500">
+                                                @appRoles.Id
+                                            </td>
+                                            <td class="text-bold-500">
+                                                @appRoles.Name
+                                            </td>
+                                            <td class="text-bold-500">
+                                                @appRoles.Description
+                                            </td>
+                                            <td class="project-actions text-right">
+                                                <a class="btn btn-success btn-sm" asp-action="Details" asp-controller="AppRoleManager" asp-route-id="@appRoles.Id">
+                                                    <i class="fas fa-folder"></i> Chi tiết
+                                                </a>
+                                                <a class="btn btn-primary btn-sm" asp-action="Edit" asp-controller="AppRoleManager" asp-route-id="@appRoles.Id">
+                                                    <i class="fas fa-folder"></i> Sửa
+                                                </a>
+                                                <button type="submit" form="deleteappRole_@count" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i> Xóa</button>
+                                                <form asp-action="Delete" asp-controller="AppRoleManager" asp-route-id="@appRoles.Id" id="deleteappRole_@count">
+                                                </form>
+                                            </td>
+                                        </tr>
+                                        count++;
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="dataTable-bottom">
+                            <div class="dataTable-info">Hiển thị @pagedInfo.PageSize trên tổng @pagedInfo.TotalItemCount dòng</div>
+                            <nav class="dataTable-pagination">
+                                <ul class="dataTable-pagination-list">
+                                    @Html.PagedListPager(
+                                    (IPagedList)ViewData["PagedList"],
+                                    p => Url.Action("Index", new {
+                                    page = p,
+                                    pageSize = pagedInfo.PageSize,
+                                    orderBy = @ViewData["OrderBy"],
+                                    orderOptions = @ViewData["OrderOptions"],
+                                    keyword = @ViewData["Keyword"]
+                                    }),
+                                    PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing(new PagedListRenderOptions
+                                    {
+                                    LiElementClasses = new string[] { "page-item" },
+                                    PageClasses = new string[] { "page-link" }
+                                    },
+                                    ajaxOptions: new AjaxOptions
+                                    {
+                                    UpdateTargetId = "dataTable",
+                                    InsertionMode = InsertionMode.Replace,
+                                    HttpMethod = "GET"
+                                    }))
+                                </ul>
+                            </nav>
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script src="~/Scripts/jquery.unobtrusive-ajax.js"></script>
+            }

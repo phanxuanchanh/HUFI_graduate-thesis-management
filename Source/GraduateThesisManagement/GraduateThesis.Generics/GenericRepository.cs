@@ -479,10 +479,10 @@ namespace GraduateThesis.Generics
                 };
 
             object id = idPropertyInfo.GetValue(entity, null);
-            if (id is string && generateUIDOptions == GenerateUIDOptions.ShortUID)
+            if ( generateUIDOptions == GenerateUIDOptions.ShortUID)
                 idPropertyInfo.SetValue(entity, UID.GetShortUID());
 
-            if (id is string && generateUIDOptions == GenerateUIDOptions.MicrosoftUID)
+            if ( generateUIDOptions == GenerateUIDOptions.MicrosoftUID)
                 idPropertyInfo.SetValue(entity, UID.GetUUID());
 
             PropertyInfo createdAtPropertyInfo = entityType.GetProperty("CreatedAt");
@@ -591,6 +591,7 @@ namespace GraduateThesis.Generics
                 workbook = new XSSFWorkbook(stream);
 
             ISheet sheet = workbook.GetSheet(sheetName);
+            List<TEntity> entities = new List<TEntity>();
             List<TInput> inputs = new List<TInput>();
             Type inputType = typeof(TInput);
             PropertyInfo[] inputProperties = inputType.GetProperties();
@@ -606,7 +607,72 @@ namespace GraduateThesis.Generics
                 }
             }
 
+            ImportFromSpreadsheet(stream, spreadsheetTypeOptions, sheetName, x =>
+            {
+
+                return default(TEntity);
+            });
+
             return BulkInsert(inputs, GenerateUIDOptions.ShortUID);
+        }
+
+        public DataResponse ImportFromSpreadsheet(Stream stream, SpreadsheetTypeOptions spreadsheetTypeOptions, string sheetName, Func<IRow, TEntity> predicate)
+        {
+            IWorkbook workbook;
+            if (spreadsheetTypeOptions == SpreadsheetTypeOptions.XLS)
+                workbook = new HSSFWorkbook(stream);
+            else
+                workbook = new XSSFWorkbook(stream);
+
+            ISheet sheet = workbook.GetSheet(sheetName);
+            List<TEntity> entities = new List<TEntity>();
+
+            for (int rowIndex = 1; rowIndex < sheet.LastRowNum; rowIndex++)
+            {
+                IRow row = sheet.GetRow(rowIndex);
+                TEntity entity = predicate(row);
+                entities.Add(entity);
+            }
+
+            _dbSet.BulkInsert(entities);
+
+            MethodInfo saveChangesMethodInfo = _contextType.GetMethod("BulkSaveChanges", new Type[] { });
+            int affected = (int)saveChangesMethodInfo.Invoke(_context, null);
+
+            if (affected == 0)
+                return new DataResponse { Status = DataResponseStatus.Failed };
+
+            return new DataResponse { Status = DataResponseStatus.Success };
+        }
+
+        public async Task<DataResponse> ImportFromSpreadsheetAsync(Stream stream, SpreadsheetTypeOptions spreadsheetTypeOptions, string sheetName, Func<IRow, TEntity> predicate)
+        {
+            IWorkbook workbook;
+            if (spreadsheetTypeOptions == SpreadsheetTypeOptions.XLS)
+                workbook = new HSSFWorkbook(stream);
+            else
+                workbook = new XSSFWorkbook(stream);
+
+            ISheet sheet = workbook.GetSheet(sheetName);
+            List<TEntity> entities = new List<TEntity>();
+
+            for (int rowIndex = 1; rowIndex < sheet.LastRowNum; rowIndex++)
+            {
+                IRow row = sheet.GetRow(rowIndex);
+                TEntity entity = predicate(row);
+                entities.Add(entity);
+            }
+
+            await _dbSet.BulkInsertAsync(entities);
+
+            MethodInfo saveChangesMethodInfo = _contextType.GetMethod("BulkSaveChangesAsync", new Type[] { typeof(CancellationToken) });
+            Task<int> resultAsync = (Task<int>)saveChangesMethodInfo.Invoke(_context, new object[] { default(CancellationToken) });
+
+            int affected = await resultAsync;
+            if (affected == 0)
+                return new DataResponse<TOutput> { Status = DataResponseStatus.Failed };
+
+            return new DataResponse { Status = DataResponseStatus.Success };
         }
 
         #endregion

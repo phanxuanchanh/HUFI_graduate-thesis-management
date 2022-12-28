@@ -6,6 +6,7 @@ using GraduateThesis.Repository.DTO;
 using NPOI.SS.UserModel;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -99,12 +100,12 @@ namespace GraduateThesis.Repository.BLL.Implements
 
         public CommitteeMemberOutput Get(string id)
         {
-            return _genericRepository.GetById(id);
+            return _genericRepository.Get("Id", id);
         }
 
-        public Task<CommitteeMemberOutput> GetAsync(string id)
+        public async Task<CommitteeMemberOutput> GetAsync(string id)
         {
-            return _genericRepository.GetByIdAsync(id);
+            return await _genericRepository.GetAsync("Id", id);
         }
 
         public List<CommitteeMemberOutput> GetList(int count = 200)
@@ -125,6 +126,16 @@ namespace GraduateThesis.Repository.BLL.Implements
         public async Task<Pagination<CommitteeMemberOutput>> GetPaginationAsync(int page, int pageSize, string orderBy, OrderOptions orderOptions, string keyword)
         {
             return await _genericRepository.GetPaginationAsync(page, pageSize, orderBy, orderOptions, keyword);
+        }
+
+        public DataResponse ImportFromSpreadsheet(Stream stream, SpreadsheetTypeOptions spreadsheetTypeOptions, string sheetName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<DataResponse> ImportFromSpreadsheetAsync(Stream stream, SpreadsheetTypeOptions spreadsheetTypeOptions, string sheetName)
+        {
+            throw new NotImplementedException();
         }
 
         public DataResponse<CommitteeMemberOutput> Update(string id, CommitteeMemberInput input)

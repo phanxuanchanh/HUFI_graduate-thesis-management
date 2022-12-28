@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using NPOI.SS.UserModel;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -173,12 +174,12 @@ namespace GraduateThesis.Repository.BLL.Implements
 
         public StudentOutput Get(string id)
         {
-            return _genericRepository.GetById(id);
+            return _genericRepository.Get("Id", id);
         }
 
-        public Task<StudentOutput> GetAsync(string id)
+        public async Task<StudentOutput> GetAsync(string id)
         {
-            return _genericRepository.GetByIdAsync(id);
+            return await _genericRepository.GetAsync("Id", id);
         }
 
         public List<StudentOutput> GetList(int count = 200)
@@ -223,6 +224,16 @@ namespace GraduateThesis.Repository.BLL.Implements
                 //StudentThesisGroup = studentThesisGroup,
                 Students = students
             };
+        }
+
+        public DataResponse ImportFromSpreadsheet(Stream stream, SpreadsheetTypeOptions spreadsheetTypeOptions, string sheetName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<DataResponse> ImportFromSpreadsheetAsync(Stream stream, SpreadsheetTypeOptions spreadsheetTypeOptions, string sheetName)
+        {
+            throw new NotImplementedException();
         }
 
         public SignInResultModel SignIn(SignInModel signInModel)
