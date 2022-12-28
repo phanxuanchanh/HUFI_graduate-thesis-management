@@ -1,5 +1,6 @@
 ﻿using GraduateThesis.Common.File;
 using GraduateThesis.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NPOI.SS.UserModel;
 using System;
@@ -198,6 +199,36 @@ namespace GraduateThesis.Generics
                     workbook.Write(memoryStream, true);
                     byte[] bytes = memoryStream.ToArray();
                     return File(bytes, ContentTypeConsts.XLSX, fileName);
+                }
+            }
+            catch (Exception ex)
+            {
+                return GetActionResult(ex);
+            }
+        }
+
+        [Route("import-from-spreadsheet")]
+        [HttpPost]
+        public virtual async Task<IActionResult> ImportFromSpreadsheet(IFormFile formFile)
+        {
+            try
+            {
+                MethodInfo methodInfo = _subRepositoryType.GetMethod("ImportFromSpreadsheetAsync");
+
+                if (methodInfo == null)
+                    return StatusCode(500);
+
+                using(MemoryStream memoryStream = new MemoryStream())
+                {
+                    await formFile.CopyToAsync(memoryStream);
+                    memoryStream.Position = 0;
+                    Task<DataResponse> resultAsync = (Task<DataResponse>)methodInfo.Invoke(_subRepository, new object[] {
+                        memoryStream, 
+                        SpreadsheetTypeOptions.XLSX, 
+                        "Default"
+                    });
+
+                    return Ok(await resultAsync);
                 }
             }
             catch (Exception ex)

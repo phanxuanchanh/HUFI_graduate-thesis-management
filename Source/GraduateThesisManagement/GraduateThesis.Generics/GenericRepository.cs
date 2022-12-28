@@ -14,7 +14,6 @@ using System.Linq.Dynamic.Core;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace GraduateThesis.Generics
@@ -33,8 +32,7 @@ namespace GraduateThesis.Generics
         where TInput : class
         where TOutput : class
     {
-        private TContext _context;
-        private Type _contextType;
+        private DbContext _context;
         private DbSet<TEntity> _dbSet;
         private Expression<Func<TEntity, object>>[] _navigationPropertyPaths;
 
@@ -44,9 +42,8 @@ namespace GraduateThesis.Generics
 
         public GenericRepository(TContext context, DbSet<TEntity> dbSet)
         {
-            _context = context;
+            _context = (context as DbContext);
             _dbSet = dbSet;
-            _contextType = _context.GetType();
         }
 
         private object To(object input, Type outputType)
@@ -86,6 +83,11 @@ namespace GraduateThesis.Generics
 
         #region get records method
 
+        private string GetWhereExpString(string prefix)
+        {
+            return $"{prefix}.IsDeleted == false";
+        }
+
         private string GetWhereExpString(string prefix, string[] conditions, string keyword)
         {
             StringBuilder expStringBuilder = new StringBuilder($"{prefix} => ");
@@ -111,7 +113,7 @@ namespace GraduateThesis.Generics
             }
 
             expStringBuilder.Append(") && ");
-            foreach(string condition in conditions)
+            foreach (string condition in conditions)
             {
                 expStringBuilder.Append($"{prefix}.{condition} && ");
             }
@@ -127,7 +129,7 @@ namespace GraduateThesis.Generics
             PropertyInfo[] properties = typeof(TEntity).GetProperties()
                 .Where(p => p.PropertyType == typeof(string)).ToArray();
 
-            if(properties.Length == 0)
+            if (properties.Length == 0)
             {
                 expStringBuilder.Append($"{prefix}.IsDeleted == false");
                 return expStringBuilder.ToString();
@@ -154,7 +156,7 @@ namespace GraduateThesis.Generics
         {
             StringBuilder expStringBuilder = new StringBuilder($"{prefix} => ");
             PropertyInfo property = typeof(TEntity).GetProperty(searchBy);
-            if(property == null)
+            if (property == null)
                 throw new Exception($"Property named '{searchBy}' not found");
 
             if (property.PropertyType == typeof(string))
@@ -166,7 +168,7 @@ namespace GraduateThesis.Generics
                 string boolValueAsString = ((bool)value) ? "true" : "false";
                 expStringBuilder.Append($"{prefix}{searchBy} == {boolValueAsString}");
             }
-            else if(
+            else if (
                 property.PropertyType == typeof(int) || property.PropertyType == typeof(long)
                 || property.PropertyType == typeof(float) || property.PropertyType == typeof(double)
             )
@@ -215,11 +217,11 @@ namespace GraduateThesis.Generics
         {
             IQueryable<TEntity> queryable = _dbSet.IncludeMultiple(_navigationPropertyPaths);
             if (!string.IsNullOrEmpty(keyword))
-            {
                 queryable = queryable.Where(GetWhereExpString("p", keyword));
-            }
+            else
+                queryable = queryable.Where(GetWhereExpString("p"));
 
-            queryable = GetOrderedQueryable(queryable, orderBy, orderOptions);  
+            queryable = GetOrderedQueryable(queryable, orderBy, orderOptions);
 
             return queryable;
         }
@@ -228,9 +230,9 @@ namespace GraduateThesis.Generics
         {
             IQueryable<TEntity> queryable = _dbSet.IncludeMultiple(_navigationPropertyPaths);
             if (!string.IsNullOrEmpty(filterBy))
-            {
                 queryable = queryable.Where(GetWhereExpString("p", filterBy, filterValue));
-            }
+            else
+                queryable = queryable.Where(GetWhereExpString("p"));
 
             queryable = GetOrderedQueryable(queryable, orderBy, orderOptions);
 
@@ -440,10 +442,10 @@ namespace GraduateThesis.Generics
                 };
 
             object id = idPropertyInfo.GetValue(entity, null);
-            if (id is string && generateUIDOptions == GenerateUIDOptions.ShortUID)
+            if (idPropertyInfo.PropertyType == typeof(string) && generateUIDOptions == GenerateUIDOptions.ShortUID)
                 idPropertyInfo.SetValue(entity, UID.GetShortUID());
 
-            if (id is string && generateUIDOptions == GenerateUIDOptions.MicrosoftUID)
+            if (idPropertyInfo.PropertyType == typeof(string) && generateUIDOptions == GenerateUIDOptions.MicrosoftUID)
                 idPropertyInfo.SetValue(entity, UID.GetUUID());
 
             PropertyInfo createdAtPropertyInfo = entityType.GetProperty("CreatedAt");
@@ -452,9 +454,7 @@ namespace GraduateThesis.Generics
 
             _dbSet.Add(entity);
 
-            MethodInfo saveChangesMethodInfo = _contextType.GetMethod("SaveChanges", new Type[] { })!;
-            int affected = (int)saveChangesMethodInfo.Invoke(_context, null)!;
-
+            int affected = _context.SaveChanges();
             if (affected == 0)
                 return new DataResponse<TOutput> { Status = DataResponseStatus.Failed };
 
@@ -479,10 +479,10 @@ namespace GraduateThesis.Generics
                 };
 
             object id = idPropertyInfo.GetValue(entity, null);
-            if ( generateUIDOptions == GenerateUIDOptions.ShortUID)
+            if (idPropertyInfo.PropertyType == typeof(string) && generateUIDOptions == GenerateUIDOptions.ShortUID)
                 idPropertyInfo.SetValue(entity, UID.GetShortUID());
 
-            if ( generateUIDOptions == GenerateUIDOptions.MicrosoftUID)
+            if (id is string && generateUIDOptions == GenerateUIDOptions.MicrosoftUID)
                 idPropertyInfo.SetValue(entity, UID.GetUUID());
 
             PropertyInfo createdAtPropertyInfo = entityType.GetProperty("CreatedAt");
@@ -491,10 +491,7 @@ namespace GraduateThesis.Generics
 
             _dbSet.Add(entity);
 
-            MethodInfo saveChangesMethodInfo = _contextType.GetMethod("SaveChangesAsync", new Type[] { typeof(CancellationToken) });
-            Task<int> resultAsync = (Task<int>)saveChangesMethodInfo.Invoke(_context, new object[] { default(CancellationToken) });
-
-            int affected = await resultAsync;
+            int affected = await _context.SaveChangesAsync();
             if (affected == 0)
                 return new DataResponse<TOutput> { Status = DataResponseStatus.Failed };
 
@@ -518,10 +515,10 @@ namespace GraduateThesis.Generics
                 if (idPropertyInfo != null)
                 {
                     object id = idPropertyInfo.GetValue(s, null);
-                    if (id is string && generateUIDOptions == GenerateUIDOptions.ShortUID)
+                    if (idPropertyInfo.PropertyType == typeof(string) && generateUIDOptions == GenerateUIDOptions.ShortUID)
                         idPropertyInfo.SetValue(entity, UID.GetShortUID());
 
-                    if (id is string && generateUIDOptions == GenerateUIDOptions.MicrosoftUID)
+                    if (idPropertyInfo.PropertyType == typeof(string) && generateUIDOptions == GenerateUIDOptions.MicrosoftUID)
                         idPropertyInfo.SetValue(entity, UID.GetUUID());
                 }
 
@@ -533,12 +530,7 @@ namespace GraduateThesis.Generics
             });
 
             _dbSet.BulkInsert(entities);
-
-            MethodInfo saveChangesMethodInfo = _contextType.GetMethod("BulkSaveChanges", new Type[] { });
-            int affected = (int)saveChangesMethodInfo.Invoke(_context, null);
-
-            if (affected == 0)
-                return new DataResponse { Status = DataResponseStatus.Failed };
+            _context.BulkSaveChanges();
 
             return new DataResponse { Status = DataResponseStatus.Success };
         }
@@ -556,10 +548,10 @@ namespace GraduateThesis.Generics
                 if (idPropertyInfo != null)
                 {
                     object id = idPropertyInfo.GetValue(s, null);
-                    if (id is string && generateUIDOptions == GenerateUIDOptions.ShortUID)
+                    if (idPropertyInfo.PropertyType == typeof(string) && generateUIDOptions == GenerateUIDOptions.ShortUID)
                         idPropertyInfo.SetValue(entity, UID.GetShortUID());
 
-                    if (id is string && generateUIDOptions == GenerateUIDOptions.MicrosoftUID)
+                    if (idPropertyInfo.PropertyType == typeof(string) && generateUIDOptions == GenerateUIDOptions.MicrosoftUID)
                         idPropertyInfo.SetValue(entity, UID.GetUUID());
                 }
 
@@ -571,13 +563,7 @@ namespace GraduateThesis.Generics
             });
 
             await _dbSet.BulkInsertAsync(entities);
-
-            MethodInfo saveChangesMethodInfo = _contextType.GetMethod("BulkSaveChangesAsync", new Type[] { typeof(CancellationToken) });
-            Task<int> resultAsync = (Task<int>)saveChangesMethodInfo.Invoke(_context, new object[] { default(CancellationToken) });
-
-            int affected = await resultAsync;
-            if (affected == 0)
-                return new DataResponse<TOutput> { Status = DataResponseStatus.Failed };
+            await _context.BulkSaveChangesAsync();
 
             return new DataResponse { Status = DataResponseStatus.Success };
         }
@@ -596,7 +582,7 @@ namespace GraduateThesis.Generics
             Type inputType = typeof(TInput);
             PropertyInfo[] inputProperties = inputType.GetProperties();
 
-            for(int rowIndex = 1; rowIndex < sheet.LastRowNum; rowIndex++)
+            for (int rowIndex = 1; rowIndex < sheet.LastRowNum; rowIndex++)
             {
                 IRow row = sheet.GetRow(rowIndex);
                 TInput input = Activator.CreateInstance<TInput>();
@@ -607,13 +593,16 @@ namespace GraduateThesis.Generics
                 }
             }
 
-            ImportFromSpreadsheet(stream, spreadsheetTypeOptions, sheetName, x =>
-            {
-
-                return default(TEntity);
-            });
-
             return BulkInsert(inputs, GenerateUIDOptions.ShortUID);
+        }
+
+        private IEnumerable<TEntity> To(ISheet sheet, Func<IRow, TEntity> predicate)
+        {
+            for (int rowIndex = 1; rowIndex < sheet.LastRowNum; rowIndex++)
+            {
+                IRow row = sheet.GetRow(rowIndex);
+                yield return predicate(row);
+            }
         }
 
         public DataResponse ImportFromSpreadsheet(Stream stream, SpreadsheetTypeOptions spreadsheetTypeOptions, string sheetName, Func<IRow, TEntity> predicate)
@@ -625,22 +614,8 @@ namespace GraduateThesis.Generics
                 workbook = new XSSFWorkbook(stream);
 
             ISheet sheet = workbook.GetSheet(sheetName);
-            List<TEntity> entities = new List<TEntity>();
-
-            for (int rowIndex = 1; rowIndex < sheet.LastRowNum; rowIndex++)
-            {
-                IRow row = sheet.GetRow(rowIndex);
-                TEntity entity = predicate(row);
-                entities.Add(entity);
-            }
-
-            _dbSet.BulkInsert(entities);
-
-            MethodInfo saveChangesMethodInfo = _contextType.GetMethod("BulkSaveChanges", new Type[] { });
-            int affected = (int)saveChangesMethodInfo.Invoke(_context, null);
-
-            if (affected == 0)
-                return new DataResponse { Status = DataResponseStatus.Failed };
+            _dbSet.BulkInsert(To(sheet, predicate));
+            _context.BulkSaveChanges();
 
             return new DataResponse { Status = DataResponseStatus.Success };
         }
@@ -654,23 +629,8 @@ namespace GraduateThesis.Generics
                 workbook = new XSSFWorkbook(stream);
 
             ISheet sheet = workbook.GetSheet(sheetName);
-            List<TEntity> entities = new List<TEntity>();
-
-            for (int rowIndex = 1; rowIndex < sheet.LastRowNum; rowIndex++)
-            {
-                IRow row = sheet.GetRow(rowIndex);
-                TEntity entity = predicate(row);
-                entities.Add(entity);
-            }
-
-            await _dbSet.BulkInsertAsync(entities);
-
-            MethodInfo saveChangesMethodInfo = _contextType.GetMethod("BulkSaveChangesAsync", new Type[] { typeof(CancellationToken) });
-            Task<int> resultAsync = (Task<int>)saveChangesMethodInfo.Invoke(_context, new object[] { default(CancellationToken) });
-
-            int affected = await resultAsync;
-            if (affected == 0)
-                return new DataResponse<TOutput> { Status = DataResponseStatus.Failed };
+            await _dbSet.BulkInsertAsync(To(sheet, predicate));
+            await _context.BulkSaveChangesAsync();
 
             return new DataResponse { Status = DataResponseStatus.Success };
         }
@@ -697,9 +657,7 @@ namespace GraduateThesis.Generics
             if (updatedAtPropertyInfo != null)
                 updatedAtPropertyInfo.SetValue(entity_fromDb, DateTime.Now);
 
-            MethodInfo saveChangesMethodInfo = _contextType.GetMethod("SaveChanges", new Type[] { })!;
-            int affected = (int)saveChangesMethodInfo.Invoke(_context, null)!;
-
+            int affected = _context.SaveChanges();
             if (affected == 0)
                 return new DataResponse<TOutput> { Status = DataResponseStatus.Failed };
 
@@ -728,10 +686,7 @@ namespace GraduateThesis.Generics
             if (updatedAtPropertyInfo != null)
                 updatedAtPropertyInfo.SetValue(entity_fromDb, DateTime.Now);
 
-            MethodInfo saveChangesMethodInfo = _contextType.GetMethod("SaveChangesAsync", new Type[] { typeof(CancellationToken) });
-            Task<int> resultAsync = (Task<int>)saveChangesMethodInfo.Invoke(_context, new object[] { default(CancellationToken) });
-
-            int affected = await resultAsync;
+            int affected = await _context.SaveChangesAsync();
             if (affected == 0)
                 return new DataResponse<TOutput> { Status = DataResponseStatus.Failed };
 
@@ -767,9 +722,7 @@ namespace GraduateThesis.Generics
             if (deletedAtPropertyInfo != null)
                 deletedAtPropertyInfo.SetValue(entity, DateTime.Now);
 
-            MethodInfo saveChangesMethodInfo = _contextType.GetMethod("SaveChanges", new Type[] { })!;
-            int affected = (int)saveChangesMethodInfo.Invoke(_context, null)!;
-
+            int affected = _context.SaveChanges();
             if (affected == 0)
                 return new DataResponse<TOutput> { Status = DataResponseStatus.Failed };
 
@@ -797,10 +750,7 @@ namespace GraduateThesis.Generics
             if (deletedAtPropertyInfo != null)
                 deletedAtPropertyInfo.SetValue(entity, DateTime.Now);
 
-            MethodInfo saveChangesMethodInfo = _contextType.GetMethod("SaveChangesAsync", new Type[] { typeof(CancellationToken) });
-            Task<int> resultAsync = (Task<int>)saveChangesMethodInfo.Invoke(_context, new object[] { default(CancellationToken) });
-
-            int affected = await resultAsync;
+            int affected = await _context.SaveChangesAsync();
             if (affected == 0)
                 return new DataResponse<TOutput> { Status = DataResponseStatus.Failed };
 
