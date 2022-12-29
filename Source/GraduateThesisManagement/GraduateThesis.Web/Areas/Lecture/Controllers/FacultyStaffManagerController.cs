@@ -214,5 +214,11 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
                 return View(viewName: "_Error", model: ex.Message);
             }
         }
+        [Route("import")]
+
+        public IActionResult Import()
+        {
+            return View();
+        }
     }
 }

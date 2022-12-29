@@ -50,7 +50,12 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
                 return View();          
         }
 
-       
+        [Route("import")]
+
+        public IActionResult Import()
+        {
+            return View();
+        }
 
     }
 }
