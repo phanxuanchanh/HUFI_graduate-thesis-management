@@ -134,6 +134,10 @@ namespace GraduateThesis.Web.Areas.Administrator.Controllers
             return RedirectToAction("Index");
         }
 
-
+        [Route("import")]
+        public IActionResult Import()
+        {
+            return View();
+        }
     }
 }

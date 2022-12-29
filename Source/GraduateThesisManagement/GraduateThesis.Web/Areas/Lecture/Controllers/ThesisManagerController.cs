@@ -19,8 +19,8 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
     [Area("Lecture")]
     [Route("lecture/thesis-manager")]
     [HandleException]
-    [WebAuthorize(AccountRole.Lecture)]
-    [AccountInfo(typeof(FacultyStaffOutput))]
+    //[WebAuthorize(AccountRole.Lecture)]
+    //[AccountInfo(typeof(FacultyStaffOutput))]
     public class ThesisManagerController : WebControllerBase
     {
         private ITopicRepository _topicRepository;
@@ -45,7 +45,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
         [Route("list")]
         [HttpGet]
         [PageName(Name = "Danh sách các đề tài khóa luận")]
-        [WebAuthorize(AccountRole.Lecture)]
+        //[WebAuthorize(AccountRole.Lecture)]
         public async Task<IActionResult> Index(int page = 1, int pageSize = 10, string orderBy = "", string orderOptions = "ASC", string keyword = "")
         {
             try
@@ -271,6 +271,13 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
             {
                 return View(viewName: "_Error", model: ex.Message);
             }
+        }
+
+        [Route("import")]
+
+        public IActionResult Import()
+        {
+            return View();
         }
     }
 }

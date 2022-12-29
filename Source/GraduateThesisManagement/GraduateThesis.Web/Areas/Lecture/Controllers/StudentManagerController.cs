@@ -177,5 +177,11 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
                 return File(bytes, ContentTypeConsts.XLSX);
             }
         }
+        [Route("import")]
+
+        public IActionResult Import()
+        {
+            return View();
+        }
     }
 }
