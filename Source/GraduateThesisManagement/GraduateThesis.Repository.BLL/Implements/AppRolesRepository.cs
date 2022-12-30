@@ -1,4 +1,5 @@
-﻿using GraduateThesis.Generics;
+﻿using GraduateThesis.Common;
+using GraduateThesis.Generics;
 using GraduateThesis.Models;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DAL;
@@ -138,12 +139,40 @@ namespace GraduateThesis.Repository.BLL.Implements
 
         public DataResponse ImportFromSpreadsheet(Stream stream, SpreadsheetTypeOptions spreadsheetTypeOptions, string sheetName)
         {
-            throw new NotImplementedException();
+            return _genericRepository.ImportFromSpreadsheet(stream, spreadsheetTypeOptions, sheetName, s =>
+            {
+                DateTime currentDateTime = DateTime.Now;
+                AppRole appRole = new AppRole
+                {
+                    Id = UID.GetShortUID(),
+                    CreatedAt = currentDateTime
+                };
+
+                appRole.Name = s.GetCell(1).StringCellValue;
+                appRole.Description = s.GetCell(2).StringCellValue;
+             
+
+                return appRole;
+            });
         }
 
-        public Task<DataResponse> ImportFromSpreadsheetAsync(Stream stream, SpreadsheetTypeOptions spreadsheetTypeOptions, string sheetName)
+        public async Task<DataResponse> ImportFromSpreadsheetAsync(Stream stream, SpreadsheetTypeOptions spreadsheetTypeOptions, string sheetName)
         {
-            throw new NotImplementedException();
+            return _genericRepository.ImportFromSpreadsheet(stream, spreadsheetTypeOptions, sheetName, s =>
+            {
+                DateTime currentDateTime = DateTime.Now;
+                AppRole appRole = new AppRole
+                {
+                    Id = UID.GetShortUID(),
+                    CreatedAt = currentDateTime
+                };
+
+                appRole.Name = s.GetCell(1).StringCellValue;
+                appRole.Description = s.GetCell(2).StringCellValue;
+
+
+                return appRole;
+            });
         }
 
         public DataResponse<AppRolesOutput> Update(string id, AppRolesInput input)

@@ -1,4 +1,5 @@
-﻿using GraduateThesis.Generics;
+﻿using GraduateThesis.Common;
+using GraduateThesis.Generics;
 using GraduateThesis.Models;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DAL;
@@ -143,13 +144,41 @@ namespace GraduateThesis.Repository.BLL.Implements
 
         public DataResponse ImportFromSpreadsheet(Stream stream, SpreadsheetTypeOptions spreadsheetTypeOptions, string sheetName)
         {
-            throw new NotImplementedException();
+            return _genericRepository.ImportFromSpreadsheet(stream, spreadsheetTypeOptions, sheetName, s =>
+            {
+                DateTime currentDateTime = DateTime.Now;
+                Faculty faculty = new Faculty
+                {
+                    Id = UID.GetShortUID(),
+                    CreatedAt = currentDateTime
+                };
+
+                faculty.Name = s.GetCell(1).StringCellValue;
+                faculty.Description = s.GetCell(2).StringCellValue;
+
+                return faculty;
+            });
         }
 
-        public Task<DataResponse> ImportFromSpreadsheetAsync(Stream stream, SpreadsheetTypeOptions spreadsheetTypeOptions, string sheetName)
+        public async Task<DataResponse> ImportFromSpreadsheetAsync(Stream stream, SpreadsheetTypeOptions spreadsheetTypeOptions, string sheetName)
         {
-            throw new NotImplementedException();
+
+            return await _genericRepository.ImportFromSpreadsheetAsync(stream, spreadsheetTypeOptions, sheetName, s =>
+            {
+                DateTime currentDateTime = DateTime.Now;
+                Faculty faculty = new Faculty
+                {
+                    Id = UID.GetShortUID(),
+                    CreatedAt = currentDateTime
+                };
+
+                faculty.Name = s.GetCell(1).StringCellValue;
+                faculty.Description = s.GetCell(2).StringCellValue;
+
+                return faculty;
+            });
         }
+    
 
         public DataResponse<FacultyOutput> Update(string id, FacultyInput input)
         {

@@ -1,4 +1,5 @@
 ﻿using GraduateThesis.Common.Authorization;
+using GraduateThesis.Common.File;
 using GraduateThesis.Common.WebAttributes;
 using GraduateThesis.Generics;
 using GraduateThesis.Models;
@@ -8,7 +9,9 @@ using GraduateThesis.Repository.DTO;
 using GraduateThesis.WebExtensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using NPOI.SS.UserModel;
 using System.ComponentModel.DataAnnotations;
+using System.Net.Mime;
 using System.Runtime.InteropServices;
 using X.PagedList;
 
@@ -212,6 +215,32 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
             catch (Exception ex)
             {
                 return View(viewName: "_Error", model: ex.Message);
+            }
+        }
+        [Route("export-to-spreadsheet")]
+        [HttpGet]
+        [WebAuthorize(AccountRole.Lecture)]
+        public async Task<IActionResult> ExportToSpreadsheet()
+        {
+            IWorkbook workbook = await _facultyStaffRepository.ExportToSpreadsheetAsync(
+                SpreadsheetTypeOptions.XLSX,
+                "Danh sách sinh viên của khoa",
+                new string[] { "Id", "FacultyId", "FacultyRoleId", "FullName", "Address", "Birthday", "Avatar", "Description", "StudentClassId" }
+            );
+
+            ContentDisposition contentDisposition = new ContentDisposition
+            {
+                FileName = $"Thesis_{DateTime.Now.ToString("ddMMyyyy_hhmmss")}.xlsx",
+                Inline = true,
+            };
+
+            Response.Headers.Append("Content-Disposition", contentDisposition.ToString());
+
+            using (MemoryStream memoryStream = new MemoryStream())
+            {
+                workbook.Write(memoryStream, true);
+                byte[] bytes = memoryStream.ToArray();
+                return File(bytes, ContentTypeConsts.XLSX);
             }
         }
         [Route("import")]

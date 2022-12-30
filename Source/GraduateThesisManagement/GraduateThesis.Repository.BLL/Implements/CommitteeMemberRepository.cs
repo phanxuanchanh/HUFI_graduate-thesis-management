@@ -1,4 +1,5 @@
-﻿using GraduateThesis.Generics;
+﻿using GraduateThesis.Common;
+using GraduateThesis.Generics;
 using GraduateThesis.Models;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DAL;
@@ -127,16 +128,45 @@ namespace GraduateThesis.Repository.BLL.Implements
         {
             return await _genericRepository.GetPaginationAsync(page, pageSize, orderBy, orderOptions, keyword);
         }
-
         public DataResponse ImportFromSpreadsheet(Stream stream, SpreadsheetTypeOptions spreadsheetTypeOptions, string sheetName)
         {
-            throw new NotImplementedException();
+            return _genericRepository.ImportFromSpreadsheet(stream, spreadsheetTypeOptions, sheetName, s =>
+            {
+                DateTime currentDateTime = DateTime.Now;
+                CommitteeMember committeeMember = new CommitteeMember
+                {
+                    Id = UID.GetShortUID(),
+                    CreatedAt = currentDateTime
+                };
+
+                committeeMember.ThesisCommitteeId = s.GetCell(1).StringCellValue;
+                committeeMember.MemberId = s.GetCell(2).StringCellValue;
+                committeeMember.Titles = s.GetCell(2).StringCellValue;
+
+                return committeeMember;
+            });
         }
 
-        public Task<DataResponse> ImportFromSpreadsheetAsync(Stream stream, SpreadsheetTypeOptions spreadsheetTypeOptions, string sheetName)
+        public async Task<DataResponse> ImportFromSpreadsheetAsync(Stream stream, SpreadsheetTypeOptions spreadsheetTypeOptions, string sheetName)
         {
-            throw new NotImplementedException();
+
+            return await _genericRepository.ImportFromSpreadsheetAsync(stream, spreadsheetTypeOptions, sheetName, s =>
+            {
+                DateTime currentDateTime = DateTime.Now;
+                CommitteeMember committeeMember = new CommitteeMember
+                {
+                    Id = UID.GetShortUID(),
+                    CreatedAt = currentDateTime
+                };
+
+                committeeMember.ThesisCommitteeId = s.GetCell(1).StringCellValue;
+                committeeMember.MemberId = s.GetCell(2).StringCellValue;
+                committeeMember.Titles = s.GetCell(2).StringCellValue;
+
+                return committeeMember;
+            });
         }
+
 
         public DataResponse<CommitteeMemberOutput> Update(string id, CommitteeMemberInput input)
         {

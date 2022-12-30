@@ -1,4 +1,5 @@
 ﻿using GraduateThesis.Common.Authorization;
+using GraduateThesis.Common.File;
 using GraduateThesis.Common.WebAttributes;
 using GraduateThesis.Generics;
 using GraduateThesis.Models;
@@ -9,7 +10,9 @@ using GraduateThesis.WebExtensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using NPOI.SS.Formula.Functions;
+using NPOI.SS.UserModel;
 using NuGet.Protocol.Core.Types;
+using System.Net.Mime;
 using X.PagedList;
 
 namespace GraduateThesis.Web.Areas.Lecture.Controllers
@@ -49,6 +52,32 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
 
                 return View();          
         }
+        [Route("export-to-spreadsheet")]
+        [HttpGet]
+        [WebAuthorize(AccountRole.Lecture)]
+        public async Task<IActionResult> ExportToSpreadsheet()
+        {
+            IWorkbook workbook = await _studentThesisGroupRepository.ExportToSpreadsheetAsync(
+                SpreadsheetTypeOptions.XLSX,
+                "Danh sách nhóm sinh viên làm khóa luận ",
+                new string[] { "Id", "Name" }
+            );
+
+            ContentDisposition contentDisposition = new ContentDisposition
+            {
+                FileName = $"Thesis_{DateTime.Now.ToString("ddMMyyyy_hhmmss")}.xlsx",
+                Inline = true,
+            };
+
+            Response.Headers.Append("Content-Disposition", contentDisposition.ToString());
+
+            using (MemoryStream memoryStream = new MemoryStream())
+            {
+                workbook.Write(memoryStream, true);
+                byte[] bytes = memoryStream.ToArray();
+                return File(bytes, ContentTypeConsts.XLSX);
+            }
+        }
 
         [Route("import")]
 
@@ -56,6 +85,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
         {
             return View();
         }
+
 
     }
 }

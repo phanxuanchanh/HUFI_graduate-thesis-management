@@ -228,13 +228,56 @@ namespace GraduateThesis.Repository.BLL.Implements
 
         public DataResponse ImportFromSpreadsheet(Stream stream, SpreadsheetTypeOptions spreadsheetTypeOptions, string sheetName)
         {
-            throw new NotImplementedException();
+            return _genericRepository.ImportFromSpreadsheet(stream, spreadsheetTypeOptions, sheetName, s =>
+            {
+                DateTime currentDateTime = DateTime.Now;
+                Student student = new Student
+                {
+                    Id = UID.GetShortUID(),
+                    CreatedAt = currentDateTime
+                };
+
+                student.Name = s.GetCell(1).StringCellValue;
+                student.Phone = s.GetCell(2).StringCellValue;
+                student.Email = s.GetCell(3).StringCellValue;
+                student.Address = s.GetCell(4).StringCellValue;
+                student.Birthday = s.GetCell(5).DateCellValue;
+                student.Avatar = s.GetCell(6).StringCellValue;
+                student.Description = s.GetCell(7).StringCellValue;
+                student.StudentClassId = s.GetCell(8).StringCellValue;
+                student.Password = s.GetCell(9).StringCellValue;
+                student.Salt = s.GetCell(10).StringCellValue;
+               
+                return student;
+            });
         }
 
-        public Task<DataResponse> ImportFromSpreadsheetAsync(Stream stream, SpreadsheetTypeOptions spreadsheetTypeOptions, string sheetName)
+        public async Task<DataResponse> ImportFromSpreadsheetAsync(Stream stream, SpreadsheetTypeOptions spreadsheetTypeOptions, string sheetName)
         {
-            throw new NotImplementedException();
+            return await _genericRepository.ImportFromSpreadsheetAsync(stream, spreadsheetTypeOptions, sheetName, s =>
+            {
+                DateTime currentDateTime = DateTime.Now;
+                Student student = new Student
+                {
+                    Id = UID.GetShortUID(),
+                    CreatedAt = currentDateTime
+                };
+
+                student.Name = s.GetCell(1).StringCellValue;
+                student.Phone = s.GetCell(2).StringCellValue;
+                student.Email = s.GetCell(3).StringCellValue;
+                student.Address = s.GetCell(4).StringCellValue;
+                student.Birthday = s.GetCell(5).DateCellValue;
+                student.Avatar = s.GetCell(6).StringCellValue;
+                student.Description = s.GetCell(7).StringCellValue;
+                student.StudentClassId = s.GetCell(8).StringCellValue;
+                student.Password = s.GetCell(9).StringCellValue;
+                student.Salt = s.GetCell(10).StringCellValue;
+
+                return student;
+            });
         }
+
 
         public SignInResultModel SignIn(SignInModel signInModel)
         {
@@ -283,5 +326,6 @@ namespace GraduateThesis.Repository.BLL.Implements
         {
             throw new NotImplementedException();
         }
+
     }
 }

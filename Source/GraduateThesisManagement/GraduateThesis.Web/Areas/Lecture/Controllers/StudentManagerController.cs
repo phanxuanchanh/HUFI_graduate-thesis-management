@@ -158,8 +158,8 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
         {
             IWorkbook workbook = await _studentRepository.ExportToSpreadsheetAsync(
                 SpreadsheetTypeOptions.XLSX,
-                "Danh sách đề tài",
-                new string[] { "Id", "Name", "Phone", "EMail" }
+                "Danh sách sinh viên của khoa",
+                new string[] { "Id", "Name", "Phone", "EMail", "Address", "Birthday", "Avatar", "Description", "StudentClassId" }
             );
 
             ContentDisposition contentDisposition = new ContentDisposition

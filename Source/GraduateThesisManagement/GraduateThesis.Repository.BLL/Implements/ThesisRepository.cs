@@ -4,6 +4,7 @@ using GraduateThesis.Models;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DAL;
 using GraduateThesis.Repository.DTO;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.EntityFrameworkCore.Storage;
 using NPOI.SS.UserModel;
 using System;
@@ -237,7 +238,23 @@ namespace GraduateThesis.Repository.BLL.Implements
 
                 thesis.Name = s.GetCell(1).StringCellValue;
                 thesis.Description = s.GetCell(2).StringCellValue;
-
+                thesis.MaxStudentNumber = (int)s.GetCell(3).NumericCellValue;
+                thesis.Credits = (int)s.GetCell(4).NumericCellValue; 
+                thesis.Year = s.GetCell(5).StringCellValue;
+                thesis.Notes = s.GetCell(6).StringCellValue;
+                thesis.TopicId = s.GetCell(7).StringCellValue;
+                thesis.TrainingFormId = s.GetCell(8).StringCellValue;
+                thesis.TrainingLevelId = s.GetCell(9).StringCellValue;
+                thesis.IsApproved = s.GetCell(10).BooleanCellValue;
+                thesis.IsNew = s.GetCell(11).BooleanCellValue;
+                thesis.InProgess = s.GetCell(12).BooleanCellValue;
+                thesis.Finished = s.GetCell(13).BooleanCellValue;
+                thesis.SpecializationId = s.GetCell(14).StringCellValue;
+                thesis.DateFrom = s.GetCell(15).DateCellValue;
+                thesis.DateTo = s.GetCell(16).DateCellValue;
+                thesis.LectureId = s.GetCell(17).StringCellValue;
+                thesis.Semester = (int)s.GetCell(18).NumericCellValue; 
+                thesis.ThesisGroupId = s.GetCell(19).StringCellValue;
                 return thesis;
             });
         }
@@ -255,6 +272,23 @@ namespace GraduateThesis.Repository.BLL.Implements
 
                 thesis.Name = s.GetCell(1).StringCellValue;
                 thesis.Description = s.GetCell(2).StringCellValue;
+                thesis.MaxStudentNumber = (int)s.GetCell(3).NumericCellValue;
+                thesis.Credits = (int)s.GetCell(4).NumericCellValue;
+                thesis.Year = s.GetCell(5).StringCellValue;
+                thesis.Notes = s.GetCell(6).StringCellValue;
+                thesis.TopicId = s.GetCell(7).StringCellValue;
+                thesis.TrainingFormId = s.GetCell(8).StringCellValue;
+                thesis.TrainingLevelId = s.GetCell(9).StringCellValue;
+                thesis.IsApproved = s.GetCell(10).BooleanCellValue;
+                thesis.IsNew = s.GetCell(11).BooleanCellValue;
+                thesis.InProgess = s.GetCell(12).BooleanCellValue;
+                thesis.Finished = s.GetCell(13).BooleanCellValue;
+                thesis.SpecializationId = s.GetCell(14).StringCellValue;
+                thesis.DateFrom = s.GetCell(15).DateCellValue;
+                thesis.DateTo = s.GetCell(16).DateCellValue;
+                thesis.LectureId = s.GetCell(17).StringCellValue;
+                thesis.Semester = (int)s.GetCell(18).NumericCellValue;
+                thesis.ThesisGroupId = s.GetCell(19).StringCellValue;
 
                 return thesis;
             });

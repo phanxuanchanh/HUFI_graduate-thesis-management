@@ -1,4 +1,5 @@
-﻿using GraduateThesis.Generics;
+﻿using GraduateThesis.Common;
+using GraduateThesis.Generics;
 using GraduateThesis.Models;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DAL;
@@ -145,12 +146,42 @@ namespace GraduateThesis.Repository.BLL.Implements
 
         public DataResponse ImportFromSpreadsheet(Stream stream, SpreadsheetTypeOptions spreadsheetTypeOptions, string sheetName)
         {
-            throw new NotImplementedException();
+            return _genericRepository.ImportFromSpreadsheet(stream, spreadsheetTypeOptions, sheetName, s =>
+            {
+                DateTime currentDateTime = DateTime.Now;
+                StudentThesisGroup studentThesisGroup = new StudentThesisGroup
+                {
+                    Id = UID.GetShortUID(),
+                    CreatedAt = currentDateTime
+                };
+
+                studentThesisGroup.Name = s.GetCell(1).StringCellValue;
+                studentThesisGroup.Description = s.GetCell(2).StringCellValue;
+                studentThesisGroup.StudentQuantity = (int)s.GetCell(3).NumericCellValue;
+                studentThesisGroup.Notes = s.GetCell(4).StringCellValue;
+             
+                return studentThesisGroup;
+            });
         }
 
-        public Task<DataResponse> ImportFromSpreadsheetAsync(Stream stream, SpreadsheetTypeOptions spreadsheetTypeOptions, string sheetName)
+        public async Task<DataResponse> ImportFromSpreadsheetAsync(Stream stream, SpreadsheetTypeOptions spreadsheetTypeOptions, string sheetName)
         {
-            throw new NotImplementedException();
+            return await _genericRepository.ImportFromSpreadsheetAsync(stream, spreadsheetTypeOptions, sheetName, s =>
+            {
+                DateTime currentDateTime = DateTime.Now;
+                StudentThesisGroup studentThesisGroup = new StudentThesisGroup
+                {
+                    Id = UID.GetShortUID(),
+                    CreatedAt = currentDateTime
+                };
+
+                studentThesisGroup.Name = s.GetCell(1).StringCellValue;
+                studentThesisGroup.Description = s.GetCell(2).StringCellValue;
+                studentThesisGroup.StudentQuantity = (int)s.GetCell(3).NumericCellValue;
+                studentThesisGroup.Notes = s.GetCell(4).StringCellValue;
+
+                return studentThesisGroup;
+            });
         }
 
         public DataResponse<StudentThesisGroupOutput> Update(string id, StudentThesisGroupInput input)

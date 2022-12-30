@@ -1,4 +1,5 @@
-﻿using GraduateThesis.ExtensionMethods;
+﻿using GraduateThesis.Common;
+using GraduateThesis.ExtensionMethods;
 using GraduateThesis.Generics;
 using GraduateThesis.Models;
 using GraduateThesis.Repository.BLL.Interfaces;
@@ -168,12 +169,65 @@ namespace GraduateThesis.Repository.BLL.Implements
 
         public DataResponse ImportFromSpreadsheet(Stream stream, SpreadsheetTypeOptions spreadsheetTypeOptions, string sheetName)
         {
-            throw new NotImplementedException();
+            return _genericRepository.ImportFromSpreadsheet(stream, spreadsheetTypeOptions, sheetName, s =>
+            {
+                DateTime currentDateTime = DateTime.Now;
+                FacultyStaff facultyStaff = new FacultyStaff
+                {
+                    Id = UID.GetShortUID(),
+                    CreatedAt = currentDateTime
+                };
+
+                facultyStaff.FacultyId = s.GetCell(1).StringCellValue;
+                facultyStaff.FacultyRoleId = s.GetCell(2).StringCellValue;
+                facultyStaff.FullName = s.GetCell(3).StringCellValue;
+                facultyStaff.Description = s.GetCell(4).StringCellValue;
+                facultyStaff.Gender = s.GetCell(5).StringCellValue;
+                facultyStaff.Phone = s.GetCell(6).StringCellValue;
+                facultyStaff.Address = s.GetCell(7).StringCellValue;
+                facultyStaff.Email = s.GetCell(8).StringCellValue;
+                facultyStaff.Birthday = s.GetCell(9).DateCellValue;
+                facultyStaff.Avatar = s.GetCell(10).StringCellValue;
+                facultyStaff.Position = s.GetCell(11).StringCellValue;
+                facultyStaff.Degree = s.GetCell(12).StringCellValue;
+                facultyStaff.Notes = s.GetCell(13).StringCellValue;
+                facultyStaff.Password = s.GetCell(14).StringCellValue;
+                facultyStaff.Salt = s.GetCell(15).StringCellValue;
+
+                return facultyStaff;
+            });
         }
 
-        public Task<DataResponse> ImportFromSpreadsheetAsync(Stream stream, SpreadsheetTypeOptions spreadsheetTypeOptions, string sheetName)
+        public async Task<DataResponse> ImportFromSpreadsheetAsync(Stream stream, SpreadsheetTypeOptions spreadsheetTypeOptions, string sheetName)
         {
-            throw new NotImplementedException();
+
+            return await _genericRepository.ImportFromSpreadsheetAsync(stream, spreadsheetTypeOptions, sheetName, s =>
+            {
+                DateTime currentDateTime = DateTime.Now;
+                FacultyStaff facultyStaff = new FacultyStaff
+                {
+                    Id = UID.GetShortUID(),
+                    CreatedAt = currentDateTime
+                };
+
+                facultyStaff.FacultyId = s.GetCell(1).StringCellValue;
+                facultyStaff.FacultyRoleId = s.GetCell(2).StringCellValue;
+                facultyStaff.FullName = s.GetCell(3).StringCellValue;
+                facultyStaff.Description = s.GetCell(4).StringCellValue;
+                facultyStaff.Gender = s.GetCell(5).StringCellValue;
+                facultyStaff.Phone = s.GetCell(6).StringCellValue;
+                facultyStaff.Address = s.GetCell(7).StringCellValue;
+                facultyStaff.Email = s.GetCell(8).StringCellValue;
+                facultyStaff.Birthday = s.GetCell(9).DateCellValue;
+                facultyStaff.Avatar = s.GetCell(10).StringCellValue;
+                facultyStaff.Position = s.GetCell(11).StringCellValue;
+                facultyStaff.Degree = s.GetCell(12).StringCellValue;
+                facultyStaff.Notes = s.GetCell(13).StringCellValue;
+                facultyStaff.Password = s.GetCell(14).StringCellValue;
+                facultyStaff.Salt = s.GetCell(15).StringCellValue;
+
+                return facultyStaff;
+            });
         }
 
         public SignInResultModel SignIn(SignInModel signInModel)
