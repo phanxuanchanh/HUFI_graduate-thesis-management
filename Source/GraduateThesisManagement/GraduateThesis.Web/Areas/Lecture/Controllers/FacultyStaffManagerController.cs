@@ -21,7 +21,7 @@ public class FacultyStaffManagerController : WebControllerBase<IFacultyStaffRepo
 
     private IFacultyStaffRepository _facultyStaffRepository;
     private IFacultyRepository _facultyRepository;
-    private IAppRolesRepository _appRolesRepository;
+    private IAppRoleRepository _appRolesRepository;
 
     public FacultyStaffManagerController(IRepository repository)
         :base(repository.FacultyStaffRepository)
