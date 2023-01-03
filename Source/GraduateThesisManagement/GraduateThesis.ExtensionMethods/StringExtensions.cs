@@ -2,45 +2,44 @@
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace GraduateThesis.ExtensionMethods
+namespace GraduateThesis.ExtensionMethods;
+
+public static class StringExtensions
 {
-    public static class StringExtensions
+    public static string GetSlug(this string input)
     {
-        public static string GetSlug(this string input)
-        {
-            Regex regex = new Regex("\\p{IsCombiningDiacriticalMarks}+");
-            string url = input.Normalize(NormalizationForm.FormD).Trim().ToLower();
+        Regex regex = new Regex("\\p{IsCombiningDiacriticalMarks}+");
+        string url = input.Normalize(NormalizationForm.FormD).Trim().ToLower();
 
-            url = regex.Replace(url, String.Empty).Replace('\u0111', 'd').Replace('\u0110', 'D').Replace(",", "-").Replace(".", "-")
-                        .Replace("!", "").Replace("(", "").Replace(")", "").Replace(";", "-").Replace("/", "-")
-                        .Replace("%", "").Replace("&", "").Replace("?", "").Replace('"', '-').Replace(' ', '-');
-            return url;
-        }
+        url = regex.Replace(url, String.Empty).Replace('\u0111', 'd').Replace('\u0110', 'D').Replace(",", "-").Replace(".", "-")
+                    .Replace("!", "").Replace("(", "").Replace(")", "").Replace(";", "-").Replace("/", "-")
+                    .Replace("%", "").Replace("&", "").Replace("?", "").Replace('"', '-').Replace(' ', '-');
+        return url;
+    }
 
-        public static string SubString(this string input, string endString)
-        {
-            if (input == null)
-                return null;
+    public static string SubString(this string input, string endString)
+    {
+        if (input == null)
+            return null;
 
-            if (endString == null)
-                return null;
+        if (endString == null)
+            return null;
 
-            int index = input.IndexOf(endString);
+        int index = input.IndexOf(endString);
 
-            return input.Substring(0, input.Length - (input.Length - 1 - index));
-        }
+        return input.Substring(0, input.Length - (input.Length - 1 - index));
+    }
 
-        public static string SubString(this string input, string startString, string endString)
-        {
-            if (input == null)
-                return null;
+    public static string SubString(this string input, string startString, string endString)
+    {
+        if (input == null)
+            return null;
 
-            if (endString == null)
-                return null;
+        if (endString == null)
+            return null;
 
-            int index = input.IndexOf(endString);
+        int index = input.IndexOf(endString);
 
-            return input.Substring(0, input.Length - (input.Length - 1 - index));
-        }
+        return input.Substring(0, input.Length - (input.Length - 1 - index));
     }
 }

@@ -1,12 +1,12 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\GraduateThesis.Common\GraduateThesis.Common.csproj" />
-    <ProjectReference Include="..\GraduateThesis.Models\GraduateThesis.Models.csproj" />
+    <ProjectReference Include="..\GraduateThesis.ApplicationCore\GraduateThesis.ApplicationCore.csproj" />
+    <ProjectReference Include="..\GraduateThesis.RazorClassLibrary\GraduateThesis.RazorClassLibrary.csproj" />
   </ItemGroup>
 
   <ItemGroup>

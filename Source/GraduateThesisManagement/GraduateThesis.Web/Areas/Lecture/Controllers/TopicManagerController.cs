@@ -1,16 +1,13 @@
-﻿using GraduateThesis.Generics;
-using GraduateThesis.Models;
-using GraduateThesis.Repository.BLL.Interfaces;
+﻿using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DTO;
 using Microsoft.AspNetCore.Mvc;
-using X.PagedList;
 using GraduateThesis.WebExtensions;
 using System.ComponentModel.DataAnnotations;
 using GraduateThesis.Common.WebAttributes;
-using GraduateThesis.Common.File;
-using NPOI.SS.UserModel;
-using System.Net.Mime;
-using GraduateThesis.Common.Authorization;
+using GraduateThesis.ApplicationCore.WebAttributes;
+using GraduateThesis.ApplicationCore.Models;
+using GraduateThesis.ApplicationCore.Enums;
+using GraduateThesis.ApplicationCore.AppController;
 
 namespace GraduateThesis.Web.Areas.Lecture.Controllers
 {
@@ -18,157 +15,118 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
     [Route("lecture/topic-manager")]
     [WebAuthorize(AccountRole.Lecture)]
     [AccountInfo(typeof(FacultyStaffOutput))]
-    [HandleException]
-    public class TopicManagerController : WebControllerBase
+    public class TopicManagerController : WebControllerBase<ITopicRepository, TopicInput, TopicOutput, string>
     {
-        private ITopicRepository _topicRepository;
-        public TopicManagerController(IRepository repository)
+        private readonly ITopicRepository _topicRepository;
+
+        public TopicManagerController(ITopicRepository subRepository) : base(subRepository)
         {
-            _topicRepository = repository.TopicRepository;
+            _topicRepository = subRepository;
         }
 
         [Route("list")]
         [HttpGet]
         [PageName(Name = "Danh sách các chủ đề khóa luận")]
         [WebAuthorize(AccountRole.Lecture)]
-        public async Task<IActionResult> Index(int page = 1, int pageSize = 10, string orderBy = "", string orderOptions = "ASC", string keyword = "")
+        public override async Task<IActionResult> Index(int page = 1, int pageSize = 10, string orderBy = "", string orderOptions = "ASC", string keyword = "")
         {
-            Pagination<TopicOutput> pagination;
-            if (orderOptions == "ASC")
-                pagination = await _topicRepository.GetPaginationAsync(page, pageSize, orderBy, OrderOptions.ASC, keyword);
-            else
-                pagination = await _topicRepository.GetPaginationAsync(page, pageSize, orderBy, OrderOptions.DESC, keyword);
+            return await IndexResult(page, pageSize, orderBy, orderOptions, keyword);
+        }
 
-            StaticPagedList<TopicOutput> pagedList = pagination.ToStaticPagedList();
-            ViewData["PagedList"] = pagedList;
-            ViewData["OrderBy"] = orderBy;
-            ViewData["OrderOptions"] = orderOptions;
-            ViewData["Keyword"] = keyword;
-
-            return View();
+        [Route("create")]
+        [HttpGet]
+        [PageName(Name = "Tạo mới chủ đề khóa luận")]
+        [WebAuthorize(AccountRole.Lecture)]
+        public override async Task<IActionResult> Create()
+        {
+            return await CreateResult();
         }
 
         [Route("details/{id}")]
         [HttpGet]
         [PageName(Name = "Chi tiết chủ đề khóa luận")]
         [WebAuthorize(AccountRole.Lecture)]
-        public async Task<IActionResult> Details([Required] string id)
+        public override async Task<IActionResult> Details([Required] string id)
         {
-            TopicOutput topicOutput = await _topicRepository.GetAsync(id);
-            if (topicOutput == null)
-                return RedirectToAction("Index");
-            ;
-            return View(topicOutput);
-        }
-
-        [Route("create")]
-        [HttpGet]
-        [PageName(Name = "Tạo mới chủ đề khóa luận")]
-        [WebAuthorize(AccountRole.Lecture)]
-        public ActionResult Create()
-        {
-            return View();
+            return await GetDetailsResult(id);
         }
 
         [Route("create")]
         [HttpPost]
         [PageName(Name = "Tạo mới chủ đề khóa luận")]
         [WebAuthorize(AccountRole.Lecture)]
-        public async Task<IActionResult> Create(TopicInput topicInput)
+        public override async Task<IActionResult> Create(TopicInput input)
         {
-            if (ModelState.IsValid)
-            {
-                DataResponse<TopicOutput> dataResponse = await _topicRepository.CreateAsync(topicInput);
-                AddViewData(dataResponse);
-
-                return View(topicInput);
-            }
-
-            AddViewData(DataResponseStatus.InvalidData);
-            return View(topicInput);
+            return await CreateResult(input);
         }
 
         [Route("edit/{id}")]
         [HttpGet]
         [PageName(Name = "Chỉnh sửa chủ đề khóa luận")]
         [WebAuthorize(AccountRole.Lecture)]
-        public async Task<IActionResult> Edit([Required] string id)
+        public override async Task<IActionResult> Edit([Required] string id)
         {
-            TopicOutput topicOutput = await _topicRepository.GetAsync(id);
-            if (topicOutput == null)
-                return RedirectToAction("Index");
-
-            return View(topicOutput);
+            return await EditResult(id);
         }
 
         [Route("edit/{id}")]
         [HttpPost]
         [PageName(Name = "Chỉnh sửa chủ đề khóa luận")]
         [WebAuthorize(AccountRole.Lecture)]
-        public async Task<IActionResult> Edit([Required] string id, TopicInput topicInput)
+        public override async Task<IActionResult> Edit([Required] string id, TopicInput input)
         {
-            if (ModelState.IsValid)
-            {
-                TopicOutput topicOutput = await _topicRepository.GetAsync(id);
-                if (topicOutput == null)
-                    return RedirectToAction("Index");
-
-                DataResponse<TopicOutput> dataResponse = await _topicRepository.UpdateAsync(id, topicInput);
-
-                AddViewData(dataResponse);
-                return View(topicInput);
-            }
-
-            AddViewData(DataResponseStatus.InvalidData);
-            return View(topicInput);
+            return await EditResult(id, input);
         }
 
-        [Route("delete/{id}")]
+        [Route("batch-delete/{id}")]
         [HttpPost]
         [WebAuthorize(AccountRole.Lecture)]
-        public async Task<IActionResult> Delete([Required] string id)
+        public override async Task<IActionResult> BatchDelete([Required] string id)
         {
-            TopicOutput topicOutput = await _topicRepository.GetAsync(id);
-            if (topicOutput == null)
-                return RedirectToAction("Index");
-
-            DataResponse dataResponse = await _topicRepository.BatchDeleteAsync(id);
-
-            AddTempData(dataResponse);
-            return RedirectToAction("Index");
+            return await BatchDeleteResult(id);
         }
 
-        [Route("export-to-spreadsheet")]
+        [Route("force-delete/{id}")]
+        [HttpPost]
+        [WebAuthorize(AccountRole.Lecture)]
+        public override async Task<IActionResult> ForceDelete([Required] string id)
+        {
+            return await ForceDeleteResult(id);
+        }
+
+        [Route("export")]
         [HttpGet]
         [WebAuthorize(AccountRole.Lecture)]
-        public async Task<IActionResult> ExportToSpreadsheet()
+        public override async Task<IActionResult> Export()
         {
-            IWorkbook workbook = await _topicRepository.ExportToSpreadsheetAsync(
-                SpreadsheetTypeOptions.XLSX,
-                "Danh sách đề tài",
-                new string[] { "Id", "Name" }
-            );
+            RecordFilter recordFilter = new RecordFilter();
+            recordFilter.AddFilter();
 
-            ContentDisposition contentDisposition = new ContentDisposition
+            ExportMetadata exportMetadata = new ExportMetadata
             {
-                FileName = $"Thesis_{DateTime.Now.ToString("ddMMyyyy_hhmmss")}.xlsx",
-                Inline = true,
+                FileName = "Topic",
+                TypeOptions = ExportTypeOptions.XLSX,
+                SheetName = "Default",
+                MaxRecordNumber = 1000,
+                IncludeProperties = new string[] { "Id", "Name", "Description" }
             };
 
-            Response.Headers.Append("Content-Disposition", contentDisposition.ToString());
-
-            using (MemoryStream memoryStream = new MemoryStream())
-            {
-                workbook.Write(memoryStream, true);
-                byte[] bytes = memoryStream.ToArray();
-                return File(bytes, ContentTypeConsts.XLSX);
-            }
+            return await ExportResult(recordFilter, exportMetadata);
         }
+
         [Route("import")]
-
-        public IActionResult Import()
+        [HttpGet]
+        [WebAuthorize(AccountRole.Lecture)]
+        public override async Task<IActionResult> Import(IFormFile formFile)
         {
-            return View();
-        }
+            ImportMetadata importMetadata = new ImportMetadata
+            {
+                SheetName = "Default",
+                StartFromRow = 1,
+                TypeOptions = ImportTypeOptions.XLSX
+            };
+
+            return await ImportResult(formFile, importMetadata);
+        }     
     }
 }

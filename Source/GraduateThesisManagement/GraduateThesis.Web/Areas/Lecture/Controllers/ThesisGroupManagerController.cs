@@ -1,61 +1,81 @@
-﻿using GraduateThesis.Common.Authorization;
+﻿using GraduateThesis.ApplicationCore.AppController;
+using GraduateThesis.ApplicationCore.WebAttributes;
 using GraduateThesis.Common.WebAttributes;
-using GraduateThesis.Generics;
-using GraduateThesis.Models;
-using GraduateThesis.Repository.BLL.Implements;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DTO;
 using GraduateThesis.WebExtensions;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using NPOI.SS.Formula.Functions;
-using NuGet.Protocol.Core.Types;
-using X.PagedList;
+using System.ComponentModel.DataAnnotations;
 
-namespace GraduateThesis.Web.Areas.Lecture.Controllers
+namespace GraduateThesis.Web.Areas.Lecture.Controllers;
+
+[Area("Lecture")]
+[Route("lecture/thesisgroup-manager")]
+[WebAuthorize(AccountRole.Lecture)]
+[AccountInfo(typeof(FacultyStaffOutput))]
+public class ThesisGroupManagerController : WebControllerBase<IStudentThesisGroupRepository, StudentThesisGroupInput, StudentThesisGroupOutput, string>
 {
-    [Area("Lecture")]
-    [Route("lecture/thesisgroup-manager")]
-    [WebAuthorize(AccountRole.Lecture)]
-    [AccountInfo(typeof(FacultyStaffOutput))]
-    [HandleException]
-    public class ThesisGroupManagerController : WebControllerBase
+    private IStudentThesisGroupRepository _studentThesisGroupRepository;
+
+    public ThesisGroupManagerController(IRepository repository)
+        :base(repository.StudentThesisGroupRepository)
+        
     {
-        private IStudentThesisGroupRepository _studentThesisGroupRepository;
-   
-        public ThesisGroupManagerController(IRepository repository)
-        {
-            _studentThesisGroupRepository = repository.StudentThesisGroupRepository;
-           
-        }
+        _studentThesisGroupRepository = repository.StudentThesisGroupRepository;
+       
+    }
 
-        [Route("list")]
-        [HttpGet]
-        [PageName(Name = "Danh sách nhóm sinh viên làm khóa luận")]
-        [WebAuthorize(AccountRole.Lecture)]
-        public async Task<IActionResult> Index(int page = 1, int pageSize = 10, string orderBy = "", string orderOptions = "ASC", string keyword = "")
-        {
-                Pagination<StudentThesisGroupOutput> pagination;
-                if (orderOptions == "ASC")
-                    pagination = await _studentThesisGroupRepository.GetPaginationAsync(page, pageSize, orderBy, OrderOptions.ASC, keyword);
-                else
-                    pagination = await _studentThesisGroupRepository.GetPaginationAsync(page, pageSize, orderBy, OrderOptions.DESC, keyword);
+    public override Task<IActionResult> BatchDelete([Required] string id)
+    {
+        throw new NotImplementedException();
+    }
 
-                StaticPagedList<StudentThesisGroupOutput> pagedList = pagination.ToStaticPagedList();
-                ViewData["PagedList"] = pagedList;
-                ViewData["OrderBy"] = orderBy;
-                ViewData["OrderOptions"] = orderOptions;
-                ViewData["Keyword"] = keyword;
+    public override Task<IActionResult> Create()
+    {
+        throw new NotImplementedException();
+    }
 
-                return View();          
-        }
+    public override Task<IActionResult> Create(StudentThesisGroupInput input)
+    {
+        throw new NotImplementedException();
+    }
 
-        [Route("import")]
+    public override Task<IActionResult> Details([Required] string id)
+    {
+        throw new NotImplementedException();
+    }
 
-        public IActionResult Import()
-        {
-            return View();
-        }
+    public override Task<IActionResult> Edit([Required] string id)
+    {
+        throw new NotImplementedException();
+    }
 
+    public override Task<IActionResult> Edit([Required] string id, StudentThesisGroupInput input)
+    {
+        throw new NotImplementedException();
+    }
+
+    public override Task<IActionResult> Export()
+    {
+        throw new NotImplementedException();
+    }
+
+    public override Task<IActionResult> ForceDelete([Required] string id)
+    {
+        throw new NotImplementedException();
+    }
+
+    public override Task<IActionResult> Import(IFormFile formFile)
+    {
+        throw new NotImplementedException();
+    }
+
+    [Route("list")]
+    [HttpGet]
+    [PageName(Name = "Danh sách nhóm sinh viên làm khóa luận")]
+    [WebAuthorize(AccountRole.Lecture)]
+    public override async Task<IActionResult> Index(int page = 1, int pageSize = 10, string orderBy = "", string orderOptions = "ASC", string keyword = "")
+    {
+        return await IndexResult(page, pageSize, orderBy, orderOptions, keyword);    
     }
 }

@@ -7,8 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\GraduateThesis.Common\GraduateThesis.Common.csproj" />
-    <ProjectReference Include="..\GraduateThesis.Models\GraduateThesis.Models.csproj" />
+    <ProjectReference Include="..\GraduateThesis.ApplicationCore\GraduateThesis.ApplicationCore.csproj" />
+    <ProjectReference Include="..\GraduateThesis.RazorClassLibrary\GraduateThesis.RazorClassLibrary.csproj" />
     <ProjectReference Include="..\GraduateThesis.Repository.BLL\GraduateThesis.Repository.BLL.csproj" />
     <ProjectReference Include="..\GraduateThesis.Repository.DAL\GraduateThesis.Repository.DAL.csproj" />
     <ProjectReference Include="..\GraduateThesis.Repository.DTO\GraduateThesis.Repository.DTO.csproj" />
@@ -27,7 +27,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="Views\Authorization\ShowUnauthorize.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="bootstrap" Version="5.2.3" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="6.0.12" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

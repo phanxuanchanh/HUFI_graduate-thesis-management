@@ -24,7 +24,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\GraduateThesis.Generics\GraduateThesis.Generics.csproj" />
+    <ProjectReference Include="..\GraduateThesis.ApplicationCore\GraduateThesis.ApplicationCore.csproj" />
+    <ProjectReference Include="..\GraduateThesis.ExtensionMethods\GraduateThesis.ExtensionMethods.csproj" />
     <ProjectReference Include="..\GraduateThesis.Repository.BLL\GraduateThesis.Repository.BLL.csproj" />
   </ItemGroup>
 

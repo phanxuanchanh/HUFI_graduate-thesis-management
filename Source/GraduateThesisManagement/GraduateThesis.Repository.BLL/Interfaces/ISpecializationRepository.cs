@@ -1,15 +1,8 @@
-﻿using GraduateThesis.Repository.DAL;
+﻿using GraduateThesis.ApplicationCore.Repository;
 using GraduateThesis.Repository.DTO;
-using GraduateThesis.RepositoryPatterns;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace GraduateThesis.Repository.BLL.Interfaces
+namespace GraduateThesis.Repository.BLL.Interfaces;
+
+public interface ISpecializationRepository : ISubRepository<SpecializationInput, SpecializationOutput, string>
 {
-    public interface ISpecializationRepository : ICrudPattern<Specialization, SpecializationInput, SpecializationOutput, string>, IRepositoryConfiguration
-    {
-    }
 }

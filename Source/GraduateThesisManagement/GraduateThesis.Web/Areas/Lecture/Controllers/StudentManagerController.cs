@@ -1,17 +1,13 @@
-﻿using GraduateThesis.Common.Authorization;
-using GraduateThesis.Common.File;
+﻿using GraduateThesis.ApplicationCore.AppController;
+using GraduateThesis.ApplicationCore.Models;
+using GraduateThesis.ApplicationCore.WebAttributes;
 using GraduateThesis.Common.WebAttributes;
-using GraduateThesis.Generics;
-using GraduateThesis.Models;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DTO;
 using GraduateThesis.WebExtensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using NPOI.SS.UserModel;
 using System.ComponentModel.DataAnnotations;
-using System.Net.Mime;
-using X.PagedList;
 
 namespace GraduateThesis.Web.Areas.Lecture.Controllers
 {
@@ -19,13 +15,13 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
     [Route("lecture/student-manager")]
     [WebAuthorize(AccountRole.Lecture)]
     [AccountInfo(typeof(FacultyStaffOutput))]
-    [HandleException]
-    public class StudentManagerController : WebControllerBase
+    public class StudentManagerController : WebControllerBase<IStudentRepository, StudentInput, StudentOutput, string>
     {
         private IStudentRepository _studentRepository;
         private IStudentClassRepository _studentClassRepository;
 
         public StudentManagerController(IRepository repository)
+            :base(repository.StudentRepository)
         {
             _studentRepository = repository.StudentRepository;
             _studentClassRepository = repository.StudentClassRepository;
@@ -35,153 +31,101 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
         [HttpGet]
         [PageName(Name = "Danh sách sinh viên của khoa")]
         [WebAuthorize(AccountRole.Lecture)]
-        public async Task<IActionResult> Index(int page = 1, int pageSize = 10, string orderBy = "", string orderOptions = "ASC", string keyword = "")
+        public override async Task<IActionResult> Index(int page = 1, int pageSize = 10, string orderBy = "", string orderOptions = "ASC", string keyword = "")
         {
-            Pagination<StudentOutput> pagination;
-            if (orderOptions == "ASC")
-                pagination = await _studentRepository.GetPaginationAsync(page, pageSize, orderBy, OrderOptions.ASC, keyword);
-            else
-                pagination = await _studentRepository.GetPaginationAsync(page, pageSize, orderBy, OrderOptions.DESC, keyword);
-
-            StaticPagedList<StudentOutput> pagedList = pagination.ToStaticPagedList();
-            ViewData["PagedList"] = pagedList;
-            ViewData["OrderBy"] = orderBy;
-            ViewData["OrderOptions"] = orderOptions;
-            ViewData["Keyword"] = keyword;
-
-            return View();
+            return await IndexResult(page, pageSize, orderBy, orderOptions, keyword);
         }
 
         [Route("details/{id}")]
         [HttpGet]
         [PageName(Name = "Chi tiết sinh viên của khoa")]
         [WebAuthorize(AccountRole.Lecture)]
-        public async Task<IActionResult> Details([Required] string id)
+        public override async Task<IActionResult> Details([Required] string id)
         {
-            StudentOutput studentOutput = await _studentRepository.GetAsync(id);
-            if (studentOutput == null)
-                return RedirectToAction("Index");
-
-            return View(studentOutput);
+            return await GetDetailsResult(id);
         }
 
         [Route("create")]
         [HttpGet]
         [PageName(Name = "Tạo mới sinh viên của khoa")]
         [WebAuthorize(AccountRole.Lecture)]
-        public async Task<ActionResult> Create()
+        public override async Task<IActionResult> Create()
         {
-            List<StudentClassOutput> studentClasses = await _studentClassRepository.GetListAsync();
-            ViewData["StudentClassList"] = new SelectList(studentClasses, "Id", "Name");
-            return View();
+            Func<Task> dependency = async () =>
+            {
+                List<StudentClassOutput> studentClasses = await _studentClassRepository.GetListAsync();
+                ViewData["StudentClassList"] = new SelectList(studentClasses, "Id", "Name");
+            };
+
+            return await CreateResult(dependency);
         }
 
         [Route("create")]
         [HttpPost]
         [PageName(Name = "Tạo mới sinh viên của khoa")]
         [WebAuthorize(AccountRole.Lecture)]
-        public async Task<IActionResult> Create(StudentInput studentInput)
+        public override async Task<IActionResult> Create(StudentInput studentInput)
         {
-            List<StudentClassOutput> studentClasses = await _studentClassRepository.GetListAsync();
-            ViewData["StudentClassList"] = new SelectList(studentClasses, "Id", "Name");
-
-            if (ModelState.IsValid)
+            Func<Task> dependency = async () =>
             {
-                DataResponse<StudentOutput> dataResponse = await _studentRepository.CreateAsync(studentInput);
-                AddViewData(dataResponse);
+                List<StudentClassOutput> studentClasses = await _studentClassRepository.GetListAsync();
+                ViewData["StudentClassList"] = new SelectList(studentClasses, "Id", "Name");
+            };
 
-                return View(studentInput);
-            }
-
-            AddViewData(DataResponseStatus.InvalidData);
-            return View(studentInput);
+            return await CreateResult(studentInput, dependency);
         }
 
         [Route("edit/{id}")]
         [HttpGet]
         [PageName(Name = "Chỉnh sửa thông tin sinh viên của khoa")]
         [WebAuthorize(AccountRole.Lecture)]
-        public async Task<IActionResult> Edit([Required] string id)
+        public override async Task<IActionResult> Edit([Required] string id)
         {
-            List<StudentClassOutput> studentClasses = await _studentClassRepository.GetListAsync();
-            ViewData["StudentClassList"] = new SelectList(studentClasses, "Id", "Name");
-            StudentOutput studentOutput = await _studentRepository.GetAsync(id);
-            if (studentOutput == null)
-                return RedirectToAction("Index");
+            Func<Task> dependency = async () =>
+            {
+                List<StudentClassOutput> studentClasses = await _studentClassRepository.GetListAsync();
+                ViewData["StudentClassList"] = new SelectList(studentClasses, "Id", "Name");
+            };
 
-            return View(studentOutput);
+            return await EditResult(id, dependency);
         }
 
         [Route("edit/{id}")]
         [HttpPost]
         [PageName(Name = "Chỉnh sửa thông tin sinh viên của khoa")]
         [WebAuthorize(AccountRole.Lecture)]
-        public async Task<IActionResult> Edit([Required] string id, StudentInput studentInput)
+        public override async Task<IActionResult> Edit([Required] string id, StudentInput studentInput)
         {
-            List<StudentClassOutput> studentClasses = await _studentClassRepository.GetListAsync();
-            ViewData["StudentClassList"] = new SelectList(studentClasses, "Id", "Name");
-            if (ModelState.IsValid)
+            Func<Task> dependency = async () =>
             {
-                StudentOutput studentOutput = await _studentRepository.GetAsync(id);
-                if (studentOutput == null)
-                    return RedirectToAction("Index");
+                List<StudentClassOutput> studentClasses = await _studentClassRepository.GetListAsync();
+                ViewData["StudentClassList"] = new SelectList(studentClasses, "Id", "Name");
+            };
 
-                DataResponse<StudentOutput> dataResponse = await _studentRepository.UpdateAsync(id, studentInput);
-
-                AddViewData(dataResponse);
-                return View(studentInput);
-            }
-
-            AddViewData(DataResponseStatus.InvalidData);
-            return View(studentInput);
+            return await Edit(id, studentInput);
         }
 
         [Route("delete/{id}")]
         [HttpPost]
         [WebAuthorize(AccountRole.Lecture)]
-        public async Task<IActionResult> Delete([Required] string id)
+        public override async Task<IActionResult> BatchDelete([Required] string id)
         {
-            StudentOutput studentOutput = await _studentRepository.GetAsync(id);
-            if (studentOutput == null)
-                return RedirectToAction("Index");
-
-            DataResponse dataResponse = await _studentRepository.BatchDeleteAsync(id);
-
-            AddTempData(dataResponse);
-            return RedirectToAction("Index");
+            return await BatchDeleteResult(id);
         }
 
-        [Route("export-to-spreadsheet")]
-        [HttpGet]
-        [WebAuthorize(AccountRole.Lecture)]
-        public async Task<IActionResult> ExportToSpreadsheet()
+        public override async Task<IActionResult> ForceDelete([Required] string id)
         {
-            IWorkbook workbook = await _studentRepository.ExportToSpreadsheetAsync(
-                SpreadsheetTypeOptions.XLSX,
-                "Danh sách đề tài",
-                new string[] { "Id", "Name", "Phone", "EMail" }
-            );
-
-            ContentDisposition contentDisposition = new ContentDisposition
-            {
-                FileName = $"Thesis_{DateTime.Now.ToString("ddMMyyyy_hhmmss")}.xlsx",
-                Inline = true,
-            };
-
-            Response.Headers.Append("Content-Disposition", contentDisposition.ToString());
-
-            using (MemoryStream memoryStream = new MemoryStream())
-            {
-                workbook.Write(memoryStream, true);
-                byte[] bytes = memoryStream.ToArray();
-                return File(bytes, ContentTypeConsts.XLSX);
-            }
+            return await ForceDeleteResult(id);
         }
-        [Route("import")]
 
-        public IActionResult Import()
+        public override async Task<IActionResult> Export()
         {
-            return View();
+            return await ExportResult(null!, null!);
+        }
+
+        public override async Task<IActionResult> Import(IFormFile formFile)
+        {
+            return await ImportResult(formFile, new ImportMetadata());
         }
     }
 }
