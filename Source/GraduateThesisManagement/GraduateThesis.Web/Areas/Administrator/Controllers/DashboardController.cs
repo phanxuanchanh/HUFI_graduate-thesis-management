@@ -1,12 +1,11 @@
-﻿using GraduateThesis.Common.WebAttributes;
+﻿using GraduateThesis.ApplicationCore.AppController;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GraduateThesis.Web.Areas.Administrator.Controllers
 {
     [Area("Administrator")]
     [Route("dashboard")]
-    [HandleException]
-    public class DashboardController : Controller
+    public class DashboardController : WebControllerBase
     {
         [Route("Index")]
         public IActionResult Index()

@@ -1,14 +1,12 @@
-﻿using GraduateThesis.Generics;
+﻿using GraduateThesis.ApplicationCore.AppController;
 using Microsoft.AspNetCore.Mvc;
-using NPOI.OpenXmlFormats.Dml;
 
-namespace GraduateThesis.Web.Controllers
+namespace GraduateThesis.Web.Controllers;
+
+public class AuthorizationController : WebControllerBase
 {
-    public class AuthorizationController : WebControllerBase
+    public ActionResult ShowUnauthorize()
     {
-        public ActionResult ShowUnauthorize()
-        {
-            return View();
-        }
+        return View();
     }
 }

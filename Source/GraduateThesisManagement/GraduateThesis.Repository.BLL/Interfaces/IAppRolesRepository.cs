@@ -1,16 +1,9 @@
-﻿using GraduateThesis.Repository.DAL;
+﻿using GraduateThesis.ApplicationCore.Repository;
 using GraduateThesis.Repository.DTO;
-using GraduateThesis.RepositoryPatterns;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace GraduateThesis.Repository.BLL.Interfaces
+namespace GraduateThesis.Repository.BLL.Interfaces;
+
+public interface IAppRolesRepository : ISubRepository<AppRolesInput, AppRolesOutput, string>
 {
-    public interface IAppRolesRepository : ICrudPattern<AppRole, AppRolesInput, AppRolesOutput, string>, IRepositoryConfiguration
-    {
 
-    }
 }

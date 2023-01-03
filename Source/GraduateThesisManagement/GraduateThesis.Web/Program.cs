@@ -1,15 +1,25 @@
 using GraduateThesis.Repository.BLL.Implements;
 using GraduateThesis.Repository.BLL.Interfaces;
+using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-
-builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<IRepository>(r => new Repository(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DbConnection"))));
+
+builder.Services.AddMvc().ConfigureApplicationPartManager(apm =>
+{
+    ApplicationPart? applicationPart = apm.ApplicationParts
+        .FirstOrDefault(part => part.Name == "DependentLibrary");
+
+    if (applicationPart != null)
+    {
+        apm.ApplicationParts.Remove(applicationPart);
+    }
+});
 
 builder.Services.AddSession();
 

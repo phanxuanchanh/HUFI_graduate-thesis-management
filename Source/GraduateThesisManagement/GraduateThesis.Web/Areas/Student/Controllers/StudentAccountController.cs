@@ -1,7 +1,7 @@
-﻿using GraduateThesis.Common.Authorization;
+﻿using GraduateThesis.ApplicationCore.AppController;
+using GraduateThesis.ApplicationCore.Enums;
+using GraduateThesis.ApplicationCore.Models;
 using GraduateThesis.Common.WebAttributes;
-using GraduateThesis.Generics;
-using GraduateThesis.Models;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DTO;
 using Microsoft.AspNetCore.Mvc;
@@ -11,7 +11,6 @@ namespace GraduateThesis.Web.Areas.Student.Controllers
 {
     [Area("Student")]
     [Route("student/account")]
-    [HandleException]
     public class StudentAccountController : WebControllerBase
     {
         private IStudentRepository _studentRepository;

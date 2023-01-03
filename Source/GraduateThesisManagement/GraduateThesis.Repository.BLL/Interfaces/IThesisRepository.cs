@@ -1,13 +1,11 @@
-﻿using GraduateThesis.Models;
-using GraduateThesis.Repository.DAL;
+﻿using GraduateThesis.ApplicationCore.Models;
+using GraduateThesis.ApplicationCore.Repository;
 using GraduateThesis.Repository.DTO;
-using GraduateThesis.RepositoryPatterns;
 using System.Threading.Tasks;
 
-namespace GraduateThesis.Repository.BLL.Interfaces
+namespace GraduateThesis.Repository.BLL.Interfaces;
+
+public interface IThesisRepository : ISubRepository<ThesisInput, ThesisOutput, string>
 {
-    public interface IThesisRepository : ICrudPattern<Thesis, ThesisInput, ThesisOutput, string>, IRepositoryConfiguration
-    {
-        Task<DataResponse> DoThesisRegisterAsync(ThesisRegisterInput thesisRegisterInput);
-    }
+    Task<DataResponse> DoThesisRegisterAsync(ThesisRegisterInput thesisRegisterInput);
 }
