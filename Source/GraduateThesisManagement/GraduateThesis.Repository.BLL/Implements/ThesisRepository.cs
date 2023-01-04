@@ -17,7 +17,7 @@ public class ThesisRepository : SubRepository<Thesis, ThesisInput, ThesisOutput,
     private HufiGraduateThesisContext _context;
 
     internal ThesisRepository(HufiGraduateThesisContext context)
-        :base(context, context.Theses)
+        : base(context, context.Theses)
     {
         _context = context;
     }
@@ -54,7 +54,7 @@ public class ThesisRepository : SubRepository<Thesis, ThesisInput, ThesisOutput,
                 Description = s.Topic.Description,
                 Id = s.Topic.Id,
             },
-            StudentThesisGroup = (s.ThesisGroup == null ) ? null : new StudentThesisGroupOutput
+            StudentThesisGroup = (s.ThesisGroup == null) ? null : new StudentThesisGroupOutput
             {
                 Id = s.ThesisGroup.Id,
                 Name = s.ThesisGroup!.Name,
@@ -64,9 +64,9 @@ public class ThesisRepository : SubRepository<Thesis, ThesisInput, ThesisOutput,
             TrainingForm = (s.TrainingForm == null) ? null : new TrainingFormOutput
             {
                 Id = s.TrainingForm.Id,
-                Name = s.TrainingForm!.Name,                 
+                Name = s.TrainingForm!.Name,
             },
-            TrainingLevel =  new TrainingLevelOutput
+            TrainingLevel = new TrainingLevelOutput
             {
                 Id = s.TrainingLevel.Id,
                 Name = s.TrainingLevel!.Name,
@@ -136,5 +136,39 @@ public class ThesisRepository : SubRepository<Thesis, ThesisInput, ThesisOutput,
 
             throw new Exception("The process was aborted because of an error!", ex);
         }
+    }
+
+    public async Task<DataResponse> SubmitThesisAsync(string thesisId, string thesisGroupId)
+    {
+
+        Thesis thesis = await _context.Theses.FindAsync(thesisId);
+        if (thesis == null)
+            return new DataResponse
+            {
+                Status = DataResponseStatus.NotFound,
+                Message = "Không tìm thấy đề tài có mã này!"
+            };
+
+        if (thesis.ThesisGroupId == null)
+            return new DataResponse
+            {
+                Status = DataResponseStatus.NotFound,
+                Message = "Đề tài này chưa được đăng ký ! Bạn không được phép nộp đề tài này"
+            };
+
+        if (thesis.ThesisGroupId != thesisGroupId)
+            return new DataResponse
+            {
+                Status = DataResponseStatus.InvalidData,
+                Message = "Đề tài này không thuộc nhóm của bạn!"
+            };
+
+        thesis.Finished = true;
+        await _context.SaveChangesAsync();
+        return new DataResponse
+        {
+            Status = DataResponseStatus.Success,
+            Message = "Bạn đã nộp đề tài thành công!"
+        };
     }
 }

@@ -132,7 +132,9 @@ namespace GraduateThesis.Web.Areas.Student.Controllers
         [WebAuthorize(AccountRole.Student)]
         public async Task<IActionResult> SubmitThesisAsync([Required]string thesisId, string thesisGroupId)
         {
-            return View();
+            DataResponse dataResponse = await _thesisRepository.SubmitThesisAsync(thesisId,thesisGroupId);
+            AddTempData(dataResponse);
+                return RedirectToAction("YourThesis");
         }
 
         

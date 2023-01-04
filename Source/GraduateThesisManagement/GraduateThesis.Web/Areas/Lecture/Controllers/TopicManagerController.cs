@@ -13,8 +13,8 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
 {
     [Area("Lecture")]
     [Route("lecture/topic-manager")]
-    [WebAuthorize(AccountRole.Lecture)]
-    [AccountInfo(typeof(FacultyStaffOutput))]
+    //[WebAuthorize(AccountRole.Lecture)]
+    //[AccountInfo(typeof(FacultyStaffOutput))]
     public class TopicManagerController : WebControllerBase<ITopicRepository, TopicInput, TopicOutput, string>
     {
         private readonly ITopicRepository _topicRepository;
@@ -27,7 +27,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
         [Route("list")]
         [HttpGet]
         [PageName(Name = "Danh sách các chủ đề khóa luận")]
-        [WebAuthorize(AccountRole.Lecture)]
+       // [WebAuthorize(AccountRole.Lecture)]
         public override async Task<IActionResult> Index(int page = 1, int pageSize = 10, string orderBy = "", string orderOptions = "ASC", string keyword = "")
         {
             return await IndexResult(page, pageSize, orderBy, orderOptions, keyword);
@@ -36,7 +36,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
         [Route("create")]
         [HttpGet]
         [PageName(Name = "Tạo mới chủ đề khóa luận")]
-        [WebAuthorize(AccountRole.Lecture)]
+       // [WebAuthorize(AccountRole.Lecture)]
         public override async Task<IActionResult> Create()
         {
             return await CreateResult();
@@ -45,7 +45,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
         [Route("details/{id}")]
         [HttpGet]
         [PageName(Name = "Chi tiết chủ đề khóa luận")]
-        [WebAuthorize(AccountRole.Lecture)]
+        //[WebAuthorize(AccountRole.Lecture)]
         public override async Task<IActionResult> Details([Required] string id)
         {
             return await GetDetailsResult(id);
@@ -54,7 +54,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
         [Route("create")]
         [HttpPost]
         [PageName(Name = "Tạo mới chủ đề khóa luận")]
-        [WebAuthorize(AccountRole.Lecture)]
+       // [WebAuthorize(AccountRole.Lecture)]
         public override async Task<IActionResult> Create(TopicInput input)
         {
             return await CreateResult(input);
@@ -63,7 +63,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
         [Route("edit/{id}")]
         [HttpGet]
         [PageName(Name = "Chỉnh sửa chủ đề khóa luận")]
-        [WebAuthorize(AccountRole.Lecture)]
+       // [WebAuthorize(AccountRole.Lecture)]
         public override async Task<IActionResult> Edit([Required] string id)
         {
             return await EditResult(id);
@@ -72,7 +72,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
         [Route("edit/{id}")]
         [HttpPost]
         [PageName(Name = "Chỉnh sửa chủ đề khóa luận")]
-        [WebAuthorize(AccountRole.Lecture)]
+       // [WebAuthorize(AccountRole.Lecture)]
         public override async Task<IActionResult> Edit([Required] string id, TopicInput input)
         {
             return await EditResult(id, input);
@@ -80,7 +80,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
 
         [Route("batch-delete/{id}")]
         [HttpPost]
-        [WebAuthorize(AccountRole.Lecture)]
+       // [WebAuthorize(AccountRole.Lecture)]
         public override async Task<IActionResult> BatchDelete([Required] string id)
         {
             return await BatchDeleteResult(id);
@@ -88,7 +88,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
 
         [Route("force-delete/{id}")]
         [HttpPost]
-        [WebAuthorize(AccountRole.Lecture)]
+      //  [WebAuthorize(AccountRole.Lecture)]
         public override async Task<IActionResult> ForceDelete([Required] string id)
         {
             return await ForceDeleteResult(id);
@@ -96,7 +96,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
 
         [Route("export")]
         [HttpGet]
-        [WebAuthorize(AccountRole.Lecture)]
+      //  [WebAuthorize(AccountRole.Lecture)]
         public override async Task<IActionResult> Export()
         {
             RecordFilter recordFilter = new RecordFilter();
@@ -116,7 +116,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
 
         [Route("import")]
         [HttpGet]
-        [WebAuthorize(AccountRole.Lecture)]
+       // [WebAuthorize(AccountRole.Lecture)]
         public override async Task<IActionResult> Import(IFormFile formFile)
         {
             ImportMetadata importMetadata = new ImportMetadata
