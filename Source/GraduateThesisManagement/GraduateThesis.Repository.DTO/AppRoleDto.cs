@@ -3,13 +3,12 @@ using System.ComponentModel.DataAnnotations;
 
 namespace GraduateThesis.Repository.DTO;
 
-public class SpecializationInput
+public class AppRoleInput
 {
-    [Display(Name = "Mã chuyên ngành")]
-    [Required(ErrorMessage = "{0} không được để trống ")]
+    [Display(Name = "Mã chức danh")]
     public string Id { get; set; }
 
-    [Display(Name = "Tên chuyên ngành")]
+    [Display(Name = "Tên vai trò , tên chức danh")]
     [Required(ErrorMessage = "{0} không được để trống")]
     public string Name { get; set; }
 
@@ -17,7 +16,7 @@ public class SpecializationInput
     public string Description { get; set; }
 }
 
-public class SpecializationOutput : SpecializationInput
+public class AppRoleOutput : AppRoleInput
 {
     public DateTime? CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }

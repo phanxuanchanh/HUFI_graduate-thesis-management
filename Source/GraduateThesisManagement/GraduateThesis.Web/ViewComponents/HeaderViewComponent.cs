@@ -2,7 +2,7 @@
 
 namespace GraduateThesis.Web.ViewComponents
 {
-    [ViewComponent(Name = "Header")]
+    [ViewComponent(Name = "CommonHeader")]
     public class HeaderViewComponent : ViewComponent
     {
         public HeaderViewComponent()

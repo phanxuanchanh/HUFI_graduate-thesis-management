@@ -6,11 +6,11 @@ using GraduateThesis.Repository.DTO;
 
 namespace GraduateThesis.Repository.BLL.Implements;
 
-public class AppRolesRepository : SubRepository<AppRole, AppRolesInput, AppRolesOutput, string>, IAppRolesRepository
+public class AppRoleRepository : SubRepository<AppRole, AppRolesInput, AppRolesOutput, string>, IAppRoleRepository
 {
     private HufiGraduateThesisContext _context;
 
-    public AppRolesRepository(HufiGraduateThesisContext context)
+    public AppRoleRepository(HufiGraduateThesisContext context)
         :base(context, context.AppRoles)
     {
         _context = context;

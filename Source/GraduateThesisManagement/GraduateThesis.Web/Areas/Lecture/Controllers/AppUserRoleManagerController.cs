@@ -9,9 +9,9 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers;
 [Route("lecture/appUserRole-manager")]
 public class AppUserRoleManagerController : WebControllerBase
 {
-    private IAppRolesRepository _appRolesRepository;
+    private IAppRoleRepository _appRolesRepository;
     private IFacultyRepository _facultyRepository;
-    private IAppUserRolesRepository _appUserRolesRepository;
+    private IAppUserRoleRepository _appUserRolesRepository;
 
     public AppUserRoleManagerController(IRepository repository)
     {

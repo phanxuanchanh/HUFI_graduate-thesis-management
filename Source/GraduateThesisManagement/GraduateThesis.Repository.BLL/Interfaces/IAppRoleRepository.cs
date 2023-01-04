@@ -3,7 +3,7 @@ using GraduateThesis.Repository.DTO;
 
 namespace GraduateThesis.Repository.BLL.Interfaces;
 
-public interface IAppRolesRepository : ISubRepository<AppRolesInput, AppRolesOutput, string>
+public interface IAppRoleRepository : ISubRepository<AppRolesInput, AppRolesOutput, string>
 {
 
 }
