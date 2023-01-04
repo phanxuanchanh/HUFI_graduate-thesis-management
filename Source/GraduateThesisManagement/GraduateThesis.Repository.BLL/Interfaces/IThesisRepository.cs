@@ -8,4 +8,5 @@ namespace GraduateThesis.Repository.BLL.Interfaces;
 public interface IThesisRepository : ISubRepository<ThesisInput, ThesisOutput, string>
 {
     Task<DataResponse> DoThesisRegisterAsync(ThesisRegisterInput thesisRegisterInput);
+    Task<DataResponse> SubmitThesisAsync(string thesisId, string thesisGroupId);
 }
