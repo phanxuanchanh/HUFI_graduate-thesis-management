@@ -61,7 +61,7 @@ public class FacultyStaffManagerController : WebControllerBase<IFacultyStaffRepo
             List<FacultyOutput> faculties = await _facultyRepository.GetListAsync();
             ViewData["FacultyList"] = new SelectList(faculties, "Id", "Name");
 
-            List<AppRolesOutput> facultyStaffRoles = await _appRolesRepository.GetListAsync();
+            List<AppRoleOutput> facultyStaffRoles = await _appRolesRepository.GetListAsync();
             ViewData["facultyStaffRolesList"] = new SelectList(facultyStaffRoles, "Id", "Name");
         };
 
@@ -78,7 +78,7 @@ public class FacultyStaffManagerController : WebControllerBase<IFacultyStaffRepo
             List<FacultyOutput> faculties = await _facultyRepository.GetListAsync();
             ViewData["FacultyList"] = new SelectList(faculties, "Id", "Name");
 
-            List<AppRolesOutput> facultyStaffRoles = await _appRolesRepository.GetListAsync();
+            List<AppRoleOutput> facultyStaffRoles = await _appRolesRepository.GetListAsync();
             ViewData["facultyStaffRolesList"] = new SelectList(facultyStaffRoles, "Id", "Name");
         };
 
@@ -96,7 +96,7 @@ public class FacultyStaffManagerController : WebControllerBase<IFacultyStaffRepo
             List<FacultyOutput> faculties = await _facultyRepository.GetListAsync();
             ViewData["FacultyList"] = new SelectList(faculties, "Id", "Name");
 
-            List<AppRolesOutput> facultyStaffRoles = await _appRolesRepository.GetListAsync();
+            List<AppRoleOutput> facultyStaffRoles = await _appRolesRepository.GetListAsync();
             ViewData["facultyStaffRolesList"] = new SelectList(facultyStaffRoles, "Id", "Name");
         };
 
@@ -113,7 +113,7 @@ public class FacultyStaffManagerController : WebControllerBase<IFacultyStaffRepo
             List<FacultyOutput> faculties = await _facultyRepository.GetListAsync();
             ViewData["FacultyList"] = new SelectList(faculties, "Id", "Name");
 
-            List<AppRolesOutput> facultyStaffRoles = await _appRolesRepository.GetListAsync();
+            List<AppRoleOutput> facultyStaffRoles = await _appRolesRepository.GetListAsync();
             ViewData["facultyStaffRolesList"] = new SelectList(facultyStaffRoles, "Id", "Name");
         };
 

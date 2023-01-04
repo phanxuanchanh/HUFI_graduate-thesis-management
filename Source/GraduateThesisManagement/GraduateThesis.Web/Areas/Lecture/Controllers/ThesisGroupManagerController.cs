@@ -1,4 +1,5 @@
-﻿using GraduateThesis.Common.Authorization;
+﻿using GraduateThesis.ApplicationCore.AppController;
+using GraduateThesis.ApplicationCore.WebAttributes;
 using GraduateThesis.Common.WebAttributes;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DTO;
@@ -54,8 +55,10 @@ public class ThesisGroupManagerController : WebControllerBase<IStudentThesisGrou
         throw new NotImplementedException();
     }
 
-                return View();          
-        }
+    public override Task<IActionResult> Export()
+    {
+        throw new NotImplementedException();
+    }
 
     public override Task<IActionResult> ForceDelete([Required] string id)
     {
@@ -67,5 +70,12 @@ public class ThesisGroupManagerController : WebControllerBase<IStudentThesisGrou
         throw new NotImplementedException();
     }
 
+    [Route("list")]
+    [HttpGet]
+    [PageName(Name = "Danh sách nhóm sinh viên làm khóa luận")]
+    [WebAuthorize(AccountRole.Lecture)]
+    public override async Task<IActionResult> Index(int page = 1, int pageSize = 10, string orderBy = "", string orderOptions = "ASC", string keyword = "")
+    {
+        return await IndexResult(page,pageSize,orderBy,orderOptions,keyword);
     }
 }

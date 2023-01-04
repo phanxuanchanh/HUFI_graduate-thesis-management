@@ -44,7 +44,7 @@ public class Repository : IRepository
 
     public IAppRoleRepository AppRolesRepository => new AppRoleRepository(_context);
 
-    public IAppUserRoleRepository AppUserRolesRepository => new AppUserRolesRepository(_context);
+
 
     protected virtual void Dispose(bool disposing)
     {

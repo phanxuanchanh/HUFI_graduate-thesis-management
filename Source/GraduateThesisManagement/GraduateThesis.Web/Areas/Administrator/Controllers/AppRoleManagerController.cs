@@ -33,7 +33,7 @@ public class AppRoleManagerController : WebControllerBase
     [PageName(Name = "Chi tiết quyền")]
     public async Task<IActionResult> Details([Required] string id)
     {
-        AppRolesOutput appRolesOutput = await _appRolesRepository.GetAsync(id);
+        AppRoleOutput appRolesOutput = await _appRolesRepository.GetAsync(id);
         if (appRolesOutput == null)
             return RedirectToAction("Index");
 
@@ -51,11 +51,11 @@ public class AppRoleManagerController : WebControllerBase
     [Route("create")]
     [HttpPost]
     [PageName(Name = "Tạo mới quyền")]
-    public async Task<IActionResult> Create(AppRolesInput appRolesInput)
+    public async Task<IActionResult> Create(AppRoleInput appRolesInput)
     {
         if (ModelState.IsValid)
         {
-            DataResponse<AppRolesOutput> dataResponse = await _appRolesRepository.CreateAsync(appRolesInput);
+            DataResponse<AppRoleOutput> dataResponse = await _appRolesRepository.CreateAsync(appRolesInput);
             AddViewData(dataResponse);
             return View(appRolesInput);
         }
@@ -70,7 +70,7 @@ public class AppRoleManagerController : WebControllerBase
     public async Task<IActionResult> Edit([Required] string id)
     {
 
-        AppRolesOutput appRolesOutput = await _appRolesRepository.GetAsync(id);
+        AppRoleOutput appRolesOutput = await _appRolesRepository.GetAsync(id);
         if (appRolesOutput == null)
             return RedirectToAction("Index");
 
@@ -80,17 +80,17 @@ public class AppRoleManagerController : WebControllerBase
     [Route("edit/{id}")]
     [HttpPost]
     [PageName(Name = "Chỉnh sửa đề tài khóa luận")]
-    public async Task<IActionResult> Edit([Required] string id, AppRolesInput appRolesInput)
+    public async Task<IActionResult> Edit([Required] string id, AppRoleInput appRolesInput)
     {
        
 
         if (ModelState.IsValid)
         {
-            AppRolesOutput appRolesOutput = await _appRolesRepository.GetAsync(id);
+            AppRoleOutput appRolesOutput = await _appRolesRepository.GetAsync(id);
             if (appRolesOutput == null)
                 return RedirectToAction("Index");
 
-            DataResponse<AppRolesOutput> dataResponse = await _appRolesRepository.UpdateAsync(id, appRolesInput);
+            DataResponse<AppRoleOutput> dataResponse = await _appRolesRepository.UpdateAsync(id, appRolesInput);
 
             AddViewData(dataResponse);
             return View(appRolesInput);
@@ -104,7 +104,7 @@ public class AppRoleManagerController : WebControllerBase
     [HttpPost]
     public async Task<IActionResult> Delete([Required] string id)
     {
-        AppRolesOutput appRolesOutput = await _appRolesRepository.GetAsync(id);
+        AppRoleOutput appRolesOutput = await _appRolesRepository.GetAsync(id);
         if (appRolesOutput == null)
             return RedirectToAction("Index");
 

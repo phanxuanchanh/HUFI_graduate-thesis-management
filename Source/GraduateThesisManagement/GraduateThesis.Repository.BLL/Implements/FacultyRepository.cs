@@ -1,5 +1,5 @@
-﻿using GraduateThesis.Generics;
-using GraduateThesis.Models;
+﻿using GraduateThesis.ApplicationCore.Repository;
+using GraduateThesis.ApplicationCore.Uuid;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DAL;
 using GraduateThesis.Repository.DTO;
