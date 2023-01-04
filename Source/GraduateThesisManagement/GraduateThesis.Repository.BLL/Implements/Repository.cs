@@ -42,9 +42,9 @@ public class Repository : IRepository
 
     public ISpecializationRepository SpecializationRepository => new SpecializationRepository(_context);
 
-    public IAppRolesRepository AppRolesRepository => new AppRolesRepository(_context);
+    public IAppRoleRepository AppRolesRepository => new AppRoleRepository(_context);
 
-    public IAppUserRolesRepository AppUserRolesRepository => new AppUserRolesRepository(_context);
+    public IAppUserRoleRepository AppUserRolesRepository => new AppUserRolesRepository(_context);
 
     protected virtual void Dispose(bool disposing)
     {
