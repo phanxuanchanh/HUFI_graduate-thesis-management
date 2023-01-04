@@ -1,331 +1,225 @@
-﻿using GraduateThesis.Common;
-using GraduateThesis.Generics;
-using GraduateThesis.Models;
+﻿using GraduateThesis.ApplicationCore.Enums;
+using GraduateThesis.ApplicationCore.Hash;
+using GraduateThesis.ApplicationCore.Models;
+using GraduateThesis.ApplicationCore.Repository;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DAL;
 using GraduateThesis.Repository.DTO;
 using Microsoft.EntityFrameworkCore;
-using NPOI.SS.UserModel;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace GraduateThesis.Repository.BLL.Implements
+namespace GraduateThesis.Repository.BLL.Implements;
+
+public class StudentRepository : SubRepository<Student, StudentInput, StudentOutput, string>, IStudentRepository
 {
-    public class StudentRepository : IStudentRepository
+    private HufiGraduateThesisContext _context;
+
+    internal StudentRepository(HufiGraduateThesisContext context)
+        :base(context, context.Students)
     {
-        private HufiGraduateThesisContext _context;
-        private GenericRepository<HufiGraduateThesisContext, Student, StudentInput, StudentOutput> _genericRepository;
+        _context = context;
+    }
 
-        internal StudentRepository(HufiGraduateThesisContext context)
+    protected override void ConfigureIncludes()
+    {
+        _genericRepository.IncludeMany(i => i.StudentClass);
+    }
+
+    protected override void ConfigureSelectors()
+    {
+        PaginationSelector = s => new StudentOutput
         {
-            _context = context;
-            _genericRepository = new GenericRepository<HufiGraduateThesisContext, Student, StudentInput, StudentOutput>(_context, _context.Students);
+            Id = s.Id,
+            Name = s.Name,
+            Phone = s.Phone,
+            Email = s.Email,
+            Address = s.Address,
+            CreatedAt = s.StudentClass.CreatedAt,
+            UpdatedAt = s.StudentClass.UpdatedAt,
+            DeletedAt = s.StudentClass.DeletedAt
+        };
 
-            ConfigureIncludes();
-            ConfigureSelectors();
-        }
-
-        public DataResponse BatchDelete(string id)
+        ListSelector = PaginationSelector;
+        SingleSelector = s => new StudentOutput
         {
-            return _genericRepository.BatchDelete(id);
-        }
-
-        public async Task<DataResponse> BatchDeleteAsync(string id)
-        {
-            return await _genericRepository.BatchDeleteAsync(id);
-        }
-
-        public void ConfigureIncludes()
-        {
-            _genericRepository.IncludeMany(i => i.StudentClass);
-        }
-
-        public void ConfigureSelectors()
-        {
-            _genericRepository.PaginationSelector = s => new StudentOutput
+            Id = s.Id,
+            Name = s.Name,
+            Phone = s.Phone,
+            Email = s.Email,
+            Address = s.Address,
+            Avatar = s.Avatar,
+            Birthday = s.Birthday,
+            Description = s.Description,
+            StudentClass = new StudentClassOutput
             {
-                Id = s.Id,
-                Name = s.Name,
-                Phone = s.Phone,
-                Email = s.Email,
-                Address = s.Address,
+                Id = s.StudentClass.Id,
+                Name = s.StudentClass.Name,
+                Description = s.StudentClass.Description,
                 CreatedAt = s.StudentClass.CreatedAt,
                 UpdatedAt = s.StudentClass.UpdatedAt,
                 DeletedAt = s.StudentClass.DeletedAt
-            };
+            },
+            CreatedAt = s.StudentClass.CreatedAt,
+            UpdatedAt = s.StudentClass.UpdatedAt,
+            DeletedAt = s.StudentClass.DeletedAt
+        };
+    }
 
-            _genericRepository.ListSelector = _genericRepository.PaginationSelector;
-            _genericRepository.SingleSelector = s => new StudentOutput
+    public override DataResponse<StudentOutput> Create(StudentInput input)
+    {
+        string salt = HashFunctions.GetMD5($"{input.Id}|{input.Name}|{DateTime.Now}");
+        Student student = new Student
+        {
+            Id = input.Id,
+            Name =input.Name,
+            Description = input.Description,
+            Email = input.Email,
+            Phone = input.Phone,
+            Address = input.Address,
+            Birthday = input.Birthday,
+            StudentClassId = input.StudentClassId,
+            Password = BCrypt.Net.BCrypt.HashPassword($"{input.Password}>>>{salt}"),
+            Salt = salt,
+            CreatedAt = DateTime.Now
+        };
+
+        _context.Students.Add(student);
+        int affected = _context.SaveChanges();
+
+        if (affected == 0)
+            return new DataResponse<StudentOutput> { Status = DataResponseStatus.Failed };
+
+        return new DataResponse<StudentOutput>
+        {
+            Status = DataResponseStatus.Success,
+            Data = new StudentOutput
             {
-                Id = s.Id,
-                Name = s.Name,
-                Phone = s.Phone,
-                Email = s.Email,
-                Address = s.Address,
-                Avatar = s.Avatar,
-                Birthday = s.Birthday,
-                Description = s.Description,
-                StudentClass = new StudentClassOutput
-                {
-                    Id = s.StudentClass.Id,
-                    Name = s.StudentClass.Name,
-                    Description = s.StudentClass.Description,
-                    CreatedAt = s.StudentClass.CreatedAt,
-                    UpdatedAt = s.StudentClass.UpdatedAt,
-                    DeletedAt = s.StudentClass.DeletedAt
-                },
-                CreatedAt = s.StudentClass.CreatedAt,
-                UpdatedAt = s.StudentClass.UpdatedAt,
-                DeletedAt = s.StudentClass.DeletedAt
-            };
-        }
+                Id = input.Id,
+                Name = input.Name,
+                Email = input.Email,
+            }
+        };
+    }
 
-        public int Count()
+    public override async Task<DataResponse<StudentOutput>> CreateAsync(StudentInput input)
+    {
+        string salt = HashFunctions.GetMD5($"{input.Id}|{input.Name}|{DateTime.Now}");
+        Student student = new Student
         {
-            return _genericRepository.Count();
-        }
+            Id = input.Id,
+            Name = input.Name,
+            Description = input.Description,
+            Email = input.Email,
+            Phone = input.Phone,
+            Address = input.Address,
+            Birthday = input.Birthday,
+            StudentClassId = input.StudentClassId,
+            Password = BCrypt.Net.BCrypt.HashPassword($"{input.Password}>>>{salt}"),
+            Salt = salt,
+            CreatedAt = DateTime.Now
+        };
 
-        public async Task<int> CountAsync()
+        await _context.Students.AddAsync(student);
+        int affected = await _context.SaveChangesAsync();
+
+        if (affected == 0)
+            return new DataResponse<StudentOutput> { Status = DataResponseStatus.Failed };
+
+        return new DataResponse<StudentOutput>
         {
-            return await _genericRepository.CountAsync();
-        }
-
-        public DataResponse<StudentOutput> Create(StudentInput input)
-        {
-            Student student = _genericRepository.ToEntity(input);
-            student.Salt = HashFunctions.GetMD5($"{input.Id}|{input.Name}|{DateTime.Now}");
-            student.Password = BCrypt.Net.BCrypt.HashPassword($"{input.Password}>>>{student.Salt}");
-
-            _context.Students.Add(student);
-            int affected = _context.SaveChanges();
-
-            if (affected == 0)
-                return new DataResponse<StudentOutput> { Status = DataResponseStatus.Failed };
-
-            return new DataResponse<StudentOutput>
+            Status = DataResponseStatus.Success,
+            Data = new StudentOutput
             {
-                Status = DataResponseStatus.Success,
-                Data = _genericRepository.ToOutput(student)
-            };
-        }
+                Id = input.Id,
+                Name = input.Name,
+                Email = input.Email,
+            }
+        };
+    }
 
-        public async Task<DataResponse<StudentOutput>> CreateAsync(StudentInput input)
-        {
-            Student student = _genericRepository.ToEntity(input);
-            student.Salt = HashFunctions.GetMD5($"{input.Id}|{input.Name}|{DateTime.Now}");
-            student.Password = BCrypt.Net.BCrypt.HashPassword($"{input.Password}>>>{student.Salt}");
+    public ForgotPasswordModel CreateNewPassword(NewPasswordModel newPasswordModel)
+    {
+        throw new NotImplementedException();
+    }
 
-            await _context.Students.AddAsync(student);
-            int affected = await _context.SaveChangesAsync();
+    public Task<ForgotPasswordModel> CreateNewPasswordAsync(NewPasswordModel newPasswordModel)
+    {
+        throw new NotImplementedException();
+    }
 
-            if (affected == 0)
-                return new DataResponse<StudentOutput> { Status = DataResponseStatus.Failed };
+    public AccountVerificationModel ForgotPassword(ForgotPasswordModel forgotPasswordModel)
+    {
+        throw new NotImplementedException();
+    }
 
-            return new DataResponse<StudentOutput>
+    public Task<AccountVerificationModel> ForgotPasswordAsync(ForgotPasswordModel forgotPasswordModel)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task<StudentThesisOutput> GetStudentThesisAsync(string studentId)
+    {
+        //ThesisOutput thesisOutput = await _genericRepository.GetAsync("Id", thesisId);
+        //if (thesisOutput == null)
+        //    return null;
+
+        //StudentThesisGroupOutput studentThesisGroup = thesisOutput.StudentThesisGroup;
+
+        List<StudentOutput> students = await _context.StudentThesisGroupDetails
+            .Where(s => s.StudentId == studentId).Include(i => i.Student)
+            .Select(s => new StudentOutput
             {
-                Status = DataResponseStatus.Success,
-                Data = _genericRepository.ToOutput(student)
-            };
-        }
+                Id = s.Student.Id,
+                Name = s.Student.Name
+            }).ToListAsync();
 
-        public ForgotPasswordModel CreateNewPassword(NewPasswordModel newPasswordModel)
+        return new StudentThesisOutput
         {
-            throw new NotImplementedException();
-        }
+            //Thesis = thesisOutput,
+            //StudentThesisGroup = studentThesisGroup,
+            Students = students
+        };
+    }
 
-        public Task<ForgotPasswordModel> CreateNewPasswordAsync(NewPasswordModel newPasswordModel)
-        {
-            throw new NotImplementedException();
-        }
+    public SignInResultModel SignIn(SignInModel signInModel)
+    {
+        Student student = _context.Students.Find(signInModel.Code);
+        if (student == null)
+            return new SignInResultModel { Status = SignInStatus.NotFound };
 
-        public IWorkbook ExportToSpreadsheet(SpreadsheetTypeOptions spreadsheetTypeOptions, string sheetName, string[] includeProperties)
-        {
-            return _genericRepository.ExportToSpreadsheet(spreadsheetTypeOptions, sheetName, includeProperties);
-        }
+        string passwordAndSalt = $"{signInModel.Password}>>>{student.Salt}";
 
-        public async Task<IWorkbook> ExportToSpreadsheetAsync(SpreadsheetTypeOptions spreadsheetTypeOptions, string sheetName, string[] includeProperties)
-        {
-            return await _genericRepository
-                .ExportToSpreadsheetAsync(spreadsheetTypeOptions, sheetName, includeProperties);
-        }
+        if (!BCrypt.Net.BCrypt.Verify(passwordAndSalt, student.Password))
+            return new SignInResultModel { Status = SignInStatus.WrongPassword };
 
-        public DataResponse ForceDelete(string id)
-        {
-            throw new NotImplementedException();
-        }
+        return new SignInResultModel { Status = SignInStatus.Success };
+    }
 
-        public Task<DataResponse> ForceDeleteAsync(string id)
-        {
-            throw new NotImplementedException();
-        }
+    public async Task<SignInResultModel> SignInAsync(SignInModel signInModel)
+    {
+        Student student = await _context.Students.FindAsync(signInModel.Code);
+        if (student == null)
+            return new SignInResultModel { Status = SignInStatus.NotFound };
 
-        public AccountVerificationModel ForgotPassword(ForgotPasswordModel forgotPasswordModel)
-        {
-            throw new NotImplementedException();
-        }
+        string passwordAndSalt = $"{signInModel.Password}>>>{student.Salt}";
 
-        public Task<AccountVerificationModel> ForgotPasswordAsync(ForgotPasswordModel forgotPasswordModel)
-        {
-            throw new NotImplementedException();
-        }
+        if (!BCrypt.Net.BCrypt.Verify(passwordAndSalt, student.Password))
+            return new SignInResultModel { Status = SignInStatus.WrongPassword };
 
-        public StudentOutput Get(string id)
-        {
-            return _genericRepository.Get("Id", id);
-        }
+        return new SignInResultModel { Status = SignInStatus.Success };
+    }
 
-        public async Task<StudentOutput> GetAsync(string id)
-        {
-            return await _genericRepository.GetAsync("Id", id);
-        }
-
-        public List<StudentOutput> GetList(int count = 200)
-        {
-            return _genericRepository.GetList(count);
-        }
-
-        public async Task<List<StudentOutput>> GetListAsync(int count = 200)
-        {
-            return await _genericRepository.GetListAsync(count);
-        }
-
-        public Pagination<StudentOutput> GetPagination(int page, int pageSize, string orderBy, OrderOptions orderOptions, string keyword)
-        {
-            return _genericRepository.GetPagination(page, pageSize, orderBy, orderOptions, keyword);
-        }
-
-        public async Task<Pagination<StudentOutput>> GetPaginationAsync(int page, int pageSize, string orderBy, OrderOptions orderOptions, string keyword)
-        {
-            return await _genericRepository.GetPaginationAsync(page, pageSize, orderBy, orderOptions, keyword);
-        }
-
-        public async Task<StudentThesisOutput> GetStudentThesisAsync(string studentId)
-        {
-            //ThesisOutput thesisOutput = await _genericRepository.GetAsync("Id", thesisId);
-            //if (thesisOutput == null)
-            //    return null;
-
-            //StudentThesisGroupOutput studentThesisGroup = thesisOutput.StudentThesisGroup;
-
-            List<StudentOutput> students = await _context.StudentThesisGroupDetails
-                .Where(s => s.StudentId == studentId).Include(i => i.Student)
-                .Select(s => new StudentOutput
-                {
-                    Id = s.Student.Id,
-                    Name = s.Student.Name
-                }).ToListAsync();
-
-            return new StudentThesisOutput
-            {
-                //Thesis = thesisOutput,
-                //StudentThesisGroup = studentThesisGroup,
-                Students = students
-            };
-        }
-
-        public DataResponse ImportFromSpreadsheet(Stream stream, SpreadsheetTypeOptions spreadsheetTypeOptions, string sheetName)
-        {
-            return _genericRepository.ImportFromSpreadsheet(stream, spreadsheetTypeOptions, sheetName, s =>
-            {
-                DateTime currentDateTime = DateTime.Now;
-                Student student = new Student
-                {
-                    Id = UID.GetShortUID(),
-                    CreatedAt = currentDateTime
-                };
-
-                student.Name = s.GetCell(1).StringCellValue;
-                student.Phone = s.GetCell(2).StringCellValue;
-                student.Email = s.GetCell(3).StringCellValue;
-                student.Address = s.GetCell(4).StringCellValue;
-                student.Birthday = s.GetCell(5).DateCellValue;
-                student.Avatar = s.GetCell(6).StringCellValue;
-                student.Description = s.GetCell(7).StringCellValue;
-                student.StudentClassId = s.GetCell(8).StringCellValue;
-                student.Password = s.GetCell(9).StringCellValue;
-                student.Salt = s.GetCell(10).StringCellValue;
-               
-                return student;
-            });
-        }
-
-        public async Task<DataResponse> ImportFromSpreadsheetAsync(Stream stream, SpreadsheetTypeOptions spreadsheetTypeOptions, string sheetName)
-        {
-            return await _genericRepository.ImportFromSpreadsheetAsync(stream, spreadsheetTypeOptions, sheetName, s =>
-            {
-                DateTime currentDateTime = DateTime.Now;
-                Student student = new Student
-                {
-                    Id = UID.GetShortUID(),
-                    CreatedAt = currentDateTime
-                };
-
-                student.Name = s.GetCell(1).StringCellValue;
-                student.Phone = s.GetCell(2).StringCellValue;
-                student.Email = s.GetCell(3).StringCellValue;
-                student.Address = s.GetCell(4).StringCellValue;
-                student.Birthday = s.GetCell(5).DateCellValue;
-                student.Avatar = s.GetCell(6).StringCellValue;
-                student.Description = s.GetCell(7).StringCellValue;
-                student.StudentClassId = s.GetCell(8).StringCellValue;
-                student.Password = s.GetCell(9).StringCellValue;
-                student.Salt = s.GetCell(10).StringCellValue;
-
-                return student;
-            });
-        }
-
-
-        public SignInResultModel SignIn(SignInModel signInModel)
-        {
-            Student student = _context.Students.Find(signInModel.Code);
-            if (student == null)
-                return new SignInResultModel { Status = SignInStatus.NotFound };
-
-            string passwordAndSalt = $"{signInModel.Password}>>>{student.Salt}";
-
-            if (!BCrypt.Net.BCrypt.Verify(passwordAndSalt, student.Password))
-                return new SignInResultModel { Status = SignInStatus.WrongPassword };
-
-            return new SignInResultModel { Status = SignInStatus.Success };
-        }
-
-        public async Task<SignInResultModel> SignInAsync(SignInModel signInModel)
-        {
-            Student student = await _context.Students.FindAsync(signInModel.Code);
-            if (student == null)
-                return new SignInResultModel { Status = SignInStatus.NotFound };
-
-            string passwordAndSalt = $"{signInModel.Password}>>>{student.Salt}";
-
-            if (!BCrypt.Net.BCrypt.Verify(passwordAndSalt, student.Password))
-                return new SignInResultModel { Status = SignInStatus.WrongPassword };
-
-            return new SignInResultModel { Status = SignInStatus.Success };
-        }
-
-        public DataResponse<StudentOutput> Update(string id, StudentInput input)
-        {
-            return _genericRepository.Update(id, input);
-        }
-
-        public Task<DataResponse<StudentOutput>> UpdateAsync(string id, StudentInput input)
-        {
-            return _genericRepository.UpdateAsync(id, input);
-        }
-
-        public NewPasswordModel VerifyAccount(AccountVerificationModel accountVerificationModel)
-        {
-            throw new NotImplementedException();
-        }
+    public NewPasswordModel VerifyAccount(AccountVerificationModel accountVerificationModel)
+    {
+        throw new NotImplementedException();
+    }
 
         public Task<NewPasswordModel> VerifyAccountAsync(AccountVerificationModel accountVerificationModel)
         {
             throw new NotImplementedException();
         }
-
     }
 }

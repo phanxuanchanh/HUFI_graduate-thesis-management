@@ -1,21 +1,16 @@
-﻿using GraduateThesis.Common.Authorization;
+﻿using GraduateThesis.ApplicationCore.AppController;
+using GraduateThesis.ApplicationCore.Enums;
+using GraduateThesis.ApplicationCore.Models;
 using GraduateThesis.Common.WebAttributes;
-using GraduateThesis.Generics;
-using GraduateThesis.Models;
-using GraduateThesis.Repository.BLL.Implements;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DTO;
-using GraduateThesis.WebExtensions;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
-using X.PagedList;
 
 namespace GraduateThesis.Web.Areas.Administrator.Controllers
 {
     [Area("Administrator")]
     [Route("administrator/appRole-manager")]
-    [HandleException]
     public class AppRoleManagerController : WebControllerBase
     {
         private IAppRolesRepository _appRolesRepository;
@@ -23,31 +18,16 @@ namespace GraduateThesis.Web.Areas.Administrator.Controllers
         public AppRoleManagerController(IRepository repository)
         {
             _appRolesRepository = repository.AppRolesRepository;
-         
         }
 
         [Route("list")]
         [HttpGet]
         [PageName(Name = "Danh sách quyền giảng viên")]
-        public async Task<IActionResult> Index(int page = 1, int pageSize = 10, string orderBy = "", string orderOptions = "ASC", string keyword = "")
+        public async Task<IActionResult> Index(string keyword = "")
         {
-
-            Pagination<AppRolesOutput> pagination;
-            if (orderOptions == "ASC")
-                pagination = await _appRolesRepository.GetPaginationAsync(page, pageSize, orderBy, OrderOptions.ASC, keyword);
-            else
-                pagination = await _appRolesRepository.GetPaginationAsync(page, pageSize, orderBy, OrderOptions.DESC, keyword);
-
-            StaticPagedList<AppRolesOutput> pagedList = pagination.ToStaticPagedList();
-            ViewData["PagedList"] = pagedList;
-            ViewData["OrderBy"] = orderBy;
-            ViewData["OrderOptions"] = orderOptions;
-            ViewData["Keyword"] = keyword;
-
             return View();
-
-
         }
+
         [Route("details/{id}")]
         [HttpGet]
         [PageName(Name = "Chi tiết quyền giảng viên")]
@@ -134,10 +114,6 @@ namespace GraduateThesis.Web.Areas.Administrator.Controllers
             return RedirectToAction("Index");
         }
 
-        [Route("import")]
-        public IActionResult Import()
-        {
-            return View();
-        }
+
     }
 }

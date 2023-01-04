@@ -1,193 +1,62 @@
-﻿using GraduateThesis.Common;
-using GraduateThesis.Generics;
+﻿using GraduateThesis.Generics;
 using GraduateThesis.Models;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DAL;
 using GraduateThesis.Repository.DTO;
-using NPOI.SS.UserModel;
 using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 
-namespace GraduateThesis.Repository.BLL.Implements
+namespace GraduateThesis.Repository.BLL.Implements;
+
+public class FacultyRepository : SubRepository<Faculty, FacultyInput, FacultyOutput, string>, IFacultyRepository
 {
-    public class FacultyRepository : IFacultyRepository
+    private HufiGraduateThesisContext _context;
+
+    public FacultyRepository(HufiGraduateThesisContext context)
+        : base(context, context.Faculties)
     {
-        private HufiGraduateThesisContext context;
-        private GenericRepository<HufiGraduateThesisContext, Faculty, FacultyInput, FacultyOutput> _genericRepository;
+        _context = context;
+    }
 
-        public FacultyRepository(HufiGraduateThesisContext context)
+    protected override void ConfigureIncludes()
+    {
+        IncludeMany(i => i.FacultyStaffs);
+    }
+
+    protected override void ConfigureSelectors()
+    {
+        PaginationSelector = s => new FacultyOutput
         {
-            this.context = context;
-            _genericRepository = new GenericRepository<HufiGraduateThesisContext, Faculty, FacultyInput, FacultyOutput>(context, context.Faculties);
+            Id = s.Id,
+            Name = s.Name,
+            Description = s.Description,
+            CreatedAt = s.CreatedAt,
+            UpdatedAt = s.UpdatedAt,
+            DeletedAt = s.DeletedAt
+        };
 
-            ConfigureIncludes();
-            ConfigureSelectors();
-        }
-
-        public DataResponse BatchDelete(string id)
+        ListSelector = PaginationSelector;
+        SingleSelector = s => new FacultyOutput
         {
-            return _genericRepository.BatchDelete(id);
-        }
-
-        public Task<DataResponse> BatchDeleteAsync(string id)
-        {
-            return _genericRepository.BatchDeleteAsync(id);
-        }
-
-        public void ConfigureIncludes()
-        {
-            _genericRepository.IncludeMany(i => i.FacultyStaffs);
-        }
-
-        public void ConfigureSelectors()
-        {
-            _genericRepository.PaginationSelector = s => new FacultyOutput
+            Id = s.Id,
+            Name = s.Name,
+            Description = s.Description,
+            FacultyStaffs = s.FacultyStaffs.Select(f => new FacultyStaffOutput
             {
-                Id = s.Id,
-                Name = s.Name,
-                Description = s.Description,
-                CreatedAt = s.CreatedAt,
-                UpdatedAt = s.UpdatedAt,
-                DeletedAt = s.DeletedAt
-            };
+                Id = f.Id,
+                FullName = f.FullName
+            }).ToList(),
+            CreatedAt = s.CreatedAt,
+            UpdatedAt = s.UpdatedAt,
+            DeletedAt = s.DeletedAt
+        };
 
-            _genericRepository.ListSelector = _genericRepository.PaginationSelector;
-            _genericRepository.SingleSelector = s => new FacultyOutput
-            {
-                Id = s.Id,
-                Name = s.Name,
-                Description = s.Description,
-                FacultyStaffs = s.FacultyStaffs.Select(f => new FacultyStaffOutput
-                {
-                    Id = f.Id,
-                    FullName = f.FullName
-                }).ToList(),
-                CreatedAt = s.CreatedAt,
-                UpdatedAt = s.UpdatedAt,
-                DeletedAt = s.DeletedAt
-            };
-        }
-
-        public int Count()
+        SimpleImportSelector = r => new Faculty
         {
-            return _genericRepository.Count();
-        }
-
-        public Task<int> CountAsync()
-        {
-            return _genericRepository.CountAsync();
-        }
-
-        public DataResponse<FacultyOutput> Create(FacultyInput input)
-        {
-            return _genericRepository.Create(input, GenerateUIDOptions.ShortUID);
-        }
-
-        public async Task<DataResponse<FacultyOutput>> CreateAsync(FacultyInput input)
-        {
-            return await _genericRepository.CreateAsync(input, GenerateUIDOptions.ShortUID);
-        }
-
-        public IWorkbook ExportToSpreadsheet(SpreadsheetTypeOptions spreadsheetTypeOptions, string sheetName, string[] includeProperties)
-        {
-            return _genericRepository.ExportToSpreadsheet(spreadsheetTypeOptions, sheetName, includeProperties);
-        }
-
-        public async Task<IWorkbook> ExportToSpreadsheetAsync(SpreadsheetTypeOptions spreadsheetTypeOptions, string sheetName, string[] includeProperties)
-        {
-            return await _genericRepository
-                .ExportToSpreadsheetAsync(spreadsheetTypeOptions, sheetName, includeProperties);
-        }
-
-        public DataResponse ForceDelete(string id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<DataResponse> ForceDeleteAsync(string id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public FacultyOutput Get(string id)
-        {
-            return _genericRepository.Get("Id", id);
-        }
-
-        public async Task<FacultyOutput> GetAsync(string id)
-        {
-            return await _genericRepository.GetAsync("Id", id);
-        }
-
-        public List<FacultyOutput> GetList(int count = 200)
-        {
-            return _genericRepository.GetList(count);
-        }
-
-        public Task<List<FacultyOutput>> GetListAsync(int count = 200)
-        {
-            return _genericRepository.GetListAsync(count);
-        }
-
-        public Pagination<FacultyOutput> GetPagination(int page, int pageSize, string orderBy, OrderOptions orderOptions, string keyword)
-        {
-            return _genericRepository.GetPagination(page, pageSize, orderBy, orderOptions, keyword);
-        }
-
-        public async Task<Pagination<FacultyOutput>> GetPaginationAsync(int page, int pageSize, string orderBy, OrderOptions orderOptions, string keyword)
-        {
-            return await _genericRepository.GetPaginationAsync(page, pageSize, orderBy, orderOptions, keyword);
-        }
-
-        public DataResponse ImportFromSpreadsheet(Stream stream, SpreadsheetTypeOptions spreadsheetTypeOptions, string sheetName)
-        {
-            return _genericRepository.ImportFromSpreadsheet(stream, spreadsheetTypeOptions, sheetName, s =>
-            {
-                DateTime currentDateTime = DateTime.Now;
-                Faculty faculty = new Faculty
-                {
-                    Id = UID.GetShortUID(),
-                    CreatedAt = currentDateTime
-                };
-
-                faculty.Name = s.GetCell(1).StringCellValue;
-                faculty.Description = s.GetCell(2).StringCellValue;
-
-                return faculty;
-            });
-        }
-
-        public async Task<DataResponse> ImportFromSpreadsheetAsync(Stream stream, SpreadsheetTypeOptions spreadsheetTypeOptions, string sheetName)
-        {
-
-            return await _genericRepository.ImportFromSpreadsheetAsync(stream, spreadsheetTypeOptions, sheetName, s =>
-            {
-                DateTime currentDateTime = DateTime.Now;
-                Faculty faculty = new Faculty
-                {
-                    Id = UID.GetShortUID(),
-                    CreatedAt = currentDateTime
-                };
-
-                faculty.Name = s.GetCell(1).StringCellValue;
-                faculty.Description = s.GetCell(2).StringCellValue;
-
-                return faculty;
-            });
-        }
-    
-
-        public DataResponse<FacultyOutput> Update(string id, FacultyInput input)
-        {
-            return _genericRepository.Update(id, input);
-        }
-
-        public Task<DataResponse<FacultyOutput>> UpdateAsync(string id, FacultyInput input)
-        {
-            return _genericRepository.UpdateAsync(id, input);
-        }
+            Id = UidHelper.GetShortUid(),
+            Name = r[1] as string,
+            Description = r[2] as string,
+            CreatedAt = DateTime.Now
+        };
     }
 }

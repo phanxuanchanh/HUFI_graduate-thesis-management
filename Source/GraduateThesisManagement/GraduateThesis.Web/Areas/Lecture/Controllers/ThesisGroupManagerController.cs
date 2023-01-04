@@ -1,91 +1,71 @@
 ﻿using GraduateThesis.Common.Authorization;
-using GraduateThesis.Common.File;
 using GraduateThesis.Common.WebAttributes;
-using GraduateThesis.Generics;
-using GraduateThesis.Models;
-using GraduateThesis.Repository.BLL.Implements;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DTO;
 using GraduateThesis.WebExtensions;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using NPOI.SS.Formula.Functions;
-using NPOI.SS.UserModel;
-using NuGet.Protocol.Core.Types;
-using System.Net.Mime;
-using X.PagedList;
+using System.ComponentModel.DataAnnotations;
 
-namespace GraduateThesis.Web.Areas.Lecture.Controllers
+namespace GraduateThesis.Web.Areas.Lecture.Controllers;
+
+[Area("Lecture")]
+[Route("lecture/thesisgroup-manager")]
+[WebAuthorize(AccountRole.Lecture)]
+[AccountInfo(typeof(FacultyStaffOutput))]
+public class ThesisGroupManagerController : WebControllerBase<IStudentThesisGroupRepository, StudentThesisGroupInput, StudentThesisGroupOutput, string>
 {
-    [Area("Lecture")]
-    [Route("lecture/thesisgroup-manager")]
-    [WebAuthorize(AccountRole.Lecture)]
-    [AccountInfo(typeof(FacultyStaffOutput))]
-    [HandleException]
-    public class ThesisGroupManagerController : WebControllerBase
+    private IStudentThesisGroupRepository _studentThesisGroupRepository;
+
+    public ThesisGroupManagerController(IRepository repository)
+        :base(repository.StudentThesisGroupRepository)
+        
     {
-        private IStudentThesisGroupRepository _studentThesisGroupRepository;
-   
-        public ThesisGroupManagerController(IRepository repository)
-        {
-            _studentThesisGroupRepository = repository.StudentThesisGroupRepository;
-           
-        }
+        _studentThesisGroupRepository = repository.StudentThesisGroupRepository;
+       
+    }
 
-        [Route("list")]
-        [HttpGet]
-        [PageName(Name = "Danh sách nhóm sinh viên làm khóa luận")]
-        [WebAuthorize(AccountRole.Lecture)]
-        public async Task<IActionResult> Index(int page = 1, int pageSize = 10, string orderBy = "", string orderOptions = "ASC", string keyword = "")
-        {
-                Pagination<StudentThesisGroupOutput> pagination;
-                if (orderOptions == "ASC")
-                    pagination = await _studentThesisGroupRepository.GetPaginationAsync(page, pageSize, orderBy, OrderOptions.ASC, keyword);
-                else
-                    pagination = await _studentThesisGroupRepository.GetPaginationAsync(page, pageSize, orderBy, OrderOptions.DESC, keyword);
+    public override Task<IActionResult> BatchDelete([Required] string id)
+    {
+        throw new NotImplementedException();
+    }
 
-                StaticPagedList<StudentThesisGroupOutput> pagedList = pagination.ToStaticPagedList();
-                ViewData["PagedList"] = pagedList;
-                ViewData["OrderBy"] = orderBy;
-                ViewData["OrderOptions"] = orderOptions;
-                ViewData["Keyword"] = keyword;
+    public override Task<IActionResult> Create()
+    {
+        throw new NotImplementedException();
+    }
+
+    public override Task<IActionResult> Create(StudentThesisGroupInput input)
+    {
+        throw new NotImplementedException();
+    }
+
+    public override Task<IActionResult> Details([Required] string id)
+    {
+        throw new NotImplementedException();
+    }
+
+    public override Task<IActionResult> Edit([Required] string id)
+    {
+        throw new NotImplementedException();
+    }
+
+    public override Task<IActionResult> Edit([Required] string id, StudentThesisGroupInput input)
+    {
+        throw new NotImplementedException();
+    }
 
                 return View();          
         }
-        [Route("export-to-spreadsheet")]
-        [HttpGet]
-        [WebAuthorize(AccountRole.Lecture)]
-        public async Task<IActionResult> ExportToSpreadsheet()
-        {
-            IWorkbook workbook = await _studentThesisGroupRepository.ExportToSpreadsheetAsync(
-                SpreadsheetTypeOptions.XLSX,
-                "Danh sách nhóm sinh viên làm khóa luận ",
-                new string[] { "Id", "Name" }
-            );
 
-            ContentDisposition contentDisposition = new ContentDisposition
-            {
-                FileName = $"Thesis_{DateTime.Now.ToString("ddMMyyyy_hhmmss")}.xlsx",
-                Inline = true,
-            };
+    public override Task<IActionResult> ForceDelete([Required] string id)
+    {
+        throw new NotImplementedException();
+    }
 
-            Response.Headers.Append("Content-Disposition", contentDisposition.ToString());
-
-            using (MemoryStream memoryStream = new MemoryStream())
-            {
-                workbook.Write(memoryStream, true);
-                byte[] bytes = memoryStream.ToArray();
-                return File(bytes, ContentTypeConsts.XLSX);
-            }
-        }
-
-        [Route("import")]
-
-        public IActionResult Import()
-        {
-            return View();
-        }
-
+    public override Task<IActionResult> Import(IFormFile formFile)
+    {
+        throw new NotImplementedException();
+    }
 
     }
 }
