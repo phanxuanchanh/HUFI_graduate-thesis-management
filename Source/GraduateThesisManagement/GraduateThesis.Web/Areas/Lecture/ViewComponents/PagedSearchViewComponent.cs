@@ -2,10 +2,10 @@
 
 namespace GraduateThesis.Web.Areas.Lecture.ViewComponents;
 
-[ViewComponent(Name = "FacultyStaffLayout_HeadElement")]
-public class HeadElementViewComponent : ViewComponent
+[ViewComponent(Name = "FacultyStaffLayout_PagedSearch")]
+public class PagedSearchViewComponent : ViewComponent
 {
-    public HeadElementViewComponent()
+    public PagedSearchViewComponent()
     {
 
     }
