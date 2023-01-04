@@ -18,7 +18,7 @@ public class StudentRepository : SubRepository<Student, StudentInput, StudentOut
     private HufiGraduateThesisContext _context;
 
     internal StudentRepository(HufiGraduateThesisContext context)
-        :base(context, context.Students)
+        : base(context, context.Students)
     {
         _context = context;
     }
@@ -74,7 +74,7 @@ public class StudentRepository : SubRepository<Student, StudentInput, StudentOut
         Student student = new Student
         {
             Id = input.Id,
-            Name =input.Name,
+            Name = input.Name,
             Description = input.Description,
             Email = input.Email,
             Phone = input.Phone,
@@ -221,4 +221,5 @@ public class StudentRepository : SubRepository<Student, StudentInput, StudentOut
     {
         throw new NotImplementedException();
     }
+
 }

@@ -7,6 +7,7 @@ using GraduateThesis.Repository.DTO;
 using GraduateThesis.WebExtensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using NPOI.SS.UserModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace GraduateThesis.Web.Areas.Lecture.Controllers;
@@ -60,7 +61,7 @@ public class FacultyStaffManagerController : WebControllerBase<IFacultyStaffRepo
             List<FacultyOutput> faculties = await _facultyRepository.GetListAsync();
             ViewData["FacultyList"] = new SelectList(faculties, "Id", "Name");
 
-            List<AppRolesOutput> facultyStaffRoles = await _appRolesRepository.GetListAsync();
+            List<AppRoleOutput> facultyStaffRoles = await _appRolesRepository.GetListAsync();
             ViewData["facultyStaffRolesList"] = new SelectList(facultyStaffRoles, "Id", "Name");
         };
 
@@ -77,7 +78,7 @@ public class FacultyStaffManagerController : WebControllerBase<IFacultyStaffRepo
             List<FacultyOutput> faculties = await _facultyRepository.GetListAsync();
             ViewData["FacultyList"] = new SelectList(faculties, "Id", "Name");
 
-            List<AppRolesOutput> facultyStaffRoles = await _appRolesRepository.GetListAsync();
+            List<AppRoleOutput> facultyStaffRoles = await _appRolesRepository.GetListAsync();
             ViewData["facultyStaffRolesList"] = new SelectList(facultyStaffRoles, "Id", "Name");
         };
 
@@ -95,7 +96,7 @@ public class FacultyStaffManagerController : WebControllerBase<IFacultyStaffRepo
             List<FacultyOutput> faculties = await _facultyRepository.GetListAsync();
             ViewData["FacultyList"] = new SelectList(faculties, "Id", "Name");
 
-            List<AppRolesOutput> facultyStaffRoles = await _appRolesRepository.GetListAsync();
+            List<AppRoleOutput> facultyStaffRoles = await _appRolesRepository.GetListAsync();
             ViewData["facultyStaffRolesList"] = new SelectList(facultyStaffRoles, "Id", "Name");
         };
 
@@ -112,7 +113,7 @@ public class FacultyStaffManagerController : WebControllerBase<IFacultyStaffRepo
             List<FacultyOutput> faculties = await _facultyRepository.GetListAsync();
             ViewData["FacultyList"] = new SelectList(faculties, "Id", "Name");
 
-            List<AppRolesOutput> facultyStaffRoles = await _appRolesRepository.GetListAsync();
+            List<AppRoleOutput> facultyStaffRoles = await _appRolesRepository.GetListAsync();
             ViewData["facultyStaffRolesList"] = new SelectList(facultyStaffRoles, "Id", "Name");
         };
 

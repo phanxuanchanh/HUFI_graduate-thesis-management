@@ -17,6 +17,5 @@ public interface IRepository : IDisposable
     ITrainingLevelRepository TrainingLevelRepository { get; }
     ISpecializationRepository SpecializationRepository { get; }
     IAppRoleRepository AppRolesRepository { get; }
-    IAppUserRoleRepository AppUserRolesRepository { get; }
 
 }

@@ -76,6 +76,6 @@ public class ThesisGroupManagerController : WebControllerBase<IStudentThesisGrou
     [WebAuthorize(AccountRole.Lecture)]
     public override async Task<IActionResult> Index(int page = 1, int pageSize = 10, string orderBy = "", string orderOptions = "ASC", string keyword = "")
     {
-        return await IndexResult(page, pageSize, orderBy, orderOptions, keyword);    
+        return await IndexResult(page,pageSize,orderBy,orderOptions,keyword);
     }
 }

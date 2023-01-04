@@ -5,7 +5,7 @@ using GraduateThesis.Repository.DTO;
 
 namespace GraduateThesis.Repository.BLL.Implements;
 
-public class AppRoleRepository : SubRepository<AppRole, AppRolesInput, AppRolesOutput, string>, IAppRoleRepository
+public class AppRoleRepository : SubRepository<AppRole, AppRoleInput, AppRoleOutput, string>, IAppRoleRepository
 {
     private HufiGraduateThesisContext _context;
 
@@ -22,7 +22,7 @@ public class AppRoleRepository : SubRepository<AppRole, AppRolesInput, AppRolesO
 
     protected override void ConfigureSelectors()
     {
-        PaginationSelector = s => new AppRolesOutput
+        PaginationSelector = s => new AppRoleOutput
         {
             Id = s.Id,
             Name = s.Name,
@@ -33,7 +33,7 @@ public class AppRoleRepository : SubRepository<AppRole, AppRolesInput, AppRolesO
         };
 
         ListSelector = PaginationSelector;
-        SingleSelector = s => new AppRolesOutput
+        SingleSelector = s => new AppRoleOutput
         {
             Id = s.Id,
             Name = s.Name,
