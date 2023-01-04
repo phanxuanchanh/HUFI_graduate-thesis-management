@@ -1,18 +1,17 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace GraduateThesis.Web.Areas.Lecture.ViewComponents
+namespace GraduateThesis.Web.Areas.Lecture.ViewComponents;
+
+[ViewComponent(Name = "FacultyStaffLayout_StatusArea")]
+public class StatusAreaViewComponent : ViewComponent
 {
-    [ViewComponent(Name = "StatusArea")]
-    public class StatusAreaViewComponent : ViewComponent
+    public StatusAreaViewComponent()
     {
-        public StatusAreaViewComponent()
-        {
 
-        }
+    }
 
-        public IViewComponentResult Invoke()
-        {
-            return View();
-        }
+    public IViewComponentResult Invoke()
+    {
+        return View();
     }
 }

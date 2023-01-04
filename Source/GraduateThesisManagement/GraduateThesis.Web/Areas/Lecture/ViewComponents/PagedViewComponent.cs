@@ -2,10 +2,10 @@
 
 namespace GraduateThesis.Web.Areas.Lecture.ViewComponents
 {
-    [ViewComponent(Name = "FacultyStaffLayout_Sidebar")]
-    public class SidebarViewComponent : ViewComponent
+    [ViewComponent(Name = "FacultyStaffLayout_Paged")]
+    public class PagedViewComponent : ViewComponent
     {
-        public SidebarViewComponent()
+        public PagedViewComponent()
         {
 
         }
