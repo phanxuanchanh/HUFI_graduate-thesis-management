@@ -1,46 +1,58 @@
-﻿@model GraduateThesis.Repository.DTO.TopicOutput
-<link href="~/css/detailpagetopic.css" rel="stylesheet" />
-<div class="container bootstrap snippets bootdey">
- 
-        <div class="col-md-8">
-            <div class="panel panel-default">
-                <div class="panel-body">
-                  
-                    <div class="h4 text-center">Thông tin chủ đề @Model.Name</div>
-                    <div class="row pv-lg">
-                        <div class="col-lg-2"></div>
-                        <div class="col-lg-8">
-                            <form class="form-horizontal ng-pristine ng-valid">
-                                <div class="form-group">
-                                    <label class="col-sm-2 control-label" for="inputContact1">Mã chủ đề</label>
-                                    <div class="col-sm-10">
-                                        <input class="form-control" id="inputContact1" type="text" placeholder="" value="@Model.Id">
+﻿@model TopicOutput
+
+<section id="basic-horizontal-layouts">
+    <div class="row match-height">
+        <div class="col-md-12 col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title">@ViewData["PageName"]: "@Model.Name"</h4>
+                </div>
+                <div class="card-content">
+                    <div class="card-body">
+                        <form class="form form-horizontal">
+                            <div class="form-body">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <label asp-for="Id"></label>
+                                    </div>
+                                    <div class="col-md-8 form-group">
+                                        <input asp-for="Id" class="form-control" disabled />
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label asp-for="Name"></label>
+                                    </div>
+                                    <div class="col-md-8 form-group">
+                                        <input asp-for="Name" class="form-control" placeholder="Nhập tên chủ đề" disabled />
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label asp-for="Description"></label>
+                                    </div>
+                                    <div class="col-md-8 form-group">
+                                        <textarea asp-for="Description" class="form-control" placeholder="Mô tả" disabled></textarea>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label asp-for="CreatedAt"></label>
+                                    </div>
+                                    <div class="col-md-8 form-group">
+                                        <input asp-for="CreatedAt" class="form-control" disabled/>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label asp-for="UpdatedAt"></label>
+                                    </div>
+                                    <div class="col-md-8 form-group">
+                                        <input asp-for="UpdatedAt" class="form-control" disabled />
+                                    </div>
+
+                                    <div class="col-sm-12 d-flex justify-content-end">
+                                        <a asp-action="Index" class="btn btn-light-secondary me-1 mb-1">Quay về danh sách</a>
+                                        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary me-1 mb-1">Chỉnh sửa</a>             
                                     </div>
                                 </div>
-                                <div class="form-group">
-                                    <label class="col-sm-2 control-label" for="inputContact1">Tên chủ đề</label>
-                                    <div class="col-sm-10">
-                                        <input class="form-control" id="inputContact1" type="text" placeholder="" value="@Model.Name">
-                                    </div>
-                                </div>
-                              
-                                <div class="form-group">
-                                    <label class="col-sm-2 control-label" for="inputContact6">Mô tả</label>
-                                    <div class="col-sm-10">
-                                        <textarea class="form-control" id="inputContact6" row="4"> @Html.DisplayFor(model => model.Description)</textarea>
-                                    </div>
-                                </div>
-                              
-                            </form>
-                      
-                        </div>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
-<div>
-    @Html.ActionLink("Edit", "Edit", new { /* id = Model.PrimaryKey */ }) |
-    <a asp-action="Index">Back to List</a>
-</div>
+</section>

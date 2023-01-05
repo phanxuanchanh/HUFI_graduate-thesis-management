@@ -1,10 +1,7 @@
-﻿using ExcelDataReader;
-using GraduateThesis.ApplicationCore.Enums;
-using GraduateThesis.ApplicationCore.File;
+﻿using GraduateThesis.ApplicationCore.Enums;
 using GraduateThesis.ApplicationCore.Models;
 using GraduateThesis.ApplicationCore.Uuid;
 using GraduateThesis.ExtensionMethods;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
 using System.Linq.Dynamic.Core;
@@ -62,7 +59,7 @@ public partial class GenericRepository<TEntity, TInput, TOutput>
 
     #endregion
 
-    #region get records method
+    #region get records methods
 
     public Pagination<TOutput> GetPagination(Pagination<TOutput> pagination, Expression<Func<TEntity, TOutput>> selector)
     {
@@ -96,10 +93,10 @@ public partial class GenericRepository<TEntity, TInput, TOutput>
 
     #endregion
 
+    
+    #region create new records methods
 
-    #region create new records method
-
-    public DataResponse<TOutput> Create(TInput input, GenerateUidOptions generateUidOptions)
+    public DataResponse<TOutput> Create(TInput input, UidOptions uidOptions)
     {
         TEntity entity = _converter.To<TInput, TEntity>(input);
         Type entityType = entity.GetType();
@@ -113,10 +110,10 @@ public partial class GenericRepository<TEntity, TInput, TOutput>
             };
 
         object id = idPropertyInfo.GetValue(entity, null);
-        if (idPropertyInfo.PropertyType == typeof(string) && generateUidOptions == GenerateUidOptions.ShortUid)
+        if (idPropertyInfo.PropertyType == typeof(string) && uidOptions == UidOptions.ShortUid)
             idPropertyInfo.SetValue(entity, UidHelper.GetShortUid());
 
-        if (idPropertyInfo.PropertyType == typeof(string) && generateUidOptions == GenerateUidOptions.MicrosoftUid)
+        if (idPropertyInfo.PropertyType == typeof(string) && uidOptions == UidOptions.MicrosoftUid)
             idPropertyInfo.SetValue(entity, UidHelper.GetMicrosoftUid());
 
         PropertyInfo createdAtPropertyInfo = entityType.GetProperty("CreatedAt");
@@ -147,7 +144,7 @@ public partial class GenericRepository<TEntity, TInput, TOutput>
     #endregion
 
 
-    #region update records method
+    #region update records methods
 
     public DataResponse<TOutput> Update(object id, TInput input)
     {
@@ -181,7 +178,7 @@ public partial class GenericRepository<TEntity, TInput, TOutput>
     #endregion
 
 
-    #region delete records method
+    #region delete records methods
 
     public DataResponse BatchDelete(object id)
     {
@@ -267,7 +264,49 @@ public partial class GenericRepository<TEntity, TInput, TOutput>
     #endregion
 
 
-    #region count records method
+    #region restore records methods
+
+    public DataResponse Restore(object id)
+    {
+        TEntity entity = _dbSet.Find(id);
+        if (entity == null)
+            return new DataResponse { Status = DataResponseStatus.NotFound };
+
+        Type entityType = entity.GetType();
+        PropertyInfo isDeletedPropertyInfo = entityType.GetProperty("IsDeleted");
+        if (isDeletedPropertyInfo == null)
+            return new DataResponse<TOutput>
+            {
+                Status = DataResponseStatus.Failed,
+                Message = "Property named 'IsDeleted' not found"
+            };
+
+        isDeletedPropertyInfo.SetValue(entity, false);
+
+        PropertyInfo deletedAtPropertyInfo = entityType.GetProperty("DeletedAt");
+        if (deletedAtPropertyInfo != null)
+            deletedAtPropertyInfo.SetValue(entity, null);
+
+        int affected = _context.SaveChanges();
+        if (affected == 0)
+            return new DataResponse<TOutput> { Status = DataResponseStatus.Failed };
+
+        return new DataResponse { Status = DataResponseStatus.Success };
+    }
+
+    #endregion
+
+
+    #region get trash records methods
+
+    public List<TOutput> GetTrash(int count, Expression<Func<TEntity, TOutput>> selector)
+    {
+        return _dbSet.Where("x => x.IsDeleted == true").Select(selector).ToList();
+    }
+
+    #endregion
+
+    #region count records methods
 
     public int Count()
     {
@@ -302,7 +341,7 @@ public partial class GenericRepository<TEntity, TInput, TOutput>
 
     public DataResponse Import(Stream stream, ImportMetadata importMetadata, ImportSelector<TEntity> importSelector)
     {
-        if(importMetadata.TypeOptions == ImportTypeOptions.XLS || importMetadata.TypeOptions == ImportTypeOptions.XLS)
+        if(importMetadata.TypeOptions == ImportTypeOptions.XLS || importMetadata.TypeOptions == ImportTypeOptions.XLSX)
         {
             if (importSelector.SimpleImportSpreadsheet != null)
                 return _importHelper.ImportFromSpreadsheet(stream, importMetadata.StartFromRow, importSelector.SimpleImportSpreadsheet);

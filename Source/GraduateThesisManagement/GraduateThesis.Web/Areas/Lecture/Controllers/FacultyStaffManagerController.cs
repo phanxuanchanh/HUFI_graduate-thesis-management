@@ -7,7 +7,6 @@ using GraduateThesis.Repository.DTO;
 using GraduateThesis.WebExtensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using NPOI.SS.UserModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace GraduateThesis.Web.Areas.Lecture.Controllers;
@@ -58,10 +57,10 @@ public class FacultyStaffManagerController : WebControllerBase<IFacultyStaffRepo
     {
         Func<Task> dependency = async () =>
         {
-            List<FacultyOutput> faculties = await _facultyRepository.GetListAsync();
+            List<FacultyOutput> faculties = await _facultyRepository.GetListAsync(50);
             ViewData["FacultyList"] = new SelectList(faculties, "Id", "Name");
 
-            List<AppRoleOutput> facultyStaffRoles = await _appRolesRepository.GetListAsync();
+            List<AppRoleOutput> facultyStaffRoles = await _appRolesRepository.GetListAsync(50);
             ViewData["facultyStaffRolesList"] = new SelectList(facultyStaffRoles, "Id", "Name");
         };
 
@@ -75,10 +74,10 @@ public class FacultyStaffManagerController : WebControllerBase<IFacultyStaffRepo
     {
         Func<Task> dependency = async () =>
         {
-            List<FacultyOutput> faculties = await _facultyRepository.GetListAsync();
+            List<FacultyOutput> faculties = await _facultyRepository.GetListAsync(50);
             ViewData["FacultyList"] = new SelectList(faculties, "Id", "Name");
 
-            List<AppRoleOutput> facultyStaffRoles = await _appRolesRepository.GetListAsync();
+            List<AppRoleOutput> facultyStaffRoles = await _appRolesRepository.GetListAsync(50);
             ViewData["facultyStaffRolesList"] = new SelectList(facultyStaffRoles, "Id", "Name");
         };
 
@@ -93,10 +92,10 @@ public class FacultyStaffManagerController : WebControllerBase<IFacultyStaffRepo
     {
         Func<Task> dependency = async () =>
         {
-            List<FacultyOutput> faculties = await _facultyRepository.GetListAsync();
+            List<FacultyOutput> faculties = await _facultyRepository.GetListAsync(50);
             ViewData["FacultyList"] = new SelectList(faculties, "Id", "Name");
 
-            List<AppRoleOutput> facultyStaffRoles = await _appRolesRepository.GetListAsync();
+            List<AppRoleOutput> facultyStaffRoles = await _appRolesRepository.GetListAsync(50);
             ViewData["facultyStaffRolesList"] = new SelectList(facultyStaffRoles, "Id", "Name");
         };
 
@@ -110,10 +109,10 @@ public class FacultyStaffManagerController : WebControllerBase<IFacultyStaffRepo
     {
         Func<Task> dependency = async () =>
         {
-            List<FacultyOutput> faculties = await _facultyRepository.GetListAsync();
+            List<FacultyOutput> faculties = await _facultyRepository.GetListAsync(50);
             ViewData["FacultyList"] = new SelectList(faculties, "Id", "Name");
 
-            List<AppRoleOutput> facultyStaffRoles = await _appRolesRepository.GetListAsync();
+            List<AppRoleOutput> facultyStaffRoles = await _appRolesRepository.GetListAsync(50);
             ViewData["facultyStaffRolesList"] = new SelectList(facultyStaffRoles, "Id", "Name");
         };
 
@@ -141,5 +140,20 @@ public class FacultyStaffManagerController : WebControllerBase<IFacultyStaffRepo
     public override async Task<IActionResult> Import(IFormFile formFile)
     {
         return await ImportResult(formFile, new ImportMetadata());
+    }
+
+    public override Task<IActionResult> Import()
+    {
+        throw new NotImplementedException();
+    }
+
+    public override Task<IActionResult> GetTrash(int count = 50)
+    {
+        throw new NotImplementedException();
+    }
+
+    public override Task<IActionResult> Restore([Required] string id)
+    {
+        throw new NotImplementedException();
     }
 }

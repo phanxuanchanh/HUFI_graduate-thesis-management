@@ -17,11 +17,13 @@ public interface ISubRepository<TInput, TOutput, T_ID>
 {
     Task<Pagination<TOutput>> GetPaginationAsync(int page, int pageSize, string orderBy, OrderOptions orderOptions, string keyword);
     Task<Pagination<TOutput>> GetPaginationAsync(Pagination<TOutput> pagination);
-    Task<List<TOutput>> GetListAsync(int count = 200);
+    Task<List<TOutput>> GetListAsync(int count);
+    Task<List<TOutput>> GetTrashAsync(int count);
     Task<TOutput> GetAsync(T_ID id);
     Task<DataResponse<TOutput>> CreateAsync(TInput input);
     Task<DataResponse<TOutput>> UpdateAsync(T_ID id, TInput input);
     Task<DataResponse> BatchDeleteAsync(T_ID id);
+    Task<DataResponse> RestoreAsync(T_ID id);
     Task<DataResponse> ForceDeleteAsync(T_ID id);
     Task<int> CountAsync();
     Task<byte[]> ExportAsync(RecordFilter recordFilter, ExportMetadata exportMetadata);
@@ -29,11 +31,13 @@ public interface ISubRepository<TInput, TOutput, T_ID>
 
     Pagination<TOutput> GetPagination(int page, int pageSize, string orderBy, OrderOptions orderOptions, string keyword);
     Pagination<TOutput> GetPagination(Pagination<TOutput> pagination);
-    List<TOutput> GetList(int count = 200);
+    List<TOutput> GetList(int count);
+    List<TOutput> GetTrash(int count);
     TOutput Get(T_ID id);
     DataResponse<TOutput> Create(TInput input);
     DataResponse<TOutput> Update(T_ID id, TInput input);
     DataResponse BatchDelete(T_ID id);
+    DataResponse Restore(T_ID id);
     DataResponse ForceDelete(T_ID id);
     int Count();
     byte[] Export(RecordFilter recordFilter, ExportMetadata exportMetadata);

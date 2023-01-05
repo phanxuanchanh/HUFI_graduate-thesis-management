@@ -1,14 +1,8 @@
-﻿using ExcelDataReader;
-using GraduateThesis.ApplicationCore.Enums;
-using GraduateThesis.ApplicationCore.File;
+﻿using GraduateThesis.ApplicationCore.Enums;
 using GraduateThesis.ApplicationCore.Models;
 using GraduateThesis.ApplicationCore.Uuid;
 using GraduateThesis.ExtensionMethods;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using NPOI.HSSF.UserModel;
-using NPOI.SS.UserModel;
-using NPOI.XSSF.UserModel;
 using System.Data;
 using System.Linq.Dynamic.Core;
 using System.Linq.Expressions;
@@ -28,7 +22,7 @@ namespace GraduateThesis.ApplicationCore.Repository;
 public partial class GenericRepository<TEntity, TInput, TOutput>
 {
 
-    #region get records method
+    #region get records methods
 
     public async Task<Pagination<TOutput>> GetPaginationAsync(Pagination<TOutput> pagination, Expression<Func<TEntity, TOutput>> selector)
     {
@@ -62,9 +56,9 @@ public partial class GenericRepository<TEntity, TInput, TOutput>
 
     #endregion
 
-    #region create new records method
+    #region create new records methods
 
-    public async Task<DataResponse<TOutput>> CreateAsync(TInput input, GenerateUidOptions generateUidOptions)
+    public async Task<DataResponse<TOutput>> CreateAsync(TInput input, UidOptions uidOptions)
     {
         TEntity entity = _converter.To<TInput, TEntity>(input);
         Type entityType = entity.GetType();
@@ -78,10 +72,10 @@ public partial class GenericRepository<TEntity, TInput, TOutput>
             };
 
         object id = idPropertyInfo.GetValue(entity, null);
-        if (idPropertyInfo.PropertyType == typeof(string) && generateUidOptions == GenerateUidOptions.ShortUid)
+        if (idPropertyInfo.PropertyType == typeof(string) && uidOptions == UidOptions.ShortUid)
             idPropertyInfo.SetValue(entity, UidHelper.GetShortUid());
 
-        if (id is string && generateUidOptions == GenerateUidOptions.MicrosoftUid)
+        if (id is string && uidOptions == UidOptions.MicrosoftUid)
             idPropertyInfo.SetValue(entity, UidHelper.GetMicrosoftUid());
 
         PropertyInfo createdAtPropertyInfo = entityType.GetProperty("CreatedAt");
@@ -111,7 +105,7 @@ public partial class GenericRepository<TEntity, TInput, TOutput>
 
     #endregion
 
-    #region update records method
+    #region update records methods
 
     public async Task<DataResponse<TOutput>> UpdateAsync(object id, TInput input)
     {
@@ -144,7 +138,7 @@ public partial class GenericRepository<TEntity, TInput, TOutput>
 
     #endregion
 
-    #region delete records method
+    #region delete records methods
 
     public async Task<DataResponse> BatchDeleteAsync(object id)
     {
@@ -198,9 +192,9 @@ public partial class GenericRepository<TEntity, TInput, TOutput>
         return new DataResponse { Status = DataResponseStatus.Success };
     }
 
-    public async Task<DataResponse> ForceDeleteAsync(object id, Func<bool> predicate)
+    public async Task<DataResponse> ForceDeleteAsync(object id, Func<Task<bool>> predicate)
     {
-        if (!predicate())
+        if (!await predicate())
             return new DataResponse { Status = DataResponseStatus.HasConstraint };
 
         return await ForceDeleteAsync(id);
@@ -227,9 +221,53 @@ public partial class GenericRepository<TEntity, TInput, TOutput>
         return new DataResponse { Status = DataResponseStatus.Success };
     }
 
-    #endregion 
+    #endregion
 
-    #region count records method
+
+    #region restore records methods
+
+    public async Task<DataResponse> RestoreAsync(object id)
+    {
+        TEntity entity = await _dbSet.FindAsync(id);
+        if (entity == null)
+            return new DataResponse { Status = DataResponseStatus.NotFound };
+
+        Type entityType = entity.GetType();
+        PropertyInfo isDeletedPropertyInfo = entityType.GetProperty("IsDeleted");
+        if (isDeletedPropertyInfo == null)
+            return new DataResponse<TOutput>
+            {
+                Status = DataResponseStatus.Failed,
+                Message = "Property named 'IsDeleted' not found"
+            };
+
+        isDeletedPropertyInfo.SetValue(entity, false);
+
+        PropertyInfo deletedAtPropertyInfo = entityType.GetProperty("DeletedAt");
+        if (deletedAtPropertyInfo != null)
+            deletedAtPropertyInfo.SetValue(entity, null);
+
+        int affected = await _context.SaveChangesAsync();
+        if (affected == 0)
+            return new DataResponse<TOutput> { Status = DataResponseStatus.Failed };
+
+        return new DataResponse { Status = DataResponseStatus.Success };
+    }
+
+    #endregion
+
+
+    #region
+
+    public async Task<List<TOutput>> GetTrashAsync(int count, Expression<Func<TEntity, TOutput>> selector)
+    {
+        return await _dbSet.Where("x => x.IsDeleted == true").Select(selector).ToListAsync();
+    }
+
+    #endregion
+
+
+    #region count records methods
 
     public async Task<int> CountAsync()
     {
@@ -264,7 +302,7 @@ public partial class GenericRepository<TEntity, TInput, TOutput>
 
     public async Task<DataResponse> ImportAsync(Stream stream, ImportMetadata importMetadata, ImportSelector<TEntity> importSelector)
     {
-        if (importMetadata.TypeOptions == ImportTypeOptions.XLS || importMetadata.TypeOptions == ImportTypeOptions.XLS)
+        if (importMetadata.TypeOptions == ImportTypeOptions.XLS || importMetadata.TypeOptions == ImportTypeOptions.XLSX)
         {
             if (importSelector.SimpleImportSpreadsheet != null)
                 return await _importHelper.ImportFromSpreadsheetAsync(stream, importMetadata.StartFromRow, importSelector.SimpleImportSpreadsheet);

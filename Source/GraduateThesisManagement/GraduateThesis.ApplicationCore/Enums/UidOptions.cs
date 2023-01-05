@@ -1,6 +1,6 @@
 ﻿namespace GraduateThesis.ApplicationCore.Enums;
 
-public enum GenerateUidOptions
+public enum UidOptions
 {
     None, ShortUid, MicrosoftUid
 }
