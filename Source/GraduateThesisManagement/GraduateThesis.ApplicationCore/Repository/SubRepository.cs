@@ -1,10 +1,8 @@
 ﻿using ExcelDataReader;
 using GraduateThesis.ApplicationCore.Enums;
 using GraduateThesis.ApplicationCore.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
-using System.IO;
 using System.Linq.Expressions;
 
 #nullable disable
@@ -31,7 +29,7 @@ public abstract class SubRepository<TEntity, TInput, TOutput, T_ID> : ISubReposi
 
     protected GenericRepository<TEntity, TInput, TOutput> _genericRepository;
     
-    public GenerateUidOptions GenerateUidOptions { get; set; }
+    public UidOptions GenerateUidOptions { get; set; }
 
     public Expression<Func<TEntity, TOutput>> PaginationSelector { get; set; }
     public Expression<Func<TEntity, TOutput>> ListSelector { get; set; }
@@ -153,7 +151,7 @@ public abstract class SubRepository<TEntity, TInput, TOutput, T_ID> : ISubReposi
         return await _genericRepository.GetAsync("Id", id, _customSelector);
     }
 
-    public virtual List<TOutput> GetList(int count = 200)
+    public virtual List<TOutput> GetList(int count)
     {
         if (_isApplyDefaultSelector)
             return _genericRepository.GetList(count, ListSelector);
@@ -162,7 +160,7 @@ public abstract class SubRepository<TEntity, TInput, TOutput, T_ID> : ISubReposi
         return _genericRepository.GetList(count, _customSelector);
     }
 
-    public virtual async Task<List<TOutput>> GetListAsync(int count = 200)
+    public virtual async Task<List<TOutput>> GetListAsync(int count)
     {
         if (_isApplyDefaultSelector)
             return await _genericRepository.GetListAsync(count, ListSelector);
@@ -263,5 +261,33 @@ public abstract class SubRepository<TEntity, TInput, TOutput, T_ID> : ISubReposi
 
         _isApplyDefaultSelector = true;
         return _genericRepository.GetPagination(pagination, _customSelector);
+    }
+
+    public async Task<List<TOutput>> GetTrashAsync(int count)
+    {
+        if (_isApplyDefaultSelector)
+            return await _genericRepository.GetTrashAsync(count, ListSelector);
+
+        _isApplyDefaultSelector = true;
+        return await _genericRepository.GetTrashAsync(count, _customSelector);
+    }
+
+    public async Task<DataResponse> RestoreAsync(T_ID id)
+    {
+        return await _genericRepository.RestoreAsync(id);
+    }
+
+    public List<TOutput> GetTrash(int count)
+    {
+        if (_isApplyDefaultSelector)
+            return _genericRepository.GetTrash(count, ListSelector);
+
+        _isApplyDefaultSelector = true;
+        return _genericRepository.GetTrash(count, _customSelector);
+    }
+
+    public DataResponse Restore(T_ID id)
+    {
+        return _genericRepository.Restore(id);
     }
 }

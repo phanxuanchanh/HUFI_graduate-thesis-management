@@ -41,22 +41,22 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
         {
             Func<Task> dependency = async () =>
             {
-                List<TopicOutput> topicClasses = await _topicRepository.GetListAsync();
+                List<TopicOutput> topicClasses = await _topicRepository.GetListAsync(50);
                 ViewData["TopicList"] = new SelectList(topicClasses, "Id", "Name");
 
-                List<StudentThesisGroupOutput> StudentThesisGrouClasses = await _studentThesisGroupRepository.GetListAsync();
+                List<StudentThesisGroupOutput> StudentThesisGrouClasses = await _studentThesisGroupRepository.GetListAsync(50);
                 ViewData["StudentThesisGrouList"] = new SelectList(StudentThesisGrouClasses, "Id", "Name");
 
-                List<TrainingFormOutput> trainingFormsClass = await _trainingFormRepository.GetListAsync();
+                List<TrainingFormOutput> trainingFormsClass = await _trainingFormRepository.GetListAsync(50);
                 ViewData["TrainingFormList"] = new SelectList(trainingFormsClass, "Id", "Name");
 
-                List<TrainingLevelOutput> trainingLevelsClass = await _trainingLevelRepository.GetListAsync();
+                List<TrainingLevelOutput> trainingLevelsClass = await _trainingLevelRepository.GetListAsync(50);
                 ViewData["TrainingLevelList"] = new SelectList(trainingLevelsClass, "Id", "Name");
 
-                List<FacultyStaffOutput> facultyStaffClass = await _facultyStaffRepository.GetListAsync();
+                List<FacultyStaffOutput> facultyStaffClass = await _facultyStaffRepository.GetListAsync(50);
                 ViewData["FacultyStaffList"] = new SelectList(facultyStaffClass, "Id", "FullName");
 
-                List<SpecializationOutput> specializationsClass = await _specializationRepository.GetListAsync();
+                List<SpecializationOutput> specializationsClass = await _specializationRepository.GetListAsync(50);
                 ViewData["SpecializationsClass"] = new SelectList(specializationsClass, "Id", "Name");
             };
 
@@ -131,6 +131,21 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
         public override async Task<IActionResult> Import(IFormFile formFile)
         {
             return await ImportResult(formFile, new ImportMetadata());
+        }
+
+        public override Task<IActionResult> Import()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Task<IActionResult> GetTrash(int count = 50)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Task<IActionResult> Restore([Required] string id)
+        {
+            throw new NotImplementedException();
         }
     }
 }

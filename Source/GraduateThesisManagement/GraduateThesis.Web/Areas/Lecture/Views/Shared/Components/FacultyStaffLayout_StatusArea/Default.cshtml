@@ -1,10 +1,14 @@
-﻿@{
-    string? cssClass = null;
-    string? status = null;
-    string? message = null;
+﻿
+@{
+
+#nullable disable
+
+    string cssClass = null;
+    string status = null;
+    string message = null;
 
     if(ViewData["Status"] != null){
-        status = ViewData["Status"]!.ToString();
+        status = ViewData["Status"].ToString();
         if (status == "Success")
         {
             cssClass = "alert-success";
@@ -22,7 +26,7 @@
     }
 
     if(TempData["Status"] != null){
-        status = TempData["Status"]!.ToString();
+        status = TempData["Status"].ToString();
         if (status == "Success")
         {
             cssClass = "alert-success";
@@ -36,7 +40,11 @@
             cssClass = "alert-danger";
         }
 
-        message = TempData["Message"]!.ToString();
+        message = TempData["Message"].ToString();
+    }
+
+    if(string.IsNullOrEmpty(message)){
+        message = "Nội dung thông báo chưa được thiết lập!";
     }
 }
 

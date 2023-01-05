@@ -17,5 +17,8 @@ public interface IRepository : IDisposable
     ITrainingLevelRepository TrainingLevelRepository { get; }
     ISpecializationRepository SpecializationRepository { get; }
     IAppRoleRepository AppRolesRepository { get; }
+    IThesisRevisionRepository ThesisRevisionRepository { get; }
 
+    int ExecuteNonQuery(FormattableString sql);
+    T ExecuteScalar<T>(FormattableString sql);
 }
