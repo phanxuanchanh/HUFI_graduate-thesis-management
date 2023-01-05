@@ -28,7 +28,7 @@ public class Converter
 
     public TOutput To<TInput, TOutput>(TInput input)
     {
-        return (TOutput)To(input, typeof(TInput));
+        return (TOutput)To(input, typeof(TOutput));
     }
 
     public IEnumerable<TOutput> To<TInput, TOutput>(IEnumerable<TInput> inputs, Func<TInput, TOutput> predicate)

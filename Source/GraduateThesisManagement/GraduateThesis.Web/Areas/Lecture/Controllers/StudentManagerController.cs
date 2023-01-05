@@ -53,7 +53,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
         {
             Func<Task> dependency = async () =>
             {
-                List<StudentClassOutput> studentClasses = await _studentClassRepository.GetListAsync();
+                List<StudentClassOutput> studentClasses = await _studentClassRepository.GetListAsync(50);
                 ViewData["StudentClassList"] = new SelectList(studentClasses, "Id", "Name");
             };
 
@@ -68,7 +68,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
         {
             Func<Task> dependency = async () =>
             {
-                List<StudentClassOutput> studentClasses = await _studentClassRepository.GetListAsync();
+                List<StudentClassOutput> studentClasses = await _studentClassRepository.GetListAsync(50);
                 ViewData["StudentClassList"] = new SelectList(studentClasses, "Id", "Name");
             };
 
@@ -83,7 +83,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
         {
             Func<Task> dependency = async () =>
             {
-                List<StudentClassOutput> studentClasses = await _studentClassRepository.GetListAsync();
+                List<StudentClassOutput> studentClasses = await _studentClassRepository.GetListAsync(50);
                 ViewData["StudentClassList"] = new SelectList(studentClasses, "Id", "Name");
             };
 
@@ -98,7 +98,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
         {
             Func<Task> dependency = async () =>
             {
-                List<StudentClassOutput> studentClasses = await _studentClassRepository.GetListAsync();
+                List<StudentClassOutput> studentClasses = await _studentClassRepository.GetListAsync(50);
                 ViewData["StudentClassList"] = new SelectList(studentClasses, "Id", "Name");
             };
 
@@ -126,6 +126,21 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
         public override async Task<IActionResult> Import(IFormFile formFile)
         {
             return await ImportResult(formFile, new ImportMetadata());
+        }
+
+        public override Task<IActionResult> Import()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Task<IActionResult> GetTrash(int count = 50)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Task<IActionResult> Restore([Required] string id)
+        {
+            throw new NotImplementedException();
         }
     }
 }

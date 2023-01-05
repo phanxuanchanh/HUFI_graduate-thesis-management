@@ -65,7 +65,17 @@ public class ThesisGroupManagerController : WebControllerBase<IStudentThesisGrou
         throw new NotImplementedException();
     }
 
+    public override Task<IActionResult> GetTrash(int count = 50)
+    {
+        throw new NotImplementedException();
+    }
+
     public override Task<IActionResult> Import(IFormFile formFile)
+    {
+        throw new NotImplementedException();
+    }
+
+    public override Task<IActionResult> Import()
     {
         throw new NotImplementedException();
     }
@@ -77,5 +87,10 @@ public class ThesisGroupManagerController : WebControllerBase<IStudentThesisGrou
     public override async Task<IActionResult> Index(int page = 1, int pageSize = 10, string orderBy = "", string orderOptions = "ASC", string keyword = "")
     {
         return await IndexResult(page,pageSize,orderBy,orderOptions,keyword);
+    }
+
+    public override Task<IActionResult> Restore([Required] string id)
+    {
+        throw new NotImplementedException();
     }
 }

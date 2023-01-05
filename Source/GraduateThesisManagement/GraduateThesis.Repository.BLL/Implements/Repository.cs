@@ -2,6 +2,7 @@
 using GraduateThesis.Repository.DAL;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Linq;
 
 namespace GraduateThesis.Repository.BLL.Implements;
 
@@ -44,7 +45,18 @@ public class Repository : IRepository
 
     public IAppRoleRepository AppRolesRepository => new AppRoleRepository(_context);
 
+    public IThesisRevisionRepository ThesisRevisionRepository => new ThesisRevisionRepository(_context);
+    
+    
+    public int ExecuteNonQuery(FormattableString sql)
+    {
+        return _context.Database.ExecuteSql(sql);
+    }
 
+    public T ExecuteScalar<T>(FormattableString sql)
+    {
+        return _context.Database.SqlQuery<T>(sql).SingleOrDefault();
+    }
 
     protected virtual void Dispose(bool disposing)
     {

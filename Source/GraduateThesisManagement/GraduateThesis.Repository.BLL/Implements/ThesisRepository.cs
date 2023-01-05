@@ -24,7 +24,13 @@ public class ThesisRepository : SubRepository<Thesis, ThesisInput, ThesisOutput,
 
     protected override void ConfigureIncludes()
     {
-        _genericRepository.IncludeMany(i => i.Topic, i => i.ThesisGroup, i => i.ThesisGroup, i => i.TrainingForm, i => i.TrainingLevel, i => i.Specialization);
+        IncludeMany(
+            i => i.Topic, 
+            i => i.ThesisGroup, 
+            i => i.TrainingForm, 
+            i => i.TrainingLevel, 
+            i => i.Specialization
+        );
     }
 
     protected override void ConfigureSelectors()
@@ -140,7 +146,6 @@ public class ThesisRepository : SubRepository<Thesis, ThesisInput, ThesisOutput,
 
     public async Task<DataResponse> SubmitThesisAsync(string thesisId, string thesisGroupId)
     {
-
         Thesis thesis = await _context.Theses.FindAsync(thesisId);
         if (thesis == null)
             return new DataResponse
@@ -165,6 +170,7 @@ public class ThesisRepository : SubRepository<Thesis, ThesisInput, ThesisOutput,
 
         thesis.Finished = true;
         await _context.SaveChangesAsync();
+
         return new DataResponse
         {
             Status = DataResponseStatus.Success,
