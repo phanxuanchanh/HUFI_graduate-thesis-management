@@ -1,11 +1,15 @@
 ﻿using GraduateThesis.ApplicationCore.AppController;
 using GraduateThesis.ApplicationCore.Enums;
 using GraduateThesis.ApplicationCore.Models;
+using GraduateThesis.ApplicationCore.WebAttributes;
 using GraduateThesis.Common.WebAttributes;
+using GraduateThesis.Repository.BLL.Implements;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DTO;
+using GraduateThesis.WebExtensions;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System.ComponentModel.DataAnnotations;
 
 namespace GraduateThesis.Web.Areas.Student.Controllers
 {
@@ -14,10 +18,14 @@ namespace GraduateThesis.Web.Areas.Student.Controllers
     public class StudentAccountController : WebControllerBase
     {
         private IStudentRepository _studentRepository;
+        private IStudentThesisGroupRepository _studentThesisGroupRepository;
+
 
         public StudentAccountController(IRepository repository)
         {
             _studentRepository = repository.StudentRepository;
+            _studentThesisGroupRepository = repository.StudentThesisGroupRepository;
+
         }
 
         [Route("sign-in-view")]
@@ -76,6 +84,29 @@ namespace GraduateThesis.Web.Areas.Student.Controllers
         {
             HttpContext.Session.SetString("account-session", "");
             return RedirectToAction("Index", "Home");
+        }
+
+        [Route("approved-studentThesisGroup")]
+        [HttpPost]
+        [PageName(Name = "Vào nhóm đề tài")]
+        [WebAuthorize(AccountRole.Student)]
+        public async Task<IActionResult> ApprovalStudentThesisGroupAsync([Required] string StudentThesisGroupId)
+        {
+            DataResponse dataResponse = await _studentThesisGroupRepository.ApprovalStudentThesisGroupAsync(StudentThesisGroupId);
+            AddTempData(dataResponse);
+            return RedirectToAction("YourStudentThesisGroup");
+        }
+
+
+        [Route("refuseapproved-studentThesisGroup")]
+        [HttpPost]
+        [PageName(Name = "Từ chối vào nhóm đề tài")]
+        [WebAuthorize(AccountRole.Student)]
+        public async Task<IActionResult> RefuseApprovalStudentThesisGroupAsync([Required] string StudentThesisGroupId)
+        {
+            DataResponse dataResponse = await _studentThesisGroupRepository.RefuseApprovalStudentThesisGroupAsync(StudentThesisGroupId);
+            AddTempData(dataResponse);
+            return RedirectToAction("YourStudentThesisGroup");
         }
     }
 }
