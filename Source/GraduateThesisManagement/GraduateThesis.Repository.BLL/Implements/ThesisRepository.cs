@@ -171,4 +171,23 @@ public class ThesisRepository : SubRepository<Thesis, ThesisInput, ThesisOutput,
             Message = "Bạn đã nộp đề tài thành công!"
         };
     }
+
+    public async Task<DataResponse> ApprovalThesisAsync(string thesisId)
+    {
+        Thesis thesis = await _context.Theses.FindAsync(thesisId);
+        if (thesis == null)
+            return new DataResponse
+            {
+                Status = DataResponseStatus.NotFound,
+                Message = "Không tìm thấy đề tài có mã này!"
+            };
+
+        thesis.IsApproved = true;
+        await _context.SaveChangesAsync();
+        return new DataResponse
+        {
+            Status = DataResponseStatus.Success,
+            Message = "Xét duyệt đề tài thành công!"
+        };
+    }
 }

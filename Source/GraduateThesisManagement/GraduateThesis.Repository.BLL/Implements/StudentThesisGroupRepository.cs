@@ -1,8 +1,11 @@
-﻿using GraduateThesis.ApplicationCore.Repository;
+﻿using GraduateThesis.ApplicationCore.Enums;
+using GraduateThesis.ApplicationCore.Models;
+using GraduateThesis.ApplicationCore.Repository;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DAL;
 using GraduateThesis.Repository.DTO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace GraduateThesis.Repository.BLL.Implements;
 
@@ -14,6 +17,45 @@ public class StudentThesisGroupRepository : SubRepository<StudentThesisGroup, St
         : base(context, context.StudentThesisGroups)
     {
         _context = context;
+    }
+
+    public async Task<DataResponse> ApprovalStudentThesisGroupAsync(string StudentThesisGroupId)
+    {
+        StudentThesisGroupDetail studentThesisGroupDetail = await _context.StudentThesisGroupDetails.FindAsync(StudentThesisGroupId);
+        if (studentThesisGroupDetail == null)
+            return new DataResponse
+            {
+                Status = DataResponseStatus.NotFound,
+                Message = "Không tìm thấy nhóm có mã này!"
+            };
+
+        studentThesisGroupDetail.IsApproved = true;
+        await _context.SaveChangesAsync();
+        return new DataResponse
+        {
+            Status = DataResponseStatus.Success,
+            Message = "Bạn đã vào nhóm thành công!"
+        };
+    }
+
+    public async Task<DataResponse> RefuseApprovalStudentThesisGroupAsync(string StudentThesisGroupId)
+    {
+
+        StudentThesisGroupDetail studentThesisGroupDetail = await _context.StudentThesisGroupDetails.FindAsync(StudentThesisGroupId);
+        if (studentThesisGroupDetail == null)
+            return new DataResponse
+            {
+                Status = DataResponseStatus.NotFound,
+                Message = "Không tìm thấy nhóm có mã này!"
+            };
+
+        studentThesisGroupDetail.IsApproved = false;
+        await _context.SaveChangesAsync();
+        return new DataResponse
+        {
+            Status = DataResponseStatus.Success,
+            Message = "Bạn đã từ chối vào nhóm thành công!"
+        };
     }
 
     protected override void ConfigureIncludes()
