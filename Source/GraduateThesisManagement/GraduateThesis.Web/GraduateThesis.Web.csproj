@@ -20,6 +20,9 @@
     <Folder Include="Areas\Administrator\Models\" />
     <Folder Include="Areas\Lecture\Data\" />
     <Folder Include="Areas\Lecture\Models\" />
+    <Folder Include="Areas\Lecture\Views\FacultyManager\" />
+    <Folder Include="Areas\Lecture\Views\CouncilManager\" />
+    <Folder Include="Areas\Lecture\Views\StudentClassManager\" />
     <Folder Include="Areas\Student\Controllers\" />
     <Folder Include="Areas\Student\Data\" />
     <Folder Include="Areas\Student\Models\" />
