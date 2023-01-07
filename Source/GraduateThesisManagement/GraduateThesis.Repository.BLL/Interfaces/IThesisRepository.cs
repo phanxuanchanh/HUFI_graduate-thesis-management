@@ -9,4 +9,5 @@ public interface IThesisRepository : ISubRepository<ThesisInput, ThesisOutput, s
 {
     Task<DataResponse> DoThesisRegisterAsync(ThesisRegisterInput thesisRegisterInput);
     Task<DataResponse> SubmitThesisAsync(string thesisId, string thesisGroupId);
+    Task<DataResponse> ApprovalThesisAsync(string thesisId);
 }
