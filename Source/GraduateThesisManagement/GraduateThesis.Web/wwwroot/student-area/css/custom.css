@@ -12,3 +12,13 @@
     width: 60px !important;
     height: 60px !important;
 }
+
+input, textarea {
+    border-color: #4a4a4a !important;
+}
+
+.search-student-area {
+    border-radius: 4px;
+    border: 1px solid;
+    border-color: chartreuse;
+}

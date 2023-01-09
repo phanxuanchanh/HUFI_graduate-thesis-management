@@ -1,7 +1,7 @@
 ﻿CREATE TABLE [dbo].[Theses] (
   [ID] [varchar](50) NOT NULL,
   [Name] [nvarchar](100) NOT NULL,
-  [Description] [nvarchar](100) NOT NULL,
+  [Description] [ntext] NOT NULL,
   [MaxStudentNumber] [int] NOT NULL,
   [DocumentFile] [nvarchar](50) NULL,
   [PresentationFile] [nvarchar](50) NULL,
@@ -27,9 +27,12 @@
   [LectureId] [varchar](50) NOT NULL,
   [Semester] [int] NOT NULL,
   [ThesisGroupId] [varchar](50) NULL,
+  [IsRejected] [bigint] NULL,
+  [IsPublished] [bigint] NULL,
   CONSTRAINT [PK_Thesis_ID] PRIMARY KEY CLUSTERED ([ID])
 )
 ON [PRIMARY]
+TEXTIMAGE_ON [PRIMARY]
 GO
 
 ALTER TABLE [dbo].[Theses]

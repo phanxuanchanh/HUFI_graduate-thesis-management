@@ -3,40 +3,68 @@
     StudentOutput student = (ViewData["AccountModel"] as StudentOutput)!;
 }
 
-<div class="row">
-    <div class="col-lg-12 grid-margin stretch-card">
-        <div class="card">
-            <div class="card-body">
-                <h4 class="card-title text-uppercase">@ViewData["PageName"]</h4>
-                <p class="card-description">
-
-                </p>
-                <div class="m-2">
-                    <h5 class="fw-bolder">Tên đề tài:</h5>
-                    <p>@Model.Name</p>
-                    <hr />
-                    <h5 class="fw-bolder">Các mô tả, yêu cầu của đề tài:</h5>
-                    <div>@Model.Description</div>
-                    <hr />
-                    <h5 class="fw-bolder">Các thông tin khác:</h5>
-                    <hr />
+<section id="basic-horizontal-layouts">
+    <div class="row match-height">
+        <div class="col-md-12 col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title">@ViewData["PageName"]: "@Model.Name"</h4>
                 </div>
+                <div class="card-content">
+                    <div class="card-body">
+                        <form class="form form-horizontal">
+                            <div class="form-body">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <label asp-for="Id"></label>
+                                    </div>
+                                    <div class="col-md-8 form-group">
+                                        <input asp-for="Id" class="form-control" disabled />
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label asp-for="Name"></label>
+                                    </div>
+                                    <div class="col-md-8 form-group">
+                                        <input asp-for="Name" class="form-control" disabled />
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label asp-for="Description"></label>
+                                    </div>
+                                    <div class="col-md-8 form-group">
+                                        <textarea asp-for="Description" class="form-control" disabled style="height: 350px;"></textarea>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label asp-for="MaxStudentNumber"></label>
+                                    </div>
+                                    <div class="col-md-8 form-group">
+                                        <input asp-for="MaxStudentNumber" class="form-control" disabled />
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label asp-for="Lecturer.FullName">Giảng viên ra đề</label>
+                                    </div>
+                                    <div class="col-md-8 form-group">
+                                        <input asp-for="Lecturer.FullName" class="form-control" disabled />
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label asp-for="ThesisSupervisor.FullName">Giảng viên hướng dẫn</label>
+                                    </div>
+                                    <div class="col-md-8 form-group">
+                                        <input asp-for="ThesisSupervisor.FullName" class="form-control" disabled />
+                                    </div>
 
-                <div class="">
-                    @if (Model.StudentThesisGroup == null)
-                    {
-                        <a type="button" class="btn btn-primary btn-icon-text" asp-action="DoThesisRegister" asp-controller="StudentThesis" asp-route-studentId="@student.Id" asp-route-thesisId="@Model.Id">
-                            <i class="mdi mdi-file-check btn-icon-prepend"></i>
-                            Đăng ký đề tài này
-                        </a>
-                    }
-                    
-                    <button type="button" class="btn btn-info btn-icon-text">
-                        Print
-                        <i class="mdi mdi-printer btn-icon-append"></i>
-                    </button>
+                                    <div class="col-sm-12 d-flex justify-content-end">
+                                        <a asp-action="Index" class="btn btn-light-secondary me-1 mb-1">Quay về danh sách</a>
+                                        @if (Model.StudentThesisGroup == null)
+                                        {
+                                            <a asp-action="Register" asp-route-studentId="@student.Id" asp-route-thesisId="@Model.Id" class="btn btn-primary me-1 mb-1">Đăng ký đề tài này</a>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
+</section>
