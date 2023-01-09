@@ -10,7 +10,7 @@ public interface IRepository : IDisposable
     ITopicRepository TopicRepository { get; }
     IThesisCommitteeRepository ThesisCommitteeRepository { get; }
     ICommitteeMemberRepository CommitteeMemberRepository { get; }
-    IStudentThesisGroupRepository StudentThesisGroupRepository { get; }
+    IThesisGroupRepository StudentThesisGroupRepository { get; }
     IFacultyRepository FacultyRepository { get; }
     IFacultyStaffRepository FacultyStaffRepository { get; }
     ITrainingFormRepository TrainingFormRepository { get; }

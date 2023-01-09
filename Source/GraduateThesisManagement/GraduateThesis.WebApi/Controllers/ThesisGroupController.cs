@@ -11,9 +11,9 @@ namespace GraduateThesis.WebApi.Controllers;
 
 [Route("api/student-thesis-group")]
 [ApiController]
-public class StudentThesisGroupController : ApiControllerBase<IStudentThesisGroupRepository, StudentThesisGroupInput, StudentThesisGroupOutput, string>
+public class ThesisGroupController : ApiControllerBase<IThesisGroupRepository, ThesisGroupInput, ThesisGroupOutput, string>
 {
-    public StudentThesisGroupController(IRepository repository) : base(repository.StudentThesisGroupRepository)
+    public ThesisGroupController(IRepository repository) : base(repository.StudentThesisGroupRepository)
     {
     }
 
@@ -24,7 +24,7 @@ public class StudentThesisGroupController : ApiControllerBase<IStudentThesisGrou
         throw new System.NotImplementedException();
     }
 
-    public override Task<IActionResult> Create(StudentThesisGroupInput input)
+    public override Task<IActionResult> Create(ThesisGroupInput input)
     {
         throw new System.NotImplementedException();
     }
@@ -44,7 +44,7 @@ public class StudentThesisGroupController : ApiControllerBase<IStudentThesisGrou
         throw new System.NotImplementedException();
     }
 
-    public override Task<IActionResult> GetPagination(Pagination<StudentThesisGroupOutput> pagination)
+    public override Task<IActionResult> GetPagination(Pagination<ThesisGroupOutput> pagination)
     {
         throw new System.NotImplementedException();
     }
@@ -54,7 +54,7 @@ public class StudentThesisGroupController : ApiControllerBase<IStudentThesisGrou
         throw new System.NotImplementedException();
     }
 
-    public override Task<IActionResult> Update([Required] string id, StudentThesisGroupInput input)
+    public override Task<IActionResult> Update([Required] string id, ThesisGroupInput input)
     {
         throw new System.NotImplementedException();
     }

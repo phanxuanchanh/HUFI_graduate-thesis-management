@@ -18,7 +18,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
     public class ThesisManagerController : WebControllerBase<IThesisRepository, ThesisInput, ThesisOutput, string>
     {
         private ITopicRepository _topicRepository;
-        private IStudentThesisGroupRepository _studentThesisGroupRepository;
+        private IThesisGroupRepository _studentThesisGroupRepository;
         private ITrainingFormRepository _trainingFormRepository;
         private IFacultyStaffRepository _facultyStaffRepository;
         private ITrainingLevelRepository _trainingLevelRepository;
@@ -44,8 +44,8 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
                 List<TopicOutput> topicClasses = await _topicRepository.GetListAsync(50);
                 ViewData["TopicList"] = new SelectList(topicClasses, "Id", "Name");
 
-                List<StudentThesisGroupOutput> StudentThesisGrouClasses = await _studentThesisGroupRepository.GetListAsync(50);
-                ViewData["StudentThesisGrouList"] = new SelectList(StudentThesisGrouClasses, "Id", "Name");
+                List<ThesisGroupOutput> thesisGrouClasses = await _studentThesisGroupRepository.GetListAsync(50);
+                ViewData["StudentThesisGrouList"] = new SelectList(thesisGrouClasses, "Id", "Name");
 
                 List<TrainingFormOutput> trainingFormsClass = await _trainingFormRepository.GetListAsync(50);
                 ViewData["TrainingFormList"] = new SelectList(trainingFormsClass, "Id", "Name");

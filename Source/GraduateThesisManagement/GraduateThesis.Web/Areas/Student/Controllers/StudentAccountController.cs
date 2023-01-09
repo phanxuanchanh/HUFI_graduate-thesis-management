@@ -18,7 +18,7 @@ namespace GraduateThesis.Web.Areas.Student.Controllers
     public class StudentAccountController : WebControllerBase
     {
         private IStudentRepository _studentRepository;
-        private IStudentThesisGroupRepository _studentThesisGroupRepository;
+        private IThesisGroupRepository _studentThesisGroupRepository;
 
 
         public StudentAccountController(IRepository repository)

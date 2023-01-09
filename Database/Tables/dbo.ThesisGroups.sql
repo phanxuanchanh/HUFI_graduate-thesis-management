@@ -1,4 +1,4 @@
-﻿CREATE TABLE [dbo].[StudentThesisGroups] (
+﻿CREATE TABLE [dbo].[ThesisGroups] (
   [ID] [varchar](50) NOT NULL,
   [Name] [nvarchar](100) NOT NULL,
   [Description] [ntext] NULL,

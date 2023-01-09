@@ -62,7 +62,7 @@ public class ThesisRepository : SubRepository<Thesis, ThesisInput, ThesisOutput,
                 Description = s.Topic.Description,
                 Id = s.Topic.Id,
             },
-            StudentThesisGroup = (s.ThesisGroup == null) ? null : new StudentThesisGroupOutput
+            ThesisGroup = (s.ThesisGroup == null) ? null : new ThesisGroupOutput
             {
                 Id = s.ThesisGroup.Id,
                 Name = s.ThesisGroup!.Name,
@@ -120,7 +120,7 @@ public class ThesisRepository : SubRepository<Thesis, ThesisInput, ThesisOutput,
 
             string groupId = UidHelper.GetShortUid();
 
-            StudentThesisGroup studentThesisGroup = new StudentThesisGroup
+            ThesisGroup studentThesisGroup = new ThesisGroup
             {
                 Id = groupId,
                 Name = thesisRegistrationInput.GroupName,
@@ -128,18 +128,18 @@ public class ThesisRepository : SubRepository<Thesis, ThesisInput, ThesisOutput,
                 StudentQuantity = 0
             };
 
-            await _context.StudentThesisGroups.AddAsync(studentThesisGroup);
+            await _context.ThesisGroups.AddAsync(studentThesisGroup);
             await _context.SaveChangesAsync();
 
             thesis.ThesisGroupId = groupId;
             await _context.SaveChangesAsync();
 
-            List<StudentThesisGroupDetail> thesisGroupDetails = new List<StudentThesisGroupDetail>();
+            List<ThesisGroupDetail> thesisGroupDetails = new List<ThesisGroupDetail>();
             string[] studentIdList = thesisRegistrationInput.StudentIdList.Split(';');
 
             foreach (string studentId in studentIdList)
             {
-                thesisGroupDetails.Add(new StudentThesisGroupDetail
+                thesisGroupDetails.Add(new ThesisGroupDetail
                 {
                     StudentThesisGroupId = groupId,
                     StudentId = studentId,
@@ -147,7 +147,7 @@ public class ThesisRepository : SubRepository<Thesis, ThesisInput, ThesisOutput,
                 });
             }
 
-            await _context.StudentThesisGroupDetails.AddRangeAsync(thesisGroupDetails);
+            await _context.ThesisGroupDetails.AddRangeAsync(thesisGroupDetails);
             await _context.SaveChangesAsync();
 
             await dbContextTransaction.CommitAsync();

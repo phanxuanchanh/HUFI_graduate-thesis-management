@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace GraduateThesis.Repository.DAL;
 
-public partial class StudentThesisGroupDetail
+public partial class ThesisGroupDetail
 {
     public string StudentThesisGroupId { get; set; }
 
@@ -25,5 +25,5 @@ public partial class StudentThesisGroupDetail
 
     public virtual Student Student { get; set; }
 
-    public virtual StudentThesisGroup StudentThesisGroup { get; set; }
+    public virtual ThesisGroup StudentThesisGroup { get; set; }
 }

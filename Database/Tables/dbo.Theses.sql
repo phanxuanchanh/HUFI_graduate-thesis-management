@@ -44,7 +44,7 @@ ALTER TABLE [dbo].[Theses]
 GO
 
 ALTER TABLE [dbo].[Theses]
-  ADD CONSTRAINT [FK_Theses_StudentThesisGroups_ID] FOREIGN KEY ([ThesisGroupId]) REFERENCES [dbo].[StudentThesisGroups] ([ID])
+  ADD CONSTRAINT [FK_Theses_ThesisGroups_ID] FOREIGN KEY ([ThesisGroupId]) REFERENCES [dbo].[ThesisGroups] ([ID])
 GO
 
 ALTER TABLE [dbo].[Theses]

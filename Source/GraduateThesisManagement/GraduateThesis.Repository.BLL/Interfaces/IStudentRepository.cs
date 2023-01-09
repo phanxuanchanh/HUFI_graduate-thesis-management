@@ -8,5 +8,5 @@ public interface IStudentRepository : ISubRepository<StudentInput, StudentOutput
 {
     Task<StudentThesisOutput> GetStudentThesisAsync(string studentId);
     Task<object> SearchForThesisRegAsync(string keyword);
-    Task<object> GetObjAsync(string studentId);
+    Task<object> GetForThesisRegAsync(string studentId);
 }

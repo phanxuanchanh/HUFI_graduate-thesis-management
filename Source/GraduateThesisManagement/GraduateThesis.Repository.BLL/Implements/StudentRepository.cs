@@ -6,7 +6,6 @@ using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DAL;
 using GraduateThesis.Repository.DTO;
 using Microsoft.EntityFrameworkCore;
-using NPOI.SS.Formula.Functions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -163,14 +162,14 @@ public class StudentRepository : SubRepository<Student, StudentInput, StudentOut
 
     public async Task<StudentThesisOutput> GetStudentThesisAsync(string studentId)
     {
-        StudentThesisGroup studentThesisGroup = await _context.StudentThesisGroupDetails
+        ThesisGroup thesisGroup = await _context.ThesisGroupDetails
             .Include(i => i.StudentThesisGroup)
-            .Where(s => s.StudentId == studentId).Select(s => new StudentThesisGroup
+            .Where(s => s.StudentId == studentId).Select(s => new ThesisGroup
             {
 
             }).SingleOrDefaultAsync();
 
-        List<StudentOutput> students = await _context.StudentThesisGroupDetails
+        List<StudentOutput> students = await _context.ThesisGroupDetails
             .Where(s => s.StudentId == studentId).Include(i => i.Student)
             .Select(s => new StudentOutput
             {
@@ -228,7 +227,7 @@ public class StudentRepository : SubRepository<Student, StudentInput, StudentOut
     {
         List<Student> students = await _context.Theses.Where(t => t.IsDeleted == false)
             .Join(
-                _context.StudentThesisGroupDetails.Where(gd => gd.IsCompleted == true),
+                _context.ThesisGroupDetails.Where(gd => gd.IsCompleted == true),
                 thesis => thesis.ThesisGroupId, groupDetail => groupDetail.StudentThesisGroupId,
                 (thesis, groupDetail) => new { StudentId = groupDetail.StudentId }
             ).Join(
@@ -253,7 +252,7 @@ public class StudentRepository : SubRepository<Student, StudentInput, StudentOut
             }).ToListAsync();
     }
 
-    public async Task<object> GetObjAsync(string studentId)
+    public async Task<object> GetForThesisRegAsync(string studentId)
     {
         return await _context.Students.Where(s => s.Id == studentId && s.IsDeleted == false)
             .Select(s => new

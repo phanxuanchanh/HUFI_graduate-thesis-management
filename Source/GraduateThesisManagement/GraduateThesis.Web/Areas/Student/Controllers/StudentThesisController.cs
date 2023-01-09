@@ -88,7 +88,7 @@ public class StudentThesisController : WebControllerBase
     [HttpGet]
     public async Task<IActionResult> GetStudentById(string studentId)
     {
-        return Json(await _studentRepository.GetObjAsync(studentId));
+        return Json(await _studentRepository.GetForThesisRegAsync(studentId));
     }
 
     [Route("check-max-student-number")]

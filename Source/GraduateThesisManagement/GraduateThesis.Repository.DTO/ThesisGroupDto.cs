@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace GraduateThesis.Repository.DTO;
 
-public class StudentThesisGroupInput
+public class ThesisGroupInput
 {
     [Display(Name = "Mã nhóm sinh viên")]
     public string Id { get; set; }
@@ -22,11 +23,12 @@ public class StudentThesisGroupInput
     public string Notes { get; set; }
 }
 
-public class StudentThesisGroupOutput : StudentThesisGroupInput
+public class ThesisGroupOutput : ThesisGroupInput
 {
     public DateTime? CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
     public DateTime? DeletedAt { get; set; }
 
     public ThesisOutput Thesis { get; set; }
+    public List<StudentOutput> Students { get; set; }
 }

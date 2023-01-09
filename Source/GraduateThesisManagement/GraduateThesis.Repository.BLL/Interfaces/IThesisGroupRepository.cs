@@ -5,8 +5,9 @@ using System.Threading.Tasks;
 
 namespace GraduateThesis.Repository.BLL.Interfaces;
 
-public interface IStudentThesisGroupRepository : ISubRepository<StudentThesisGroupInput, StudentThesisGroupOutput, string>
+public interface IThesisGroupRepository : ISubRepository<ThesisGroupInput, ThesisGroupOutput, string>
 {
+    
     Task<DataResponse> ApprovalStudentThesisGroupAsync(string StudentThesisGroupId);
     Task<DataResponse> RefuseApprovalStudentThesisGroupAsync(string StudentThesisGroupId);
 }

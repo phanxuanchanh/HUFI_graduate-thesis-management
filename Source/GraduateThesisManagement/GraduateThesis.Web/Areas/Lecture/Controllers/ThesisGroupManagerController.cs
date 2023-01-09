@@ -13,9 +13,9 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers;
 [Route("lecture/thesisgroup-manager")]
 [WebAuthorize(AccountRole.Lecture)]
 [AccountInfo(typeof(FacultyStaffOutput))]
-public class ThesisGroupManagerController : WebControllerBase<IStudentThesisGroupRepository, StudentThesisGroupInput, StudentThesisGroupOutput, string>
+public class ThesisGroupManagerController : WebControllerBase<IThesisGroupRepository, ThesisGroupInput, ThesisGroupOutput, string>
 {
-    private IStudentThesisGroupRepository _studentThesisGroupRepository;
+    private IThesisGroupRepository _studentThesisGroupRepository;
 
     public ThesisGroupManagerController(IRepository repository)
         :base(repository.StudentThesisGroupRepository)
@@ -35,7 +35,7 @@ public class ThesisGroupManagerController : WebControllerBase<IStudentThesisGrou
         throw new NotImplementedException();
     }
 
-    public override Task<IActionResult> Create(StudentThesisGroupInput input)
+    public override Task<IActionResult> Create(ThesisGroupInput input)
     {
         throw new NotImplementedException();
     }
@@ -50,7 +50,7 @@ public class ThesisGroupManagerController : WebControllerBase<IStudentThesisGrou
         throw new NotImplementedException();
     }
 
-    public override Task<IActionResult> Edit([Required] string id, StudentThesisGroupInput input)
+    public override Task<IActionResult> Edit([Required] string id, ThesisGroupInput input)
     {
         throw new NotImplementedException();
     }

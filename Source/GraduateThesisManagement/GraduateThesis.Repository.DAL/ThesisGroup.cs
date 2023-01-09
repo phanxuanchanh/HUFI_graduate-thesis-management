@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace GraduateThesis.Repository.DAL;
 
-public partial class StudentThesisGroup
+public partial class ThesisGroup
 {
     public string Id { get; set; }
 
@@ -23,7 +23,7 @@ public partial class StudentThesisGroup
 
     public bool IsDeleted { get; set; }
 
-    public virtual ICollection<StudentThesisGroupDetail> StudentThesisGroupDetails { get; } = new List<StudentThesisGroupDetail>();
-
     public virtual ICollection<Thesis> Theses { get; } = new List<Thesis>();
+
+    public virtual ICollection<ThesisGroupDetail> ThesisGroupDetails { get; } = new List<ThesisGroupDetail>();
 }

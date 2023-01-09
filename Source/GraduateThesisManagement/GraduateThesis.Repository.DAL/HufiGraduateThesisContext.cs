@@ -39,10 +39,6 @@ public partial class HufiGraduateThesisContext : DbContext
 
     public virtual DbSet<StudentClass> StudentClasses { get; set; }
 
-    public virtual DbSet<StudentThesisGroup> StudentThesisGroups { get; set; }
-
-    public virtual DbSet<StudentThesisGroupDetail> StudentThesisGroupDetails { get; set; }
-
     public virtual DbSet<Sysdiagram> Sysdiagrams { get; set; }
 
     public virtual DbSet<Thesis> Theses { get; set; }
@@ -50,6 +46,10 @@ public partial class HufiGraduateThesisContext : DbContext
     public virtual DbSet<ThesisCommittee> ThesisCommittees { get; set; }
 
     public virtual DbSet<ThesisCommitteeResult> ThesisCommitteeResults { get; set; }
+
+    public virtual DbSet<ThesisGroup> ThesisGroups { get; set; }
+
+    public virtual DbSet<ThesisGroupDetail> ThesisGroupDetails { get; set; }
 
     public virtual DbSet<ThesisRevision> ThesisRevisions { get; set; }
 
@@ -465,50 +465,6 @@ public partial class HufiGraduateThesisContext : DbContext
                 .HasConstraintName("FK_StudentClasses_Faculties_ID");
         });
 
-        modelBuilder.Entity<StudentThesisGroup>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PK_StudentThesisGroup_ID");
-
-            entity.Property(e => e.Id)
-                .HasMaxLength(50)
-                .IsUnicode(false)
-                .HasColumnName("ID");
-            entity.Property(e => e.CreatedAt).HasColumnType("datetime");
-            entity.Property(e => e.DeletedAt).HasColumnType("datetime");
-            entity.Property(e => e.Description).HasColumnType("ntext");
-            entity.Property(e => e.Name)
-                .IsRequired()
-                .HasMaxLength(100);
-            entity.Property(e => e.Notes).HasColumnType("ntext");
-            entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
-        });
-
-        modelBuilder.Entity<StudentThesisGroupDetail>(entity =>
-        {
-            entity.HasKey(e => new { e.StudentThesisGroupId, e.StudentId }).HasName("PK_StudentThesisGroupDetail_PK_StudentThesisGroup_ID");
-
-            entity.Property(e => e.StudentThesisGroupId)
-                .HasMaxLength(50)
-                .IsUnicode(false);
-            entity.Property(e => e.StudentId)
-                .HasMaxLength(50)
-                .IsUnicode(false);
-            entity.Property(e => e.CreatedAt).HasColumnType("datetime");
-            entity.Property(e => e.DeletedAt).HasColumnType("datetime");
-            entity.Property(e => e.Notes).HasColumnType("ntext");
-            entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
-
-            entity.HasOne(d => d.Student).WithMany(p => p.StudentThesisGroupDetails)
-                .HasForeignKey(d => d.StudentId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_StudentThesisGroupDetails_Students_ID");
-
-            entity.HasOne(d => d.StudentThesisGroup).WithMany(p => p.StudentThesisGroupDetails)
-                .HasForeignKey(d => d.StudentThesisGroupId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_StudentThesisGroupDetails_StudentThesisGroups_ID");
-        });
-
         modelBuilder.Entity<Sysdiagram>(entity =>
         {
             entity.HasKey(e => e.DiagramId).HasName("PK__sysdiagr__C2B05B61B31F7C2C");
@@ -661,6 +617,50 @@ public partial class HufiGraduateThesisContext : DbContext
                 .HasForeignKey<ThesisCommitteeResult>(d => d.ThesisId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_ThesisCommitteeResults_Theses_ID");
+        });
+
+        modelBuilder.Entity<ThesisGroup>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK_StudentThesisGroup_ID");
+
+            entity.Property(e => e.Id)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("ID");
+            entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+            entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+            entity.Property(e => e.Description).HasColumnType("ntext");
+            entity.Property(e => e.Name)
+                .IsRequired()
+                .HasMaxLength(100);
+            entity.Property(e => e.Notes).HasColumnType("ntext");
+            entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+        });
+
+        modelBuilder.Entity<ThesisGroupDetail>(entity =>
+        {
+            entity.HasKey(e => new { e.StudentThesisGroupId, e.StudentId }).HasName("PK_StudentThesisGroupDetail_PK_StudentThesisGroup_ID");
+
+            entity.Property(e => e.StudentThesisGroupId)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.StudentId)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+            entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+            entity.Property(e => e.Notes).HasColumnType("ntext");
+            entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+            entity.HasOne(d => d.Student).WithMany(p => p.ThesisGroupDetails)
+                .HasForeignKey(d => d.StudentId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_StudentThesisGroupDetails_Students_ID");
+
+            entity.HasOne(d => d.StudentThesisGroup).WithMany(p => p.ThesisGroupDetails)
+                .HasForeignKey(d => d.StudentThesisGroupId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_StudentThesisGroupDetails_StudentThesisGroups_ID");
         });
 
         modelBuilder.Entity<ThesisRevision>(entity =>

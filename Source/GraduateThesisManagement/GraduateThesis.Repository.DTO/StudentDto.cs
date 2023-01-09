@@ -53,5 +53,5 @@ public class StudentOutput : StudentInput
     public DateTime? DeletedAt { get; set; }
 
     public StudentClassOutput StudentClass { get; set; }
-    public List<StudentThesisGroupOutput> StudentThesisGroups { get; set; }
+    public List<ThesisGroupOutput> ThesisGroups { get; set; }
 }
