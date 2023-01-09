@@ -13,7 +13,7 @@ namespace GraduateThesis.WebApi.Controllers;
 [ApiController]
 public class ThesisGroupController : ApiControllerBase<IThesisGroupRepository, ThesisGroupInput, ThesisGroupOutput, string>
 {
-    public ThesisGroupController(IRepository repository) : base(repository.StudentThesisGroupRepository)
+    public ThesisGroupController(IRepository repository) : base(repository.ThesisGroupRepository)
     {
     }
 

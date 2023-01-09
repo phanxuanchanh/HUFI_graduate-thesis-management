@@ -27,7 +27,7 @@ public class Repository : IRepository
 
     public ITopicRepository TopicRepository => new TopicRepository(_context);
 
-    public IThesisGroupRepository StudentThesisGroupRepository => new ThesisGroupRepository(_context);
+    public IThesisGroupRepository ThesisGroupRepository => new ThesisGroupRepository(_context);
 
     public IFacultyRepository FacultyRepository => new FacultyRepository(_context);
 

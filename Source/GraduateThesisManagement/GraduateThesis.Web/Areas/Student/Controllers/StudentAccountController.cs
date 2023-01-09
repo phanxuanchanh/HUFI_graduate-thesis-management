@@ -24,7 +24,7 @@ namespace GraduateThesis.Web.Areas.Student.Controllers
         public StudentAccountController(IRepository repository)
         {
             _studentRepository = repository.StudentRepository;
-            _studentThesisGroupRepository = repository.StudentThesisGroupRepository;
+            _studentThesisGroupRepository = repository.ThesisGroupRepository;
 
         }
 

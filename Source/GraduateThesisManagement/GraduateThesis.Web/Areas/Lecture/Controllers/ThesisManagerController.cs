@@ -29,7 +29,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
             : base(repository.ThesisRepository)
         {
             _thesisRepository = repository.ThesisRepository;
-            _studentThesisGroupRepository = repository.StudentThesisGroupRepository;
+            _studentThesisGroupRepository = repository.ThesisGroupRepository;
             _trainingFormRepository = repository.TrainingFormRepository;
             _trainingLevelRepository = repository.TrainingLevelRepository;
             _facultyStaffRepository = repository.FacultyStaffRepository;

@@ -15,65 +15,88 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers;
 [AccountInfo(typeof(FacultyStaffOutput))]
 public class ThesisGroupManagerController : WebControllerBase<IThesisGroupRepository, ThesisGroupInput, ThesisGroupOutput, string>
 {
-    private IThesisGroupRepository _studentThesisGroupRepository;
+    private IThesisGroupRepository _thesisGroupRepository;
 
     public ThesisGroupManagerController(IRepository repository)
-        :base(repository.StudentThesisGroupRepository)
+        :base(repository.ThesisGroupRepository)
         
     {
-        _studentThesisGroupRepository = repository.StudentThesisGroupRepository;
+        _thesisGroupRepository = repository.ThesisGroupRepository;
        
     }
 
-    public override Task<IActionResult> BatchDelete([Required] string id)
+    [Route("batch-delete/{id}")]
+    [HttpPost]
+    public override async Task<IActionResult> BatchDelete([Required] string id)
     {
-        throw new NotImplementedException();
+        return await BatchDeleteResult(id);
     }
 
-    public override Task<IActionResult> Create()
+    [Route("create")]
+    [HttpGet]
+    [PageName(Name = "Tạo mới nhóm đề tài")]
+    public override async Task<IActionResult> Create()
     {
-        throw new NotImplementedException();
+        return await CreateResult();
     }
 
-    public override Task<IActionResult> Create(ThesisGroupInput input)
+    [Route("create")]
+    [HttpPost]
+    [PageName(Name = "Tạo mới nhóm đề tài")]
+    public override async Task<IActionResult> Create(ThesisGroupInput input)
     {
-        throw new NotImplementedException();
+        return await CreateResult(input);
     }
 
-    public override Task<IActionResult> Details([Required] string id)
+    [Route("details/{id}")]
+    [HttpGet]
+    [PageName(Name = "Chi tiết nhóm đề tài")]
+    public override async Task<IActionResult> Details([Required] string id)
     {
-        throw new NotImplementedException();
+        return await GetDetailsResult(id);
     }
 
-    public override Task<IActionResult> Edit([Required] string id)
+    [Route("edit/{id}")]
+    [HttpGet]
+    [PageName(Name = "Chỉnh sửa nhóm đề tài")]
+    public override async Task<IActionResult> Edit([Required] string id)
     {
-        throw new NotImplementedException();
+        return await EditResult(id);
     }
 
+    [Route("edit/{id}")]
+    [HttpPost]
+    [PageName(Name = "Chỉnh sửa nhóm đề tài")]
     public override Task<IActionResult> Edit([Required] string id, ThesisGroupInput input)
     {
-        throw new NotImplementedException();
+        return EditResult(id, input);
     }
 
+    [Route("export")]
     public override Task<IActionResult> Export()
     {
         throw new NotImplementedException();
     }
 
-    public override Task<IActionResult> ForceDelete([Required] string id)
+    [Route("force-delete/{id}")]
+    [HttpPost]
+    public override async Task<IActionResult> ForceDelete([Required] string id)
     {
-        throw new NotImplementedException();
+        return await ForceDeleteResult(id);
     }
 
-    public override Task<IActionResult> GetTrash(int count = 50)
+    [Route("trash")]
+    [HttpGet]
+    public override async Task<IActionResult> GetTrash(int count = 50)
     {
-        throw new NotImplementedException();
+        return await GetTrashResult(count);
     }
 
     public override Task<IActionResult> Import(IFormFile formFile)
     {
         throw new NotImplementedException();
     }
+
 
     public override Task<IActionResult> Import()
     {
@@ -86,11 +109,13 @@ public class ThesisGroupManagerController : WebControllerBase<IThesisGroupReposi
     [WebAuthorize(AccountRole.Lecture)]
     public override async Task<IActionResult> Index(int page = 1, int pageSize = 10, string orderBy = "", string orderOptions = "ASC", string keyword = "")
     {
-        return await IndexResult(page,pageSize,orderBy,orderOptions,keyword);
+        return await IndexResult(page, pageSize, orderBy, orderOptions, keyword);
     }
 
-    public override Task<IActionResult> Restore([Required] string id)
+    [Route("restore/{id}")]
+    [HttpPost]
+    public override async Task<IActionResult> Restore([Required] string id)
     {
-        throw new NotImplementedException();
+        return await RestoreResult(id);
     }
 }

@@ -20,11 +20,13 @@ public class StudentThesisController : WebControllerBase
 {
     private IThesisRepository _thesisRepository;
     private IStudentRepository _studentRepository;
+    private IThesisGroupRepository _thesisGroupRepository;
 
     public StudentThesisController(IRepository repository)
     {
         _thesisRepository = repository.ThesisRepository;
         _studentRepository = repository.StudentRepository;
+        _thesisGroupRepository = repository.ThesisGroupRepository;
     }
 
     [Route("list")]
@@ -129,6 +131,12 @@ public class StudentThesisController : WebControllerBase
 
         AddViewData(DataResponseStatus.InvalidData);
         return View(thesisRegistrationInput);
+    }
+
+    public async Task<IActionResult> GetThesisGroup()
+    {
+         //_thesisGroupRepository
+        return View();
     }
 
     [Route("my-thesis/{thesisId}")]
