@@ -70,7 +70,11 @@ public class ThesisOutput : ThesisInput
 
     public TrainingFormOutput TrainingForm { get; set; }
 
-    public FacultyStaffOutput FacultyStaf { get; set; }
+    public FacultyStaffOutput Lecturer { get; set; }
+
+    public FacultyStaffOutput ThesisSupervisor { get; set; }
+
+    public FacultyStaffOutput CriticalLecturer { get; set; }
 
     public SpecializationOutput Specialization { get; set; }
 }

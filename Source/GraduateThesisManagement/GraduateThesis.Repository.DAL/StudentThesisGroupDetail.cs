@@ -11,6 +11,8 @@ public partial class StudentThesisGroupDetail
 
     public string Notes { get; set; }
 
+    public bool IsCompleted { get; set; }
+
     public bool IsApproved { get; set; }
 
     public DateTime? CreatedAt { get; set; }

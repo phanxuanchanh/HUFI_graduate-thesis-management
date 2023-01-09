@@ -73,22 +73,22 @@
                 </li>
 
                 <li class="sidebar-item  has-sub">
-                    <a asp-action="Index" asp-controller="StudentManager" class='sidebar-link'>
+                    <a asp-action="Index" asp-controller="FacultyManager" class='sidebar-link'>
                         <i class="bi bi-stack"></i>
-                        <span>Sinh viên</span>
+                        <span>Khoa</span>
                     </a>
                     <ul class="submenu ">
                         <li class="submenu-item ">
-                            <a asp-action="Index" asp-controller="StudentManager">Danh sách</a>
+                            <a asp-action="Index" asp-controller="FacultyManager">Danh sách</a>
                         </li>
                         <li class="submenu-item ">
-                            <a asp-action="Import" asp-controller="StudentManager">Nhập</a>
+                            <a asp-action="Import" asp-controller="FacultyManager">Nhập</a>
                         </li>
                         <li class="submenu-item ">
-                            <a asp-action="Export" asp-controller="StudentManager">Xuất</a>
+                            <a asp-action="Export" asp-controller="FacultyManager">Xuất</a>
                         </li>
                         <li class="submenu-item ">
-                            <a asp-action="Trash" asp-controller="StudentManager">Thùng rác</a>
+                            <a asp-action="Trash" asp-controller="FacultyManager">Thùng rác</a>
                         </li>
                     </ul>
                 </li>
@@ -115,88 +115,94 @@
                 </li>
 
                 <li class="sidebar-item  has-sub">
-                    <a asp-action="" asp-controller="" class='sidebar-link'>
-                        <i class="bi bi-stack"></i>
-                        <span>Hội đồng chấm luận văn</span>
-                    </a>
-                    <ul class="submenu ">
-                        <li class="submenu-item ">
-                            <a asp-action="" asp-controller="">Danh sách</a>
-                        </li>
-                        <li class="submenu-item ">
-                            <a asp-action="" asp-controller="">Nhập</a>
-                        </li>
-                        <li class="submenu-item ">
-                            <a asp-action="" asp-controller="">Xuất</a>
-                        </li>
-                        <li class="submenu-item ">
-                            <a asp-action="" asp-controller="">Thùng rác</a>
-                        </li>
-                    </ul>
-                </li>
-
-                <li class="sidebar-item  has-sub">
-                    <a asp-action="" asp-controller="" class='sidebar-link'>
+                    <a asp-action="Index" asp-controller="SpecializationManager" class='sidebar-link'>
                         <i class="bi bi-stack"></i>
                         <span>Chuyên ngành</span>
                     </a>
                     <ul class="submenu ">
                         <li class="submenu-item ">
-                            <a asp-action="" asp-controller="">Danh sách</a>
+                            <a asp-action="Index" asp-controller="SpecializationManager">Danh sách</a>
                         </li>
                         <li class="submenu-item ">
-                            <a asp-action="" asp-controller="">Nhập</a>
+                            <a asp-action="Import" asp-controller="SpecializationManager">Nhập</a>
                         </li>
                         <li class="submenu-item ">
-                            <a asp-action="" asp-controller="">Xuất</a>
+                            <a asp-action="Export" asp-controller="SpecializationManager">Xuất</a>
                         </li>
                         <li class="submenu-item ">
-                            <a asp-action="" asp-controller="">Thùng rác</a>
+                            <a asp-action="Trash" asp-controller="SpecializationManager">Thùng rác</a>
                         </li>
                     </ul>
                 </li>
 
                 <li class="sidebar-item  has-sub">
-                    <a asp-action="" asp-controller="" class='sidebar-link'>
-                        <i class="bi bi-stack"></i>
-                        <span>Thông tin khoa</span>
-                    </a>
-                    <ul class="submenu ">
-                        <li class="submenu-item ">
-                            <a asp-action="" asp-controller="">Danh sách</a>
-                        </li>
-                        <li class="submenu-item ">
-                            <a asp-action="" asp-controller="">Nhập</a>
-                        </li>
-                        <li class="submenu-item ">
-                            <a asp-action="" asp-controller="">Xuất</a>
-                        </li>
-                        <li class="submenu-item ">
-                            <a asp-action="" asp-controller="">Thùng rác</a>
-                        </li>
-                    </ul>
-                </li>
-
-                <li class="sidebar-item  has-sub">
-                    <a asp-action="" asp-controller="" class='sidebar-link'>
+                    <a asp-action="Index" asp-controller="StudentClassManager" class='sidebar-link'>
                         <i class="bi bi-stack"></i>
                         <span>Lớp học</span>
                     </a>
                     <ul class="submenu ">
                         <li class="submenu-item ">
-                            <a asp-action="" asp-controller="">Danh sách</a>
+                            <a asp-action="Index" asp-controller="StudentClassManager">Danh sách</a>
                         </li>
                         <li class="submenu-item ">
-                            <a asp-action="" asp-controller="">Nhập</a>
+                            <a asp-action="Import" asp-controller="StudentClassManager">Nhập</a>
                         </li>
                         <li class="submenu-item ">
-                            <a asp-action="" asp-controller="">Xuất</a>
+                            <a asp-action="Export" asp-controller="StudentClassManager">Xuất</a>
                         </li>
                         <li class="submenu-item ">
-                            <a asp-action="" asp-controller="">Thùng rác</a>
+                            <a asp-action="Trash" asp-controller="StudentClassManager">Thùng rác</a>
                         </li>
                     </ul>
                 </li>
+
+                <li class="sidebar-item  has-sub">
+                    <a asp-action="Index" asp-controller="StudentManager" class='sidebar-link'>
+                        <i class="bi bi-stack"></i>
+                        <span>Sinh viên</span>
+                    </a>
+                    <ul class="submenu ">
+                        <li class="submenu-item ">
+                            <a asp-action="Index" asp-controller="StudentManager">Danh sách</a>
+                        </li>
+                        <li class="submenu-item ">
+                            <a asp-action="Import" asp-controller="StudentManager">Nhập</a>
+                        </li>
+                        <li class="submenu-item ">
+                            <a asp-action="Export" asp-controller="StudentManager">Xuất</a>
+                        </li>
+                        <li class="submenu-item ">
+                            <a asp-action="Trash" asp-controller="StudentManager">Thùng rác</a>
+                        </li>
+                    </ul>
+                </li>
+
+                <li class="sidebar-item  has-sub">
+                    <a asp-action="Index" asp-controller="CouncilManager" class='sidebar-link'>
+                        <i class="bi bi-stack"></i>
+                        <span>Hội đồng chấm luận văn</span>
+                    </a>
+                    <ul class="submenu ">
+                        <li class="submenu-item ">
+                            <a asp-action="Index" asp-controller="CouncilManager">Danh sách</a>
+                        </li>
+                        <li class="submenu-item ">
+                            <a asp-action="Import" asp-controller="CouncilManager">Nhập</a>
+                        </li>
+                        <li class="submenu-item ">
+                            <a asp-action="Export" asp-controller="CouncilManager">Xuất</a>
+                        </li>
+                        <li class="submenu-item ">
+                            <a asp-action="Trash" asp-controller="CouncilManager">Thùng rác</a>
+                        </li>
+                    </ul>
+                </li>
+
+                
+
+                
+
+                
 
                 <li class="sidebar-item  has-sub">
                     <a asp-action="" asp-controller="" class='sidebar-link'>

@@ -8,7 +8,7 @@
     <ConnectionModel>
       <PropertyValue Name="OverrideMFA">false</PropertyValue>
       <PropertyValue Name="Database">aa8afe9c-7d62-4564-b477-c12e62e0f440</PropertyValue>
-      <PropertyValue Name="ConnectionString" xml:space="preserve">Data Source=DESKTOP-T2JLATV\DONGKHANH;Integrated Security=False;User ID=sa</PropertyValue>
+      <PropertyValue Name="ConnectionString" xml:space="preserve">Data Source=LAPTOP-HP-PXCHA;Integrated Security=False;User ID=sa</PropertyValue>
       <PropertyValue Name="ExecutionTimeout">0</PropertyValue>
     </ConnectionModel>
   </Connection>
@@ -633,7 +633,7 @@
             </Location>
             <Size>
               <Width>269 px</Width>
-              <Height>212 px</Height>
+              <Height>229 px</Height>
             </Size>
             <DbOid>
               <Path>[HUFI_graduate-thesis].dbo.StudentThesisGroupDetails</Path>
@@ -659,7 +659,7 @@
               <Port>
                 <Location>
                   <X>0 px</X>
-                  <Y>159 px</Y>
+                  <Y>171.75 px</Y>
                 </Location>
                 <Anchors>Top Bottom</Anchors>
                 <Align>Right</Align>
@@ -684,7 +684,7 @@
             <BendPoints>
               <PointD>
                 <X>1649 px</X>
-                <Y>119 px</Y>
+                <Y>131.75 px</Y>
               </PointD>
               <PointD>
                 <X>1649 px</X>
@@ -708,7 +708,7 @@
               <Port xsi:type="LinkPort">
                 <Location>
                   <X>-170.5 px</X>
-                  <Y>2.75 px</Y>
+                  <Y>15.5 px</Y>
                 </Location>
                 <Anchors>None</Anchors>
                 <Align>Right</Align>
@@ -777,7 +777,7 @@
               <Port xsi:type="LinkPort">
                 <Location>
                   <X>0 px</X>
-                  <Y>-109 px</Y>
+                  <Y>-100.5 px</Y>
                 </Location>
                 <Anchors>None</Anchors>
                 <Align>Bottom</Align>
@@ -2623,10 +2623,10 @@
         </Children>
         <ViewPort>
           <ScaleMode>Free</ScaleMode>
-          <Scale>0.9</Scale>
+          <Scale>0.7</Scale>
           <Location>
-            <X>1615.11111111111 px</X>
-            <Y>1385.77777798971 px</Y>
+            <X>387.428571428571 px</X>
+            <Y>-88.0000016348703 px</Y>
           </Location>
         </ViewPort>
       </Model>
