@@ -693,7 +693,7 @@
             </BendPoints>
             <IsManuallyRouted>false</IsManuallyRouted>
             <DbOid>
-              <Path>[HUFI_graduate-thesis].dbo.ThesisGroupDetails.FK_StudentThesisGroupDetails_Students_ID</Path>
+              <Path>[HUFI_graduate-thesis].dbo.ThesisGroupDetails.FK_ThesisGroupDetails_Students_ID</Path>
               <TypeName>ForeignKey</TypeName>
             </DbOid>
           </Model>
@@ -762,7 +762,7 @@
             </PortAnchors>
             <IsManuallyRouted>false</IsManuallyRouted>
             <DbOid>
-              <Path>[HUFI_graduate-thesis].dbo.ThesisGroupDetails.FK_StudentThesisGroupDetails_StudentThesisGroups_ID</Path>
+              <Path>[HUFI_graduate-thesis].dbo.ThesisGroupDetails.FK_ThesisGroupDetails_ThesisGroups_ID</Path>
               <TypeName>ForeignKey</TypeName>
             </DbOid>
           </Model>
@@ -2222,7 +2222,7 @@
             </PortAnchors>
             <IsManuallyRouted>false</IsManuallyRouted>
             <DbOid>
-              <Path>[HUFI_graduate-thesis].dbo.Theses.FK_Theses_StudentThesisGroups_ID</Path>
+              <Path>[HUFI_graduate-thesis].dbo.Theses.FK_Theses_ThesisGroups_ID</Path>
               <TypeName>ForeignKey</TypeName>
             </DbOid>
           </Model>

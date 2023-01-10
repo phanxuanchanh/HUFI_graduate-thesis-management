@@ -1,3 +1,5 @@
+using GraduateThesis.ApplicationCore.Authorization;
+using GraduateThesis.ApplicationCore.Email;
 using GraduateThesis.Repository.BLL.Implements;
 using GraduateThesis.Repository.BLL.Interfaces;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
@@ -7,6 +9,15 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+IConfigurationSection configurationSection = builder.Configuration.GetSection("SMTP");
+
+string host = configurationSection.GetValue<string>("Host");
+int port = configurationSection.GetValue<int>("Port");
+string user = configurationSection.GetValue<string>("User");
+string password = configurationSection.GetValue<string>("Password");
+
+builder.Services.AddScoped<IEmailService>(e => new SmtpService(host, port, user, password));
+builder.Services.AddScoped<IAccountManager>(a => new AccountManager());
 builder.Services.AddScoped<IRepository>(r => new Repository(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DbConnection"))));
 

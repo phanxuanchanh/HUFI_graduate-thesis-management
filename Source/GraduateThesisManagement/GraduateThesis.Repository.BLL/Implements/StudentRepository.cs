@@ -25,7 +25,7 @@ public class StudentRepository : SubRepository<Student, StudentInput, StudentOut
 
     protected override void ConfigureIncludes()
     {
-        _genericRepository.IncludeMany(i => i.StudentClass);
+        IncludeMany(i => i.StudentClass);
     }
 
     protected override void ConfigureSelectors()
@@ -152,12 +152,32 @@ public class StudentRepository : SubRepository<Student, StudentInput, StudentOut
 
     public AccountVerificationModel ForgotPassword(ForgotPasswordModel forgotPasswordModel)
     {
-        throw new NotImplementedException();
+        bool checkExists = _context.Students
+           .Any(f => f.Email == forgotPasswordModel.Email && f.IsDeleted == false);
+
+        if (!checkExists)
+            return new AccountVerificationModel { AccountStatus = AccountStatus.NotFound };
+
+        return new AccountVerificationModel
+        {
+            AccountStatus = AccountStatus.Success,
+            Email = forgotPasswordModel.Email
+        };
     }
 
-    public Task<AccountVerificationModel> ForgotPasswordAsync(ForgotPasswordModel forgotPasswordModel)
+    public async Task<AccountVerificationModel> ForgotPasswordAsync(ForgotPasswordModel forgotPasswordModel)
     {
-        throw new NotImplementedException();
+        bool checkExists = await _context.Students
+           .AnyAsync(f => f.Email == forgotPasswordModel.Email && f.IsDeleted == false);
+
+        if (!checkExists)
+            return new AccountVerificationModel { AccountStatus = AccountStatus.NotFound };
+
+        return new AccountVerificationModel
+        {
+            AccountStatus = AccountStatus.Success,
+            Email = forgotPasswordModel.Email
+        };
     }
 
     public async Task<StudentThesisOutput> GetStudentThesisAsync(string studentId)

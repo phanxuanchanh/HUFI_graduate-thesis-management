@@ -5,7 +5,9 @@ using GraduateThesis.ExtensionMethods;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DAL;
 using GraduateThesis.Repository.DTO;
+using Microsoft.EntityFrameworkCore;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace GraduateThesis.Repository.BLL.Implements;
@@ -68,12 +70,32 @@ public class FacultyStaffRepository : SubRepository<FacultyStaff, FacultyStaffIn
 
     public AccountVerificationModel ForgotPassword(ForgotPasswordModel forgotPasswordModel)
     {
-        throw new NotImplementedException();
+        bool checkExists = _context.FacultyStaffs
+           .Any(f => f.Email == forgotPasswordModel.Email && f.IsDeleted == false);
+
+        if (!checkExists)
+            return new AccountVerificationModel { AccountStatus = AccountStatus.NotFound };
+
+        return new AccountVerificationModel
+        {
+            AccountStatus = AccountStatus.Success,
+            Email = forgotPasswordModel.Email
+        };
     }
 
-    public Task<AccountVerificationModel> ForgotPasswordAsync(ForgotPasswordModel forgotPasswordModel)
+    public async Task<AccountVerificationModel> ForgotPasswordAsync(ForgotPasswordModel forgotPasswordModel)
     {
-        throw new NotImplementedException();
+        bool checkExists = await _context.FacultyStaffs
+           .AnyAsync(f => f.Email == forgotPasswordModel.Email && f.IsDeleted == false);
+
+        if (!checkExists)
+            return new AccountVerificationModel { AccountStatus = AccountStatus.NotFound };
+
+        return new AccountVerificationModel
+        {
+            AccountStatus = AccountStatus.Success,
+            Email = forgotPasswordModel.Email
+        };
     }
 
     public SignInResultModel SignIn(SignInModel signInModel)

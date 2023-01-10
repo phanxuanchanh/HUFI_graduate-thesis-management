@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿
+namespace GraduateThesis.ApplicationCore.Email;
 
-namespace GraduateThesis.ApplicationCore.Email
+public interface IEmailService : IDisposable
 {
-    public interface IEmailService
-    {
-
-    }
+    void Send(string email, string subject, string content);
 }

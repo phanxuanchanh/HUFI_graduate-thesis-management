@@ -1,0 +1,29 @@
+﻿@{
+    IPagedList pagedInfo = (IPagedList)ViewData["PagedList"]!;
+}
+
+<form asp-action="Index" method="get">
+    <input type="hidden" name="page" value="1" />
+    <input type="hidden" name="orderBy" value="@ViewData["OrderBy"]" />
+    <input type="hidden" name="orderOptions" value="@ViewData["OrderOptions"]" />
+    <div class="dataTable-top">
+        <div class="dataTable-dropdown">
+            <select class="dataTable-selector form-select" name="pageSize" onchange="this.form.submit();">
+                @for (int i = 5; i <= 50; i += 5)
+                {
+                    if (i == pagedInfo.PageSize)
+                    {
+                        <option value="@i" selected>@i</option>
+                    }
+                    else
+                    {
+                        <option value="@i">@i</option>
+                    }
+                }
+            </select><label>dòng trên 1 trang</label>
+        </div>
+        <div class="dataTable-search">
+            <input class="dataTable-input" name="keyword" placeholder="Search..." type="text">
+        </div>
+    </div>
+</form>
