@@ -8,6 +8,7 @@ using GraduateThesis.Common.WebAttributes;
 using GraduateThesis.ApplicationCore.WebAttributes;
 using GraduateThesis.ApplicationCore.Models;
 using GraduateThesis.ApplicationCore.AppController;
+using GraduateThesis.Repository.DAL;
 
 namespace GraduateThesis.Web.Areas.Lecture.Controllers
 {
@@ -147,6 +148,26 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
         {
             throw new NotImplementedException();
         }
+        [Route("list-thesis")]
+        [HttpGet]
+        [PageName(Name = "Danh sách đề tài xét duyệt")]
+        public async Task<IActionResult> GetApprovalThesis()
+        {
+            List<ThesisOutput> thesisOutputs = await _thesisRepository.GetApprovalThesisAsync();
+            return View(thesisOutputs);
+        }
+
+        [Route("submit-thesis")]
+        [HttpPost]
+        [PageName(Name = "Xét duyệt đề tài")]
+        [WebAuthorize(AccountRole.Student)]
+        public async Task<IActionResult> ApprovalThesis([Required] string thesisId)
+        {  
+            DataResponse dataResponse = await _thesisRepository.ApprovalThesisAsync(thesisId);
+            AddTempData(dataResponse);
+            return RedirectToAction("YourThesis");
+        }
+
     }
 }
 

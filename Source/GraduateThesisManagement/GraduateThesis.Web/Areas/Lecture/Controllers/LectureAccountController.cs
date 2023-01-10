@@ -81,16 +81,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        [Route("submit-thesis")]
-        [HttpPost]
-        [PageName(Name = "Xét duyệt đề tài")]
-        [WebAuthorize(AccountRole.Student)]
-        public async Task<IActionResult> ApprovalThesisAsync([Required] string thesisId)
-        {
-            DataResponse dataResponse = await _thesisRepository.ApprovalThesisAsync(thesisId);
-            AddTempData(dataResponse);
-            return RedirectToAction("YourThesis");
-        }
+     
 
     }
 }

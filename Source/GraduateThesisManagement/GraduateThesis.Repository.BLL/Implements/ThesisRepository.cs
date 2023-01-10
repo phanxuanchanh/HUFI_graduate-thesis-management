@@ -5,10 +5,15 @@ using GraduateThesis.ApplicationCore.Uuid;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DAL;
 using GraduateThesis.Repository.DTO;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
+using X.PagedList;
 
 namespace GraduateThesis.Repository.BLL.Implements;
 
@@ -196,4 +201,22 @@ public class ThesisRepository : SubRepository<Thesis, ThesisInput, ThesisOutput,
             Message = "Xét duyệt đề tài thành công!"
         };
     }
+
+    
+    public async Task<List<ThesisOutput>> GetApprovalThesisAsync()
+    {
+        int TotalItemCount = await _context.Theses.CountAsync();
+        List<ThesisOutput> pagination = await _context.Theses.Where(x => x.IsApproved == false).Select(t => new ThesisOutput
+        {
+            Id = t.Id,
+            Name = t.Name,
+            Description = t.Description,
+            MaxStudentNumber = t.MaxStudentNumber,
+            ThesisGroupId =t.ThesisGroupId
+        }).ToListAsync();
+        return pagination;
+
+    }
+
+   
 }
