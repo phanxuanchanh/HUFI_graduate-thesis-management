@@ -7,6 +7,7 @@ using GraduateThesis.Repository.DAL;
 using GraduateThesis.Repository.DTO;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -134,5 +135,57 @@ public class FacultyStaffRepository : SubRepository<FacultyStaff, FacultyStaffIn
     public Task<NewPasswordModel> VerifyAccountAsync(AccountVerificationModel accountVerificationModel)
     {
         throw new NotImplementedException();
+    }
+
+    public async Task<Pagination<FacultyStaffOutput>> GetPgnHasRoleIdAsync(string roleId, int page, int pageSize, string keyword)
+    {
+        int n = (page - 1) * pageSize;
+        int totalItemCount = await _context.AppUserRoles
+            .Where(f => f.RoleId == roleId && f.User.IsDeleted == false).CountAsync();
+
+        List<FacultyStaffOutput> onePageOfData = await _context.AppUserRoles
+            .Where(f => f.RoleId == roleId && f.User.IsDeleted == false)
+            .Skip(n).Take(pageSize)
+            .Select(s => new FacultyStaffOutput
+            {
+                Id = s.User.Id,
+                FullName = s.User.FullName,
+                Email = s.User.Email
+            }).ToListAsync();
+
+        return new Pagination<FacultyStaffOutput>
+        {
+            Page = page,
+            PageSize = pageSize,
+            TotalItemCount = totalItemCount,
+            Items = onePageOfData
+        };
+    }
+
+    public async Task<Pagination<FacultyStaffOutput>> GetPgnHasNotRoleIdAsync(string roleId, int page, int pageSize, string keyword)
+    {
+
+
+        int n = (page - 1) * pageSize;
+        int totalItemCount = await _context.FacultyStaffs
+            .Where(f => f.IsDeleted == false).CountAsync();
+
+        List<FacultyStaffOutput> onePageOfData = await _context.FacultyStaffs
+            .Where(f => f.IsDeleted == false)
+            .Skip(n).Take(pageSize)
+            .Select(s => new FacultyStaffOutput
+            {
+                Id = s.Id,
+                FullName = s.FullName,
+                Email = s.Email
+            }).ToListAsync();
+
+        return new Pagination<FacultyStaffOutput>
+        {
+            Page = page,
+            PageSize = pageSize,
+            TotalItemCount = totalItemCount,
+            Items = onePageOfData
+        };
     }
 }

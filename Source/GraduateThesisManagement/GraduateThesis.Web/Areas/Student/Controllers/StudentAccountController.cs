@@ -7,7 +7,6 @@ using GraduateThesis.ApplicationCore.WebAttributes;
 using GraduateThesis.Common.WebAttributes;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DTO;
-using GraduateThesis.WebExtensions;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
@@ -29,6 +28,8 @@ public class StudentAccountController : WebControllerBase
         _studentThesisGroupRepository = repository.ThesisGroupRepository;
         _emailService = emailService;
         _accountManager = accountManager;
+
+        _studentRepository.EmailService = emailService;
     }
 
     [Route("sign-in-view")]
@@ -57,14 +58,13 @@ public class StudentAccountController : WebControllerBase
             if (string.IsNullOrEmpty(student.Avatar))
                 student.Avatar = "default-male-profile.png";
 
-            string accountSession = JsonConvert.SerializeObject(new AccountSession
+            _accountManager.SetHttpContext(HttpContext);
+            _accountManager.SetSession(new AccountSession
             {
                 AccountModel = student,
-                Role = "Student",
+                Roles = "Student",
                 LastSignInTime = DateTime.Now
             });
-
-            HttpContext.Session.SetString("account-session", accountSession);
 
             return RedirectToAction("Index", "StudentThesis");
         }
@@ -92,7 +92,7 @@ public class StudentAccountController : WebControllerBase
     [Route("approved-studentThesisGroup")]
     [HttpPost]
     [PageName(Name = "Vào nhóm đề tài")]
-    [WebAuthorize(AccountRole.Student)]
+    [WebAuthorize("")]
     public async Task<IActionResult> ApprovalStudentThesisGroupAsync([Required] string StudentThesisGroupId)
     {
         DataResponse dataResponse = await _studentThesisGroupRepository.ApprovalStudentThesisGroupAsync(StudentThesisGroupId);
@@ -104,7 +104,7 @@ public class StudentAccountController : WebControllerBase
     [Route("refuseapproved-studentThesisGroup")]
     [HttpPost]
     [PageName(Name = "Từ chối vào nhóm đề tài")]
-    [WebAuthorize(AccountRole.Student)]
+    [WebAuthorize("")]
     public async Task<IActionResult> RefuseApprovalStudentThesisGroupAsync([Required] string StudentThesisGroupId)
     {
         DataResponse dataResponse = await _studentThesisGroupRepository.RefuseApprovalStudentThesisGroupAsync(StudentThesisGroupId);

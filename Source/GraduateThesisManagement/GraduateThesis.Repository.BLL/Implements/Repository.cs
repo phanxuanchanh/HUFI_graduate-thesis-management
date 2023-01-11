@@ -10,11 +10,9 @@ public class Repository : IRepository
 {
     private HufiGraduateThesisContext _context;
 
-    public Repository(Action<DbContextOptionsBuilder> optionsAction)
+    public Repository(HufiGraduateThesisContext context)
     {
-        DbContextOptionsBuilder<HufiGraduateThesisContext> dbContextOptionsBuilder = new DbContextOptionsBuilder<HufiGraduateThesisContext>();
-        optionsAction.Invoke(dbContextOptionsBuilder);
-        _context = new HufiGraduateThesisContext(dbContextOptionsBuilder.Options);
+        _context = context;
     }
 
     private bool disposedValue;
@@ -46,8 +44,10 @@ public class Repository : IRepository
     public IAppRoleRepository AppRolesRepository => new AppRoleRepository(_context);
 
     public IThesisRevisionRepository ThesisRevisionRepository => new ThesisRevisionRepository(_context);
-    
-    
+
+    public IAppPageRepository AppPageRepository => new AppPageRepository(_context);
+
+
     public int ExecuteNonQuery(FormattableString sql)
     {
         return _context.Database.ExecuteSql(sql);
@@ -66,8 +66,6 @@ public class Repository : IRepository
             {
 
             }
-
-            this._context.Dispose();
 
             disposedValue = true;
         }

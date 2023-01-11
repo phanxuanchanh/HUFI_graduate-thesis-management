@@ -75,7 +75,7 @@ public partial class GenericRepository<TEntity, TInput, TOutput>
         if (idPropertyInfo.PropertyType == typeof(string) && uidOptions == UidOptions.ShortUid)
             idPropertyInfo.SetValue(entity, UidHelper.GetShortUid());
 
-        if (id is string && uidOptions == UidOptions.MicrosoftUid)
+        if (idPropertyInfo.PropertyType == typeof(string) && uidOptions == UidOptions.MicrosoftUid)
             idPropertyInfo.SetValue(entity, UidHelper.GetMicrosoftUid());
 
         PropertyInfo createdAtPropertyInfo = entityType.GetProperty("CreatedAt");

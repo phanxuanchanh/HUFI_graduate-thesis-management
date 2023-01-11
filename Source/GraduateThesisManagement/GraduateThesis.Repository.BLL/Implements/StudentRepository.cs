@@ -1,7 +1,9 @@
-﻿using GraduateThesis.ApplicationCore.Enums;
+﻿using GraduateThesis.ApplicationCore.Email;
+using GraduateThesis.ApplicationCore.Enums;
 using GraduateThesis.ApplicationCore.Hash;
 using GraduateThesis.ApplicationCore.Models;
 using GraduateThesis.ApplicationCore.Repository;
+using GraduateThesis.ExtensionMethods;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DAL;
 using GraduateThesis.Repository.DTO;
@@ -16,6 +18,8 @@ namespace GraduateThesis.Repository.BLL.Implements;
 public class StudentRepository : SubRepository<Student, StudentInput, StudentOutput, string>, IStudentRepository
 {
     private HufiGraduateThesisContext _context;
+
+    public IEmailService EmailService { get; set; }
 
     internal StudentRepository(HufiGraduateThesisContext context)
         : base(context, context.Students)
@@ -152,11 +156,22 @@ public class StudentRepository : SubRepository<Student, StudentInput, StudentOut
 
     public AccountVerificationModel ForgotPassword(ForgotPasswordModel forgotPasswordModel)
     {
-        bool checkExists = _context.Students
-           .Any(f => f.Email == forgotPasswordModel.Email && f.IsDeleted == false);
+        Student student = _context.Students
+           .Where(f => f.Email == forgotPasswordModel.Email && f.IsDeleted == false)
+           .SingleOrDefault();
 
-        if (!checkExists)
+        if (student == null)
             return new AccountVerificationModel { AccountStatus = AccountStatus.NotFound };
+
+        Random random = new Random();
+        student.VerificationCode = random.NextString(24);
+        _context.SaveChanges();
+
+        EmailService.Send(
+            student.Email, 
+            "Khôi phục mật khẩu", 
+            $"Mã xác nhận của bạn là: {student.VerificationCode}"
+        );
 
         return new AccountVerificationModel
         {
@@ -167,11 +182,22 @@ public class StudentRepository : SubRepository<Student, StudentInput, StudentOut
 
     public async Task<AccountVerificationModel> ForgotPasswordAsync(ForgotPasswordModel forgotPasswordModel)
     {
-        bool checkExists = await _context.Students
-           .AnyAsync(f => f.Email == forgotPasswordModel.Email && f.IsDeleted == false);
+        Student student = await _context.Students
+           .Where(f => f.Email == forgotPasswordModel.Email && f.IsDeleted == false)
+           .SingleOrDefaultAsync();
 
-        if (!checkExists)
+        if (student == null)
             return new AccountVerificationModel { AccountStatus = AccountStatus.NotFound };
+
+        Random random = new Random();
+        student.VerificationCode = random.NextString(24);
+        await _context.SaveChangesAsync();
+
+        EmailService.Send(
+            student.Email,
+            "Khôi phục mật khẩu",
+            $"Mã xác nhận của bạn là: {student.VerificationCode}"
+        );
 
         return new AccountVerificationModel
         {
@@ -235,12 +261,54 @@ public class StudentRepository : SubRepository<Student, StudentInput, StudentOut
 
     public NewPasswordModel VerifyAccount(AccountVerificationModel accountVerificationModel)
     {
-        throw new NotImplementedException();
+        Student student = _context.Students
+            .Where(
+                s => s.Email == accountVerificationModel.Email 
+                && s.VerificationCode == accountVerificationModel.VerificationCode 
+                && s.IsDeleted == false
+            ).SingleOrDefault();
+
+        if (student == null)
+            return new NewPasswordModel { AccountStatus = AccountStatus.NotFound };
+
+        if (student.VerificationCode != accountVerificationModel.VerificationCode)
+            return new NewPasswordModel
+            {
+                AccountStatus = AccountStatus.Failed,
+                Email = student.Email,
+            };
+
+        return new NewPasswordModel
+        {
+            AccountStatus = AccountStatus.Success,
+            Email = student.Email,
+        };
     }
 
-    public Task<NewPasswordModel> VerifyAccountAsync(AccountVerificationModel accountVerificationModel)
+    public async Task<NewPasswordModel> VerifyAccountAsync(AccountVerificationModel accountVerificationModel)
     {
-        throw new NotImplementedException();
+        Student student = await _context.Students
+            .Where(
+                s => s.Email == accountVerificationModel.Email
+                && s.VerificationCode == accountVerificationModel.VerificationCode
+                && s.IsDeleted == false
+            ).SingleOrDefaultAsync();
+
+        if (student == null)
+            return new NewPasswordModel { AccountStatus = AccountStatus.NotFound };
+
+        if (student.VerificationCode != accountVerificationModel.VerificationCode)
+            return new NewPasswordModel
+            {
+                AccountStatus = AccountStatus.Failed,
+                Email = student.Email,
+            };
+
+        return new NewPasswordModel
+        {
+            AccountStatus = AccountStatus.Success,
+            Email = student.Email,
+        };
     }
 
     public async Task<object> SearchForThesisRegAsync(string keyword)

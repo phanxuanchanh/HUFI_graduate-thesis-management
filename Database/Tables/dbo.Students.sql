@@ -1,23 +1,26 @@
-CREATE TABLE [HUFI_graduate-thesis].dbo.Students (
-  ID VARCHAR(50) NOT NULL
- ,Name NVARCHAR(100) NOT NULL
- ,Phone VARCHAR(20) NOT NULL
- ,Email VARCHAR(200) NOT NULL
- ,Address NVARCHAR(400) NOT NULL
- ,Birthday DATE NOT NULL
- ,Avatar VARCHAR(200) NULL
- ,Description NTEXT NULL
- ,StudentClassId VARCHAR(50) NOT NULL
- ,Password NVARCHAR(100) NOT NULL
- ,Salt NVARCHAR(100) NOT NULL
- ,CreatedAt DATETIME NULL
- ,UpdatedAt DATETIME NULL
- ,DeletedAt DATETIME NULL
- ,IsDeleted BIT NOT NULL
- ,CONSTRAINT PK_Students_ID PRIMARY KEY CLUSTERED (ID)
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+CREATE TABLE [dbo].[Students] (
+  [ID] [varchar](50) NOT NULL,
+  [Name] [nvarchar](100) NOT NULL,
+  [Phone] [varchar](20) NOT NULL,
+  [Email] [varchar](200) NOT NULL,
+  [Address] [nvarchar](400) NOT NULL,
+  [Birthday] [date] NOT NULL,
+  [Avatar] [varchar](200) NULL,
+  [Description] [ntext] NULL,
+  [StudentClassId] [varchar](50) NOT NULL,
+  [Password] [nvarchar](100) NOT NULL,
+  [Salt] [nvarchar](100) NOT NULL,
+  [CreatedAt] [datetime] NULL,
+  [UpdatedAt] [datetime] NULL,
+  [DeletedAt] [datetime] NULL,
+  [IsDeleted] [bit] NOT NULL,
+  [VerificationCode] [varchar](100) NULL,
+  CONSTRAINT [PK_Students_ID] PRIMARY KEY CLUSTERED ([ID])
+)
+ON [PRIMARY]
+TEXTIMAGE_ON [PRIMARY]
 GO
 
-ALTER TABLE [HUFI_graduate-thesis].dbo.Students
-ADD CONSTRAINT FK_Students_StudentClasses_ID FOREIGN KEY (StudentClassId) REFERENCES dbo.StudentClasses (ID)
+ALTER TABLE [dbo].[Students]
+  ADD CONSTRAINT [FK_Students_StudentClasses_ID] FOREIGN KEY ([StudentClassId]) REFERENCES [dbo].[StudentClasses] ([ID])
 GO

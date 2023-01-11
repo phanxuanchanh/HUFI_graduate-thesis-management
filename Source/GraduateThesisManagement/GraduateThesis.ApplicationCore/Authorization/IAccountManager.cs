@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using GraduateThesis.ApplicationCore.Models;
+using Microsoft.AspNetCore.Http;
 
 namespace GraduateThesis.ApplicationCore.Authorization;
 
 public interface IAccountManager
 {
-    void Save();
-    void Clear();
-    //void 
+    void SetHttpContext(HttpContext httpContext);
+    AccountSession GetSession();
+    void SetSession(AccountSession accountSession);
 }

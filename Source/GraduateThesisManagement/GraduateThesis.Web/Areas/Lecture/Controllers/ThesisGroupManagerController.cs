@@ -11,7 +11,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers;
 
 [Area("Lecture")]
 [Route("lecture/thesisgroup-manager")]
-[WebAuthorize(AccountRole.Lecture)]
+[WebAuthorize("")]
 [AccountInfo(typeof(FacultyStaffOutput))]
 public class ThesisGroupManagerController : WebControllerBase<IThesisGroupRepository, ThesisGroupInput, ThesisGroupOutput, string>
 {
@@ -106,7 +106,7 @@ public class ThesisGroupManagerController : WebControllerBase<IThesisGroupReposi
     [Route("list")]
     [HttpGet]
     [PageName(Name = "Danh sách nhóm sinh viên làm khóa luận")]
-    [WebAuthorize(AccountRole.Lecture)]
+    [WebAuthorize("")]
     public override async Task<IActionResult> Index(int page = 1, int pageSize = 10, string orderBy = "", string orderOptions = "ASC", string keyword = "")
     {
         return await IndexResult(page, pageSize, orderBy, orderOptions, keyword);

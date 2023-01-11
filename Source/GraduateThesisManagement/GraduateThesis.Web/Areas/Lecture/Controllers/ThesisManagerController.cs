@@ -13,7 +13,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
 {
     [Area("Lecture")]
     [Route("lecture/thesis-manager")]
-    //[WebAuthorize(AccountRole.Lecture)]
+    //[WebAuthorize("")]
     //[AccountInfo(typeof(FacultyStaffOutput))]
     public class ThesisManagerController : WebControllerBase<IThesisRepository, ThesisInput, ThesisOutput, string>
     {

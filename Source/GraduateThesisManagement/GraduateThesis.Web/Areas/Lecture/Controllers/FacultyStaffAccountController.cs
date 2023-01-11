@@ -1,4 +1,5 @@
 ﻿using GraduateThesis.ApplicationCore.AppController;
+using GraduateThesis.ApplicationCore.Authorization;
 using GraduateThesis.ApplicationCore.Enums;
 using GraduateThesis.ApplicationCore.Models;
 using GraduateThesis.ApplicationCore.WebAttributes;
@@ -15,15 +16,17 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
 {
     [Area("Lecture")]
     [Route("lecture/account")]
-    public class LectureAccountController : WebControllerBase
+    public class FacultyStaffAccountController : WebControllerBase
     {
         private IFacultyStaffRepository _facultyStaffRepository;
         private IThesisRepository _thesisRepository;
+        private IAccountManager _accountManager;
 
-        public LectureAccountController(IRepository repository)
+        public FacultyStaffAccountController(IRepository repository, IAccountManager accountManager)
         {
             _facultyStaffRepository = repository.FacultyStaffRepository;
             _thesisRepository = repository.ThesisRepository;
+            _accountManager = accountManager;
         }
 
         [Route("sign-in-view")]
@@ -49,14 +52,14 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
             if (signInResultModel.Status == SignInStatus.Success)
             {
                 FacultyStaffOutput facultyStaff = await _facultyStaffRepository.GetAsync(signInModel.Code);
-                string accountSession = JsonConvert.SerializeObject(new AccountSession
-                {
-                    AccountModel = facultyStaff,
-                    Role = facultyStaff.FacultyStaffRole.Name,
-                    LastSignInTime = DateTime.Now
-                });
+                _accountManager.SetHttpContext(HttpContext);
 
-                HttpContext.Session.SetString("account-session", accountSession);
+                _accountManager.SetSession(new AccountSession
+                {
+                    UserId = facultyStaff.Id,
+                    LastSignInTime = DateTime.Now,
+                    AccountModel = facultyStaff
+                });
 
                 return RedirectToAction("Index", "LectureDashboard");
             }
@@ -84,7 +87,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
         [Route("submit-thesis")]
         [HttpPost]
         [PageName(Name = "Xét duyệt đề tài")]
-        [WebAuthorize(AccountRole.Student)]
+        [WebAuthorize("")]
         public async Task<IActionResult> ApprovalThesisAsync([Required] string thesisId)
         {
             DataResponse dataResponse = await _thesisRepository.ApprovalThesisAsync(thesisId);

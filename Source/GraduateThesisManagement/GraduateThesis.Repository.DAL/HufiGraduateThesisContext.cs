@@ -11,7 +11,11 @@ public partial class HufiGraduateThesisContext : DbContext
     {
     }
 
+    public virtual DbSet<AppPage> AppPages { get; set; }
+
     public virtual DbSet<AppRole> AppRoles { get; set; }
+
+    public virtual DbSet<AppRoleMapping> AppRoleMappings { get; set; }
 
     public virtual DbSet<AppUserRole> AppUserRoles { get; set; }
 
@@ -63,6 +67,36 @@ public partial class HufiGraduateThesisContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<AppPage>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK_AppRoleMapping_ID");
+
+            entity.Property(e => e.Id)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("ID");
+            entity.Property(e => e.ActionName)
+                .IsRequired()
+                .HasMaxLength(100)
+                .IsUnicode(false);
+            entity.Property(e => e.Area)
+                .HasMaxLength(100)
+                .IsUnicode(false);
+            entity.Property(e => e.ControllerName)
+                .IsRequired()
+                .HasMaxLength(100)
+                .IsUnicode(false);
+            entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+            entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+            entity.Property(e => e.PageName)
+                .IsRequired()
+                .HasMaxLength(200);
+            entity.Property(e => e.Path)
+                .HasMaxLength(400)
+                .IsUnicode(false);
+            entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+        });
+
         modelBuilder.Entity<AppRole>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK_FacultyRoles_ID ");
@@ -80,30 +114,52 @@ public partial class HufiGraduateThesisContext : DbContext
             entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
         });
 
+        modelBuilder.Entity<AppRoleMapping>(entity =>
+        {
+            entity.HasKey(e => new { e.RoleId, e.PageId });
+
+            entity.ToTable("AppRoleMapping");
+
+            entity.Property(e => e.RoleId)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.PageId)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+
+            entity.HasOne(d => d.Page).WithMany(p => p.AppRoleMappings)
+                .HasForeignKey(d => d.PageId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_AppRoleMapping_AppPages_ID");
+
+            entity.HasOne(d => d.Role).WithMany(p => p.AppRoleMappings)
+                .HasForeignKey(d => d.RoleId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_AppRoleMapping_AppRoles_ID ");
+        });
+
         modelBuilder.Entity<AppUserRole>(entity =>
         {
-            entity.HasKey(e => e.UserId).HasName("PK_AppUserRoles_UserId");
+            entity.HasKey(e => new { e.UserId, e.RoleId }).HasName("PK_AppUserRoles_UserId");
 
             entity.Property(e => e.UserId)
                 .HasMaxLength(50)
                 .IsUnicode(false);
-            entity.Property(e => e.CreatedAt).HasColumnType("datetime");
-            entity.Property(e => e.DeletedAt).HasColumnType("datetime");
-            entity.Property(e => e.Description).HasColumnType("ntext");
-            entity.Property(e => e.Notes).HasColumnType("ntext");
             entity.Property(e => e.RoleId)
                 .HasMaxLength(50)
                 .IsUnicode(false);
-            entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+            entity.Property(e => e.CreatedAt).HasColumnType("datetime");
 
             entity.HasOne(d => d.Role).WithMany(p => p.AppUserRoles)
                 .HasForeignKey(d => d.RoleId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_AppUserRoles_AppRoles_ID ");
 
-            entity.HasOne(d => d.User).WithOne(p => p.AppUserRole)
-                .HasForeignKey<AppUserRole>(d => d.UserId)
+            entity.HasOne(d => d.User).WithMany(p => p.AppUserRoles)
+                .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_AppUserRoles_Faculties_ID");
+                .HasConstraintName("FK_AppUserRoles_FacultyStaffs_ID");
         });
 
         modelBuilder.Entity<CommitteeMember>(entity =>
@@ -291,16 +347,14 @@ public partial class HufiGraduateThesisContext : DbContext
                 .IsRequired()
                 .HasMaxLength(100);
             entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+            entity.Property(e => e.VerificationCode)
+                .HasMaxLength(100)
+                .IsUnicode(false);
 
             entity.HasOne(d => d.Faculty).WithMany(p => p.FacultyStaffs)
                 .HasForeignKey(d => d.FacultyId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_FacultyStaffs_Faculties_ID");
-
-            entity.HasOne(d => d.FacultyRole).WithMany(p => p.FacultyStaffs)
-                .HasForeignKey(d => d.FacultyRoleId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_FacultyStaffs_AppRoles_ID ");
         });
 
         modelBuilder.Entity<ImplementationPlan>(entity =>
@@ -432,6 +486,9 @@ public partial class HufiGraduateThesisContext : DbContext
                 .HasMaxLength(50)
                 .IsUnicode(false);
             entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+            entity.Property(e => e.VerificationCode)
+                .HasMaxLength(100)
+                .IsUnicode(false);
 
             entity.HasOne(d => d.StudentClass).WithMany(p => p.Students)
                 .HasForeignKey(d => d.StudentClassId)
@@ -545,7 +602,7 @@ public partial class HufiGraduateThesisContext : DbContext
 
             entity.HasOne(d => d.ThesisGroup).WithMany(p => p.Theses)
                 .HasForeignKey(d => d.ThesisGroupId)
-                .HasConstraintName("FK_Theses_StudentThesisGroups_ID");
+                .HasConstraintName("FK_Theses_ThesisGroups_ID");
 
             entity.HasOne(d => d.Topic).WithMany(p => p.Theses)
                 .HasForeignKey(d => d.TopicId)
@@ -655,12 +712,12 @@ public partial class HufiGraduateThesisContext : DbContext
             entity.HasOne(d => d.Student).WithMany(p => p.ThesisGroupDetails)
                 .HasForeignKey(d => d.StudentId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_StudentThesisGroupDetails_Students_ID");
+                .HasConstraintName("FK_ThesisGroupDetails_Students_ID");
 
             entity.HasOne(d => d.StudentThesisGroup).WithMany(p => p.ThesisGroupDetails)
                 .HasForeignKey(d => d.StudentThesisGroupId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_StudentThesisGroupDetails_StudentThesisGroups_ID");
+                .HasConstraintName("FK_ThesisGroupDetails_ThesisGroups_ID");
         });
 
         modelBuilder.Entity<ThesisRevision>(entity =>

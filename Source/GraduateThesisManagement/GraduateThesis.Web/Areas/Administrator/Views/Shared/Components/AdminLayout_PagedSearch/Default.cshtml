@@ -2,10 +2,13 @@
     IPagedList pagedInfo = (IPagedList)ViewData["PagedList"]!;
 }
 
-<form asp-action="Index" method="get">
+<form asp-action="@ViewData["Action"]" method="get">
     <input type="hidden" name="page" value="1" />
-    <input type="hidden" name="orderBy" value="@ViewData["OrderBy"]" />
-    <input type="hidden" name="orderOptions" value="@ViewData["OrderOptions"]" />
+    @if ((bool)ViewData["EnableOrder"]!)
+    {
+        <input type="hidden" name="orderBy" value="@ViewData["OrderBy"]" />
+        <input type="hidden" name="orderOptions" value="@ViewData["OrderOptions"]" />
+    }
     <div class="dataTable-top">
         <div class="dataTable-dropdown">
             <select class="dataTable-selector form-select" name="pageSize" onchange="this.form.submit();">

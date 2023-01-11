@@ -1,16 +1,10 @@
 ﻿CREATE TABLE [dbo].[AppUserRoles] (
   [UserId] [varchar](50) NOT NULL,
-  [RoleId] [varchar](50) NULL,
-  [Description] [ntext] NULL,
-  [Notes] [ntext] NULL,
+  [RoleId] [varchar](50) NOT NULL,
   [CreatedAt] [datetime] NULL,
-  [UpdatedAt] [datetime] NULL,
-  [DeletedAt] [datetime] NULL,
-  [IsDeleted] [bit] NOT NULL,
-  CONSTRAINT [PK_AppUserRoles_UserId] PRIMARY KEY CLUSTERED ([UserId])
+  CONSTRAINT [PK_AppUserRoles_UserId] PRIMARY KEY CLUSTERED ([UserId], [RoleId])
 )
 ON [PRIMARY]
-TEXTIMAGE_ON [PRIMARY]
 GO
 
 ALTER TABLE [dbo].[AppUserRoles]
@@ -18,5 +12,5 @@ ALTER TABLE [dbo].[AppUserRoles]
 GO
 
 ALTER TABLE [dbo].[AppUserRoles]
-  ADD CONSTRAINT [FK_AppUserRoles_Faculties_ID] FOREIGN KEY ([UserId]) REFERENCES [dbo].[Faculties] ([ID])
+  ADD CONSTRAINT [FK_AppUserRoles_FacultyStaffs_ID] FOREIGN KEY ([UserId]) REFERENCES [dbo].[FacultyStaffs] ([ID])
 GO

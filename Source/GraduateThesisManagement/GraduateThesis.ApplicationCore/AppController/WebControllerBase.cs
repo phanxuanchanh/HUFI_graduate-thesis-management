@@ -137,6 +137,21 @@ public class WebControllerBase : Controller
         }
     }
 
+    [NonAction]
+    protected void AddTempData(DataResponseStatus dataResponseStatus)
+    {
+        TempData["Status"] = dataResponseStatus.ToString();
+
+        if (dataResponseStatus == DataResponseStatus.Success)
+            TempData["Message"] = "";
+        else if (dataResponseStatus == DataResponseStatus.NotFound)
+            TempData["Message"] = "";
+        else if (dataResponseStatus == DataResponseStatus.AlreadyExists)
+            TempData["Message"] = "";
+        else
+            TempData["Message"] = "";
+    }
+
 }
 
 

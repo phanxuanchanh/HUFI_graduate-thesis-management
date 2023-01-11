@@ -19,8 +19,6 @@ public partial class Faculty
 
     public bool IsDeleted { get; set; }
 
-    public virtual AppUserRole AppUserRole { get; set; }
-
     public virtual ICollection<FacultyStaff> FacultyStaffs { get; } = new List<FacultyStaff>();
 
     public virtual ICollection<StudentClass> StudentClasses { get; } = new List<StudentClass>();
