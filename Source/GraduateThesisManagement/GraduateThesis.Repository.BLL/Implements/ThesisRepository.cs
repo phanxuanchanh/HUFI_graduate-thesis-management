@@ -2,9 +2,11 @@
 using GraduateThesis.ApplicationCore.Models;
 using GraduateThesis.ApplicationCore.Repository;
 using GraduateThesis.ApplicationCore.Uuid;
+using GraduateThesis.ExtensionMethods;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DAL;
 using GraduateThesis.Repository.DTO;
+using MathNet.Numerics.Distributions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using System;
@@ -28,10 +30,10 @@ public class ThesisRepository : SubRepository<Thesis, ThesisInput, ThesisOutput,
     protected override void ConfigureIncludes()
     {
         IncludeMany(
-            i => i.Topic, 
-            i => i.ThesisGroup, 
-            i => i.TrainingForm, 
-            i => i.TrainingLevel, 
+            i => i.Topic,
+            i => i.ThesisGroup,
+            i => i.TrainingForm,
+            i => i.TrainingLevel,
             i => i.Specialization
         );
     }
@@ -217,23 +219,57 @@ public class ThesisRepository : SubRepository<Thesis, ThesisInput, ThesisOutput,
         };
     }
 
-    
+    public async Task<DataResponse> RejectThesisAsync(ThesisInput thesisInput, string thesisId)
+    {
+        Thesis thesis = await _context.Theses.FindAsync(thesisId);
+        if (thesis == null)
+            return new DataResponse
+            {
+                Status = DataResponseStatus.NotFound,
+                Message = "Không tìm thấy đề tài có mã này!"
+            };
+
+        thesis.IsApproved = false;
+        thesis.Notes = thesisInput.Notes;
+        await _context.SaveChangesAsync();
+        return new DataResponse
+        {
+            Status = DataResponseStatus.Success,
+            Message = "Từ chối xét duyệt đề tài thành công!"
+        };
+    }
+
     public async Task<List<ThesisOutput>> GetApprovalThesisAsync()
     {
+
+        await _context.Theses.Include(x => x.Lecture).Where(predicate => predicate.IsDeleted == false)
+            .Select(tb => new ThesisOutput
+            {
+                Id = tb.Id,
+                Lecturer = new FacultyStaffOutput
+                {
+                    FullName = tb.Lecture.FullName
+
+                }
+            }
+        ).ToListAsync();
         int TotalItemCount = await _context.Theses.CountAsync();
-        List<ThesisOutput> pagination = await _context.Theses.Where(x => x.IsApproved == false).Select(t => new ThesisOutput
-        {
-            Id = t.Id,
-            Name = t.Name,
-            Description = t.Description,
-            MaxStudentNumber = t.MaxStudentNumber,
-            ThesisGroupId =t.ThesisGroupId
-        }).ToListAsync();
+        List<ThesisOutput> pagination = await _context.Theses.Where(x => x.IsApproved == false)
+            .Select(t => new ThesisOutput
+            {
+                Id = t.Id,
+                Name = t.Name,
+                Description = t.Description,
+                MaxStudentNumber = t.MaxStudentNumber,
+                ThesisGroupId = t.ThesisGroupId,
+
+            }).ToListAsync();
+
         return pagination;
 
     }
 
-   
+
 
     public async Task<DataResponse> CheckMaxStudentNumberAsync(string thesisId, int currentStudentNumber)
     {

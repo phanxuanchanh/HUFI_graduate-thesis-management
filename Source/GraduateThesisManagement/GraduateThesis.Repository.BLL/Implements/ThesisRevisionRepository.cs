@@ -44,7 +44,7 @@ public class ThesisRevisionRepository : SubRepository<ThesisRevision, ThesisRevi
             PresentationFile = s.PresentationFile,
             PdfFile = s.PdfFile,
             SourceCode = s.SourceCode,
-            thesis = new ThesisOutput
+            Thesis = new ThesisOutput
             {
                 Id = s.Thesis.Id,
                 Name = s.Thesis.Name,

@@ -1,57 +1,108 @@
 ﻿@model GraduateThesis.Repository.DTO.ThesisOutput
-<div class="page-heading">
-    <div class="page-title">
-        <div class="row">
-            <div class="col-12 col-md-6 order-md-1 order-last">
-            </div>
-            <div class="col-12 col-md-6 order-md-2 order-first">
-                <nav aria-label="breadcrumb" class="breadcrumb-header float-start float-lg-end">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="index.html">Dashboard</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Input</li>
-                    </ol>
-                </nav>
-            </div>
-        </div>
-    </div>
-    <section class="section">
-        <div class="card">
-            <div class="card-header">
-                <h4 class="card-title">Chi tiết quyền : @Model.Name</h4>
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="basicInput">Mã đề tài</label>
-                            <p type="text" class="form-control">@Html.DisplayFor(model => model.Id)</p>
-                        </div>
 
-                        <div class="form-group">
-                            <label for="basicInput">Tên đề tài</label>
-                            <p type="text" class="form-control">@Html.DisplayFor(model => model.Name)</p>
-                        </div>
 
-                        <div class="form-group">
-                            <label for="basicInput">Mô tả</label>
-                            <p type="text" class="form-control" id="basicInput" placeholder="Enter email">@Html.DisplayFor(model => model.Description)</p>
-                        </div>
+@await Component.InvokeAsync("FacultyStaffLayout_StatusArea")
+
+
+<section id="basic-horizontal-layouts">
+    <div class="row match-height">
+        <div class="col-md-6 col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title">@ViewData["PageName"]: "@Model.Name"</h4>
+                </div>
+                <div class="card-content">
+                    <div class="card-body">
+                            <div class="form-body">
+                                <div class="form-body">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <label asp-for="Id"></label>
+                                        </div>
+                                        <div class="col-md-8 form-group">
+                                            <input asp-for="Id" class="form-control" disabled />
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label asp-for="Name"></label>
+                                        </div>
+                                        <div class="col-md-8 form-group">
+                                            <input asp-for="Name" class="form-control" placeholder="Tên đề tài" />
+                                            <span asp-validation-for="Name" class="text-danger"></span>
+                                        </div>
+                                    <div class="col-md-4">
+                                        <label asp-for="Lecturer.FullName"></label>
+                                    </div>
+                                    <div class="col-md-8 form-group">
+                                        <input asp-for="Lecturer.FullName" class="form-control" disabled />
+                                    </div>
+                                        <div class="col-md-4">
+                                            <label asp-for="Description"></label>
+                                        </div>
+                                        <div class="col-md-8 form-group">
+                                            <textarea asp-for="Description" class="form-control" placeholder="Mô tả"></textarea>
+                                            <span asp-validation-for="Description" class="text-danger"></span>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label asp-for="Notes"></label>
+                                        </div>
+                                        <div class="col-md-8 form-group">
+                                            <textarea asp-for="Notes" class="form-control" placeholder="Nhận xét từ chối"></textarea>
+                                            <span asp-validation-for="Notes" class="text-danger"></span>
+                                        </div>
+                                        <div class="col-sm-12 d-flex justify-content-end">
+                                        <a asp-action="GetApprovalThesis" class="btn btn-light-secondary me-1 mb-1">Quay về danh sách</a>
+                                            <button type="submit" form="publicThesis" class="btn btn-light-secondary me-1 mb-1"><i class="fas fa-restore"></i> Duyệt đề tài</button>
+                                            <form asp-action="ApproveThesis" asp-route-thesisId="@Model.Id" id="publicThesis" method="post">
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                       
                     </div>
-
                 </div>
             </div>
         </div>
-    </section>
-</div>
-<div>
-    @Html.ActionLink("Edit", "Edit", new { /* id = Model.PrimaryKey */ }) |
-    <a asp-action="Index">Back to List</a>
-  
-        <button type="submit" form="restoreTopic" class="btn btn-primary btn-sm"><i class="fas fa-restore"></i> Khôi phục</button>
-        <button type="submit" form="deleteTopic" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i> Xóa vĩnh viễn</button>
-    <form asp-action="Restore" asp-route-thesisId="@Model.Id" id="restoreTopic" method="post">
-        </form>
-    <form asp-action="ForceDelete" asp-route-thesisId="@Model.Id" id="deleteTopic" method="post">
-        </form>
-   
-</div>
+        <div class="col-md-6 col-12">
+            <div class="card">
+
+                <div class="card-content">
+                    <div class="card-body">
+
+                        <div class="form-body">
+                            <div class="form-body">
+                                <div class="row">
+
+                                   
+                                    <div class="col-sm-12 d-flex justify-content-end">
+                                        <button type="submit" form="rejectThesis" class="btn btn-light-secondary me-5 mb-3" style="margin-top: 26px"><i class="fas fa-trash"></i> Từ chối đề tài</button>
+                                        <form asp-action="RejectThesis" asp-route-thesisId="@Model.Id" id="rejectThesis" method="post">
+                                           
+                                               
+                                            <div class="col-md-4">
+                                                <label asp-for="Notes"></label>
+                                            </div>
+                                            <div class="col-md-8 form-group">
+                                                <textarea asp-for="Notes" class="form-control" placeholder="Nhận xét từ chối"></textarea>
+                                                <span asp-validation-for="Notes" class="text-danger"></span>
+                                            </div>
+                                            
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</section>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

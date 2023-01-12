@@ -46,7 +46,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
                 ViewData["TopicList"] = new SelectList(topicClasses, "Id", "Name");
 
                 List<StudentThesisGroupOutput> StudentThesisGrouClasses = await _studentThesisGroupRepository.GetListAsync(50);
-                ViewData["StudentThesisGrouList"] = new SelectList(StudentThesisGrouClasses, "Id", "Name");
+                ViewData["StudentThesisGroupList"] = new SelectList(StudentThesisGrouClasses, "Id", "Name");
 
                 List<TrainingFormOutput> trainingFormsClass = await _trainingFormRepository.GetListAsync(50);
                 ViewData["TrainingFormList"] = new SelectList(trainingFormsClass, "Id", "Name");
@@ -156,16 +156,34 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
             List<ThesisOutput> thesisOutputs = await _thesisRepository.GetApprovalThesisAsync();
             return View(thesisOutputs);
         }
+        [Route("approve-thesis/{thesisId}")]
+        [HttpGet]
+        [PageName(Name = "Xét duyệt đề tài")]
 
-        [Route("submit-thesis")]
+        public async Task<IActionResult> ApprovalThesis([Required] string thesisId)
+        {
+            return await GetDetailsResult(thesisId);
+        }
+
+        [Route("approve-thesis/{thesisId}")]
         [HttpPost]
         [PageName(Name = "Xét duyệt đề tài")]
-        [WebAuthorize(AccountRole.Student)]
-        public async Task<IActionResult> ApprovalThesis([Required] string thesisId)
-        {  
+
+        public async Task<IActionResult> ApproveThesis([Required] string thesisId)
+        {
             DataResponse dataResponse = await _thesisRepository.ApprovalThesisAsync(thesisId);
             AddTempData(dataResponse);
-            return RedirectToAction("YourThesis");
+            return RedirectToAction("ApprovalThesis",new { thesisId= thesisId });
+        }
+        [Route("reject-thesis/{thesisId}")]
+        [HttpPost]
+        [PageName(Name = "Từ chối xét duyệt đề tài")]
+        public async Task<IActionResult> RejectThesis([Required] ThesisInput thesisInput, string thesisId)
+        {
+            DataResponse dataResponse = await _thesisRepository.RejectThesisAsync(thesisInput, thesisId);
+            AddTempData(dataResponse);
+            return RedirectToAction("ApprovalThesis", new { thesisId = thesisId });
+
         }
 
     }

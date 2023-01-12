@@ -108,5 +108,13 @@ namespace GraduateThesis.Web.Areas.Student.Controllers
             AddTempData(dataResponse);
             return RedirectToAction("YourStudentThesisGroup");
         }
+
+        [Route("profiles-in-view")]
+        [HttpGet]
+        [PageName(Name = "Thông tin sinh viên")]
+        public IActionResult ProfilesView()
+        {
+            return View();
+        }
     }
 }
