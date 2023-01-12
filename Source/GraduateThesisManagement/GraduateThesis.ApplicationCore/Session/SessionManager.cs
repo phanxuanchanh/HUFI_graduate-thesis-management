@@ -17,6 +17,9 @@ public class SessionManager
     public TSessionModel GetSession<TSessionModel>(string key)
     {
         string json = _httpContext.Session.GetString(key);
+        if (string.IsNullOrEmpty(json))
+            return default(TSessionModel);
+
         return JsonConvert.DeserializeObject<TSessionModel>(json);
     }
 

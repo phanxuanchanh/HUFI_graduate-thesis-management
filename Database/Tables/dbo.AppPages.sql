@@ -8,7 +8,7 @@
   [CreatedAt] [datetime] NULL,
   [UpdatedAt] [datetime] NULL,
   [DeletedAt] [datetime] NULL,
-  [IsDeleted] [bit] NULL,
+  [IsDeleted] [bit] NOT NULL,
   CONSTRAINT [PK_AppRoleMapping_ID] PRIMARY KEY CLUSTERED ([ID])
 )
 ON [PRIMARY]

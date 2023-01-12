@@ -52,10 +52,10 @@ public class AppRoleRepository : SubRepository<AppRole, AppRoleInput, AppRoleOut
         };
     }
 
-    public async Task<DataResponse> GrantAsync(AppUserRoleInput appUserRoleInput)
+    public async Task<DataResponse> GrantAsync(AppUserRoleInput input)
     {
         bool checkRolesExists = await _context.AppRoles
-            .AnyAsync(r => r.Id == appUserRoleInput.RoleId && r.IsDeleted == false);
+            .AnyAsync(r => r.Id == input.RoleId && r.IsDeleted == false);
         if (!checkRolesExists)
             return new DataResponse
             {
@@ -64,7 +64,7 @@ public class AppRoleRepository : SubRepository<AppRole, AppRoleInput, AppRoleOut
             };
 
         bool checkUserExists = await _context.FacultyStaffs
-            .AnyAsync(f => f.Id == appUserRoleInput.UserId && f.IsDeleted == false);
+            .AnyAsync(f => f.Id == input.UserId && f.IsDeleted == false);
         if (!checkUserExists)
             return new DataResponse
             {
@@ -73,7 +73,7 @@ public class AppRoleRepository : SubRepository<AppRole, AppRoleInput, AppRoleOut
             };
 
         bool checkExists = await _context.AppUserRoles
-            .AnyAsync(ur => ur.RoleId == appUserRoleInput.RoleId && ur.UserId == appUserRoleInput.UserId);
+            .AnyAsync(ur => ur.RoleId == input.RoleId && ur.UserId == input.UserId);
 
         if (checkExists)
             return new DataResponse
@@ -84,8 +84,8 @@ public class AppRoleRepository : SubRepository<AppRole, AppRoleInput, AppRoleOut
 
         AppUserRole appUserRole = new AppUserRole
         {
-            RoleId = appUserRoleInput.RoleId,
-            UserId = appUserRoleInput.UserId,
+            RoleId = input.RoleId,
+            UserId = input.UserId,
             CreatedAt = DateTime.Now
         };
 
@@ -98,10 +98,10 @@ public class AppRoleRepository : SubRepository<AppRole, AppRoleInput, AppRoleOut
         };
     }
 
-    public async Task<DataResponse> RevokeAsync(AppUserRoleInput appUserRoleInput)
+    public async Task<DataResponse> RevokeAsync(AppUserRoleInput input)
     {
         bool checkRolesExists = await _context.AppRoles
-            .AnyAsync(r => r.Id == appUserRoleInput.RoleId && r.IsDeleted == false);
+            .AnyAsync(r => r.Id == input.RoleId && r.IsDeleted == false);
         if (!checkRolesExists)
             return new DataResponse
             {
@@ -110,7 +110,7 @@ public class AppRoleRepository : SubRepository<AppRole, AppRoleInput, AppRoleOut
             };
 
         bool checkUserExists = await _context.FacultyStaffs
-            .AnyAsync(f => f.Id == appUserRoleInput.UserId && f.IsDeleted == false);
+            .AnyAsync(f => f.Id == input.UserId && f.IsDeleted == false);
         if (!checkUserExists)
             return new DataResponse
             {
@@ -119,7 +119,7 @@ public class AppRoleRepository : SubRepository<AppRole, AppRoleInput, AppRoleOut
             };
 
         AppUserRole appUserRole = await _context.AppUserRoles
-            .FindAsync(appUserRoleInput.UserId, appUserRoleInput.RoleId);
+            .FindAsync(input.UserId, input.RoleId);
 
         if (appUserRole == null)
             return new DataResponse
