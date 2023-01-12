@@ -6,6 +6,7 @@ using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DAL;
 using GraduateThesis.Repository.DTO;
 using Microsoft.EntityFrameworkCore;
+using NPOI.SS.Formula.Functions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -162,11 +163,12 @@ public class StudentRepository : SubRepository<Student, StudentInput, StudentOut
 
     public async Task<StudentThesisOutput> GetStudentThesisAsync(string studentId)
     {
-        //ThesisOutput thesisOutput = await _genericRepository.GetAsync("Id", thesisId);
-        //if (thesisOutput == null)
-        //    return null;
+        StudentThesisGroup studentThesisGroup = await _context.StudentThesisGroupDetails
+            .Include(i => i.StudentThesisGroup)
+            .Where(s => s.StudentId == studentId).Select(s => new StudentThesisGroup
+            {
 
-        //StudentThesisGroupOutput studentThesisGroup = thesisOutput.StudentThesisGroup;
+            }).SingleOrDefaultAsync();
 
         List<StudentOutput> students = await _context.StudentThesisGroupDetails
             .Where(s => s.StudentId == studentId).Include(i => i.Student)
@@ -222,4 +224,47 @@ public class StudentRepository : SubRepository<Student, StudentInput, StudentOut
         throw new NotImplementedException();
     }
 
+    public async Task<object> SearchForThesisRegAsync(string keyword)
+    {
+        List<Student> students = await _context.Theses.Where(t => t.IsDeleted == false)
+            .Join(
+                _context.StudentThesisGroupDetails.Where(gd => gd.IsCompleted == true),
+                thesis => thesis.ThesisGroupId, groupDetail => groupDetail.StudentThesisGroupId,
+                (thesis, groupDetail) => new { StudentId = groupDetail.StudentId }
+            ).Join(
+                _context.Students,
+                combined => combined.StudentId,
+                student => student.Id,
+                (combined, student) => new Student { Id = student.Id, Name = student.Name }
+            ).Distinct().ToListAsync();
+
+        return await _context.Students.Include(i => i.StudentClass)
+            .Where(s => (s.Id.Contains(keyword) || s.Name.Contains(keyword)) && s.IsDeleted == false)
+            .WhereBulkNotContains(students)
+            .Take(50).Select(s => new
+            {
+                Id = s.Id,
+                Name = s.Name,
+                StudentClass = new
+                {
+                    Id = s.StudentClass.Id,
+                    Name = s.StudentClass.Name
+                }
+            }).ToListAsync();
+    }
+
+    public async Task<object> GetObjAsync(string studentId)
+    {
+        return await _context.Students.Where(s => s.Id == studentId && s.IsDeleted == false)
+            .Select(s => new
+            {
+                Id = s.Id,
+                Name = s.Name,
+                StudentClass = new
+                {
+                    Id = s.StudentClass.Id,
+                    Name = s.StudentClass.Name
+                }
+            }).SingleOrDefaultAsync();
+    }
 }

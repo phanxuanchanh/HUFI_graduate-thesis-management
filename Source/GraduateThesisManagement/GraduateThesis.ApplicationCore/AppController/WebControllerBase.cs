@@ -1,4 +1,5 @@
 ﻿using GraduateThesis.ApplicationCore.Enums;
+using GraduateThesis.ApplicationCore.File;
 using GraduateThesis.ApplicationCore.Models;
 using GraduateThesis.ApplicationCore.Repository;
 using GraduateThesis.ApplicationCore.WebAttributes;
@@ -311,7 +312,7 @@ public abstract class WebControllerBase<TSubRepository, TInput, TOutput, T_ID> :
     [NonAction]
     protected async Task<IActionResult> ExportResult(RecordFilter recordFilter, ExportMetadata exportMetadata)
     {
-        return View(await _subRepository.ExportAsync(recordFilter, exportMetadata));
+        return File(await _subRepository.ExportAsync(recordFilter, exportMetadata), ContentTypeConsts.XLSX);
     }
 
     [NonAction]

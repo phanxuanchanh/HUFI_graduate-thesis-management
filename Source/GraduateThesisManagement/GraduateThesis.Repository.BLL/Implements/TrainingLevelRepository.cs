@@ -1,4 +1,5 @@
-﻿using GraduateThesis.ApplicationCore.Repository;
+﻿using GraduateThesis.ApplicationCore.Enums;
+using GraduateThesis.ApplicationCore.Repository;
 using GraduateThesis.ApplicationCore.Uuid;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DAL;
@@ -15,6 +16,7 @@ public class TrainingLevelRepository : SubRepository<TrainingLevel, TrainingLeve
         : base(context, context.TrainingLevels)
     {
         _context = context;
+        GenerateUidOptions = UidOptions.ShortUid;
     }
 
     protected override void ConfigureIncludes()

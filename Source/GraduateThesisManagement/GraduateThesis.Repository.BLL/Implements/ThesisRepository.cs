@@ -5,13 +5,11 @@ using GraduateThesis.ApplicationCore.Uuid;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DAL;
 using GraduateThesis.Repository.DTO;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
 using X.PagedList;
 
@@ -93,14 +91,31 @@ public class ThesisRepository : SubRepository<Thesis, ThesisInput, ThesisOutput,
         };
     }
 
-    public async Task<DataResponse> DoThesisRegisterAsync(ThesisRegisterInput thesisRegisterInput)
+    public override async Task<ThesisOutput> GetAsync(string id)
+    {
+        ThesisOutput thesis = await base.GetAsync(id);
+
+        thesis.CriticalLecturer = await _context.CounterArgumentResults.Include(i => i.Lecture)
+            .Where(c => c.ThesisId == id && c.IsDeleted == false)
+            .Select(s => new FacultyStaffOutput { Id = s.Lecture.Id, FullName = s.Lecture.FullName })
+            .SingleOrDefaultAsync();
+
+        thesis.ThesisSupervisor = await _context.ThesisSupervisors.Include(i => i.Lecture)
+            .Where(t => t.ThesisId == id && t.IsDeleted == false)
+            .Select(s => new FacultyStaffOutput { Id = s.Lecture.Id, FullName = s.Lecture.FullName })
+            .SingleOrDefaultAsync();
+
+        return thesis;
+    }
+
+    public async Task<DataResponse> RegisterThesisAsync(ThesisRegistrationInput thesisRegistrationInput)
     {
         IDbContextTransaction dbContextTransaction = null;
         try
         {
             dbContextTransaction = _context.Database.BeginTransaction();
 
-            Thesis thesis = await _context.Theses.FindAsync(thesisRegisterInput.ThesisId);
+            Thesis thesis = await _context.Theses.FindAsync(thesisRegistrationInput.ThesisId);
             if (thesis == null)
                 return new DataResponse { Status = DataResponseStatus.NotFound };
 
@@ -109,8 +124,8 @@ public class ThesisRepository : SubRepository<Thesis, ThesisInput, ThesisOutput,
             StudentThesisGroup studentThesisGroup = new StudentThesisGroup
             {
                 Id = groupId,
-                Name = thesisRegisterInput.GroupName,
-                Description = thesisRegisterInput.GroupDescription,
+                Name = thesisRegistrationInput.GroupName,
+                Description = thesisRegistrationInput.GroupDescription,
                 StudentQuantity = 0
             };
 
@@ -121,7 +136,7 @@ public class ThesisRepository : SubRepository<Thesis, ThesisInput, ThesisOutput,
             await _context.SaveChangesAsync();
 
             List<StudentThesisGroupDetail> thesisGroupDetails = new List<StudentThesisGroupDetail>();
-            string[] studentIdList = thesisRegisterInput.StudentIdList.Split(';');
+            string[] studentIdList = thesisRegistrationInput.StudentIdList.Split(';');
 
             foreach (string studentId in studentIdList)
             {
@@ -219,4 +234,16 @@ public class ThesisRepository : SubRepository<Thesis, ThesisInput, ThesisOutput,
     }
 
    
+
+    public async Task<DataResponse> CheckMaxStudentNumberAsync(string thesisId, int currentStudentNumber)
+    {
+        Thesis thesis = await _context.Theses.FindAsync(thesisId);
+        if (thesis == null)
+            return new DataResponse { Status = DataResponseStatus.NotFound };
+
+        if (currentStudentNumber > thesis.MaxStudentNumber)
+            return new DataResponse { Status = DataResponseStatus.Failed };
+
+        return new DataResponse { Status = DataResponseStatus.Success };
+    }
 }

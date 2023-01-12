@@ -1,4 +1,5 @@
-﻿using GraduateThesis.ApplicationCore.Repository;
+﻿using GraduateThesis.ApplicationCore.Enums;
+using GraduateThesis.ApplicationCore.Repository;
 using GraduateThesis.ApplicationCore.Uuid;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DAL;
@@ -15,11 +16,12 @@ public class TrainingFormRepository : SubRepository<TrainingForm, TrainingFormIn
         : base(context, context.TrainingForms)
     {
         _context = context;
+        GenerateUidOptions = UidOptions.ShortUid;
     }
 
     protected override void ConfigureIncludes()
     {
-        _genericRepository.IncludeMany(i => i.Theses);
+        IncludeMany(i => i.Theses);
     }
 
     protected override void ConfigureSelectors()

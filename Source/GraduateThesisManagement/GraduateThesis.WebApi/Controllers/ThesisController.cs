@@ -30,18 +30,18 @@ public class ThesisController : ApiControllerBase<IThesisRepository, ThesisInput
         throw new System.NotImplementedException();
     }
 
-    [Route("do-thesis-register")]
-    [HttpPost]
-    public async Task<IActionResult> DoThesisRegister(ThesisRegisterInput thesisRegisterInput)
-    {
-        if (ModelState.IsValid)
-        {
-            DataResponse dataResponse = await _thesisRepository.DoThesisRegisterAsync(thesisRegisterInput);
+    //[Route("do-thesis-register")]
+    //[HttpPost]
+    //public async Task<IActionResult> DoThesisRegister(ThesisRegisterInput thesisRegisterInput)
+    //{
+    //    if (ModelState.IsValid)
+    //    {
+    //        DataResponse dataResponse = await _thesisRepository.DoThesisRegisterAsync(thesisRegisterInput);
 
-            return Ok(dataResponse);
-        }
-        return Ok(new { Status = "DoAgain" });
-    }
+    //        return Ok(dataResponse);
+    //    }
+    //    return Ok(new { Status = "DoAgain" });
+    //}
 
     public override Task<IActionResult> Export(ExportMetadata exportMetadata)
     {
