@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="~/mazer-main/vendors/perfect-scrollbar/perfect-scrollbar.css">
     <link rel="stylesheet" href="~/mazer-main/vendors/bootstrap-icons/bootstrap-icons.css">
     <link rel="stylesheet" href="~/mazer-main/css/app.css">
+    <link rel="stylesheet" href="~/mazer-main/vendors/simple-datatables/style.css">
     <link rel="shortcut icon" href="~/mazer-main/images/favicon.svg" type="image/x-icon">
 
     @await RenderSectionAsync("Styles", required: false)
@@ -30,10 +31,9 @@
             @await Component.InvokeAsync("AdminLayout_Footer")
         </div>
     </div>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/mazer-main/vendors/perfect-scrollbar/perfect-scrollbar.min.js"></script>
     <script src="~/mazer-main/js/bootstrap.bundle.min.js"></script>
-    <script src="~/mazer-main/vendors/apexcharts/apexcharts.js"></script>
-    <script src="~/mazer-main/js/pages/dashboard.js"></script>
     <script src="~/mazer-main/js/main.js"></script>
 
     @await RenderSectionAsync("Scripts", required: false)

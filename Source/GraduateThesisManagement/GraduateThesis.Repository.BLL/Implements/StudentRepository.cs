@@ -1,12 +1,13 @@
-﻿using GraduateThesis.ApplicationCore.Enums;
+﻿using GraduateThesis.ApplicationCore.Email;
+using GraduateThesis.ApplicationCore.Enums;
 using GraduateThesis.ApplicationCore.Hash;
 using GraduateThesis.ApplicationCore.Models;
 using GraduateThesis.ApplicationCore.Repository;
+using GraduateThesis.ExtensionMethods;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DAL;
 using GraduateThesis.Repository.DTO;
 using Microsoft.EntityFrameworkCore;
-using NPOI.SS.Formula.Functions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,6 +19,8 @@ public class StudentRepository : SubRepository<Student, StudentInput, StudentOut
 {
     private HufiGraduateThesisContext _context;
 
+    public IEmailService EmailService { get; set; }
+
     internal StudentRepository(HufiGraduateThesisContext context)
         : base(context, context.Students)
     {
@@ -26,7 +29,7 @@ public class StudentRepository : SubRepository<Student, StudentInput, StudentOut
 
     protected override void ConfigureIncludes()
     {
-        _genericRepository.IncludeMany(i => i.StudentClass);
+        IncludeMany(i => i.StudentClass);
     }
 
     protected override void ConfigureSelectors()
@@ -153,24 +156,66 @@ public class StudentRepository : SubRepository<Student, StudentInput, StudentOut
 
     public AccountVerificationModel ForgotPassword(ForgotPasswordModel forgotPasswordModel)
     {
-        throw new NotImplementedException();
+        Student student = _context.Students
+           .Where(f => f.Email == forgotPasswordModel.Email && f.IsDeleted == false)
+           .SingleOrDefault();
+
+        if (student == null)
+            return new AccountVerificationModel { AccountStatus = AccountStatus.NotFound };
+
+        Random random = new Random();
+        student.VerificationCode = random.NextString(24);
+        _context.SaveChanges();
+
+        EmailService.Send(
+            student.Email, 
+            "Khôi phục mật khẩu", 
+            $"Mã xác nhận của bạn là: {student.VerificationCode}"
+        );
+
+        return new AccountVerificationModel
+        {
+            AccountStatus = AccountStatus.Success,
+            Email = forgotPasswordModel.Email
+        };
     }
 
-    public Task<AccountVerificationModel> ForgotPasswordAsync(ForgotPasswordModel forgotPasswordModel)
+    public async Task<AccountVerificationModel> ForgotPasswordAsync(ForgotPasswordModel forgotPasswordModel)
     {
-        throw new NotImplementedException();
+        Student student = await _context.Students
+           .Where(f => f.Email == forgotPasswordModel.Email && f.IsDeleted == false)
+           .SingleOrDefaultAsync();
+
+        if (student == null)
+            return new AccountVerificationModel { AccountStatus = AccountStatus.NotFound };
+
+        Random random = new Random();
+        student.VerificationCode = random.NextString(24);
+        await _context.SaveChangesAsync();
+
+        EmailService.Send(
+            student.Email,
+            "Khôi phục mật khẩu",
+            $"Mã xác nhận của bạn là: {student.VerificationCode}"
+        );
+
+        return new AccountVerificationModel
+        {
+            AccountStatus = AccountStatus.Success,
+            Email = forgotPasswordModel.Email
+        };
     }
 
     public async Task<StudentThesisOutput> GetStudentThesisAsync(string studentId)
     {
-        StudentThesisGroup studentThesisGroup = await _context.StudentThesisGroupDetails
+        ThesisGroup thesisGroup = await _context.ThesisGroupDetails
             .Include(i => i.StudentThesisGroup)
-            .Where(s => s.StudentId == studentId).Select(s => new StudentThesisGroup
+            .Where(s => s.StudentId == studentId).Select(s => new ThesisGroup
             {
 
             }).SingleOrDefaultAsync();
 
-        List<StudentOutput> students = await _context.StudentThesisGroupDetails
+        List<StudentOutput> students = await _context.ThesisGroupDetails
             .Where(s => s.StudentId == studentId).Include(i => i.Student)
             .Select(s => new StudentOutput
             {
@@ -216,19 +261,61 @@ public class StudentRepository : SubRepository<Student, StudentInput, StudentOut
 
     public NewPasswordModel VerifyAccount(AccountVerificationModel accountVerificationModel)
     {
-        throw new NotImplementedException();
+        Student student = _context.Students
+            .Where(
+                s => s.Email == accountVerificationModel.Email 
+                && s.VerificationCode == accountVerificationModel.VerificationCode 
+                && s.IsDeleted == false
+            ).SingleOrDefault();
+
+        if (student == null)
+            return new NewPasswordModel { AccountStatus = AccountStatus.NotFound };
+
+        if (student.VerificationCode != accountVerificationModel.VerificationCode)
+            return new NewPasswordModel
+            {
+                AccountStatus = AccountStatus.Failed,
+                Email = student.Email,
+            };
+
+        return new NewPasswordModel
+        {
+            AccountStatus = AccountStatus.Success,
+            Email = student.Email,
+        };
     }
 
-    public Task<NewPasswordModel> VerifyAccountAsync(AccountVerificationModel accountVerificationModel)
+    public async Task<NewPasswordModel> VerifyAccountAsync(AccountVerificationModel accountVerificationModel)
     {
-        throw new NotImplementedException();
+        Student student = await _context.Students
+            .Where(
+                s => s.Email == accountVerificationModel.Email
+                && s.VerificationCode == accountVerificationModel.VerificationCode
+                && s.IsDeleted == false
+            ).SingleOrDefaultAsync();
+
+        if (student == null)
+            return new NewPasswordModel { AccountStatus = AccountStatus.NotFound };
+
+        if (student.VerificationCode != accountVerificationModel.VerificationCode)
+            return new NewPasswordModel
+            {
+                AccountStatus = AccountStatus.Failed,
+                Email = student.Email,
+            };
+
+        return new NewPasswordModel
+        {
+            AccountStatus = AccountStatus.Success,
+            Email = student.Email,
+        };
     }
 
     public async Task<object> SearchForThesisRegAsync(string keyword)
     {
         List<Student> students = await _context.Theses.Where(t => t.IsDeleted == false)
             .Join(
-                _context.StudentThesisGroupDetails.Where(gd => gd.IsCompleted == true),
+                _context.ThesisGroupDetails.Where(gd => gd.IsCompleted == true),
                 thesis => thesis.ThesisGroupId, groupDetail => groupDetail.StudentThesisGroupId,
                 (thesis, groupDetail) => new { StudentId = groupDetail.StudentId }
             ).Join(
@@ -253,7 +340,7 @@ public class StudentRepository : SubRepository<Student, StudentInput, StudentOut
             }).ToListAsync();
     }
 
-    public async Task<object> GetObjAsync(string studentId)
+    public async Task<object> GetForThesisRegAsync(string studentId)
     {
         return await _context.Students.Where(s => s.Id == studentId && s.IsDeleted == false)
             .Select(s => new

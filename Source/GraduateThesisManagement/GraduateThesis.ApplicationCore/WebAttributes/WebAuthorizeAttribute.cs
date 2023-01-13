@@ -1,12 +1,16 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using GraduateThesis.ApplicationCore.Models;
 using GraduateThesis.ApplicationCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Controllers;
+using GraduateThesis.ApplicationCore.Context;
+using GraduateThesis.ApplicationCore.Models;
+
+#nullable disable
 
 namespace GraduateThesis.ApplicationCore.WebAttributes;
 
 [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class)]
-public class WebAuthorizeAttribute : Attribute, IAuthorizationFilter
+public class WebAuthorizeAttribute : Attribute, IAsyncAuthorizationFilter
 {
     private string _role;
 
@@ -15,15 +19,22 @@ public class WebAuthorizeAttribute : Attribute, IAuthorizationFilter
         _role = role;    
     }
 
-    public void OnAuthorization(AuthorizationFilterContext context)
+    public async Task OnAuthorizationAsync(AuthorizationFilterContext context)
     {
-        AccountSessionManager accountSessionManager = new AccountSessionManager(context.HttpContext);
-        AccountSession? accountSession = accountSessionManager.GetAccountSession(); 
+        ControllerActionDescriptor actionDescriptor = (context.ActionDescriptor as ControllerActionDescriptor);
 
-        if (accountSession == null)
-            context.Result = new RedirectToActionResult("ShowUnauthorize", "Authorization", null);
+        AppDbContext dbContext = AppDbContext.CreateContext();
+        IRoleManager roleManager = new RoleManager(dbContext);
+        IAccountManager accountManager = new AccountManager(dbContext);
 
-        if (accountSession != null && _role != accountSession.Role)
+        accountManager.SetHttpContext(context.HttpContext);
+        AccountSession accountSession = accountManager.GetSession();
+
+        bool isValid = await roleManager.IsValidAsync(accountSession.UserId, actionDescriptor.ActionName, actionDescriptor.ControllerName);
+        if (!isValid)
+        {
             context.Result = new RedirectToActionResult("ShowUnauthorize", "Authorization", null);
+        }
     }
+
 }

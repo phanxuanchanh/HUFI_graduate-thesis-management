@@ -35,7 +35,9 @@ public partial class Student
 
     public bool IsDeleted { get; set; }
 
+    public string VerificationCode { get; set; }
+
     public virtual StudentClass StudentClass { get; set; }
 
-    public virtual ICollection<StudentThesisGroupDetail> StudentThesisGroupDetails { get; } = new List<StudentThesisGroupDetail>();
+    public virtual ICollection<ThesisGroupDetail> ThesisGroupDetails { get; } = new List<ThesisGroupDetail>();
 }

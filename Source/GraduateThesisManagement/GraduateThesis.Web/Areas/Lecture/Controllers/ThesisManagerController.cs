@@ -8,17 +8,18 @@ using GraduateThesis.Common.WebAttributes;
 using GraduateThesis.ApplicationCore.WebAttributes;
 using GraduateThesis.ApplicationCore.Models;
 using GraduateThesis.ApplicationCore.AppController;
+using GraduateThesis.Repository.DAL;
 
 namespace GraduateThesis.Web.Areas.Lecture.Controllers
 {
     [Area("Lecture")]
     [Route("lecture/thesis-manager")]
-    //[WebAuthorize(AccountRole.Lecture)]
+    //[WebAuthorize("")]
     //[AccountInfo(typeof(FacultyStaffOutput))]
     public class ThesisManagerController : WebControllerBase<IThesisRepository, ThesisInput, ThesisOutput, string>
     {
         private ITopicRepository _topicRepository;
-        private IStudentThesisGroupRepository _studentThesisGroupRepository;
+        private IThesisGroupRepository _studentThesisGroupRepository;
         private ITrainingFormRepository _trainingFormRepository;
         private IFacultyStaffRepository _facultyStaffRepository;
         private ITrainingLevelRepository _trainingLevelRepository;
@@ -29,7 +30,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
             : base(repository.ThesisRepository)
         {
             _thesisRepository = repository.ThesisRepository;
-            _studentThesisGroupRepository = repository.StudentThesisGroupRepository;
+            _studentThesisGroupRepository = repository.ThesisGroupRepository;
             _trainingFormRepository = repository.TrainingFormRepository;
             _trainingLevelRepository = repository.TrainingLevelRepository;
             _facultyStaffRepository = repository.FacultyStaffRepository;
@@ -45,7 +46,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
                 ViewData["TopicList"] = new SelectList(topicClasses, "Id", "Name");
 
                 List<StudentThesisGroupOutput> StudentThesisGrouClasses = await _studentThesisGroupRepository.GetListAsync(50);
-                ViewData["StudentThesisGrouList"] = new SelectList(StudentThesisGrouClasses, "Id", "Name");
+                ViewData["StudentThesisGroupList"] = new SelectList(StudentThesisGrouClasses, "Id", "Name");
 
                 List<TrainingFormOutput> trainingFormsClass = await _trainingFormRepository.GetListAsync(50);
                 ViewData["TrainingFormList"] = new SelectList(trainingFormsClass, "Id", "Name");
@@ -147,6 +148,44 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
         {
             throw new NotImplementedException();
         }
+        [Route("list-thesis")]
+        [HttpGet]
+        [PageName(Name = "Danh sách đề tài xét duyệt")]
+        public async Task<IActionResult> GetApprovalThesis()
+        {
+            List<ThesisOutput> thesisOutputs = await _thesisRepository.GetApprovalThesisAsync();
+            return View(thesisOutputs);
+        }
+        [Route("approve-thesis/{thesisId}")]
+        [HttpGet]
+        [PageName(Name = "Xét duyệt đề tài")]
+
+        public async Task<IActionResult> ApprovalThesis([Required] string thesisId)
+        {
+            return await GetDetailsResult(thesisId);
+        }
+
+        [Route("approve-thesis/{thesisId}")]
+        [HttpPost]
+        [PageName(Name = "Xét duyệt đề tài")]
+
+        public async Task<IActionResult> ApproveThesis([Required] string thesisId)
+        {
+            DataResponse dataResponse = await _thesisRepository.ApprovalThesisAsync(thesisId);
+            AddTempData(dataResponse);
+            return RedirectToAction("ApprovalThesis",new { thesisId= thesisId });
+        }
+        [Route("reject-thesis/{thesisId}")]
+        [HttpPost]
+        [PageName(Name = "Từ chối xét duyệt đề tài")]
+        public async Task<IActionResult> RejectThesis([Required] ThesisInput thesisInput, string thesisId)
+        {
+            DataResponse dataResponse = await _thesisRepository.RejectThesisAsync(thesisInput, thesisId);
+            AddTempData(dataResponse);
+            return RedirectToAction("ApprovalThesis", new { thesisId = thesisId });
+
+        }
+
     }
 }
 

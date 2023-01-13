@@ -4,113 +4,191 @@ using GraduateThesis.ApplicationCore.Models;
 using GraduateThesis.Common.WebAttributes;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DTO;
+using GraduateThesis.WebExtensions;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
+using static Microsoft.Extensions.Logging.EventSource.LoggingEventSource;
+using X.PagedList;
 
 namespace GraduateThesis.Web.Areas.Administrator.Controllers;
 
 [Area("Administrator")]
 [Route("admin/app-role-manager")]
-public class AppRoleManagerController : WebControllerBase
+public class AppRoleManagerController : WebControllerBase<IAppRoleRepository, AppRoleInput, AppRoleOutput, string>
 {
-    private IAppRoleRepository _appRolesRepository;
+    private IAppRoleRepository _appRoleRepository;
+    private IFacultyStaffRepository _facultyStaffRepository;
 
-    public AppRoleManagerController(IRepository repository)
+    public AppRoleManagerController(IRepository repository) 
+        : base(repository.AppRolesRepository)
     {
-        _appRolesRepository = repository.AppRolesRepository;
+        _appRoleRepository = repository.AppRolesRepository;
+        _facultyStaffRepository = repository.FacultyStaffRepository;
     }
 
     [Route("list")]
     [HttpGet]
     [PageName(Name = "Danh sách quyền")]
-    public async Task<IActionResult> Index(string keyword = "")
+    public override async Task<IActionResult> Index(int page = 1, int pageSize = 10, string orderBy = "", string orderOptions = "ASC", string keyword = "")
     {
-        return View();
+        return await IndexResult(page, pageSize, orderBy, orderOptions, keyword);
+    }
+
+    public override Task<IActionResult> GetTrash(int count = 50)
+    {
+        throw new NotImplementedException();
     }
 
     [Route("details/{id}")]
     [HttpGet]
     [PageName(Name = "Chi tiết quyền")]
-    public async Task<IActionResult> Details([Required] string id)
+    public override async Task<IActionResult> Details([Required] string id)
     {
-        AppRoleOutput appRolesOutput = await _appRolesRepository.GetAsync(id);
-        if (appRolesOutput == null)
-            return RedirectToAction("Index");
-
-        return View(appRolesOutput);
+        return await GetDetailsResult(id);
     }
 
     [Route("create")]
     [HttpGet]
     [PageName(Name = "Tạo mới quyền")]
-    public async Task<ActionResult> Create()
+    public override async Task<IActionResult> Create()
     {
-        return View();
+        return await CreateResult();
     }
 
     [Route("create")]
     [HttpPost]
     [PageName(Name = "Tạo mới quyền")]
-    public async Task<IActionResult> Create(AppRoleInput appRolesInput)
+    public override async Task<IActionResult> Create(AppRoleInput input)
     {
-        if (ModelState.IsValid)
-        {
-            DataResponse<AppRoleOutput> dataResponse = await _appRolesRepository.CreateAsync(appRolesInput);
-            AddViewData(dataResponse);
-            return View(appRolesInput);
-        }
-
-        AddViewData(DataResponseStatus.InvalidData);
-        return View(appRolesInput);
+        return await CreateResult(input);
     }
 
     [Route("edit/{id}")]
     [HttpGet]
     [PageName(Name = "Chỉnh sửa quyền")]
-    public async Task<IActionResult> Edit([Required] string id)
+    public override async Task<IActionResult> Edit([Required] string id)
     {
-
-        AppRoleOutput appRolesOutput = await _appRolesRepository.GetAsync(id);
-        if (appRolesOutput == null)
-            return RedirectToAction("Index");
-
-        return View(appRolesOutput);
+        return await EditResult(id);
     }
 
     [Route("edit/{id}")]
     [HttpPost]
-    [PageName(Name = "Chỉnh sửa đề tài khóa luận")]
-    public async Task<IActionResult> Edit([Required] string id, AppRoleInput appRolesInput)
+    [PageName(Name = "Chỉnh sửa quyền")]
+    public override async Task<IActionResult> Edit([Required] string id, AppRoleInput input)
     {
-       
-
-        if (ModelState.IsValid)
-        {
-            AppRoleOutput appRolesOutput = await _appRolesRepository.GetAsync(id);
-            if (appRolesOutput == null)
-                return RedirectToAction("Index");
-
-            DataResponse<AppRoleOutput> dataResponse = await _appRolesRepository.UpdateAsync(id, appRolesInput);
-
-            AddViewData(dataResponse);
-            return View(appRolesInput);
-        }
-
-        AddViewData(DataResponseStatus.InvalidData);
-        return View(appRolesInput);
+        return await EditResult(id, input);
     }
 
-    [Route("delete/{id}")]
+    [Route("batch-delete/{id}")]
     [HttpPost]
-    public async Task<IActionResult> Delete([Required] string id)
+    public override Task<IActionResult> BatchDelete([Required] string id)
     {
-        AppRoleOutput appRolesOutput = await _appRolesRepository.GetAsync(id);
-        if (appRolesOutput == null)
+        throw new NotImplementedException();
+    }
+
+    [Route("restore/{id}")]
+    [HttpPost]
+    public override Task<IActionResult> Restore([Required] string id)
+    {
+        throw new NotImplementedException();
+    }
+
+    [Route("force-delete/{id}")]
+    [HttpPost]
+    public override Task<IActionResult> ForceDelete([Required] string id)
+    {
+        throw new NotImplementedException();
+    }
+
+    [NonAction]
+    public override Task<IActionResult> Export()
+    {
+        throw new NotImplementedException();
+    }
+
+    [NonAction]
+    public override Task<IActionResult> Import()
+    {
+        throw new NotImplementedException();
+    }
+
+    [NonAction]
+    public override Task<IActionResult> Import([FromForm] IFormFile formFile)
+    {
+        throw new NotImplementedException();
+    }
+
+    [Route("grant/{roleId}")]
+    [HttpGet]
+    [PageName(Name = "Gán quyền cho tài khoản")]
+    public async Task<IActionResult> Grant(string roleId, int page = 1, int pageSize = 10, string keyword = "")
+    {
+        AppRoleOutput appRole = await _appRoleRepository.GetAsync(roleId);
+        if (appRole == null)
             return RedirectToAction("Index");
 
-        DataResponse dataResponse = await _appRolesRepository.BatchDeleteAsync(id);
+        Pagination<FacultyStaffOutput> pagination = await _facultyStaffRepository
+            .GetPgnHasNotRoleIdAsync(roleId, page, pageSize, keyword);
 
-        AddTempData(dataResponse);
-        return RedirectToAction("Index");
+        StaticPagedList<FacultyStaffOutput> pagedList = pagination.ToStaticPagedList();
+        
+        ViewData["PagedList"] = pagedList;
+        ViewData["Keyword"] = keyword;
+        ViewData["Role"] = appRole;
+
+        return View();
+    }
+
+    [Route("grant/{roleId}")]
+    [HttpPost]
+    public async Task<IActionResult> Grant(AppUserRoleInput appUserRoleInput)
+    {
+        if (ModelState.IsValid)
+        {
+            DataResponse dataResponse = await _appRoleRepository.GrantAsync(appUserRoleInput);
+
+            AddTempData(dataResponse);
+            return RedirectToAction("Grant", new { roleId = appUserRoleInput.RoleId });
+        }
+
+        AddTempData(DataResponseStatus.InvalidData);
+        return RedirectToAction("Grant", new { roleId = appUserRoleInput.RoleId });
+    }
+
+    [Route("revoke/{roleId}")]
+    [HttpGet]
+    [PageName(Name = "Thu hồi quyền của tài khoản")]
+    public async Task<IActionResult> Revoke(string roleId, int page = 1, int pageSize = 10, string keyword = "")
+    {
+        AppRoleOutput appRole = await _appRoleRepository.GetAsync(roleId);
+        if (appRole == null)
+            return RedirectToAction("Index");
+
+        Pagination<FacultyStaffOutput> pagination = await _facultyStaffRepository
+            .GetPgnHasRoleIdAsync(roleId, page, pageSize, keyword);
+
+        StaticPagedList<FacultyStaffOutput> pagedList = pagination.ToStaticPagedList();
+
+        ViewData["PagedList"] = pagedList;
+        ViewData["Keyword"] = keyword;
+        ViewData["Role"] = appRole;
+
+        return View();
+    }
+
+    [Route("revoke/{roleId}")]
+    [HttpPost]
+    public async Task<IActionResult> Revoke(AppUserRoleInput appUserRoleInput)
+    {
+        if (ModelState.IsValid)
+        {
+            DataResponse dataResponse = await _appRoleRepository.RevokeAsync(appUserRoleInput);
+
+            AddTempData(dataResponse);
+            return RedirectToAction("Revoke", new { roleId = appUserRoleInput.RoleId });
+        }
+
+        AddTempData(DataResponseStatus.InvalidData);
+        return RedirectToAction("Revoke", new { roleId = appUserRoleInput.RoleId });
     }
 }

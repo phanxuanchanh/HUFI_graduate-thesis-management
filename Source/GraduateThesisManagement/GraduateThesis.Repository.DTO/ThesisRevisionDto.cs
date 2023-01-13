@@ -52,7 +52,7 @@ namespace GraduateThesis.Repository.DTO
             public DateTime DeletedAt { get; set; }
 
 
-            public ThesisOutput thesis { get; set; }
+            public ThesisOutput Thesis { get; set; }
 
 
         }

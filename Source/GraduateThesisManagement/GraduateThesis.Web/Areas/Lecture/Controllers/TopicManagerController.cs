@@ -6,11 +6,13 @@ using GraduateThesis.Common.WebAttributes;
 using GraduateThesis.ApplicationCore.Models;
 using GraduateThesis.ApplicationCore.Enums;
 using GraduateThesis.ApplicationCore.AppController;
+using GraduateThesis.ApplicationCore.WebAttributes;
 
 namespace GraduateThesis.Web.Areas.Lecture.Controllers;
 
 [Area("Lecture")]
 [Route("lecture/topic-manager")]
+[WebAuthorize("")]
 public class TopicManagerController : WebControllerBase<ITopicRepository, TopicInput, TopicOutput, string>
 {
     private readonly ITopicRepository _topicRepository;
