@@ -3,7 +3,6 @@ using GraduateThesis.ApplicationCore.Authorization;
 using GraduateThesis.ApplicationCore.Email;
 using GraduateThesis.ApplicationCore.Enums;
 using GraduateThesis.ApplicationCore.Models;
-using GraduateThesis.ApplicationCore.WebAttributes;
 using GraduateThesis.Common.WebAttributes;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DTO;
@@ -108,5 +107,13 @@ public class StudentAccountController : WebControllerBase
         DataResponse dataResponse = await _studentThesisGroupRepository.RefuseApprovalStudentThesisGroupAsync(StudentThesisGroupId);
         AddTempData(dataResponse);
         return RedirectToAction("YourStudentThesisGroup");
+    }
+
+    [Route("profiles-in-view")]
+    [HttpGet]
+    [PageName(Name = "Thông tin sinh viên")]
+    public IActionResult ProfilesView()
+    {
+        return View();
     }
 }
