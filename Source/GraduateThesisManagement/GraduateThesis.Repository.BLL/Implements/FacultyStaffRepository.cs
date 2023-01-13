@@ -1,4 +1,6 @@
-﻿using GraduateThesis.ApplicationCore.Enums;
+﻿using GraduateThesis.ApplicationCore.Email;
+using GraduateThesis.ApplicationCore.Enums;
+using GraduateThesis.ApplicationCore.Hash;
 using GraduateThesis.ApplicationCore.Models;
 using GraduateThesis.ApplicationCore.Repository;
 using GraduateThesis.ExtensionMethods;
@@ -16,6 +18,8 @@ namespace GraduateThesis.Repository.BLL.Implements;
 public class FacultyStaffRepository : SubRepository<FacultyStaff, FacultyStaffInput, FacultyStaffOutput, string>, IFacultyStaffRepository
 {
     private HufiGraduateThesisContext _context;
+
+    public IEmailService EmailService { get; set; }
 
     internal FacultyStaffRepository(HufiGraduateThesisContext context)
         : base(context, context.FacultyStaffs)
@@ -58,59 +62,60 @@ public class FacultyStaffRepository : SubRepository<FacultyStaff, FacultyStaffIn
         };
     }
 
-
-    public ForgotPasswordModel CreateNewPassword(NewPasswordModel newPasswordModel)
+    public async Task<ForgotPasswordModel> CreateNewPasswordAsync(NewPasswordModel newPasswordModel)
     {
-        throw new NotImplementedException();
-    }
+        FacultyStaff facultyStaff = await _context.FacultyStaffs
+           .Where(f => f.Email == newPasswordModel.Email && f.IsDeleted == false)
+           .SingleOrDefaultAsync();
 
-    public Task<ForgotPasswordModel> CreateNewPasswordAsync(NewPasswordModel newPasswordModel)
-    {
-        throw new NotImplementedException();
-    }
+        if (facultyStaff == null)
+            return new ForgotPasswordModel
+            {
+                Status = AccountStatus.NotFound,
+                Message = "Không tìm thấy tài khoản này!"
+            };
 
-    public AccountVerificationModel ForgotPassword(ForgotPasswordModel forgotPasswordModel)
-    {
-        bool checkExists = _context.FacultyStaffs
-           .Any(f => f.Email == forgotPasswordModel.Email && f.IsDeleted == false);
+        facultyStaff.Salt = HashFunctions.GetMD5($"{facultyStaff.Id}|{facultyStaff.FullName}|{DateTime.Now}");
+        facultyStaff.Password = BCrypt.Net.BCrypt.HashPassword($"{newPasswordModel.Password}>>>{facultyStaff.Salt}");
 
-        if (!checkExists)
-            return new AccountVerificationModel { AccountStatus = AccountStatus.NotFound };
+        await _context.SaveChangesAsync();
 
-        return new AccountVerificationModel
+        return new ForgotPasswordModel
         {
-            AccountStatus = AccountStatus.Success,
-            Email = forgotPasswordModel.Email
+            Status = AccountStatus.Success,
+            Message = "Đã đổi mật khẩu thành công, hãy thực hiện đăng nhập lại để truy cập vào hệ thống!"
         };
     }
 
     public async Task<AccountVerificationModel> ForgotPasswordAsync(ForgotPasswordModel forgotPasswordModel)
     {
-        bool checkExists = await _context.FacultyStaffs
-           .AnyAsync(f => f.Email == forgotPasswordModel.Email && f.IsDeleted == false);
+        FacultyStaff facultyStaff = await _context.FacultyStaffs
+           .Where(f => f.Email == forgotPasswordModel.Email && f.IsDeleted == false)
+           .SingleOrDefaultAsync();
 
-        if (!checkExists)
-            return new AccountVerificationModel { AccountStatus = AccountStatus.NotFound };
+        if (facultyStaff == null)
+            return new AccountVerificationModel {
+                Status = AccountStatus.NotFound,
+                Message = "Không tìm thấy tài khoản này!"
+            };
+
+        Random random = new Random();
+        facultyStaff.VerificationCode = random.NextString(24);
+        facultyStaff.CodeExpTime = DateTime.Now.AddMinutes(5);
+        await _context.SaveChangesAsync();
+
+        EmailService.Send(
+            facultyStaff.Email,
+            "Khôi phục mật khẩu",
+            $"Mã xác nhận của bạn là: {facultyStaff.VerificationCode}"
+        );
 
         return new AccountVerificationModel
         {
-            AccountStatus = AccountStatus.Success,
+            Status = AccountStatus.Success,
+            Message = "Thực hiện bước 1 của quá trình lấy lại mật khẩu thành công!",
             Email = forgotPasswordModel.Email
         };
-    }
-
-    public SignInResultModel SignIn(SignInModel signInModel)
-    {
-        FacultyStaff facultyStaff = _context.FacultyStaffs.Find(signInModel.Code);
-        if (facultyStaff == null)
-            return new SignInResultModel { Status = SignInStatus.NotFound };
-
-        string passwordAndSalt = $"{signInModel.Password}>>>{facultyStaff.Salt}";
-
-        if (!BCrypt.Net.BCrypt.Verify(passwordAndSalt, facultyStaff.Password))
-            return new SignInResultModel { Status = SignInStatus.WrongPassword };
-
-        return new SignInResultModel { Status = SignInStatus.Success };
     }
 
     public async Task<SignInResultModel> SignInAsync(SignInModel signInModel)
@@ -127,14 +132,35 @@ public class FacultyStaffRepository : SubRepository<FacultyStaff, FacultyStaffIn
         return new SignInResultModel { Status = SignInStatus.Success };
     }
 
-    public NewPasswordModel VerifyAccount(AccountVerificationModel accountVerificationModel)
+    public async Task<NewPasswordModel> VerifyAccountAsync(AccountVerificationModel accountVerificationModel)
     {
-        throw new NotImplementedException();
-    }
+        FacultyStaff facultyStaff = await _context.FacultyStaffs
+            .Where(f => f.Email == accountVerificationModel.Email && f.IsDeleted == false)
+            .SingleOrDefaultAsync();
 
-    public Task<NewPasswordModel> VerifyAccountAsync(AccountVerificationModel accountVerificationModel)
-    {
-        throw new NotImplementedException();
+        if (facultyStaff == null)
+            return new NewPasswordModel { 
+                Status = AccountStatus.NotFound,
+                Message = "Không tìm thấy tài khoản này!"
+            };
+        
+        if (accountVerificationModel.VerificationCode != facultyStaff.VerificationCode)
+            return new NewPasswordModel { 
+                Status = AccountStatus.Failed,
+                Message = "Mã xác thực không trùng khớp!"
+            };
+
+        DateTime currentDatetime = DateTime.Now;
+        if (facultyStaff.CodeExpTime < currentDatetime)
+            return new NewPasswordModel {
+                Status = AccountStatus.Failed,
+                Message = "Mã xác nhận đã hết hạn!"
+            };
+
+        return new NewPasswordModel { 
+            Status = AccountStatus.Success,
+            Message = "Thực hiện bước 2 của quá trình lấy lại mật khẩu thành công!",
+        };
     }
 
     public async Task<Pagination<FacultyStaffOutput>> GetPgnHasRoleIdAsync(string roleId, int page, int pageSize, string keyword)

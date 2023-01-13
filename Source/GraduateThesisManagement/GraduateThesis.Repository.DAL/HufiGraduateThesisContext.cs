@@ -311,6 +311,7 @@ public partial class HufiGraduateThesisContext : DbContext
                 .HasMaxLength(50);
             entity.Property(e => e.Avatar).HasMaxLength(50);
             entity.Property(e => e.Birthday).HasColumnType("date");
+            entity.Property(e => e.CodeExpTime).HasColumnType("datetime");
             entity.Property(e => e.CreatedAt).HasColumnType("datetime");
             entity.Property(e => e.Degree)
                 .IsRequired()
@@ -461,6 +462,7 @@ public partial class HufiGraduateThesisContext : DbContext
                 .HasMaxLength(200)
                 .IsUnicode(false);
             entity.Property(e => e.Birthday).HasColumnType("date");
+            entity.Property(e => e.CodeExpTime).HasColumnType("datetime");
             entity.Property(e => e.CreatedAt).HasColumnType("datetime");
             entity.Property(e => e.DeletedAt).HasColumnType("datetime");
             entity.Property(e => e.Description).HasColumnType("ntext");

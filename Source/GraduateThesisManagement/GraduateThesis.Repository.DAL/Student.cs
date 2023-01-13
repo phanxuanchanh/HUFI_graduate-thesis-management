@@ -37,6 +37,8 @@ public partial class Student
 
     public string VerificationCode { get; set; }
 
+    public DateTime? CodeExpTime { get; set; }
+
     public virtual StudentClass StudentClass { get; set; }
 
     public virtual ICollection<ThesisGroupDetail> ThesisGroupDetails { get; } = new List<ThesisGroupDetail>();

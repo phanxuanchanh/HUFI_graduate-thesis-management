@@ -29,8 +29,9 @@ string host = smtpSection.GetValue<string>("Host");
 int port = smtpSection.GetValue<int>("Port");
 string user = smtpSection.GetValue<string>("User");
 string password = smtpSection.GetValue<string>("Password");
+bool enableSsl = smtpSection.GetValue<bool>("EnableSsl");
 
-builder.Services.AddScoped<IEmailService>(e => new SmtpService(host, port, user, password));
+builder.Services.AddScoped<IEmailService>(e => new SmtpService(host, port, user, password, enableSsl));
 builder.Services.AddScoped(typeof(IAccountManager), typeof(AccountManager));
 builder.Services.AddScoped(typeof(IRepository), typeof(Repository));
 

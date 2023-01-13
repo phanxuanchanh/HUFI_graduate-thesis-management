@@ -79,6 +79,32 @@ public class WebControllerBase : Controller
     }
 
     [NonAction]
+    protected void AddViewData(SignInStatus signInStatus)
+    {
+        ViewData["Status"] = signInStatus.ToString();
+
+        if (signInStatus == SignInStatus.Success)
+            ViewData["Message"] = "";
+        else if (signInStatus == SignInStatus.WrongPassword)
+            ViewData["Message"] = "";
+        else if (signInStatus == SignInStatus.NotFound)
+            ViewData["Message"] = "";
+        else
+            ViewData["Message"] = "";
+    }
+
+    [NonAction]
+    protected void AddViewData(AccountAuthModel accountAuthModel)
+    {
+        ViewData["Status"] = accountAuthModel.Status.ToString();
+
+        if (string.IsNullOrEmpty(accountAuthModel.Message))
+            ViewData["Message"] = "The message content has not been set!";
+        else
+            ViewData["Message"] = accountAuthModel.Message;
+    }
+
+    [NonAction]
     protected void AddTempData(SignInStatus signInStatus)
     {
         TempData["Status"] = signInStatus.ToString();
@@ -113,6 +139,17 @@ public class WebControllerBase : Controller
         {
             TempData["Message"] = signInResultModel.Message;
         }
+    }
+
+    [NonAction]
+    protected void AddTempData(AccountAuthModel accountAuthModel)
+    {
+        TempData["Status"] = accountAuthModel.Status.ToString();
+
+        if (string.IsNullOrEmpty(accountAuthModel.Message))
+            TempData["Message"] = "The message content has not been set!";
+        else
+            TempData["Message"] = accountAuthModel.Message;
     }
 
     [NonAction]

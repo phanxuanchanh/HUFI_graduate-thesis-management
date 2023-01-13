@@ -15,6 +15,7 @@ CREATE TABLE [dbo].[Students] (
   [DeletedAt] [datetime] NULL,
   [IsDeleted] [bit] NOT NULL,
   [VerificationCode] [varchar](100) NULL,
+  [CodeExpTime] [datetime] NULL,
   CONSTRAINT [PK_Students_ID] PRIMARY KEY CLUSTERED ([ID])
 )
 ON [PRIMARY]

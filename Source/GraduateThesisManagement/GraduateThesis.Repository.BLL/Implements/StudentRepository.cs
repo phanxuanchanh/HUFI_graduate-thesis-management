@@ -72,42 +72,6 @@ public class StudentRepository : SubRepository<Student, StudentInput, StudentOut
         };
     }
 
-    public override DataResponse<StudentOutput> Create(StudentInput input)
-    {
-        string salt = HashFunctions.GetMD5($"{input.Id}|{input.Name}|{DateTime.Now}");
-        Student student = new Student
-        {
-            Id = input.Id,
-            Name = input.Name,
-            Description = input.Description,
-            Email = input.Email,
-            Phone = input.Phone,
-            Address = input.Address,
-            Birthday = input.Birthday,
-            StudentClassId = input.StudentClassId,
-            Password = BCrypt.Net.BCrypt.HashPassword($"{input.Password}>>>{salt}"),
-            Salt = salt,
-            CreatedAt = DateTime.Now
-        };
-
-        _context.Students.Add(student);
-        int affected = _context.SaveChanges();
-
-        if (affected == 0)
-            return new DataResponse<StudentOutput> { Status = DataResponseStatus.Failed };
-
-        return new DataResponse<StudentOutput>
-        {
-            Status = DataResponseStatus.Success,
-            Data = new StudentOutput
-            {
-                Id = input.Id,
-                Name = input.Name,
-                Email = input.Email,
-            }
-        };
-    }
-
     public override async Task<DataResponse<StudentOutput>> CreateAsync(StudentInput input)
     {
         string salt = HashFunctions.GetMD5($"{input.Id}|{input.Name}|{DateTime.Now}");
@@ -144,39 +108,28 @@ public class StudentRepository : SubRepository<Student, StudentInput, StudentOut
         };
     }
 
-    public ForgotPasswordModel CreateNewPassword(NewPasswordModel newPasswordModel)
+    public async Task<ForgotPasswordModel> CreateNewPasswordAsync(NewPasswordModel newPasswordModel)
     {
-        throw new NotImplementedException();
-    }
-
-    public Task<ForgotPasswordModel> CreateNewPasswordAsync(NewPasswordModel newPasswordModel)
-    {
-        throw new NotImplementedException();
-    }
-
-    public AccountVerificationModel ForgotPassword(ForgotPasswordModel forgotPasswordModel)
-    {
-        Student student = _context.Students
-           .Where(f => f.Email == forgotPasswordModel.Email && f.IsDeleted == false)
-           .SingleOrDefault();
+        Student student = await _context.Students
+           .Where(s => s.Email == newPasswordModel.Email && s.IsDeleted == false)
+           .SingleOrDefaultAsync();
 
         if (student == null)
-            return new AccountVerificationModel { AccountStatus = AccountStatus.NotFound };
+            return new ForgotPasswordModel
+            {
+                Status = AccountStatus.NotFound,
+                Message = "Không tìm thấy tài khoản này!"
+            };
 
-        Random random = new Random();
-        student.VerificationCode = random.NextString(24);
-        _context.SaveChanges();
+        student.Salt = HashFunctions.GetMD5($"{student.Id}|{student.Name}|{DateTime.Now}");
+        student.Password = BCrypt.Net.BCrypt.HashPassword($"{newPasswordModel.Password}>>>{student.Salt}");
 
-        EmailService.Send(
-            student.Email, 
-            "Khôi phục mật khẩu", 
-            $"Mã xác nhận của bạn là: {student.VerificationCode}"
-        );
+        await _context.SaveChangesAsync();
 
-        return new AccountVerificationModel
+        return new ForgotPasswordModel
         {
-            AccountStatus = AccountStatus.Success,
-            Email = forgotPasswordModel.Email
+            Status = AccountStatus.Success,
+            Message = "Đã đổi mật khẩu thành công, hãy thực hiện đăng nhập lại để truy cập vào hệ thống!"
         };
     }
 
@@ -187,7 +140,10 @@ public class StudentRepository : SubRepository<Student, StudentInput, StudentOut
            .SingleOrDefaultAsync();
 
         if (student == null)
-            return new AccountVerificationModel { AccountStatus = AccountStatus.NotFound };
+            return new AccountVerificationModel {
+                Status = AccountStatus.NotFound,
+                Message = "Không tìm thấy tài khoản này!"
+            };
 
         Random random = new Random();
         student.VerificationCode = random.NextString(24);
@@ -201,7 +157,8 @@ public class StudentRepository : SubRepository<Student, StudentInput, StudentOut
 
         return new AccountVerificationModel
         {
-            AccountStatus = AccountStatus.Success,
+            Status = AccountStatus.Success,
+            Message = "Thực hiện bước 1 của quá trình lấy lại mật khẩu thành công!",
             Email = forgotPasswordModel.Email
         };
     }
@@ -231,20 +188,6 @@ public class StudentRepository : SubRepository<Student, StudentInput, StudentOut
         };
     }
 
-    public SignInResultModel SignIn(SignInModel signInModel)
-    {
-        Student student = _context.Students.Find(signInModel.Code);
-        if (student == null)
-            return new SignInResultModel { Status = SignInStatus.NotFound };
-
-        string passwordAndSalt = $"{signInModel.Password}>>>{student.Salt}";
-
-        if (!BCrypt.Net.BCrypt.Verify(passwordAndSalt, student.Password))
-            return new SignInResultModel { Status = SignInStatus.WrongPassword };
-
-        return new SignInResultModel { Status = SignInStatus.Success };
-    }
-
     public async Task<SignInResultModel> SignInAsync(SignInModel signInModel)
     {
         Student student = await _context.Students.FindAsync(signInModel.Code);
@@ -259,32 +202,6 @@ public class StudentRepository : SubRepository<Student, StudentInput, StudentOut
         return new SignInResultModel { Status = SignInStatus.Success };
     }
 
-    public NewPasswordModel VerifyAccount(AccountVerificationModel accountVerificationModel)
-    {
-        Student student = _context.Students
-            .Where(
-                s => s.Email == accountVerificationModel.Email 
-                && s.VerificationCode == accountVerificationModel.VerificationCode 
-                && s.IsDeleted == false
-            ).SingleOrDefault();
-
-        if (student == null)
-            return new NewPasswordModel { AccountStatus = AccountStatus.NotFound };
-
-        if (student.VerificationCode != accountVerificationModel.VerificationCode)
-            return new NewPasswordModel
-            {
-                AccountStatus = AccountStatus.Failed,
-                Email = student.Email,
-            };
-
-        return new NewPasswordModel
-        {
-            AccountStatus = AccountStatus.Success,
-            Email = student.Email,
-        };
-    }
-
     public async Task<NewPasswordModel> VerifyAccountAsync(AccountVerificationModel accountVerificationModel)
     {
         Student student = await _context.Students
@@ -295,19 +212,31 @@ public class StudentRepository : SubRepository<Student, StudentInput, StudentOut
             ).SingleOrDefaultAsync();
 
         if (student == null)
-            return new NewPasswordModel { AccountStatus = AccountStatus.NotFound };
+            return new NewPasswordModel { 
+                Status = AccountStatus.NotFound,
+                Message = "Không tìm thấy tài khoản này!"
+            };
 
         if (student.VerificationCode != accountVerificationModel.VerificationCode)
             return new NewPasswordModel
             {
-                AccountStatus = AccountStatus.Failed,
+                Status = AccountStatus.Failed,
+                Message = "Mã xác thực không trùng khớp!",
                 Email = student.Email,
+            };
+
+        DateTime currentDatetime = DateTime.Now;
+        if (student.CodeExpTime < currentDatetime)
+            return new NewPasswordModel
+            {
+                Status = AccountStatus.Failed,
+                Message = "Mã xác nhận đã hết hạn!"
             };
 
         return new NewPasswordModel
         {
-            AccountStatus = AccountStatus.Success,
-            Email = student.Email,
+            Status = AccountStatus.Success,
+            Message = "Thực hiện bước 2 của quá trình lấy lại mật khẩu thành công!",
         };
     }
 
