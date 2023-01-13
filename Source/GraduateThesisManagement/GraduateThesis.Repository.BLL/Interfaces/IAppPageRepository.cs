@@ -7,6 +7,5 @@ namespace GraduateThesis.Repository.BLL.Interfaces;
 
 public interface IAppPageRepository : ISubRepository<AppPageInput, AppPageOutput, string>
 {
-    Task<DataResponse> GrantAsync(AppRoleMappingInput input);
-    Task<DataResponse> RevokeAsync(AppRoleMappingInput input);
+    Task<Pagination<AppPageOutput>> GetPgnHasRoleIdAsync(string roleId, int page, int pageSize, string keyword);
 }

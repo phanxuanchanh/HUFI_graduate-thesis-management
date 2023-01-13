@@ -92,7 +92,6 @@ public class StudentAccountController : WebControllerBase
     [Route("approved-studentThesisGroup")]
     [HttpPost]
     [PageName(Name = "Vào nhóm đề tài")]
-    [WebAuthorize("")]
     public async Task<IActionResult> ApprovalStudentThesisGroupAsync([Required] string StudentThesisGroupId)
     {
         DataResponse dataResponse = await _studentThesisGroupRepository.ApprovalStudentThesisGroupAsync(StudentThesisGroupId);
@@ -104,7 +103,6 @@ public class StudentAccountController : WebControllerBase
     [Route("refuseapproved-studentThesisGroup")]
     [HttpPost]
     [PageName(Name = "Từ chối vào nhóm đề tài")]
-    [WebAuthorize("")]
     public async Task<IActionResult> RefuseApprovalStudentThesisGroupAsync([Required] string StudentThesisGroupId)
     {
         DataResponse dataResponse = await _studentThesisGroupRepository.RefuseApprovalStudentThesisGroupAsync(StudentThesisGroupId);

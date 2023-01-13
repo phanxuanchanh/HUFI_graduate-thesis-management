@@ -143,41 +143,15 @@ public class FacultyStaffRepository : SubRepository<FacultyStaff, FacultyStaffIn
         int totalItemCount = await _context.AppUserRoles
             .Where(f => f.RoleId == roleId && f.User.IsDeleted == false).CountAsync();
 
-        List<FacultyStaffOutput> onePageOfData = await _context.AppUserRoles
+        List<FacultyStaffOutput> onePageOfData = await _context.AppUserRoles.Include(i => i.User)
             .Where(f => f.RoleId == roleId && f.User.IsDeleted == false)
+            .Where(f => f.User.Id.Contains(keyword) || f.User.FullName.Contains(keyword) || f.User.Email.Contains(keyword))
             .Skip(n).Take(pageSize)
             .Select(s => new FacultyStaffOutput
             {
                 Id = s.User.Id,
                 FullName = s.User.FullName,
                 Email = s.User.Email
-            }).ToListAsync();
-
-        return new Pagination<FacultyStaffOutput>
-        {
-            Page = page,
-            PageSize = pageSize,
-            TotalItemCount = totalItemCount,
-            Items = onePageOfData
-        };
-    }
-
-    public async Task<Pagination<FacultyStaffOutput>> GetPgnHasNotRoleIdAsync(string roleId, int page, int pageSize, string keyword)
-    {
-
-
-        int n = (page - 1) * pageSize;
-        int totalItemCount = await _context.FacultyStaffs
-            .Where(f => f.IsDeleted == false).CountAsync();
-
-        List<FacultyStaffOutput> onePageOfData = await _context.FacultyStaffs
-            .Where(f => f.IsDeleted == false)
-            .Skip(n).Take(pageSize)
-            .Select(s => new FacultyStaffOutput
-            {
-                Id = s.Id,
-                FullName = s.FullName,
-                Email = s.Email
             }).ToListAsync();
 
         return new Pagination<FacultyStaffOutput>
