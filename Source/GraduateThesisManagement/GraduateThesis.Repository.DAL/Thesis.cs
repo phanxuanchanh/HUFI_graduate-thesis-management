@@ -77,7 +77,7 @@ public partial class Thesis
 
     public virtual ThesisCommitteeResult ThesisCommitteeResult { get; set; }
 
-    public virtual StudentThesisGroup ThesisGroup { get; set; }
+    public virtual ThesisGroup ThesisGroup { get; set; }
 
     public virtual ICollection<ThesisRevision> ThesisRevisions { get; } = new List<ThesisRevision>();
 

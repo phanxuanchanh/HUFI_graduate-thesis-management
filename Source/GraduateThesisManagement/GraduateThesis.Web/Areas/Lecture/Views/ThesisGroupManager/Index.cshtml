@@ -1,6 +1,4 @@
-﻿@using X.PagedList.Mvc.Core
-@using X.PagedList.Web.Common
-@model IEnumerable<StudentThesisGroupOutput>
+﻿@model IEnumerable<ThesisGroupOutput>
 @{
     IPagedList pagedInfo = (IPagedList)ViewData["PagedList"]!;
 }
@@ -89,7 +87,7 @@
                         @{
                             int count = 1;
                         }
-                        @foreach (StudentThesisGroupOutput studentThesisGroup in (IEnumerable<StudentThesisGroupOutput>)ViewData["PagedList"]!)
+                        @foreach (ThesisGroupOutput studentThesisGroup in (IEnumerable<ThesisGroupOutput>)ViewData["PagedList"]!)
                         {
                             <tr>
                                 <td>

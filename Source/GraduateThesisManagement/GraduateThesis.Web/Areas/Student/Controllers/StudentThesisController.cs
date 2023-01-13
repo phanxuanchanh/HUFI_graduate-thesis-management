@@ -14,23 +14,24 @@ namespace GraduateThesis.Web.Areas.Student.Controllers;
 
 [Area("Student")]
 [Route("student/thesis")]
-[WebAuthorize(AccountRole.Student)]
+[IsStudent]
 [AccountInfo(typeof(StudentOutput))]
 public class StudentThesisController : WebControllerBase
 {
     private IThesisRepository _thesisRepository;
     private IStudentRepository _studentRepository;
+    private IThesisGroupRepository _thesisGroupRepository;
 
     public StudentThesisController(IRepository repository)
     {
         _thesisRepository = repository.ThesisRepository;
         _studentRepository = repository.StudentRepository;
+        _thesisGroupRepository = repository.ThesisGroupRepository;
     }
 
     [Route("list")]
     [HttpGet]
     [PageName(Name = "Danh sách đề tài khóa luận")]
-    [WebAuthorize(AccountRole.Student)]
     public async Task<IActionResult> Index(int page = 1, int pageSize = 10, string orderBy = "", string orderOptions = "ASC", string keyword = "")
     {
         Pagination<ThesisOutput> pagination;
@@ -51,7 +52,6 @@ public class StudentThesisController : WebControllerBase
     [Route("details/{id}")]
     [HttpGet]
     [PageName(Name = "Xem chi tiết đề tài")]
-    [WebAuthorize(AccountRole.Student)]
     public async Task<IActionResult> Details([Required] string id)
     {
         ThesisOutput thesis = await _thesisRepository.GetAsync(id);
@@ -63,7 +63,6 @@ public class StudentThesisController : WebControllerBase
 
     [Route("check-available/{id}")]
     [HttpGet]
-    [WebAuthorize(AccountRole.Student)]
     public async Task<IActionResult> CheckAvailable([Required] string id)
     {
         ThesisOutput thesis = await _thesisRepository.GetAsync(id);
@@ -78,7 +77,6 @@ public class StudentThesisController : WebControllerBase
 
     [Route("search-students")]
     [HttpGet]
-    [WebAuthorize(AccountRole.Student)]
     public async Task<IActionResult> SearchStudents(string keyword)
     {   
         return Json(await _studentRepository.SearchForThesisRegAsync(keyword));
@@ -88,12 +86,11 @@ public class StudentThesisController : WebControllerBase
     [HttpGet]
     public async Task<IActionResult> GetStudentById(string studentId)
     {
-        return Json(await _studentRepository.GetObjAsync(studentId));
+        return Json(await _studentRepository.GetForThesisRegAsync(studentId));
     }
 
     [Route("check-max-student-number")]
     [HttpPost]
-    [WebAuthorize(AccountRole.Student)]
     public async Task<IActionResult> CheckMaxStudentNumber(string thesisId, int currentStudentNumber)
     {
         return Json(await _thesisRepository.CheckMaxStudentNumberAsync(thesisId, currentStudentNumber));
@@ -102,7 +99,6 @@ public class StudentThesisController : WebControllerBase
     [Route("register/{studentId}/{thesisId}")]
     [HttpGet]
     [PageName(Name = "Đăng ký đề tài")]
-    [WebAuthorize(AccountRole.Student)]
     public IActionResult Register([Required] string studentId, [Required] string thesisId)
     {
         ViewData["StudentId"] = studentId;
@@ -113,7 +109,6 @@ public class StudentThesisController : WebControllerBase
     [Route("register/{studentId}/{thesisId}")]
     [HttpPost]
     [PageName(Name = "Đăng ký đề tài")]
-    [WebAuthorize(AccountRole.Student)]
     public async Task<IActionResult> Register(ThesisRegistrationInput thesisRegistrationInput)
     {
         if (ModelState.IsValid)
@@ -131,10 +126,15 @@ public class StudentThesisController : WebControllerBase
         return View(thesisRegistrationInput);
     }
 
+    public async Task<IActionResult> GetThesisGroup()
+    {
+         //_thesisGroupRepository
+        return View();
+    }
+
     [Route("my-thesis/{thesisId}")]
     [HttpPost]
     [PageName(Name = "Đề tài khóa luận của bạn")]
-    [WebAuthorize(AccountRole.Student)]
     public async Task<IActionResult> GetYourThesis([Required] string thesisId)
     {
         //StudentThesisOutput studentThesis = await _thesisRepository.GetStudentThesisAsync(thesisId);
@@ -147,7 +147,6 @@ public class StudentThesisController : WebControllerBase
     [Route("submit-thesis")]
     [HttpPost]
     [PageName(Name = "Nộp đề tài")]
-    [WebAuthorize(AccountRole.Student)]
     public async Task<IActionResult> SubmitThesisAsync([Required]string thesisId, string thesisGroupId)
     {
         DataResponse dataResponse = await _thesisRepository.SubmitThesisAsync(thesisId,thesisGroupId);

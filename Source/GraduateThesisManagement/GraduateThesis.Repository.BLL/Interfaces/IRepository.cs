@@ -10,7 +10,7 @@ public interface IRepository : IDisposable
     ITopicRepository TopicRepository { get; }
     IThesisCommitteeRepository ThesisCommitteeRepository { get; }
     ICommitteeMemberRepository CommitteeMemberRepository { get; }
-    IStudentThesisGroupRepository StudentThesisGroupRepository { get; }
+    IThesisGroupRepository ThesisGroupRepository { get; }
     IFacultyRepository FacultyRepository { get; }
     IFacultyStaffRepository FacultyStaffRepository { get; }
     ITrainingFormRepository TrainingFormRepository { get; }
@@ -18,6 +18,7 @@ public interface IRepository : IDisposable
     ISpecializationRepository SpecializationRepository { get; }
     IAppRoleRepository AppRolesRepository { get; }
     IThesisRevisionRepository ThesisRevisionRepository { get; }
+    IAppPageRepository AppPageRepository { get; }
 
     int ExecuteNonQuery(FormattableString sql);
     T ExecuteScalar<T>(FormattableString sql);

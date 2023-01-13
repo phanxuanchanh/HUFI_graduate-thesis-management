@@ -64,7 +64,7 @@ public class ThesisOutput : ThesisInput
 
     public TopicOutput TopicClass { get; set; }
 
-    public StudentThesisGroupOutput StudentThesisGroup { get; set; }
+    public ThesisGroupOutput ThesisGroup { get; set; }
 
     public TrainingLevelOutput TrainingLevel { get; set; }
 

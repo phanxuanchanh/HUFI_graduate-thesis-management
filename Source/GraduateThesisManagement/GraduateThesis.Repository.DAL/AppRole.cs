@@ -19,7 +19,7 @@ public partial class AppRole
 
     public bool IsDeleted { get; set; }
 
-    public virtual ICollection<AppUserRole> AppUserRoles { get; } = new List<AppUserRole>();
+    public virtual ICollection<AppRoleMapping> AppRoleMappings { get; } = new List<AppRoleMapping>();
 
-    public virtual ICollection<FacultyStaff> FacultyStaffs { get; } = new List<FacultyStaff>();
+    public virtual ICollection<AppUserRole> AppUserRoles { get; } = new List<AppUserRole>();
 }

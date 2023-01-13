@@ -5,7 +5,10 @@ using GraduateThesis.ExtensionMethods;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DAL;
 using GraduateThesis.Repository.DTO;
+using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace GraduateThesis.Repository.BLL.Implements;
@@ -68,12 +71,32 @@ public class FacultyStaffRepository : SubRepository<FacultyStaff, FacultyStaffIn
 
     public AccountVerificationModel ForgotPassword(ForgotPasswordModel forgotPasswordModel)
     {
-        throw new NotImplementedException();
+        bool checkExists = _context.FacultyStaffs
+           .Any(f => f.Email == forgotPasswordModel.Email && f.IsDeleted == false);
+
+        if (!checkExists)
+            return new AccountVerificationModel { AccountStatus = AccountStatus.NotFound };
+
+        return new AccountVerificationModel
+        {
+            AccountStatus = AccountStatus.Success,
+            Email = forgotPasswordModel.Email
+        };
     }
 
-    public Task<AccountVerificationModel> ForgotPasswordAsync(ForgotPasswordModel forgotPasswordModel)
+    public async Task<AccountVerificationModel> ForgotPasswordAsync(ForgotPasswordModel forgotPasswordModel)
     {
-        throw new NotImplementedException();
+        bool checkExists = await _context.FacultyStaffs
+           .AnyAsync(f => f.Email == forgotPasswordModel.Email && f.IsDeleted == false);
+
+        if (!checkExists)
+            return new AccountVerificationModel { AccountStatus = AccountStatus.NotFound };
+
+        return new AccountVerificationModel
+        {
+            AccountStatus = AccountStatus.Success,
+            Email = forgotPasswordModel.Email
+        };
     }
 
     public SignInResultModel SignIn(SignInModel signInModel)
@@ -112,5 +135,57 @@ public class FacultyStaffRepository : SubRepository<FacultyStaff, FacultyStaffIn
     public Task<NewPasswordModel> VerifyAccountAsync(AccountVerificationModel accountVerificationModel)
     {
         throw new NotImplementedException();
+    }
+
+    public async Task<Pagination<FacultyStaffOutput>> GetPgnHasRoleIdAsync(string roleId, int page, int pageSize, string keyword)
+    {
+        int n = (page - 1) * pageSize;
+        int totalItemCount = await _context.AppUserRoles
+            .Where(f => f.RoleId == roleId && f.User.IsDeleted == false).CountAsync();
+
+        List<FacultyStaffOutput> onePageOfData = await _context.AppUserRoles
+            .Where(f => f.RoleId == roleId && f.User.IsDeleted == false)
+            .Skip(n).Take(pageSize)
+            .Select(s => new FacultyStaffOutput
+            {
+                Id = s.User.Id,
+                FullName = s.User.FullName,
+                Email = s.User.Email
+            }).ToListAsync();
+
+        return new Pagination<FacultyStaffOutput>
+        {
+            Page = page,
+            PageSize = pageSize,
+            TotalItemCount = totalItemCount,
+            Items = onePageOfData
+        };
+    }
+
+    public async Task<Pagination<FacultyStaffOutput>> GetPgnHasNotRoleIdAsync(string roleId, int page, int pageSize, string keyword)
+    {
+
+
+        int n = (page - 1) * pageSize;
+        int totalItemCount = await _context.FacultyStaffs
+            .Where(f => f.IsDeleted == false).CountAsync();
+
+        List<FacultyStaffOutput> onePageOfData = await _context.FacultyStaffs
+            .Where(f => f.IsDeleted == false)
+            .Skip(n).Take(pageSize)
+            .Select(s => new FacultyStaffOutput
+            {
+                Id = s.Id,
+                FullName = s.FullName,
+                Email = s.Email
+            }).ToListAsync();
+
+        return new Pagination<FacultyStaffOutput>
+        {
+            Page = page,
+            PageSize = pageSize,
+            TotalItemCount = totalItemCount,
+            Items = onePageOfData
+        };
     }
 }

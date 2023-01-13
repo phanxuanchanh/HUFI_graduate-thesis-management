@@ -26,7 +26,7 @@
                         <i class="bi bi-stack"></i>
                         <span>Hệ thống</span>
                     </a>
-                     <ul class="submenu has-sub">
+                    <ul class="submenu has-sub">
                         <li class="submenu-item ">
                             <a asp-action="ExecQuery" asp-controller="SystemManager">Chạy truy vấn</a>
                         </li>
@@ -49,6 +49,21 @@
                 </li>
 
                 <li class="sidebar-item has-sub">
+                    <a asp-action="Index" asp-controller="AppPageManager" class='sidebar-link'>
+                        <i class="bi bi-stack"></i>
+                        <span>Trang</span>
+                    </a>
+                    <ul class="submenu has-sub">
+                        <li class="submenu-item ">
+                            <a asp-action="Index" asp-controller="AppPageManager">Danh sách</a>
+                        </li>
+                        <li class="submenu-item ">
+                            <a asp-action="Trash" asp-controller="AppPageManager">Thùng rác</a>
+                        </li>
+                    </ul>
+                </li>
+
+                <li class="sidebar-item has-sub">
                     <a asp-action="Index" asp-controller="AppRoleManager" class='sidebar-link'>
                         <i class="bi bi-stack"></i>
                         <span>Quyền truy cập</span>
@@ -61,7 +76,7 @@
                             <a asp-action="Grant" asp-controller="AppRoleManager">Cấp quyền</a>
                         </li>
                         <li class="submenu-item ">
-                            <a asp-action="Grant" asp-controller="AppRoleManager">Thu hồi</a>
+                            <a asp-action="Revoke" asp-controller="AppRoleManager">Thu hồi</a>
                         </li>
                     </ul>
                 </li>

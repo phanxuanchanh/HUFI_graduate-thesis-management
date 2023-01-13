@@ -45,13 +45,15 @@ public partial class FacultyStaff
 
     public bool IsDeleted { get; set; }
 
+    public string VerificationCode { get; set; }
+
+    public virtual ICollection<AppUserRole> AppUserRoles { get; } = new List<AppUserRole>();
+
     public virtual ICollection<CommitteeMember> CommitteeMembers { get; } = new List<CommitteeMember>();
 
     public virtual ICollection<CounterArgumentResult> CounterArgumentResults { get; } = new List<CounterArgumentResult>();
 
     public virtual Faculty Faculty { get; set; }
-
-    public virtual AppRole FacultyRole { get; set; }
 
     public virtual ICollection<Thesis> Theses { get; } = new List<Thesis>();
 
