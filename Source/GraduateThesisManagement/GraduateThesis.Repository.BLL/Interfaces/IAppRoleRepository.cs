@@ -7,6 +7,8 @@ namespace GraduateThesis.Repository.BLL.Interfaces;
 
 public interface IAppRoleRepository : ISubRepository<AppRoleInput, AppRoleOutput, string>
 {
-    Task<DataResponse> GrantAsync(AppUserRoleInput input);
-    Task<DataResponse> RevokeAsync(AppUserRoleInput input);
+    Task<DataResponse> GrantToUserAsync(AppUserRoleInput input);
+    Task<DataResponse> RevokeFromUserAsync(AppUserRoleInput input);
+    Task<DataResponse> GrantToPageAsync(AppRoleMappingInput input);
+    Task<DataResponse> RevokeFromPageAsync(AppRoleMappingInput input);
 }

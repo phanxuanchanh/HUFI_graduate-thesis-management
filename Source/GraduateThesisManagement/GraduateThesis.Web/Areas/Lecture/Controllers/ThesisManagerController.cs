@@ -1,7 +1,6 @@
 ﻿using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DTO;
 using Microsoft.AspNetCore.Mvc;
-using GraduateThesis.WebExtensions;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
 using GraduateThesis.Common.WebAttributes;
@@ -13,8 +12,8 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
 {
     [Area("Lecture")]
     [Route("lecture/thesis-manager")]
-    //[WebAuthorize("")]
-    //[AccountInfo(typeof(FacultyStaffOutput))]
+    [WebAuthorize]
+    [AccountInfo(typeof(FacultyStaffOutput))]
     public class ThesisManagerController : WebControllerBase<IThesisRepository, ThesisInput, ThesisOutput, string>
     {
         private ITopicRepository _topicRepository;

@@ -14,8 +14,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers;
 
 [Area("Lecture")]
 [Route("lecture/student-manager")]
-//  [WebAuthorize("")]
-// [AccountInfo(typeof(FacultyStaffOutput))]
+[WebAuthorize]
 public class StudentManagerController : WebControllerBase<IStudentRepository, StudentInput, StudentOutput, string>
 {
     private IStudentRepository _studentRepository;
@@ -33,7 +32,6 @@ public class StudentManagerController : WebControllerBase<IStudentRepository, St
     [Route("list")]
     [HttpGet]
     [PageName(Name = "Danh sách sinh viên của khoa")]
-   // [WebAuthorize("")]
     public override async Task<IActionResult> Index(int page = 1, int pageSize = 10, string orderBy = "", string orderOptions = "ASC", string keyword = "")
     {
         return await IndexResult(page, pageSize, orderBy, orderOptions, keyword);
@@ -42,7 +40,6 @@ public class StudentManagerController : WebControllerBase<IStudentRepository, St
     [Route("details/{id}")]
     [HttpGet]
     [PageName(Name = "Chi tiết sinh viên của khoa")]
-    [WebAuthorize("")]
     public override async Task<IActionResult> Details([Required] string id)
     {
         return await GetDetailsResult(id);
@@ -51,7 +48,6 @@ public class StudentManagerController : WebControllerBase<IStudentRepository, St
     [Route("create")]
     [HttpGet]
     [PageName(Name = "Tạo mới sinh viên của khoa")]
-    [WebAuthorize("")]
     public override async Task<IActionResult> Create()
     {
         Func<Task> dependency = async () =>
@@ -66,7 +62,6 @@ public class StudentManagerController : WebControllerBase<IStudentRepository, St
     [Route("create")]
     [HttpPost]
     [PageName(Name = "Tạo mới sinh viên của khoa")]
-    [WebAuthorize("")]
     public override async Task<IActionResult> Create(StudentInput studentInput)
     {
         Func<Task> dependency = async () =>
@@ -81,7 +76,6 @@ public class StudentManagerController : WebControllerBase<IStudentRepository, St
     [Route("edit/{id}")]
     [HttpGet]
     [PageName(Name = "Chỉnh sửa thông tin sinh viên của khoa")]
-    [WebAuthorize("")]
     public override async Task<IActionResult> Edit([Required] string id)
     {
         Func<Task> dependency = async () =>
@@ -96,7 +90,6 @@ public class StudentManagerController : WebControllerBase<IStudentRepository, St
     [Route("edit/{id}")]
     [HttpPost]
     [PageName(Name = "Chỉnh sửa thông tin sinh viên của khoa")]
-    [WebAuthorize("")]
     public override async Task<IActionResult> Edit([Required] string id, StudentInput studentInput)
     {
         Func<Task> dependency = async () =>
@@ -110,7 +103,6 @@ public class StudentManagerController : WebControllerBase<IStudentRepository, St
 
     [Route("delete/{id}")]
     [HttpPost]
-    [WebAuthorize("")]
     public override async Task<IActionResult> BatchDelete([Required] string id)
     {
         return await BatchDeleteResult(id);

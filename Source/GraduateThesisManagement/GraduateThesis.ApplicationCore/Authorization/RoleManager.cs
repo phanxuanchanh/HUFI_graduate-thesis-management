@@ -19,17 +19,17 @@ public class RoleManager : IRoleManager
                 _context.AppRoles.Where(r => r.IsDeleted == false),
                 userRole => userRole.RoleId,
                 role => role.Id,
-                (userRole, role) => new { RoleId = role.Id }
+                (userRole, role) => new { UserId = userRole.UserId, RoleId = role.Id }
             ).Join(
                 _context.AppRoleMappings,
                 combined1 => combined1.RoleId,
                 roleMapping => roleMapping.RoleId,
-                (combined1, roleMapping) => new { RoleId = combined1.RoleId, PageId = roleMapping.PageId }
+                (combined1, roleMapping) => new { UserId = combined1.UserId, RoleId = combined1.RoleId, PageId = roleMapping.PageId }
             ).Join(
                 _context.AppPages.Where(p => p.ControllerName == controllerName && p.ActionName == actionName && p.IsDeleted == false),
                 combined2 => combined2.PageId,
                 page => page.Id,
-                (combined2, page) => new { page }
+                (combined2, page) => new { UserId = combined2.UserId, RoleId = combined2.RoleId, PageId = page.Id }
             ).CountAsync();
 
         return (count > 0);

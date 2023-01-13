@@ -12,11 +12,9 @@ namespace GraduateThesis.ApplicationCore.WebAttributes;
 [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class)]
 public class WebAuthorizeAttribute : Attribute, IAsyncAuthorizationFilter
 {
-    private string _role;
-
-    public WebAuthorizeAttribute(string role) : base()
+    public WebAuthorizeAttribute() : base()
     {
-        _role = role;    
+        
     }
 
     public async Task OnAuthorizationAsync(AuthorizationFilterContext context)
@@ -30,10 +28,17 @@ public class WebAuthorizeAttribute : Attribute, IAsyncAuthorizationFilter
         accountManager.SetHttpContext(context.HttpContext);
         AccountSession accountSession = accountManager.GetSession();
 
-        bool isValid = await roleManager.IsValidAsync(accountSession.UserId, actionDescriptor.ActionName, actionDescriptor.ControllerName);
+        if(accountSession == null)
+        {
+            context.Result = new RedirectToActionResult("ShowUnauthorize", "Authorization", null);
+            return;
+        }
+
+        bool isValid = await roleManager.IsValidAsync(accountSession.UserId, actionDescriptor.ControllerName, actionDescriptor.ActionName);
         if (!isValid)
         {
             context.Result = new RedirectToActionResult("ShowUnauthorize", "Authorization", null);
+            return;
         }
     }
 

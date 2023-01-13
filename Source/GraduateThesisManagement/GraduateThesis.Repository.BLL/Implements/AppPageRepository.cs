@@ -6,6 +6,8 @@ using GraduateThesis.Repository.DAL;
 using GraduateThesis.Repository.DTO;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace GraduateThesis.Repository.BLL.Implements;
@@ -51,90 +53,30 @@ public class AppPageRepository : SubRepository<AppPage, AppPageInput, AppPageOut
         };
     }
 
-    public async Task<DataResponse> GrantAsync(AppRoleMappingInput input)
+    public async Task<Pagination<AppPageOutput>> GetPgnHasRoleIdAsync(string roleId, int page, int pageSize, string keyword)
     {
-        bool checkRolesExists = await _context.AppRoles
-            .AnyAsync(r => r.Id == input.RoleId && r.IsDeleted == false);
-        if (!checkRolesExists)
-            return new DataResponse
+        int n = (page - 1) * pageSize;
+        int totalItemCount = await _context.AppRoleMappings
+            .Where(rm => rm.RoleId == roleId && rm.Page.IsDeleted == false).CountAsync();
+
+        List<AppPageOutput> onePageOfData = await _context.AppRoleMappings.Include(i => i.Page)
+            .Where(rm => rm.RoleId == roleId && rm.Page.IsDeleted == false)
+            .Where(rm => rm.Page.Id.Contains(keyword) || rm.Page.PageName.Contains(keyword) || rm.Page.ControllerName.Contains(keyword) || rm.Page.ActionName.Contains(keyword))
+            .Skip(n).Take(pageSize)
+            .Select(s => new AppPageOutput
             {
-                Status = DataResponseStatus.NotFound,
-                Message = "Không tìm thấy quyền có Id này!"
-            };
+                Id = s.Page.Id,
+                PageName = s.Page.PageName,
+                ControllerName = s.Page.ControllerName,
+                ActionName = s.Page.ActionName
+            }).ToListAsync();
 
-        bool checkPageExists = await _context.AppPages
-            .AnyAsync(p => p.Id == input.PageId && p.IsDeleted == false);
-        if (!checkPageExists)
-            return new DataResponse
-            {
-                Status = DataResponseStatus.NotFound,
-                Message = "Không tìm thấy trang có Id này!"
-            };
-
-        bool checkExists = await _context.AppRoleMappings
-            .AnyAsync(rm => rm.RoleId == input.RoleId && rm.PageId == input.PageId);
-
-        if (checkExists)
-            return new DataResponse
-            {
-                Status = DataResponseStatus.AlreadyExists,
-                Message = "Đã gán quyền với trang này, không thể thực hiện gán trùng!"
-            };
-
-        AppRoleMapping appRoleMapping = new AppRoleMapping
+        return new Pagination<AppPageOutput>
         {
-            RoleId = input.RoleId,
-            PageId = input.PageId,
-            CreatedAt = DateTime.Now
-        };
-
-        await _context.AppRoleMappings.AddAsync(appRoleMapping);
-        await _context.SaveChangesAsync();
-
-        return new DataResponse
-        {
-            Status = DataResponseStatus.Success,
-            Message = "Đã gán quyền cho trang thành công!"
-        };
-    }
-
-    public async Task<DataResponse> RevokeAsync(AppRoleMappingInput input)
-    {
-        bool checkRolesExists = await _context.AppRoles
-            .AnyAsync(r => r.Id == input.RoleId && r.IsDeleted == false);
-        if (!checkRolesExists)
-            return new DataResponse
-            {
-                Status = DataResponseStatus.NotFound,
-                Message = "Không tìm thấy quyền có Id này!"
-            };
-
-        bool checkPageExists = await _context.AppPages
-            .AnyAsync(p => p.Id == input.PageId && p.IsDeleted == false);
-        if (!checkPageExists)
-            return new DataResponse
-            {
-                Status = DataResponseStatus.NotFound,
-                Message = "Không tìm thấy trang có Id này!"
-            };
-
-        AppRoleMapping appRoleMapping = await _context.AppRoleMappings
-            .FindAsync(input.RoleId, input.PageId);
-
-        if (appRoleMapping == null)
-            return new DataResponse
-            {
-                Status = DataResponseStatus.AlreadyExists,
-                Message = "Không thể thu hồi quyền vì không tồn tại trong hệ thống!"
-            };
-
-        _context.AppRoleMappings.Remove(appRoleMapping);
-        await _context.SaveChangesAsync();
-
-        return new DataResponse
-        {
-            Status = DataResponseStatus.Success,
-            Message = "Đã thu hồi quyền được gán cho trang thành công!"
+            Page = page,
+            PageSize = pageSize,
+            TotalItemCount = totalItemCount,
+            Items = onePageOfData
         };
     }
 }

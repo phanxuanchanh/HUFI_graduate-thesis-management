@@ -46,12 +46,28 @@
                                         <a class="btn btn-primary btn-sm" asp-action="Edit" asp-route-id="@appRole.Id">
                                             <i class="fas fa-folder"></i> Sửa
                                         </a>
-                                        <a class="btn btn-primary btn-sm" asp-action="Grant" asp-route-roleId="@appRole.Id">
-                                            <i class="fas fa-folder"></i> Cấp quyền
-                                        </a>
-                                        <a class="btn btn-primary btn-sm" asp-action="Revoke" asp-route-roleId="@appRole.Id">
-                                            <i class="fas fa-folder"></i> Thu hồi
-                                        </a>
+                                        <div class="btn-group">
+                                            <div class="dropdown">
+                                                <button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                    Cấp quyền
+                                                </button>
+                                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" style="margin: 0px;">
+                                                    <a class="dropdown-item" asp-action="GrantToUser" asp-route-roleId="@appRole.Id">Gán quyền cho người dùng</a>
+                                                    <a class="dropdown-item" asp-action="GrantToPage" asp-route-roleId="@appRole.Id">Gán quyền vào trang</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="btn-group">
+                                            <div class="dropdown">
+                                                <button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                    Thu hồi
+                                                </button>
+                                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" style="margin: 0px;">
+                                                    <a class="dropdown-item" asp-action="RevokeFromUser" asp-route-roleId="@appRole.Id">Thu hồi quyền người dùng</a>
+                                                    <a class="dropdown-item" asp-action="RevokeFromPage" asp-route-roleId="@appRole.Id">Thu hồi quyền của trang</a>
+                                                </div>
+                                            </div>
+                                        </div>
                                         <button type="submit" form="delete_@count" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i> Xóa</button>
                                         <form asp-action="BatchDelete" asp-route-id="@appRole.Id" id="delete_@count" method="post">
                                         </form>
