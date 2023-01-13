@@ -1,21 +1,19 @@
 ﻿using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DTO;
 using Microsoft.AspNetCore.Mvc;
-using GraduateThesis.WebExtensions;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
 using GraduateThesis.Common.WebAttributes;
 using GraduateThesis.ApplicationCore.WebAttributes;
 using GraduateThesis.ApplicationCore.Models;
 using GraduateThesis.ApplicationCore.AppController;
-using GraduateThesis.Repository.DAL;
 
 namespace GraduateThesis.Web.Areas.Lecture.Controllers
 {
     [Area("Lecture")]
     [Route("lecture/thesis-manager")]
-    //[WebAuthorize("")]
-    //[AccountInfo(typeof(FacultyStaffOutput))]
+    [WebAuthorize]
+    [AccountInfo(typeof(FacultyStaffOutput))]
     public class ThesisManagerController : WebControllerBase<IThesisRepository, ThesisInput, ThesisOutput, string>
     {
         private ITopicRepository _topicRepository;
@@ -45,7 +43,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
                 List<TopicOutput> topicClasses = await _topicRepository.GetListAsync(50);
                 ViewData["TopicList"] = new SelectList(topicClasses, "Id", "Name");
 
-                List<StudentThesisGroupOutput> StudentThesisGrouClasses = await _studentThesisGroupRepository.GetListAsync(50);
+                List<ThesisGroupOutput> StudentThesisGrouClasses = await _studentThesisGroupRepository.GetListAsync(50);
                 ViewData["StudentThesisGroupList"] = new SelectList(StudentThesisGrouClasses, "Id", "Name");
 
                 List<TrainingFormOutput> trainingFormsClass = await _trainingFormRepository.GetListAsync(50);

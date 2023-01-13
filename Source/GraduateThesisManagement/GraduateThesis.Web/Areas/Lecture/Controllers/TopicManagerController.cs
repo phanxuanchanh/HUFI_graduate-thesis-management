@@ -12,7 +12,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers;
 
 [Area("Lecture")]
 [Route("lecture/topic-manager")]
-[WebAuthorize("")]
+[WebAuthorize]
 public class TopicManagerController : WebControllerBase<ITopicRepository, TopicInput, TopicOutput, string>
 {
     private readonly ITopicRepository _topicRepository;

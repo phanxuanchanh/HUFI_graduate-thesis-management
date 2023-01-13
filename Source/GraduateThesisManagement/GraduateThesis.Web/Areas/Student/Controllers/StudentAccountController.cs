@@ -3,7 +3,6 @@ using GraduateThesis.ApplicationCore.Authorization;
 using GraduateThesis.ApplicationCore.Email;
 using GraduateThesis.ApplicationCore.Enums;
 using GraduateThesis.ApplicationCore.Models;
-using GraduateThesis.ApplicationCore.WebAttributes;
 using GraduateThesis.Common.WebAttributes;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DTO;
@@ -92,7 +91,6 @@ public class StudentAccountController : WebControllerBase
     [Route("approved-studentThesisGroup")]
     [HttpPost]
     [PageName(Name = "Vào nhóm đề tài")]
-    [WebAuthorize("")]
     public async Task<IActionResult> ApprovalStudentThesisGroupAsync([Required] string StudentThesisGroupId)
     {
         DataResponse dataResponse = await _studentThesisGroupRepository.ApprovalStudentThesisGroupAsync(StudentThesisGroupId);
@@ -101,23 +99,21 @@ public class StudentAccountController : WebControllerBase
     }
 
 
-        [Route("refuseapproved-studentThesisGroup")]
-        [HttpPost]
-        [PageName(Name = "Từ chối vào nhóm đề tài")]
-        [WebAuthorize(AccountRole.Student)]
-        public async Task<IActionResult> RefuseApprovalStudentThesisGroupAsync([Required] string StudentThesisGroupId)
-        {
-            DataResponse dataResponse = await _studentThesisGroupRepository.RefuseApprovalStudentThesisGroupAsync(StudentThesisGroupId);
-            AddTempData(dataResponse);
-            return RedirectToAction("YourStudentThesisGroup");
-        }
+    [Route("refuseapproved-studentThesisGroup")]
+    [HttpPost]
+    [PageName(Name = "Từ chối vào nhóm đề tài")]
+    public async Task<IActionResult> RefuseApprovalStudentThesisGroupAsync([Required] string StudentThesisGroupId)
+    {
+        DataResponse dataResponse = await _studentThesisGroupRepository.RefuseApprovalStudentThesisGroupAsync(StudentThesisGroupId);
+        AddTempData(dataResponse);
+        return RedirectToAction("YourStudentThesisGroup");
+    }
 
-        [Route("profiles-in-view")]
-        [HttpGet]
-        [PageName(Name = "Thông tin sinh viên")]
-        public IActionResult ProfilesView()
-        {
-            return View();
-        }
+    [Route("profiles-in-view")]
+    [HttpGet]
+    [PageName(Name = "Thông tin sinh viên")]
+    public IActionResult ProfilesView()
+    {
+        return View();
     }
 }

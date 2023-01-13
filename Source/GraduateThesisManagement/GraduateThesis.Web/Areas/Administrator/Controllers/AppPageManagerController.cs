@@ -11,10 +11,12 @@ namespace GraduateThesis.Web.Areas.Administrator.Controllers;
 [Route("admin/app-page-manager")]
 public class AppPageManagerController : WebControllerBase<IAppPageRepository, AppPageInput, AppPageOutput, string>
 {
+    private IAppPageRepository _appPageRepository;
+
     public AppPageManagerController(IRepository repository) 
         : base(repository.AppPageRepository)
     {
-
+        _appPageRepository = repository.AppPageRepository;
     }
 
     [Route("batch-delete/{id}")]

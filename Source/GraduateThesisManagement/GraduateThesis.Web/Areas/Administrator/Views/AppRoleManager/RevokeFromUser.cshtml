@@ -54,7 +54,7 @@
                                     <td>@facultyStaff.Email</td>
                                     <td>
                                         <button type="submit" form="revoke_@count" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i> Thu hồi</button>
-                                        <form asp-action="Revoke" id="revoke_@count" method="post">
+                                        <form asp-action="RevokeFromUser" id="revoke_@count" method="post">
                                             <input type="hidden" name="UserId" value="@facultyStaff.Id" />
                                             <input type="hidden" name="RoleId" value="@appRole.Id" />
                                         </form>

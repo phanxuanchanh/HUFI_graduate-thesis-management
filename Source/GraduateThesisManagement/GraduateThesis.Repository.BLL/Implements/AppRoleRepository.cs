@@ -52,7 +52,7 @@ public class AppRoleRepository : SubRepository<AppRole, AppRoleInput, AppRoleOut
         };
     }
 
-    public async Task<DataResponse> GrantAsync(AppUserRoleInput input)
+    public async Task<DataResponse> GrantToUserAsync(AppUserRoleInput input)
     {
         bool checkRolesExists = await _context.AppRoles
             .AnyAsync(r => r.Id == input.RoleId && r.IsDeleted == false);
@@ -98,7 +98,7 @@ public class AppRoleRepository : SubRepository<AppRole, AppRoleInput, AppRoleOut
         };
     }
 
-    public async Task<DataResponse> RevokeAsync(AppUserRoleInput input)
+    public async Task<DataResponse> RevokeFromUserAsync(AppUserRoleInput input)
     {
         bool checkRolesExists = await _context.AppRoles
             .AnyAsync(r => r.Id == input.RoleId && r.IsDeleted == false);
@@ -135,6 +135,93 @@ public class AppRoleRepository : SubRepository<AppRole, AppRoleInput, AppRoleOut
         {
             Status = DataResponseStatus.Success,
             Message = "Đã thu hồi quyền thành công!"
+        };
+    }
+
+    public async Task<DataResponse> GrantToPageAsync(AppRoleMappingInput input)
+    {
+        bool checkRolesExists = await _context.AppRoles
+            .AnyAsync(r => r.Id == input.RoleId && r.IsDeleted == false);
+        if (!checkRolesExists)
+            return new DataResponse
+            {
+                Status = DataResponseStatus.NotFound,
+                Message = "Không tìm thấy quyền có Id này!"
+            };
+
+        bool checkPageExists = await _context.AppPages
+            .AnyAsync(p => p.Id == input.PageId && p.IsDeleted == false);
+        if (!checkPageExists)
+            return new DataResponse
+            {
+                Status = DataResponseStatus.NotFound,
+                Message = "Không tìm thấy trang có Id này!"
+            };
+
+        bool checkExists = await _context.AppRoleMappings
+            .AnyAsync(rm => rm.RoleId == input.RoleId && rm.PageId == input.PageId);
+
+        if (checkExists)
+            return new DataResponse
+            {
+                Status = DataResponseStatus.AlreadyExists,
+                Message = "Đã gán quyền với trang này, không thể thực hiện gán trùng!"
+            };
+
+        AppRoleMapping appRoleMapping = new AppRoleMapping
+        {
+            RoleId = input.RoleId,
+            PageId = input.PageId,
+            CreatedAt = DateTime.Now
+        };
+
+        await _context.AppRoleMappings.AddAsync(appRoleMapping);
+        await _context.SaveChangesAsync();
+
+        return new DataResponse
+        {
+            Status = DataResponseStatus.Success,
+            Message = "Đã gán quyền cho trang thành công!"
+        };
+    }
+
+    public async Task<DataResponse> RevokeFromPageAsync(AppRoleMappingInput input)
+    {
+        bool checkRolesExists = await _context.AppRoles
+            .AnyAsync(r => r.Id == input.RoleId && r.IsDeleted == false);
+        if (!checkRolesExists)
+            return new DataResponse
+            {
+                Status = DataResponseStatus.NotFound,
+                Message = "Không tìm thấy quyền có Id này!"
+            };
+
+        bool checkPageExists = await _context.AppPages
+            .AnyAsync(p => p.Id == input.PageId && p.IsDeleted == false);
+        if (!checkPageExists)
+            return new DataResponse
+            {
+                Status = DataResponseStatus.NotFound,
+                Message = "Không tìm thấy trang có Id này!"
+            };
+
+        AppRoleMapping appRoleMapping = await _context.AppRoleMappings
+            .FindAsync(input.RoleId, input.PageId);
+
+        if (appRoleMapping == null)
+            return new DataResponse
+            {
+                Status = DataResponseStatus.AlreadyExists,
+                Message = "Không thể thu hồi quyền vì không tồn tại trong hệ thống!"
+            };
+
+        _context.AppRoleMappings.Remove(appRoleMapping);
+        await _context.SaveChangesAsync();
+
+        return new DataResponse
+        {
+            Status = DataResponseStatus.Success,
+            Message = "Đã thu hồi quyền được gán cho trang thành công!"
         };
     }
 }

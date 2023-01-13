@@ -13,7 +13,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers;
 
 [Area("Lecture")]
 [Route("lecture/facutlystaff-manager")]
-[WebAuthorize("")]
+[WebAuthorize]
 [AccountInfo(typeof(FacultyStaffOutput))]
 public class FacultyStaffManagerController : WebControllerBase<IFacultyStaffRepository, FacultyStaffInput, FacultyStaffOutput, string>
 {
@@ -34,7 +34,6 @@ public class FacultyStaffManagerController : WebControllerBase<IFacultyStaffRepo
     [Route("list")]
     [HttpGet]
     [PageName(Name = "Danh sách giảng viên")]
-    [WebAuthorize("")]
     public override async Task<IActionResult> Index(int page = 1, int pageSize = 10, string orderBy = null!, string orderOptions = "ASC", string keyword = null!)
     {
         return await IndexResult(page, pageSize, orderBy, orderOptions, keyword);
@@ -43,7 +42,6 @@ public class FacultyStaffManagerController : WebControllerBase<IFacultyStaffRepo
     [Route("details/{id}")]
     [HttpGet]
     [PageName(Name = "Chỉnh sửa giảng viên")]
-    [WebAuthorize("")]
     public override async Task<IActionResult> Details([Required] string id)
     {
         return await GetDetailsResult(id);
@@ -52,7 +50,6 @@ public class FacultyStaffManagerController : WebControllerBase<IFacultyStaffRepo
     [Route("create")]
     [HttpGet]
     [PageName(Name = "Tạo mới giảng viên")]
-    [WebAuthorize("")]
     public override async Task<IActionResult> Create()
     {
         Func<Task> dependency = async () =>
@@ -69,7 +66,6 @@ public class FacultyStaffManagerController : WebControllerBase<IFacultyStaffRepo
 
     [Route("create")]
     [HttpPost]
-    [WebAuthorize("")]
     public override async Task<IActionResult> Create(FacultyStaffInput facultyStaffInput)
     {
         Func<Task> dependency = async () =>
@@ -87,7 +83,6 @@ public class FacultyStaffManagerController : WebControllerBase<IFacultyStaffRepo
     [Route("edit/{id}")]
     [HttpGet]
     [PageName(Name = "Chỉnh sửa giảng viên")]
-    [WebAuthorize("")]
     public override async Task<IActionResult> Edit([Required] string id)
     {
         Func<Task> dependency = async () =>
@@ -104,7 +99,6 @@ public class FacultyStaffManagerController : WebControllerBase<IFacultyStaffRepo
 
     [Route("edit/{id}")]
     [HttpPost]
-    [WebAuthorize("")]
     public override async Task<IActionResult> Edit([Required] string id, FacultyStaffInput facultyStaffInput)
     {
         Func<Task> dependency = async () =>
@@ -121,7 +115,6 @@ public class FacultyStaffManagerController : WebControllerBase<IFacultyStaffRepo
 
     [Route("delete/{id}")]
     [HttpPost]
-    [WebAuthorize("")]
     public override async Task<IActionResult> BatchDelete([Required] string id)
     {
         return await BatchDeleteResult(id);

@@ -1,5 +1,6 @@
 ﻿using GraduateThesis.ApplicationCore.AppController;
 using GraduateThesis.ApplicationCore.Models;
+using GraduateThesis.ApplicationCore.WebAttributes;
 using GraduateThesis.Common.WebAttributes;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DTO;
@@ -10,6 +11,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers;
 
 [Area("Lecture")]
 [Route("lecture/student-class-manager")]
+[WebAuthorize]
 public class StudentClassManagerController : WebControllerBase<IStudentClassRepository, StudentClassInput, StudentClassOutput, string>
 {
     public StudentClassManagerController(IRepository repository) 
