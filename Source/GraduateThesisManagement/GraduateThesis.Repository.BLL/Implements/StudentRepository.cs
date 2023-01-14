@@ -192,23 +192,29 @@ public class StudentRepository : SubRepository<Student, StudentInput, StudentOut
     {
         Student student = await _context.Students.FindAsync(signInModel.Code);
         if (student == null)
-            return new SignInResultModel { Status = SignInStatus.NotFound };
+            return new SignInResultModel { 
+                Status = AccountStatus.NotFound,
+                Message = "Không tìm thấy tài khoản này!"
+            };
 
         string passwordAndSalt = $"{signInModel.Password}>>>{student.Salt}";
 
         if (!BCrypt.Net.BCrypt.Verify(passwordAndSalt, student.Password))
-            return new SignInResultModel { Status = SignInStatus.WrongPassword };
+            return new SignInResultModel { 
+                Status = AccountStatus.WrongPassword,
+                Message = "Mật khẩu không trùng khớp!"
+            };
 
-        return new SignInResultModel { Status = SignInStatus.Success };
+        return new SignInResultModel {
+            Status = AccountStatus.Success,
+            Message = "Đã đăng nhập vào hệ thống thành công!"
+        };
     }
 
     public async Task<NewPasswordModel> VerifyAccountAsync(AccountVerificationModel accountVerificationModel)
     {
         Student student = await _context.Students
-            .Where(
-                s => s.Email == accountVerificationModel.Email
-                && s.VerificationCode == accountVerificationModel.VerificationCode
-                && s.IsDeleted == false
+            .Where(s => s.Email == accountVerificationModel.Email && s.IsDeleted == false
             ).SingleOrDefaultAsync();
 
         if (student == null)

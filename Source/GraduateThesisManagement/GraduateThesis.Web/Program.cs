@@ -1,10 +1,10 @@
-using GraduateThesis.ApplicationCore.AppSettings;
 using GraduateThesis.ApplicationCore.Authorization;
 using GraduateThesis.ApplicationCore.Context;
 using GraduateThesis.ApplicationCore.Email;
 using GraduateThesis.Repository.BLL.Implements;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DAL;
+using GraduateThesis.Web;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.EntityFrameworkCore;
 
@@ -48,7 +48,8 @@ builder.Services.AddMvc().ConfigureApplicationPartManager(apm =>
 
 builder.Services.AddSession();
 
-AppDefaultValue.ConnectionString = connectionString;
+AppConfiguration.ConfigConnectionString(connectionString);
+AppConfiguration.ConfigDefaultMessage();
 
 var app = builder.Build();
 

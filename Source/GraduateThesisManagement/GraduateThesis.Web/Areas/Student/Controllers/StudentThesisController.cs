@@ -122,7 +122,7 @@ public class StudentThesisController : WebControllerBase
             return View(thesisRegistrationInput);
         }
 
-        AddViewData(DataResponseStatus.InvalidData);
+        AddTempData(DataResponseStatus.InvalidData);
         return View(thesisRegistrationInput);
     }
 

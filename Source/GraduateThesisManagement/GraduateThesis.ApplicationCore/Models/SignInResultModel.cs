@@ -4,8 +4,7 @@
 
 namespace GraduateThesis.ApplicationCore.Models;
 
-public class SignInResultModel
+public class SignInResultModel : AccountAuthModel
 {
-    public SignInStatus Status { get; set; }
-    public string Message { get; set; }
+
 }

@@ -46,13 +46,13 @@ public class StudentAccountController : WebControllerBase
     {
         if (!ModelState.IsValid)
         {
-            AddViewData(SignInStatus.InvalidData);
+            AddTempData(AccountStatus.InvalidData);
             return View(signInModel);
         }
 
         SignInResultModel signInResultModel = await _studentRepository.SignInAsync(signInModel);
 
-        if (signInResultModel.Status == SignInStatus.Success)
+        if (signInResultModel.Status == AccountStatus.Success)
         {
             StudentOutput student = await _studentRepository.GetAsync(signInModel.Code);
             if (string.IsNullOrEmpty(student.Avatar))
@@ -88,8 +88,7 @@ public class StudentAccountController : WebControllerBase
     {
         if (!ModelState.IsValid)
         {
-            ViewData["Status"] = "InvalidData";
-            ViewData["Message"] = "Dữ liệu nhập vào không hợp lệ!";
+            AddViewData(AccountStatus.InvalidData);
             return View(forgotPasswordModel);
         }
 
@@ -97,7 +96,10 @@ public class StudentAccountController : WebControllerBase
             .ForgotPasswordAsync(forgotPasswordModel);
 
         if (accountVerification.Status == AccountStatus.Success)
+        {
+            AddViewData(accountVerification);
             return View("Verify", accountVerification);
+        }   
 
         AddViewData(accountVerification);
         return View(forgotPasswordModel);
@@ -110,8 +112,7 @@ public class StudentAccountController : WebControllerBase
     {
         if (!ModelState.IsValid)
         {
-            ViewData["Status"] = "InvalidData";
-            ViewData["Message"] = "Dữ liệu nhập vào không hợp lệ!";
+            AddViewData(AccountStatus.InvalidData);
             return View(verificationModel);
         }
 
@@ -119,9 +120,12 @@ public class StudentAccountController : WebControllerBase
             .VerifyAccountAsync(verificationModel);
 
         if (newPasswordModel.Status == AccountStatus.Success)
+        {
+            AddViewData(newPasswordModel);
             return View("CreatePassword", newPasswordModel);
+        }
 
-        AddViewData(verificationModel);
+        AddViewData(newPasswordModel);
         return View(verificationModel);
     }
 
@@ -132,9 +136,7 @@ public class StudentAccountController : WebControllerBase
     {
         if (!ModelState.IsValid)
         {
-            ViewData["Status"] = "InvalidData";
-            ViewData["Message"] = "Dữ liệu nhập vào không hợp lệ!";
-
+            AddViewData(AccountStatus.InvalidData);
             return View(newPasswordModel);
         }
 

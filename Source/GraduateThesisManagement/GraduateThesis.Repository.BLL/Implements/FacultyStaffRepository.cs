@@ -122,14 +122,23 @@ public class FacultyStaffRepository : SubRepository<FacultyStaff, FacultyStaffIn
     {
         FacultyStaff facultyStaff = await _context.FacultyStaffs.FindAsync(signInModel.Code);
         if (facultyStaff == null)
-            return new SignInResultModel { Status = SignInStatus.NotFound };
+            return new SignInResultModel {
+                Status = AccountStatus.NotFound,
+                Message = "Không tìm thấy tài khoản này!"
+            };
 
         string passwordAndSalt = $"{signInModel.Password}>>>{facultyStaff.Salt}";
 
         if (!BCrypt.Net.BCrypt.Verify(passwordAndSalt, facultyStaff.Password))
-            return new SignInResultModel { Status = SignInStatus.WrongPassword };
+            return new SignInResultModel { 
+                Status = AccountStatus.WrongPassword,
+                Message = "Mật khẩu không trùng khớp!"
+            };
 
-        return new SignInResultModel { Status = SignInStatus.Success };
+        return new SignInResultModel {
+            Status = AccountStatus.Success,
+            Message = "Đã đăng nhập vào hệ thống thành công!"
+        };
     }
 
     public async Task<NewPasswordModel> VerifyAccountAsync(AccountVerificationModel accountVerificationModel)

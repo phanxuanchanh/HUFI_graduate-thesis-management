@@ -42,13 +42,13 @@ public class FacultyStaffAccountController : WebControllerBase
     {
         if (!ModelState.IsValid)
         {
-            AddViewData(SignInStatus.InvalidData);
+            AddViewData(AccountStatus.InvalidData);
             return View(signInModel);
         }
 
         SignInResultModel signInResultModel = await _facultyStaffRepository.SignInAsync(signInModel);
 
-        if (signInResultModel.Status == SignInStatus.Success)
+        if (signInResultModel.Status == AccountStatus.Success)
         {
             FacultyStaffOutput facultyStaff = await _facultyStaffRepository.GetAsync(signInModel.Code);
             _accountManager.SetHttpContext(HttpContext);
@@ -82,9 +82,7 @@ public class FacultyStaffAccountController : WebControllerBase
     {
         if (!ModelState.IsValid)
         {
-            ViewData["Status"] = "InvalidData";
-            ViewData["Message"] = "Dữ liệu nhập vào không hợp lệ!";
-
+            AddViewData(AccountStatus.InvalidData);
             return View(forgotPasswordModel);
         }
 
@@ -92,7 +90,11 @@ public class FacultyStaffAccountController : WebControllerBase
             .ForgotPasswordAsync(forgotPasswordModel);
 
         if (accountVerification.Status == AccountStatus.Success)
+        {
+            AddViewData(accountVerification);
             return View("Verify", accountVerification);
+        }
+            
 
         AddViewData(accountVerification);
         return View(forgotPasswordModel);
@@ -105,9 +107,7 @@ public class FacultyStaffAccountController : WebControllerBase
     {
         if (!ModelState.IsValid)
         {
-            ViewData["Status"] = "InvalidData";
-            ViewData["Message"] = "Dữ liệu nhập vào không hợp lệ!";
-
+            AddViewData(AccountStatus.InvalidData);
             return View(verificationModel);
         }
 
@@ -115,9 +115,12 @@ public class FacultyStaffAccountController : WebControllerBase
             .VerifyAccountAsync(verificationModel);
 
         if (newPasswordModel.Status == AccountStatus.Success)
+        {
+            AddViewData(newPasswordModel);
             return View("CreatePassword", newPasswordModel);
+        }
 
-        AddViewData(verificationModel);
+        AddViewData(newPasswordModel);
         return View(verificationModel);
     }
 
@@ -128,9 +131,7 @@ public class FacultyStaffAccountController : WebControllerBase
     {
         if (!ModelState.IsValid)
         {
-            ViewData["Status"] = "InvalidData";
-            ViewData["Message"] = "Dữ liệu nhập vào không hợp lệ!";
-
+            AddViewData(AccountStatus.InvalidData);
             return View(newPasswordModel);
         }
 
