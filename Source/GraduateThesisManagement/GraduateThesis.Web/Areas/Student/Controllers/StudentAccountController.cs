@@ -31,22 +31,23 @@ public class StudentAccountController : WebControllerBase
         _studentRepository.EmailService = emailService;
     }
 
-    [Route("sign-in-view")]
+    [Route("sign-in")]
     [HttpGet]
     [PageName(Name = "Trang đăng nhập dành cho sinh viên")]
-    public IActionResult LoadSignInView()
+    public IActionResult SignIn()
     {
         return View(new SignInModel());
     }
 
     [Route("sign-in")]
     [HttpPost]
+    [PageName(Name = "Trang đăng nhập dành cho sinh viên")]
     public async Task<IActionResult> SignIn(SignInModel signInModel)
     {
         if (!ModelState.IsValid)
         {
-            AddTempData(SignInStatus.InvalidData);
-            return RedirectToAction("LoadSignInView");
+            AddViewData(SignInStatus.InvalidData);
+            return View(signInModel);
         }
 
         SignInResultModel signInResultModel = await _studentRepository.SignInAsync(signInModel);
@@ -68,16 +69,86 @@ public class StudentAccountController : WebControllerBase
             return RedirectToAction("Index", "StudentThesis");
         }
 
-        AddTempData(signInResultModel);
-        return RedirectToAction("LoadSignInView");
+        AddViewData(signInResultModel);
+        return View(signInModel);
     }
 
-    [Route("forgot-password-view")]
+    [Route("forgot-password")]
     [HttpGet]
-    [PageName(Name = "Trang lấy lại mật khẩu sinh viên")]
-    public IActionResult ForgotPasswordView()
+    [PageName(Name = "Lấy lại mật khẩu")]
+    public IActionResult ForgotPassword()
     {
-        return View();
+        return View(new ForgotPasswordModel());
+    }
+
+    [Route("forgot-password")]
+    [HttpPost]
+    [PageName(Name = "Lấy lại mật khẩu")]
+    public async Task<IActionResult> ForgotPassword(ForgotPasswordModel forgotPasswordModel)
+    {
+        if (!ModelState.IsValid)
+        {
+            ViewData["Status"] = "InvalidData";
+            ViewData["Message"] = "Dữ liệu nhập vào không hợp lệ!";
+            return View(forgotPasswordModel);
+        }
+
+        AccountVerificationModel accountVerification = await _studentRepository
+            .ForgotPasswordAsync(forgotPasswordModel);
+
+        if (accountVerification.Status == AccountStatus.Success)
+            return View("Verify", accountVerification);
+
+        AddViewData(accountVerification);
+        return View(forgotPasswordModel);
+    }
+
+    [Route("verify")]
+    [HttpPost]
+    [PageName(Name = "Lấy lại mật khẩu")]
+    public async Task<IActionResult> Verify(AccountVerificationModel verificationModel)
+    {
+        if (!ModelState.IsValid)
+        {
+            ViewData["Status"] = "InvalidData";
+            ViewData["Message"] = "Dữ liệu nhập vào không hợp lệ!";
+            return View(verificationModel);
+        }
+
+        NewPasswordModel newPasswordModel = await _studentRepository
+            .VerifyAccountAsync(verificationModel);
+
+        if (newPasswordModel.Status == AccountStatus.Success)
+            return View("CreatePassword", newPasswordModel);
+
+        AddViewData(verificationModel);
+        return View(verificationModel);
+    }
+
+    [Route("create-password")]
+    [HttpPost]
+    [PageName(Name = "Lấy lại mật khẩu")]
+    public async Task<IActionResult> CreatePassword(NewPasswordModel newPasswordModel)
+    {
+        if (!ModelState.IsValid)
+        {
+            ViewData["Status"] = "InvalidData";
+            ViewData["Message"] = "Dữ liệu nhập vào không hợp lệ!";
+
+            return View(newPasswordModel);
+        }
+
+        ForgotPasswordModel forgotPasswordModel = await _studentRepository
+            .CreateNewPasswordAsync(newPasswordModel);
+
+        if (forgotPasswordModel.Status == AccountStatus.Success)
+        {
+            AddTempData(forgotPasswordModel);
+            return RedirectToAction("SignIn");
+        }
+
+        AddViewData(forgotPasswordModel);
+        return View(newPasswordModel);
     }
 
     [Route("sign-out")]

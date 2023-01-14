@@ -16,7 +16,9 @@ CREATE TABLE [dbo].[Students] (
   [IsDeleted] [bit] NOT NULL,
   [VerificationCode] [varchar](100) NULL,
   [CodeExpTime] [datetime] NULL,
-  CONSTRAINT [PK_Students_ID] PRIMARY KEY CLUSTERED ([ID])
+  CONSTRAINT [PK_Students_ID] PRIMARY KEY CLUSTERED ([ID]),
+  UNIQUE ([Phone]),
+  UNIQUE ([Email])
 )
 ON [PRIMARY]
 TEXTIMAGE_ON [PRIMARY]

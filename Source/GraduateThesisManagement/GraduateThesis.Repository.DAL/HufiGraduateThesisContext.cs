@@ -451,6 +451,10 @@ public partial class HufiGraduateThesisContext : DbContext
         {
             entity.HasKey(e => e.Id).HasName("PK_Students_ID");
 
+            entity.HasIndex(e => e.Phone, "UQ__Students__5C7E359E8767B4AD").IsUnique();
+
+            entity.HasIndex(e => e.Email, "UQ__Students__A9D105343DDCBD48").IsUnique();
+
             entity.Property(e => e.Id)
                 .HasMaxLength(50)
                 .IsUnicode(false)
@@ -713,7 +717,6 @@ public partial class HufiGraduateThesisContext : DbContext
 
             entity.HasOne(d => d.Student).WithMany(p => p.ThesisGroupDetails)
                 .HasForeignKey(d => d.StudentId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_ThesisGroupDetails_Students_ID");
 
             entity.HasOne(d => d.StudentThesisGroup).WithMany(p => p.ThesisGroupDetails)
