@@ -9,11 +9,14 @@ public class SmtpService : IEmailService
     private string _user;
     private bool disposedValue;
 
-    public SmtpService(string host, int port, string user, string password)
+    public SmtpService(string host, int port, string user, string password, bool enableSsl)
     {
         _smtp = new SmtpClient();
+        _smtp.UseDefaultCredentials = false;
+
         _smtp.Host = host;
         _smtp.Port = port;
+        _smtp.EnableSsl = enableSsl;
         _smtp.Credentials = new NetworkCredential(user, password);
 
         _user = user;

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace GraduateThesis.Repository.BLL.Interfaces;
 
-public interface IStudentRepository : ISubRepository<StudentInput, StudentOutput, string>, IAccountPattern
+public interface IStudentRepository : ISubRepository<StudentInput, StudentOutput, string>, IAsyncAccountPattern
 {
     IEmailService EmailService { get; set; }
 

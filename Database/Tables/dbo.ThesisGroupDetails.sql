@@ -15,7 +15,7 @@ TEXTIMAGE_ON [PRIMARY]
 GO
 
 ALTER TABLE [dbo].[ThesisGroupDetails]
-  ADD CONSTRAINT [FK_ThesisGroupDetails_Students_ID] FOREIGN KEY ([StudentId]) REFERENCES [dbo].[Students] ([ID])
+  ADD CONSTRAINT [FK_ThesisGroupDetails_Students_ID] FOREIGN KEY ([StudentId]) REFERENCES [dbo].[Students] ([ID]) ON DELETE CASCADE ON UPDATE CASCADE
 GO
 
 ALTER TABLE [dbo].[ThesisGroupDetails]

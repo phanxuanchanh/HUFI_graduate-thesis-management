@@ -1,14 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using GraduateThesis.ApplicationCore.Enums;
 
 #nullable disable
 
 namespace GraduateThesis.ApplicationCore.Models;
 
-public class AccountVerificationModel
+public class AccountVerificationModel : AccountAuthModel
 {
-    public AccountStatus AccountStatus { get; set; }
-
     [Required]
     public string Email { get; set; }
 

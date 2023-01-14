@@ -1,55 +1,57 @@
-﻿
-@{
+﻿@{
     string cssClass = null!;
     string status = null!;
     string message = null!;
 
-    if(ViewData["Status"] != null){
+    if (ViewData["Status"] != null)
+    {
         status = ViewData["Status"]!.ToString()!;
         if (status == "Success")
         {
-            cssClass = "alert-success";
+            cssClass = "bg-success";
         }
-        else if(status == "InvalidData" && status == "NotFound" && status == "AlreadyExits")
+        else if (status == "InvalidData" && status == "NotFound" && status == "AlreadyExits")
         {
-            cssClass = "alert-warning";
+            cssClass = "bg-warning";
         }
-        else 
+        else
         {
-            cssClass = "alert-danger";
+            cssClass = "bg-danger";
         }
 
         message = ViewData["Message"]!.ToString()!;
     }
 
-    if(TempData["Status"] != null){
+    if (TempData["Status"] != null)
+    {
         status = TempData["Status"]!.ToString()!;
         if (status == "Success")
         {
-            cssClass = "alert-success";
+            cssClass = "bg-success";
         }
         else if (status == "InvalidData" && status == "NotFound" && status == "AlreadyExits")
         {
-            cssClass = "alert-warning";
+            cssClass = "bg-warning";
         }
         else
         {
-            cssClass = "alert-danger";
+            cssClass = "bg-danger";
         }
 
         message = TempData["Message"]!.ToString()!;
     }
 
-    if(string.IsNullOrEmpty(message)){
+    if (string.IsNullOrEmpty(message))
+    {
         message = "Nội dung thông báo chưa được thiết lập!";
     }
 }
 
-@if(status != null){
-    <section class="section">
-        <div class="alert @cssClass alert-dismissible show fade">
+@if (status != null)
+{
+    <div class="card my-5 @cssClass">
+        <div class="card-body text-white">
             @message
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
-    </section>
+    </div>
 }

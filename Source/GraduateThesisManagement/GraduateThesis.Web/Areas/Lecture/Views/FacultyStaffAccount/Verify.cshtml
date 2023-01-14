@@ -1,4 +1,4 @@
-﻿@model ForgotPasswordModel
+﻿@model AccountVerificationModel
 
 @{
     Layout = "_FacultyStaffLogLayout";
@@ -11,7 +11,8 @@
                  class="img-fluid" alt="Sample image">
         </div>
         <div class="col-md-8 col-lg-6 col-xl-4 offset-xl-1">
-            <form asp-controller="StudentAccount" asp-action="SignIn" method="post">
+            @await Component.InvokeAsync("FsLogLayout_AuthStatusArea")
+            <form asp-controller="FacultyStaffAccount" asp-action="Verify" method="post">
                 <div class="d-flex flex-row align-items-center justify-content-center justify-content-lg-start">
                     <p class="lead fw-normal mb-0 me-3">Thực hiện các bước sau đây để tạo mới mật khẩu!</p>
                 </div>
@@ -23,8 +24,15 @@
                 <div class="form-outline mb-4">
                     <label class="form-label" asp-for="Email"></label>
                     <input asp-for="Email" class="form-control form-control-lg"
-                           placeholder="Nhập vào địa chỉ email" />
+                           placeholder="Nhập vào địa chỉ email" readonly />
                     <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+
+                <div class="form-outline mb-4">
+                    <label class="form-label" asp-for="VerificationCode"></label>
+                    <input asp-for="VerificationCode" class="form-control form-control-lg"
+                           placeholder="Nhập vào mã xác nhận" />
+                    <span asp-validation-for="VerificationCode" class="text-danger"></span>
                 </div>
 
                 <div class="text-center text-lg-start mt-4 pt-2">
@@ -32,9 +40,6 @@
                             style="padding-left: 2.5rem; padding-right: 2.5rem;">
                         Bước tiếp theo
                     </button>
-                    @*<p class="small fw-bold mt-2 pt-1 mb-0">
-                    Bạn quên mật khẩu? <a href="#!" class="link-danger">Tạo mật khẩu mới</a>
-                    </p>*@
                 </div>
 
             </form>
@@ -45,12 +50,5 @@
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
-
-    @if (TempData["Status"] != null)
-    {
-        <script type="text/javascript">
-            alert('@TempData["Status"] => @TempData["Message"]');
-        </script>
     }
 }

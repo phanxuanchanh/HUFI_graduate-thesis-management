@@ -311,6 +311,7 @@ public partial class HufiGraduateThesisContext : DbContext
                 .HasMaxLength(50);
             entity.Property(e => e.Avatar).HasMaxLength(50);
             entity.Property(e => e.Birthday).HasColumnType("date");
+            entity.Property(e => e.CodeExpTime).HasColumnType("datetime");
             entity.Property(e => e.CreatedAt).HasColumnType("datetime");
             entity.Property(e => e.Degree)
                 .IsRequired()
@@ -450,6 +451,10 @@ public partial class HufiGraduateThesisContext : DbContext
         {
             entity.HasKey(e => e.Id).HasName("PK_Students_ID");
 
+            entity.HasIndex(e => e.Phone, "UQ__Students__5C7E359E8767B4AD").IsUnique();
+
+            entity.HasIndex(e => e.Email, "UQ__Students__A9D105343DDCBD48").IsUnique();
+
             entity.Property(e => e.Id)
                 .HasMaxLength(50)
                 .IsUnicode(false)
@@ -461,6 +466,7 @@ public partial class HufiGraduateThesisContext : DbContext
                 .HasMaxLength(200)
                 .IsUnicode(false);
             entity.Property(e => e.Birthday).HasColumnType("date");
+            entity.Property(e => e.CodeExpTime).HasColumnType("datetime");
             entity.Property(e => e.CreatedAt).HasColumnType("datetime");
             entity.Property(e => e.DeletedAt).HasColumnType("datetime");
             entity.Property(e => e.Description).HasColumnType("ntext");
@@ -711,7 +717,6 @@ public partial class HufiGraduateThesisContext : DbContext
 
             entity.HasOne(d => d.Student).WithMany(p => p.ThesisGroupDetails)
                 .HasForeignKey(d => d.StudentId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_ThesisGroupDetails_Students_ID");
 
             entity.HasOne(d => d.StudentThesisGroup).WithMany(p => p.ThesisGroupDetails)

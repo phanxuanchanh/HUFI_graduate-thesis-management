@@ -1,4 +1,5 @@
-﻿using GraduateThesis.ApplicationCore.Enums;
+﻿using GraduateThesis.ApplicationCore.AppSettings;
+using GraduateThesis.ApplicationCore.Enums;
 using GraduateThesis.ApplicationCore.File;
 using GraduateThesis.ApplicationCore.Models;
 using GraduateThesis.ApplicationCore.Repository;
@@ -19,100 +20,110 @@ namespace GraduateThesis.ApplicationCore.AppController;
 [HandleException]
 public class WebControllerBase : Controller
 {
+    private void SetDefaultMsgViewData(DataResponseStatus dataResponseStatus)
+    {
+        if (dataResponseStatus == DataResponseStatus.Success && !string.IsNullOrEmpty(AppDefaultValue.SuccessMsg))
+            ViewData["Message"] = AppDefaultValue.SuccessMsg;
+        else if (dataResponseStatus == DataResponseStatus.InvalidData && !string.IsNullOrEmpty(AppDefaultValue.InvalidDataMsg))
+            ViewData["Message"] = AppDefaultValue.InvalidDataMsg;
+        else if (dataResponseStatus == DataResponseStatus.NotFound && !string.IsNullOrEmpty(AppDefaultValue.NotFoundMsg))
+            ViewData["Message"] = AppDefaultValue.NotFoundMsg;
+        else if (dataResponseStatus == DataResponseStatus.HasConstraint && !string.IsNullOrEmpty(AppDefaultValue.HasConstraintMsg))
+            ViewData["Message"] = AppDefaultValue.HasConstraintMsg;
+        else if (dataResponseStatus == DataResponseStatus.Failed && !string.IsNullOrEmpty(AppDefaultValue.FailedMsg))
+            ViewData["Message"] = AppDefaultValue.FailedMsg;
+        else
+            ViewData["Message"] = "The message content has not been set!";
+    }
+
+    private void SetDefaultMsgTempData(DataResponseStatus dataResponseStatus)
+    {
+        if (dataResponseStatus == DataResponseStatus.Success && !string.IsNullOrEmpty(AppDefaultValue.SuccessMsg))
+            TempData["Message"] = AppDefaultValue.SuccessMsg;
+        else if (dataResponseStatus == DataResponseStatus.InvalidData && !string.IsNullOrEmpty(AppDefaultValue.InvalidDataMsg))
+            TempData["Message"] = AppDefaultValue.InvalidDataMsg;
+        else if (dataResponseStatus == DataResponseStatus.NotFound && !string.IsNullOrEmpty(AppDefaultValue.NotFoundMsg))
+            TempData["Message"] = AppDefaultValue.NotFoundMsg;
+        else if (dataResponseStatus == DataResponseStatus.HasConstraint && !string.IsNullOrEmpty(AppDefaultValue.HasConstraintMsg))
+            TempData["Message"] = AppDefaultValue.HasConstraintMsg;
+        else if (dataResponseStatus == DataResponseStatus.Failed && !string.IsNullOrEmpty(AppDefaultValue.FailedMsg))
+            TempData["Message"] = AppDefaultValue.FailedMsg;
+        else
+            TempData["Message"] = "The message content has not been set!";
+    }
+
+    private void SetDefaultMsgViewData(AccountStatus accountStatus)
+    {
+        if (accountStatus == AccountStatus.Success && !string.IsNullOrEmpty(AppDefaultValue.AccAuthSuccessMsg))
+            ViewData["Message"] = AppDefaultValue.AccAuthSuccessMsg;
+        else if (accountStatus == AccountStatus.InvalidData && !string.IsNullOrEmpty(AppDefaultValue.AccAuthInvalidDataMsg))
+            ViewData["Message"] = AppDefaultValue.AccAuthInvalidDataMsg;
+        else if (accountStatus == AccountStatus.NotFound && !string.IsNullOrEmpty(AppDefaultValue.AccAuthNotFoundMsg))
+            ViewData["Message"] = AppDefaultValue.AccAuthNotFoundMsg;
+        else if (accountStatus == AccountStatus.WrongPassword && !string.IsNullOrEmpty(AppDefaultValue.AccAuthWrongPwdMsg))
+            ViewData["Message"] = AppDefaultValue.AccAuthWrongPwdMsg;
+        else if (accountStatus == AccountStatus.NotActivated && !string.IsNullOrEmpty(AppDefaultValue.AccAuthNotActivatedMsg))
+            ViewData["Message"] = AppDefaultValue.AccAuthNotActivatedMsg;
+        else if (accountStatus == AccountStatus.Locked && !string.IsNullOrEmpty(AppDefaultValue.AccAuthLockedMsg))
+            ViewData["Message"] = AppDefaultValue.AccAuthLockedMsg;
+        else if (accountStatus == AccountStatus.Failed && !string.IsNullOrEmpty(AppDefaultValue.AccAuthFailedMsg))
+            ViewData["Message"] = AppDefaultValue.AccAuthFailedMsg;
+        else
+            ViewData["Message"] = "The message content has not been set!";
+    }
+
+    private void SetDefaultMsgTempData(AccountStatus accountStatus)
+    {
+        if (accountStatus == AccountStatus.Success && !string.IsNullOrEmpty(AppDefaultValue.AccAuthSuccessMsg))
+            TempData["Message"] = AppDefaultValue.AccAuthSuccessMsg;
+        else if (accountStatus == AccountStatus.InvalidData && !string.IsNullOrEmpty(AppDefaultValue.AccAuthInvalidDataMsg))
+            TempData["Message"] = AppDefaultValue.AccAuthInvalidDataMsg;
+        else if (accountStatus == AccountStatus.NotFound && !string.IsNullOrEmpty(AppDefaultValue.AccAuthNotFoundMsg))
+            TempData["Message"] = AppDefaultValue.AccAuthNotFoundMsg;
+        else if (accountStatus == AccountStatus.WrongPassword && !string.IsNullOrEmpty(AppDefaultValue.AccAuthWrongPwdMsg))
+            TempData["Message"] = AppDefaultValue.AccAuthWrongPwdMsg;
+        else if (accountStatus == AccountStatus.NotActivated && !string.IsNullOrEmpty(AppDefaultValue.AccAuthNotActivatedMsg))
+            TempData["Message"] = AppDefaultValue.AccAuthNotActivatedMsg;
+        else if (accountStatus == AccountStatus.Locked && !string.IsNullOrEmpty(AppDefaultValue.AccAuthLockedMsg))
+            TempData["Message"] = AppDefaultValue.AccAuthLockedMsg;
+        else if (accountStatus == AccountStatus.Failed && !string.IsNullOrEmpty(AppDefaultValue.AccAuthFailedMsg))
+            TempData["Message"] = AppDefaultValue.AccAuthFailedMsg;
+        else
+            TempData["Message"] = "The message content has not been set!";
+    }
+
+
     [NonAction]
     protected void AddViewData(DataResponse dataResponse)
     {
         ViewData["Status"] = dataResponse.Status.ToString();
 
         if (string.IsNullOrEmpty(dataResponse.Message))
-        {
-            if (dataResponse.Status == DataResponseStatus.Success)
-                ViewData["Message"] = "";
-            else if (dataResponse.Status == DataResponseStatus.NotFound)
-                ViewData["Message"] = "";
-            else if (dataResponse.Status == DataResponseStatus.AlreadyExists)
-                ViewData["Message"] = "";
-            else
-                ViewData["Message"] = "";
-        }
+            SetDefaultMsgViewData(dataResponse.Status);
         else
-        {
             ViewData["Message"] = dataResponse.Message;
-        }
     }
 
     [NonAction]
-    protected void AddViewData(DataResponseStatus dataResponseStatus)
+    protected void AddViewData(AccountAuthModel accountAuthModel)
     {
-        ViewData["Status"] = dataResponseStatus.ToString();
+        ViewData["Status"] = accountAuthModel.Status.ToString();
 
-        if (dataResponseStatus == DataResponseStatus.Success)
-            ViewData["Message"] = "";
-        else if (dataResponseStatus == DataResponseStatus.NotFound)
-            ViewData["Message"] = "";
-        else if (dataResponseStatus == DataResponseStatus.AlreadyExists)
-            ViewData["Message"] = "";
+        if (string.IsNullOrEmpty(accountAuthModel.Message))
+            SetDefaultMsgViewData(accountAuthModel.Status);
         else
-            ViewData["Message"] = "";
+            ViewData["Message"] = accountAuthModel.Message;
     }
 
     [NonAction]
-    protected void AddViewData(SignInResultModel signInResultModel)
+    protected void AddTempData(AccountAuthModel accountAuthModel)
     {
-        ViewData["Status"] = signInResultModel.Status.ToString();
+        TempData["Status"] = accountAuthModel.Status.ToString();
 
-        if (string.IsNullOrEmpty(signInResultModel.Message))
-        {
-            if (signInResultModel.Status == SignInStatus.Success)
-                ViewData["Message"] = "";
-            else if (signInResultModel.Status == SignInStatus.WrongPassword)
-                ViewData["Message"] = "";
-            else if (signInResultModel.Status == SignInStatus.NotFound)
-                ViewData["Message"] = "";
-            else
-                ViewData["Message"] = "";
-        }
+        if (string.IsNullOrEmpty(accountAuthModel.Message))
+            SetDefaultMsgTempData(accountAuthModel.Status);
         else
-        {
-            ViewData["Message"] = signInResultModel.Message;
-        }
-    }
-
-    [NonAction]
-    protected void AddTempData(SignInStatus signInStatus)
-    {
-        TempData["Status"] = signInStatus.ToString();
-
-        if (signInStatus == SignInStatus.Success)
-            TempData["Message"] = "";
-        else if (signInStatus == SignInStatus.WrongPassword)
-            TempData["Message"] = "";
-        else if (signInStatus == SignInStatus.NotFound)
-            TempData["Message"] = "";
-        else
-            TempData["Message"] = "";
-    }
-
-    [NonAction]
-    protected void AddTempData(SignInResultModel signInResultModel)
-    {
-        TempData["Status"] = signInResultModel.Status.ToString();
-
-        if (string.IsNullOrEmpty(signInResultModel.Message))
-        {
-            if (signInResultModel.Status == SignInStatus.Success)
-                TempData["Message"] = "";
-            else if (signInResultModel.Status == SignInStatus.WrongPassword)
-                TempData["Message"] = "";
-            else if (signInResultModel.Status == SignInStatus.NotFound)
-                TempData["Message"] = "";
-            else
-                TempData["Message"] = "";
-        }
-        else
-        {
-            TempData["Message"] = signInResultModel.Message;
-        }
+            TempData["Message"] = accountAuthModel.Message;
     }
 
     [NonAction]
@@ -121,37 +132,59 @@ public class WebControllerBase : Controller
         TempData["Status"] = dataResponse.Status.ToString();
 
         if (string.IsNullOrEmpty(dataResponse.Message))
-        {
-            if (dataResponse.Status == DataResponseStatus.Success)
-                TempData["Message"] = "";
-            else if (dataResponse.Status == DataResponseStatus.NotFound)
-                TempData["Message"] = "";
-            else if (dataResponse.Status == DataResponseStatus.AlreadyExists)
-                TempData["Message"] = "";
-            else
-                TempData["Message"] = "";
-        }
+            SetDefaultMsgTempData(dataResponse.Status);
         else
-        {
             TempData["Message"] = dataResponse.Message;
-        }
+    }
+
+
+    [NonAction]
+    protected void AddViewData(DataResponseStatus dataResponseStatus)
+    {
+        AddViewData(new DataResponse { Status = dataResponseStatus });
     }
 
     [NonAction]
     protected void AddTempData(DataResponseStatus dataResponseStatus)
     {
-        TempData["Status"] = dataResponseStatus.ToString();
-
-        if (dataResponseStatus == DataResponseStatus.Success)
-            TempData["Message"] = "";
-        else if (dataResponseStatus == DataResponseStatus.NotFound)
-            TempData["Message"] = "";
-        else if (dataResponseStatus == DataResponseStatus.AlreadyExists)
-            TempData["Message"] = "";
-        else
-            TempData["Message"] = "";
+        AddViewData(new DataResponse { Status = dataResponseStatus });
     }
 
+    [NonAction]
+    protected void AddViewData(AccountStatus accountStatus)
+    {
+        AddViewData(new AccountAuthModel { Status = accountStatus });
+    }
+
+    [NonAction]
+    protected void AddTempData(AccountStatus accountStatus)
+    {
+        AddViewData(new AccountAuthModel { Status = accountStatus });
+    }
+
+    [NonAction]
+    protected void AddViewData(DataResponseStatus dataResponseStatus, string message)
+    {
+        AddViewData(new DataResponse { Status = dataResponseStatus, Message = message });
+    }
+
+    [NonAction]
+    protected void AddTempData(DataResponseStatus dataResponseStatus, string message)
+    {
+        AddViewData(new DataResponse { Status = dataResponseStatus, Message = message });
+    }
+
+    [NonAction]
+    protected void AddViewData(AccountStatus accountStatus, string message)
+    {
+        AddViewData(new AccountAuthModel { Status = accountStatus, Message = message });
+    }
+
+    [NonAction]
+    protected void AddTempData(AccountStatus accountStatus, string message)
+    {
+        AddViewData(new AccountAuthModel { Status = accountStatus, Message = message });
+    }
 }
 
 

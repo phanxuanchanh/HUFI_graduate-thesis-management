@@ -2,5 +2,5 @@
 
 public enum AccountStatus
 {
-    Success, NotFound, Failed
+    Success, NotActivated, Locked, WrongPassword, NotFound, InvalidData, Failed
 }

@@ -47,6 +47,8 @@ public partial class FacultyStaff
 
     public string VerificationCode { get; set; }
 
+    public DateTime? CodeExpTime { get; set; }
+
     public virtual ICollection<AppUserRole> AppUserRoles { get; } = new List<AppUserRole>();
 
     public virtual ICollection<CommitteeMember> CommitteeMembers { get; } = new List<CommitteeMember>();
