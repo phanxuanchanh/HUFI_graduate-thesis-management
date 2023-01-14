@@ -6,7 +6,7 @@ using System.Collections.ObjectModel;
 
 namespace GraduateThesis.ApplicationCore.File;
 
-public class FileManager : IDisposable
+public class FileManager : IFileManager
 {
     private bool disposedValue;
 
@@ -147,5 +147,15 @@ public class FileManager : IDisposable
     {
         Dispose(disposing: true);
         GC.SuppressFinalize(this);
+    }
+
+    public void Save()
+    {
+        throw new NotImplementedException();
+    }
+
+    public void Delete()
+    {
+        throw new NotImplementedException();
     }
 }

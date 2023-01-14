@@ -22,11 +22,12 @@ public class AccountInfoAttribute : ActionFilterAttribute
     {
         Controller controller = (filterContext.Controller as Controller);
 
-        //AccountManager accountManager = new AccountManager(filterContext.HttpContext);
-        //AccountSession accountSession = accountManager.GetSession();
-        //if (accountSession == null)
-        //    throw new Exception("Session must not be null!");
+        IAccountManager accountManager = new AccountManager(null);
+        accountManager.SetHttpContext(filterContext.HttpContext);
+        AccountSession accountSession = accountManager.GetSession();
+        if (accountSession == null)
+            throw new Exception("Session must not be null!");
 
-        //controller.ViewData["AccountModel"] = JsonConvert.DeserializeObject(accountSession.AccountModel.ToString(), _type);
+        controller.ViewData["AccountModel"] = JsonConvert.DeserializeObject(accountSession.AccountModel.ToString(), _type);
     }
 }
