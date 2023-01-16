@@ -19,12 +19,16 @@
   [UpdatedAt] [datetime] NULL,
   [DeletedAt] [datetime] NULL,
   [IsDeleted] [bit] NOT NULL,
-  CONSTRAINT [PK_FacultyStaff_ID] PRIMARY KEY CLUSTERED ([ID])
+  [VerificationCode] [varchar](100) NULL,
+  [CodeExpTime] [datetime] NULL
 )
 ON [PRIMARY]
 TEXTIMAGE_ON [PRIMARY]
 GO
 
 ALTER TABLE [dbo].[FacultyStaffs]
-  ADD CONSTRAINT [FK_FacultyStaffs_Faculties_ID] FOREIGN KEY ([FacultyId]) REFERENCES [dbo].[Faculties] ([ID]) ON DELETE CASCADE
+  ADD CONSTRAINT [PK_FacultyStaff_ID] PRIMARY KEY CLUSTERED ([ID])
 GO
+
+ALTER TABLE [dbo].[FacultyStaffs]
+  ADD CONSTRAINT [FK_FacultyStaffs_Faculties_ID] FOREIGN KEY ([FacultyId]) REFERENCES [dbo].[Faculties] ([ID]) ON DELETE CASCADE

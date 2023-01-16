@@ -198,6 +198,9 @@ public class StudentAccountController : WebControllerBase
         AccountSession accountSession = _accountManager.GetSession();
         StudentOutput student = await _studentRepository.GetAsync(accountSession.UserId);
 
+        if (string.IsNullOrEmpty(student.Avatar))
+            student.Avatar = "default-male-profile.png";
+
         return View(student);
     }
 

@@ -8,7 +8,7 @@
     <ConnectionModel>
       <PropertyValue Name="OverrideMFA">false</PropertyValue>
       <PropertyValue Name="Database">aa8afe9c-7d62-4564-b477-c12e62e0f440</PropertyValue>
-      <PropertyValue Name="ConnectionString" xml:space="preserve">Data Source=DESKTOP-T2JLATV\DONGKHANH;Integrated Security=False;User ID=sa</PropertyValue>
+      <PropertyValue Name="ConnectionString" xml:space="preserve">Data Source=LAPTOP-HP-PXCHA;Integrated Security=False;User ID=sa</PropertyValue>
       <PropertyValue Name="ExecutionTimeout">0</PropertyValue>
     </ConnectionModel>
   </Connection>
@@ -556,7 +556,7 @@
               <Port>
                 <Location>
                   <X>99.9999399979934 px</X>
-                  <Y>Undefined</Y>
+                  <Y>0 px</Y>
                 </Location>
                 <Anchors>Left Right</Anchors>
                 <Align>Bottom</Align>
@@ -670,7 +670,7 @@
               </Port>
               <Port>
                 <Location>
-                  <X>Undefined</X>
+                  <X>0 px</X>
                   <Y>183.327039274924 px</Y>
                 </Location>
                 <Anchors>Top Bottom</Anchors>
@@ -1032,7 +1032,7 @@
               <Port>
                 <Location>
                   <X>56 px</X>
-                  <Y>Undefined</Y>
+                  <Y>0 px</Y>
                 </Location>
                 <Anchors>Left Right</Anchors>
                 <Align>Top</Align>
@@ -1133,7 +1133,7 @@
               </Port>
               <Port>
                 <Location>
-                  <X>Undefined</X>
+                  <X>0 px</X>
                   <Y>33.65378635816 px</Y>
                 </Location>
                 <Anchors>Top Bottom</Anchors>
@@ -1526,7 +1526,7 @@
               </Port>
               <Port>
                 <Location>
-                  <X>Undefined</X>
+                  <X>0 px</X>
                   <Y>106.00961538462 px</Y>
                 </Location>
                 <Anchors>Top Bottom</Anchors>
@@ -1609,7 +1609,7 @@
               </Port>
               <Port>
                 <Location>
-                  <X>Undefined</X>
+                  <X>0 px</X>
                   <Y>166.58653846154 px</Y>
                 </Location>
                 <Anchors>Top Bottom</Anchors>
@@ -1716,7 +1716,7 @@
               <Port>
                 <Location>
                   <X>139.5 px</X>
-                  <Y>Undefined</Y>
+                  <Y>0 px</Y>
                 </Location>
                 <Anchors>Left Right</Anchors>
                 <Align>Bottom</Align>
@@ -2611,8 +2611,8 @@
             <CustomProperties>
               <OID>155</OID>
               <Comment>156</Comment>
-              <OutModel>136</OutModel>
-              <InModel>52</InModel>
+              <OutModel>5</OutModel>
+              <InModel>33</InModel>
               <OutPort>157</OutPort>
               <InPort>158</InPort>
               <Parent>0</Parent>
@@ -2621,10 +2621,10 @@
               <Port>
                 <Location>
                   <X>0 px</X>
-                  <Y>31.75 px</Y>
+                  <Y>211.75 px</Y>
                 </Location>
                 <Anchors>Top Bottom</Anchors>
-                <Align>Left</Align>
+                <Align>Right</Align>
                 <CustomProperties>
                   <OID>157</OID>
                   <PortType>FloatAnchor</PortType>
@@ -2632,26 +2632,20 @@
               </Port>
               <Port>
                 <Location>
-                  <X>86 px</X>
-                  <Y>0 px</Y>
+                  <X>0 px</X>
+                  <Y>171.75 px</Y>
                 </Location>
-                <Anchors>Left Right</Anchors>
-                <Align>Bottom</Align>
+                <Anchors>Top Bottom</Anchors>
+                <Align>Left</Align>
                 <CustomProperties>
                   <OID>158</OID>
                   <PortType>FloatAnchor</PortType>
                 </CustomProperties>
               </Port>
             </PortAnchors>
-            <BendPoints>
-              <PointD>
-                <X>2056 px</X>
-                <Y>1071.75 px</Y>
-              </PointD>
-            </BendPoints>
             <IsManuallyRouted>false</IsManuallyRouted>
             <DbOid>
-              <Path>[HUFI_graduate-thesis].dbo.AppUserRoles.FK_AppUserRoles_Faculties_ID</Path>
+              <Path>[HUFI_graduate-thesis].dbo.Theses.FK_Theses_ThesisGroups_ID</Path>
               <TypeName>ForeignKey</TypeName>
             </DbOid>
           </Model>
@@ -2665,11 +2659,11 @@
             <PortAnchors>
               <Port xsi:type="LinkPort">
                 <Location>
-                  <X>252 px</X>
+                  <X>-293 px</X>
                   <Y>0 px</Y>
                 </Location>
                 <Anchors>None</Anchors>
-                <Align>Left</Align>
+                <Align>Right</Align>
                 <CustomProperties>
                   <OID>159</OID>
                   <PortType>FixedAnchor</PortType>
@@ -2678,16 +2672,16 @@
               </Port>
             </PortAnchors>
             <CommentOffset>
-              <X>22 px</X>
-              <Y>2 px</Y>
+              <X>176 px</X>
+              <Y>-31.75 px</Y>
             </CommentOffset>
           </Model>
           <Model xsi:type="RelationLinkModel">
             <CustomProperties>
               <OID>160</OID>
               <Comment>161</Comment>
-              <OutModel>5</OutModel>
-              <InModel>33</InModel>
+              <OutModel>136</OutModel>
+              <InModel>51</InModel>
               <OutPort>162</OutPort>
               <InPort>163</InPort>
               <Parent>0</Parent>
@@ -2696,10 +2690,10 @@
               <Port>
                 <Location>
                   <X>0 px</X>
-                  <Y>211.75 px</Y>
+                  <Y>63.5 px</Y>
                 </Location>
                 <Anchors>Top Bottom</Anchors>
-                <Align>Right</Align>
+                <Align>Left</Align>
                 <CustomProperties>
                   <OID>162</OID>
                   <PortType>FloatAnchor</PortType>
@@ -2707,20 +2701,26 @@
               </Port>
               <Port>
                 <Location>
-                  <X>0 px</X>
-                  <Y>171.75 px</Y>
+                  <X>139.5 px</X>
+                  <Y>0 px</Y>
                 </Location>
-                <Anchors>Top Bottom</Anchors>
-                <Align>Left</Align>
+                <Anchors>Left Right</Anchors>
+                <Align>Top</Align>
                 <CustomProperties>
                   <OID>163</OID>
                   <PortType>FloatAnchor</PortType>
                 </CustomProperties>
               </Port>
             </PortAnchors>
+            <BendPoints>
+              <PointD>
+                <X>2239.5 px</X>
+                <Y>1103.5 px</Y>
+              </PointD>
+            </BendPoints>
             <IsManuallyRouted>false</IsManuallyRouted>
             <DbOid>
-              <Path>[HUFI_graduate-thesis].dbo.Theses.FK_Theses_ThesisGroups_ID</Path>
+              <Path>[HUFI_graduate-thesis].dbo.AppUserRoles.FK_AppUserRoles_FacultyStaffs_ID</Path>
               <TypeName>ForeignKey</TypeName>
             </DbOid>
           </Model>
@@ -2734,11 +2734,11 @@
             <PortAnchors>
               <Port xsi:type="LinkPort">
                 <Location>
-                  <X>-293 px</X>
+                  <X>160.25 px</X>
                   <Y>0 px</Y>
                 </Location>
                 <Anchors>None</Anchors>
-                <Align>Right</Align>
+                <Align>Left</Align>
                 <CustomProperties>
                   <OID>164</OID>
                   <PortType>FixedAnchor</PortType>
@@ -2747,8 +2747,8 @@
               </Port>
             </PortAnchors>
             <CommentOffset>
-              <X>176 px</X>
-              <Y>-31.75 px</Y>
+              <X>22 px</X>
+              <Y>2 px</Y>
             </CommentOffset>
           </Model>
         </Children>
@@ -2756,8 +2756,8 @@
           <ScaleMode>Free</ScaleMode>
           <Scale>0.5</Scale>
           <Location>
-            <X>1628.8 px</X>
-            <Y>943.999999237061 px</Y>
+            <X>-1222.4 px</X>
+            <Y>-131.200000762939 px</Y>
           </Location>
         </ViewPort>
       </Model>

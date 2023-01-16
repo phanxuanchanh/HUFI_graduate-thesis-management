@@ -152,7 +152,8 @@ public class FacultyStaffAccountController : WebControllerBase
     [HttpGet]
     public IActionResult SignOutAccount()
     {
-        HttpContext.Session.SetString("account-session", "");
+        _accountManager.SetHttpContext(HttpContext);
+        _accountManager.RemoveSession();
         return RedirectToAction("Index", "Home");
     }
 }

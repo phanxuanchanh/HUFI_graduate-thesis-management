@@ -14,10 +14,10 @@
                 <div class="card mb-4 mb-xl-0">
                     <div class="card-header">Ảnh đại diện</div>
                     <div class="card-body text-center">
+                        <input type="file" name="formFile" style="display: none" />
                         <img class="img-account-profile rounded-circle mb-2" src="~/images/@Model.Avatar" alt="">
                         <div class="small font-italic text-muted mb-4">JPG or PNG no larger than 5 MB</div>
                         <button class="btn btn-primary" type="button">Cập nhật ảnh mới</button>
-                        <input type="file" name="formFile" />
                     </div>
                 </div>
             </div>
@@ -63,3 +63,12 @@
     </form>
 </div>
 <link href="~/css/profiles.css" rel="stylesheet" />
+
+@section Scripts {
+    <script>
+        function uploadAvatar(){
+
+        }
+    </script>
+
+}
