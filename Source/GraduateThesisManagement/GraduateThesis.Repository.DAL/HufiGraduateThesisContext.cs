@@ -153,12 +153,10 @@ public partial class HufiGraduateThesisContext : DbContext
 
             entity.HasOne(d => d.Role).WithMany(p => p.AppUserRoles)
                 .HasForeignKey(d => d.RoleId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_AppUserRoles_AppRoles_ID ");
 
             entity.HasOne(d => d.User).WithMany(p => p.AppUserRoles)
                 .HasForeignKey(d => d.UserId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_AppUserRoles_FacultyStaffs_ID");
         });
 
@@ -188,12 +186,10 @@ public partial class HufiGraduateThesisContext : DbContext
 
             entity.HasOne(d => d.Member).WithMany(p => p.CommitteeMembers)
                 .HasForeignKey(d => d.MemberId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_CommitteeMembers_FacultyStaffs_ID");
 
             entity.HasOne(d => d.ThesisCommittee).WithMany(p => p.CommitteeMembers)
                 .HasForeignKey(d => d.ThesisCommitteeId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_CommitteeMembers_ThesisCommittees_ID");
         });
 
@@ -223,7 +219,6 @@ public partial class HufiGraduateThesisContext : DbContext
 
             entity.HasOne(d => d.Thesis).WithMany(p => p.CommitteeMemberResults)
                 .HasForeignKey(d => d.ThesisId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_CommitteeMemberResults_Theses_ID");
         });
 
@@ -272,7 +267,6 @@ public partial class HufiGraduateThesisContext : DbContext
 
             entity.HasOne(d => d.Lecture).WithMany(p => p.CounterArgumentResults)
                 .HasForeignKey(d => d.LectureId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Counterargument_FacultyStaffs_ID");
 
             entity.HasOne(d => d.Thesis).WithOne(p => p.CounterArgumentResult)
@@ -354,7 +348,6 @@ public partial class HufiGraduateThesisContext : DbContext
 
             entity.HasOne(d => d.Faculty).WithMany(p => p.FacultyStaffs)
                 .HasForeignKey(d => d.FacultyId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_FacultyStaffs_Faculties_ID");
         });
 
@@ -381,7 +374,6 @@ public partial class HufiGraduateThesisContext : DbContext
 
             entity.HasOne(d => d.Thesis).WithMany(p => p.ImplementationPlans)
                 .HasForeignKey(d => d.ThesisId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_ImplementationPlans_Theses_ID");
         });
 
@@ -498,7 +490,6 @@ public partial class HufiGraduateThesisContext : DbContext
 
             entity.HasOne(d => d.StudentClass).WithMany(p => p.Students)
                 .HasForeignKey(d => d.StudentClassId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Students_StudentClasses_ID");
         });
 
@@ -524,7 +515,6 @@ public partial class HufiGraduateThesisContext : DbContext
 
             entity.HasOne(d => d.Faculty).WithMany(p => p.StudentClasses)
                 .HasForeignKey(d => d.FacultyId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_StudentClasses_Faculties_ID");
         });
 
@@ -598,30 +588,28 @@ public partial class HufiGraduateThesisContext : DbContext
 
             entity.HasOne(d => d.Lecture).WithMany(p => p.Theses)
                 .HasForeignKey(d => d.LectureId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Theses_FacultyStaffs_ID");
 
             entity.HasOne(d => d.Specialization).WithMany(p => p.Theses)
                 .HasForeignKey(d => d.SpecializationId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Theses_Specializations_ID");
 
             entity.HasOne(d => d.ThesisGroup).WithMany(p => p.Theses)
                 .HasForeignKey(d => d.ThesisGroupId)
+                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK_Theses_ThesisGroups_ID");
 
             entity.HasOne(d => d.Topic).WithMany(p => p.Theses)
                 .HasForeignKey(d => d.TopicId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Theses_Topics_ID");
 
             entity.HasOne(d => d.TrainingForm).WithMany(p => p.Theses)
                 .HasForeignKey(d => d.TrainingFormId)
+                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK_Theses_TrainingForms_ID");
 
             entity.HasOne(d => d.TrainingLevel).WithMany(p => p.Theses)
                 .HasForeignKey(d => d.TrainingLevelId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Theses_TrainingLevels_ID");
         });
 
@@ -649,7 +637,6 @@ public partial class HufiGraduateThesisContext : DbContext
 
             entity.HasOne(d => d.Council).WithMany(p => p.ThesisCommittees)
                 .HasForeignKey(d => d.CouncilId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_ThesisCommittees_Councils_ID");
         });
 
@@ -673,12 +660,10 @@ public partial class HufiGraduateThesisContext : DbContext
 
             entity.HasOne(d => d.ThesisCommittee).WithMany(p => p.ThesisCommitteeResults)
                 .HasForeignKey(d => d.ThesisCommitteeId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_ThesisCommitteeResults_ThesisCommittees_ID");
 
             entity.HasOne(d => d.Thesis).WithOne(p => p.ThesisCommitteeResult)
                 .HasForeignKey<ThesisCommitteeResult>(d => d.ThesisId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_ThesisCommitteeResults_Theses_ID");
         });
 
@@ -747,7 +732,6 @@ public partial class HufiGraduateThesisContext : DbContext
 
             entity.HasOne(d => d.Thesis).WithMany(p => p.ThesisRevisions)
                 .HasForeignKey(d => d.ThesisId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_ThesisRevisions_Theses_ID");
         });
 
@@ -773,7 +757,6 @@ public partial class HufiGraduateThesisContext : DbContext
 
             entity.HasOne(d => d.Lecture).WithMany(p => p.ThesisSupervisors)
                 .HasForeignKey(d => d.LectureId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_ThesisSupervisors_FacultyStaffs_ID");
 
             entity.HasOne(d => d.Thesis).WithOne(p => p.ThesisSupervisor)

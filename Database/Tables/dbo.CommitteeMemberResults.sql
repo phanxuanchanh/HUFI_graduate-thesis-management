@@ -13,9 +13,9 @@ ON [PRIMARY]
 GO
 
 ALTER TABLE [dbo].[CommitteeMemberResults]
-  ADD CONSTRAINT [FK_CommitteeMemberResults_CommitteeMembers_ID] FOREIGN KEY ([CommitteeMemberId]) REFERENCES [dbo].[CommitteeMembers] ([ID])
+  ADD CONSTRAINT [FK_CommitteeMemberResults_CommitteeMembers_ID] FOREIGN KEY ([CommitteeMemberId]) REFERENCES [dbo].[CommitteeMembers] ([ID]) ON UPDATE CASCADE
 GO
 
 ALTER TABLE [dbo].[CommitteeMemberResults]
-  ADD CONSTRAINT [FK_CommitteeMemberResults_Theses_ID] FOREIGN KEY ([ThesisId]) REFERENCES [dbo].[Theses] ([ID])
+  ADD CONSTRAINT [FK_CommitteeMemberResults_Theses_ID] FOREIGN KEY ([ThesisId]) REFERENCES [dbo].[Theses] ([ID]) ON DELETE CASCADE ON UPDATE CASCADE
 GO

@@ -14,5 +14,5 @@ ON [PRIMARY]
 GO
 
 ALTER TABLE [dbo].[StudentClasses]
-  ADD CONSTRAINT [FK_StudentClasses_Faculties_ID] FOREIGN KEY ([FacultyId]) REFERENCES [dbo].[Faculties] ([ID])
+  ADD CONSTRAINT [FK_StudentClasses_Faculties_ID] FOREIGN KEY ([FacultyId]) REFERENCES [dbo].[Faculties] ([ID]) ON DELETE CASCADE
 GO

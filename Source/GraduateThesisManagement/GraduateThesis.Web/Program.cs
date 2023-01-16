@@ -1,6 +1,7 @@
 using GraduateThesis.ApplicationCore.Authorization;
 using GraduateThesis.ApplicationCore.Context;
 using GraduateThesis.ApplicationCore.Email;
+using GraduateThesis.ApplicationCore.File;
 using GraduateThesis.Repository.BLL.Implements;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DAL;
@@ -33,6 +34,8 @@ bool enableSsl = smtpSection.GetValue<bool>("EnableSsl");
 
 builder.Services.AddScoped<IEmailService>(e => new SmtpService(host, port, user, password, enableSsl));
 builder.Services.AddScoped(typeof(IAccountManager), typeof(AccountManager));
+builder.Services.AddScoped(typeof(IRoleManager), typeof(RoleManager));
+builder.Services.AddScoped(typeof(IFileManager), typeof(FileManager));
 builder.Services.AddScoped(typeof(IRepository), typeof(Repository));
 
 builder.Services.AddMvc().ConfigureApplicationPartManager(apm =>

@@ -3,9 +3,11 @@ using GraduateThesis.ApplicationCore.Authorization;
 using GraduateThesis.ApplicationCore.Email;
 using GraduateThesis.ApplicationCore.Enums;
 using GraduateThesis.ApplicationCore.Models;
+using GraduateThesis.ApplicationCore.WebAttributes;
 using GraduateThesis.Common.WebAttributes;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DTO;
+using GraduateThesis.WebExtensions;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
@@ -61,6 +63,7 @@ public class StudentAccountController : WebControllerBase
             _accountManager.SetHttpContext(HttpContext);
             _accountManager.SetSession(new AccountSession
             {
+                UserId = student.Id,
                 AccountModel = student,
                 Roles = "Student",
                 LastSignInTime = DateTime.Now
@@ -155,10 +158,12 @@ public class StudentAccountController : WebControllerBase
 
     [Route("sign-out")]
     [HttpGet]
+    [IsStudent]
     public IActionResult SignOutAccount()
     {
-        HttpContext.Session.SetString("account-session", "");
-        return RedirectToAction("Index", "Home");
+        _accountManager.SetHttpContext(HttpContext);
+        _accountManager.RemoveSession();
+        return RedirectToAction("SignIn", "StudentAccount");
     }
 
     [Route("approved-studentThesisGroup")]
@@ -182,10 +187,28 @@ public class StudentAccountController : WebControllerBase
         return RedirectToAction("YourStudentThesisGroup");
     }
 
-    [Route("profiles-in-view")]
+    [Route("get-profile")]
     [HttpGet]
+    [IsStudent]
+    [AccountInfo(typeof(StudentOutput))]
     [PageName(Name = "Thông tin sinh viên")]
-    public IActionResult ProfilesView()
+    public async Task<IActionResult> GetProfile()
+    {
+        _accountManager.SetHttpContext(HttpContext);
+        AccountSession accountSession = _accountManager.GetSession();
+        StudentOutput student = await _studentRepository.GetAsync(accountSession.UserId);
+
+        if (string.IsNullOrEmpty(student.Avatar))
+            student.Avatar = "default-male-profile.png";
+
+        return View(student);
+    }
+
+    [Route("update-profile")]
+    [HttpPost]
+    [IsStudent]
+    [AccountInfo(typeof(StudentOutput))]
+    public IActionResult UpdateProfile(IFormFile formFile, StudentInput studentInput)
     {
         return View();
     }

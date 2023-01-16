@@ -24,6 +24,12 @@ public class AccountManager: IAccountManager
         return sessionManager.GetSession<AccountSession>("account-session");
     }
 
+    public void RemoveSession()
+    {
+        SessionManager sessionManager = new SessionManager(_httpContext);
+        sessionManager.RemoveSession("account-session");
+    }
+
     public void SetHttpContext(HttpContext httpContext)
     {
         _httpContext = httpContext;

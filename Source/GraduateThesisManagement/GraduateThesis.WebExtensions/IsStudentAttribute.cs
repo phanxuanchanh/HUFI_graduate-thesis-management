@@ -20,8 +20,7 @@ public class IsStudentAttribute : Attribute, IAuthorizationFilter
 
     public void OnAuthorization(AuthorizationFilterContext context)
     {
-        AppDbContext dbContext = AppDbContext.CreateContext();
-        IAccountManager accountManager = new AccountManager(dbContext);
+        IAccountManager accountManager = new AccountManager(null);
 
         accountManager.SetHttpContext(context.HttpContext);
         AccountSession accountSession = accountManager.GetSession();

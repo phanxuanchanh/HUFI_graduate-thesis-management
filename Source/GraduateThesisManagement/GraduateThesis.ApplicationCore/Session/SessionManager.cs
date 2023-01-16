@@ -28,4 +28,9 @@ public class SessionManager
         string json = JsonConvert.SerializeObject(value);
         _httpContext.Session.SetString(key, json);
     }
+
+    public void RemoveSession(string key)
+    {
+        _httpContext.Session.SetString(key, "");
+    }
 }
