@@ -1,9 +1,12 @@
 ﻿using GraduateThesis.ApplicationCore.AppController;
+using GraduateThesis.ApplicationCore.Authorization;
 using GraduateThesis.ApplicationCore.Models;
 using GraduateThesis.ApplicationCore.WebAttributes;
 using GraduateThesis.Common.WebAttributes;
+using GraduateThesis.Repository.BLL.Implements;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DTO;
+using GraduateThesis.WebExtensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
@@ -21,13 +24,16 @@ public class FacultyStaffManagerController : WebControllerBase<IFacultyStaffRepo
     private IFacultyStaffRepository _facultyStaffRepository;
     private IFacultyRepository _facultyRepository;
     private IAppRoleRepository _appRolesRepository;
+    private IAccountManager _accountManager;
 
-    public FacultyStaffManagerController(IRepository repository)
+
+    public FacultyStaffManagerController(IRepository repository, IAccountManager accountManager)
         :base(repository.FacultyStaffRepository)
     {
         _facultyStaffRepository = repository.FacultyStaffRepository;
         _facultyRepository = repository.FacultyRepository;
         _appRolesRepository = repository.AppRolesRepository;
+        _accountManager = accountManager;
     }
 
     [Route("list")]
@@ -147,5 +153,31 @@ public class FacultyStaffManagerController : WebControllerBase<IFacultyStaffRepo
     public override Task<IActionResult> Restore([Required] string id)
     {
         throw new NotImplementedException();
+    }
+
+    [Route("get-profile")]
+    [HttpGet]
+    [WebAuthorize]
+    [AccountInfo(typeof(FacultyStaffOutput))]
+    [PageName(Name = "Thông tin giảng viên")]
+    public async Task<IActionResult> GetProfile()
+    {
+        _accountManager.SetHttpContext(HttpContext);
+        AccountSession accountSession = _accountManager.GetSession();
+        FacultyStaffOutput facultyStaffOutput = await _facultyStaffRepository.GetAsync(accountSession.UserId);
+
+        if (string.IsNullOrEmpty(facultyStaffOutput.Avatar))
+            facultyStaffOutput.Avatar = "default-male-profile.png";
+
+        return View(facultyStaffOutput);
+    }
+
+    [Route("update-profile")]
+    [HttpPost]
+    [WebAuthorize]
+    [AccountInfo(typeof(FacultyStaffOutput))]
+    public IActionResult UpdateProfile(IFormFile formFile, FacultyStaffInput facultyStaffInput)
+    {
+        return View();
     }
 }
