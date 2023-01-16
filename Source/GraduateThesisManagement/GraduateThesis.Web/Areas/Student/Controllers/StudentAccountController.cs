@@ -1,6 +1,5 @@
 ﻿using GraduateThesis.ApplicationCore.AppController;
 using GraduateThesis.ApplicationCore.Authorization;
-using GraduateThesis.ApplicationCore.Email;
 using GraduateThesis.ApplicationCore.Enums;
 using GraduateThesis.ApplicationCore.Models;
 using GraduateThesis.ApplicationCore.WebAttributes;
@@ -12,6 +11,8 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
 
+#nullable disable
+
 namespace GraduateThesis.Web.Areas.Student.Controllers;
 
 [Area("Student")]
@@ -20,17 +21,13 @@ public class StudentAccountController : WebControllerBase
 {
     private IStudentRepository _studentRepository;
     private IThesisGroupRepository _studentThesisGroupRepository;
-    private IEmailService _emailService;
     private IAccountManager _accountManager;
 
-    public StudentAccountController(IRepository repository, IEmailService emailService, IAccountManager accountManager)
+    public StudentAccountController(IRepository repository, IAccountManager accountManager)
     {
         _studentRepository = repository.StudentRepository;
         _studentThesisGroupRepository = repository.ThesisGroupRepository;
-        _emailService = emailService;
         _accountManager = accountManager;
-
-        _studentRepository.EmailService = emailService;
     }
 
     [Route("sign-in")]
@@ -57,8 +54,6 @@ public class StudentAccountController : WebControllerBase
         if (signInResultModel.Status == AccountStatus.Success)
         {
             StudentOutput student = await _studentRepository.GetAsync(signInModel.Code);
-            if (string.IsNullOrEmpty(student.Avatar))
-                student.Avatar = "default-male-profile.png";
 
             _accountManager.SetHttpContext(HttpContext);
             _accountManager.SetSession(new AccountSession
@@ -166,23 +161,21 @@ public class StudentAccountController : WebControllerBase
         return RedirectToAction("SignIn", "StudentAccount");
     }
 
-    [Route("approved-studentThesisGroup")]
+    [Route("join-to-group")]
     [HttpPost]
-    [PageName(Name = "Vào nhóm đề tài")]
-    public async Task<IActionResult> ApprovalStudentThesisGroupAsync([Required] string StudentThesisGroupId)
+    public async Task<IActionResult> JoinToGroupAsync([Required] string groupId)
     {
-        DataResponse dataResponse = await _studentThesisGroupRepository.ApprovalStudentThesisGroupAsync(StudentThesisGroupId);
+        DataResponse dataResponse = await _studentThesisGroupRepository.ApprovalStudentThesisGroupAsync(groupId);
         AddTempData(dataResponse);
         return RedirectToAction("YourStudentThesisGroup");
     }
 
 
-    [Route("refuseapproved-studentThesisGroup")]
+    [Route("deny-from-group")]
     [HttpPost]
-    [PageName(Name = "Từ chối vào nhóm đề tài")]
-    public async Task<IActionResult> RefuseApprovalStudentThesisGroupAsync([Required] string StudentThesisGroupId)
+    public async Task<IActionResult> DenyFromGroupAsync([Required] string groupId)
     {
-        DataResponse dataResponse = await _studentThesisGroupRepository.RefuseApprovalStudentThesisGroupAsync(StudentThesisGroupId);
+        DataResponse dataResponse = await _studentThesisGroupRepository.RefuseApprovalStudentThesisGroupAsync(groupId);
         AddTempData(dataResponse);
         return RedirectToAction("YourStudentThesisGroup");
     }
@@ -198,9 +191,6 @@ public class StudentAccountController : WebControllerBase
         AccountSession accountSession = _accountManager.GetSession();
         StudentOutput student = await _studentRepository.GetAsync(accountSession.UserId);
 
-        if (string.IsNullOrEmpty(student.Avatar))
-            student.Avatar = "default-male-profile.png";
-
         return View(student);
     }
 
@@ -208,8 +198,38 @@ public class StudentAccountController : WebControllerBase
     [HttpPost]
     [IsStudent]
     [AccountInfo(typeof(StudentOutput))]
-    public IActionResult UpdateProfile(IFormFile formFile, StudentInput studentInput)
+    public async Task<IActionResult> UpdateProfile(IFormFile formFile, StudentInput studentInput)
     {
-        return View();
+        if (!ModelState.IsValid)
+        {
+            AddTempData(DataResponseStatus.InvalidData);
+            return RedirectToAction("GetProfile");
+        }
+
+        DataResponse dataResponse = null;
+        if (formFile == null)
+            dataResponse = await _studentRepository.UpdateProfileAsync(studentInput, null);
+        else
+            dataResponse = await _studentRepository
+                .UpdateProfileAsync(studentInput, formFile.ToFileUploadModel());
+
+        AddTempData(dataResponse);
+
+        return RedirectToAction("GetProfile");
+    }
+
+    [Route("set-default-avatar")]
+    [HttpPost]
+    [IsStudent]
+    [AccountInfo(typeof(StudentOutput))]
+    public async Task<IActionResult> SetDefaultAvatar()
+    {
+        _accountManager.SetHttpContext(HttpContext);
+        AccountSession accountSession = _accountManager.GetSession();
+        DataResponse dataResponse = await _studentRepository.SetDefaultAvatarAsync(accountSession.UserId);
+
+        AddTempData(dataResponse);
+
+        return RedirectToAction("GetProfile");
     }
 }

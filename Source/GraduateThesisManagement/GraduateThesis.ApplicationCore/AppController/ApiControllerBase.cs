@@ -26,10 +26,12 @@ public abstract class ApiControllerBase<TSubRepository, TInput, TOutput, T_ID> :
     where TOutput : class
 {
     private readonly ISubRepository<TInput, TOutput, T_ID> _subRepository;
+    private readonly IFileManager _fileManager;
 
-    public ApiControllerBase(TSubRepository subRepository)
+    public ApiControllerBase(TSubRepository subRepository, IFileManager fileManager)
     {
         _subRepository = (subRepository as ISubRepository<TInput, TOutput, T_ID>);
+        _fileManager = fileManager;
     }
 
     [NonAction]
@@ -99,12 +101,11 @@ public abstract class ApiControllerBase<TSubRepository, TInput, TOutput, T_ID> :
     protected async Task<IActionResult> ExportResult(ExportMetadata exportMetadata)
     {
         byte[] bytes = await _subRepository.ExportAsync(null, exportMetadata);
-        ContentTypeManager contentTypeManager = new ContentTypeManager();
 
-        string fileExtension = contentTypeManager.GetExtensionName(exportMetadata.TypeOptions);
+        string fileExtension = _fileManager.GetExtension(exportMetadata.TypeOptions);
         string fileName = $"{exportMetadata.FileName}_{DateTime.Now.ToString("ddMMyyyy_hhmmss")}.{fileExtension}";
 
-        return File(bytes, contentTypeManager.GetContentType(exportMetadata.TypeOptions), fileName);
+        return File(bytes, _fileManager.GetContentType(exportMetadata.TypeOptions), fileName);
     }
 
     [NonAction]

@@ -1,5 +1,6 @@
 ﻿using GraduateThesis.ApplicationCore.Email;
 using GraduateThesis.ApplicationCore.Enums;
+using GraduateThesis.ApplicationCore.File;
 using GraduateThesis.ApplicationCore.Hash;
 using GraduateThesis.ApplicationCore.Models;
 using GraduateThesis.ApplicationCore.Repository;
@@ -18,13 +19,15 @@ namespace GraduateThesis.Repository.BLL.Implements;
 public class FacultyStaffRepository : SubRepository<FacultyStaff, FacultyStaffInput, FacultyStaffOutput, string>, IFacultyStaffRepository
 {
     private HufiGraduateThesisContext _context;
+    private IEmailService _emailService;
+    private IFileManager _fileManager;
 
-    public IEmailService EmailService { get; set; }
-
-    internal FacultyStaffRepository(HufiGraduateThesisContext context)
+    internal FacultyStaffRepository(HufiGraduateThesisContext context, IEmailService emailService, IFileManager fileManager)
         : base(context, context.FacultyStaffs)
     {
         _context = context;
+        _emailService = emailService;
+        _fileManager = fileManager;
     }
 
     protected override void ConfigureIncludes()
@@ -104,7 +107,7 @@ public class FacultyStaffRepository : SubRepository<FacultyStaff, FacultyStaffIn
         facultyStaff.CodeExpTime = DateTime.Now.AddMinutes(5);
         await _context.SaveChangesAsync();
 
-        EmailService.Send(
+        _emailService.Send(
             facultyStaff.Email,
             "Khôi phục mật khẩu",
             $"Mã xác nhận của bạn là: {facultyStaff.VerificationCode}"

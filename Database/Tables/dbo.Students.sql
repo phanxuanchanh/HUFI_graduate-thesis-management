@@ -15,23 +15,16 @@ CREATE TABLE [dbo].[Students] (
   [DeletedAt] [datetime] NULL,
   [IsDeleted] [bit] NOT NULL,
   [VerificationCode] [varchar](100) NULL,
-  [CodeExpTime] [datetime] NULL
+  [CodeExpTime] [datetime] NULL,
+  [Gender] [nvarchar](10) NULL DEFAULT (N'Nam'),
+  CONSTRAINT [PK_Students_ID] PRIMARY KEY CLUSTERED ([ID]),
+  UNIQUE ([Phone]),
+  UNIQUE ([Email])
 )
 ON [PRIMARY]
 TEXTIMAGE_ON [PRIMARY]
 GO
 
 ALTER TABLE [dbo].[Students]
-  ADD CONSTRAINT [PK_Students_ID] PRIMARY KEY CLUSTERED ([ID])
-GO
-
-ALTER TABLE [dbo].[Students]
-  ADD UNIQUE ([Email])
-GO
-
-ALTER TABLE [dbo].[Students]
-  ADD UNIQUE ([Phone])
-GO
-
-ALTER TABLE [dbo].[Students]
   ADD CONSTRAINT [FK_Students_StudentClasses_ID] FOREIGN KEY ([StudentClassId]) REFERENCES [dbo].[StudentClasses] ([ID]) ON DELETE CASCADE ON UPDATE CASCADE
+GO

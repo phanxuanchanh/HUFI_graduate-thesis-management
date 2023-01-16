@@ -1,5 +1,8 @@
-﻿using GraduateThesis.Repository.BLL.Interfaces;
+﻿using GraduateThesis.ApplicationCore.Email;
+using GraduateThesis.ApplicationCore.File;
+using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DAL;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
@@ -9,15 +12,21 @@ namespace GraduateThesis.Repository.BLL.Implements;
 public class Repository : IRepository
 {
     private HufiGraduateThesisContext _context;
+    private IHostingEnvironment _hostingEnvironment;
+    private IEmailService _emailService;
+    private IFileManager _fileManager;
 
-    public Repository(HufiGraduateThesisContext context)
+    public Repository(HufiGraduateThesisContext context, IHostingEnvironment hostingEnvironment, IEmailService emailService, IFileManager fileManager)
     {
         _context = context;
+        _hostingEnvironment = hostingEnvironment;
+        _emailService = emailService;
+        _fileManager = fileManager;
     }
 
     private bool disposedValue;
 
-    public IStudentRepository StudentRepository => new StudentRepository(_context);
+    public IStudentRepository StudentRepository => new StudentRepository(_context, _hostingEnvironment, _emailService, _fileManager);
 
     public IStudentClassRepository StudentClassRepository => new StudentClassRepository(_context);
 
@@ -33,7 +42,7 @@ public class Repository : IRepository
 
     public IThesisCommitteeRepository ThesisCommitteeRepository => new ThesisCommitteeRepository(_context);
 
-    public IFacultyStaffRepository FacultyStaffRepository => new FacultyStaffRepository(_context);
+    public IFacultyStaffRepository FacultyStaffRepository => new FacultyStaffRepository(_context, _emailService, _fileManager);
 
     public ITrainingFormRepository TrainingFormRepository => new TrainingFormRepository(_context);
 

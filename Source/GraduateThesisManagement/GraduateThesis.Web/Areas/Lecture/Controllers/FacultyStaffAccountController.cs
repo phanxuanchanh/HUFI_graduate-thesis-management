@@ -1,6 +1,5 @@
 ﻿using GraduateThesis.ApplicationCore.AppController;
 using GraduateThesis.ApplicationCore.Authorization;
-using GraduateThesis.ApplicationCore.Email;
 using GraduateThesis.ApplicationCore.Enums;
 using GraduateThesis.ApplicationCore.Models;
 using GraduateThesis.ApplicationCore.WebAttributes;
@@ -19,13 +18,11 @@ public class FacultyStaffAccountController : WebControllerBase
     private IThesisRepository _thesisRepository;
     private IAccountManager _accountManager;
 
-    public FacultyStaffAccountController(IRepository repository, IEmailService emailService, IAccountManager accountManager)
+    public FacultyStaffAccountController(IRepository repository, IAccountManager accountManager)
     {
         _facultyStaffRepository = repository.FacultyStaffRepository;
         _thesisRepository = repository.ThesisRepository;
         _accountManager = accountManager;
-
-        _facultyStaffRepository.EmailService = emailService;
     }
 
     [Route("sign-in")]

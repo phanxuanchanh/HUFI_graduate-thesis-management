@@ -39,6 +39,8 @@ public partial class Student
 
     public DateTime? CodeExpTime { get; set; }
 
+    public string Gender { get; set; }
+
     public virtual StudentClass StudentClass { get; set; }
 
     public virtual ICollection<ThesisGroupDetail> ThesisGroupDetails { get; } = new List<ThesisGroupDetail>();
