@@ -4,8 +4,10 @@ using GraduateThesis.ApplicationCore.Enums;
 using GraduateThesis.ApplicationCore.Models;
 using GraduateThesis.ApplicationCore.WebAttributes;
 using GraduateThesis.Common.WebAttributes;
+using GraduateThesis.Repository.BLL.Implements;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DTO;
+using GraduateThesis.WebExtensions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GraduateThesis.Web.Areas.Lecture.Controllers;
@@ -176,8 +178,38 @@ public class FacultyStaffAccountController : WebControllerBase
     [HttpPost]
     [WebAuthorize]
     [AccountInfo(typeof(FacultyStaffOutput))]
-    public IActionResult UpdateProfile(IFormFile formFile, FacultyStaffInput facultyStaffInput)
+    public async Task<IActionResult> UpdateProfile(IFormFile formFile, FacultyStaffInput facultyStaffInput)
     {
-        return View();
+        if (!ModelState.IsValid)
+        {
+            AddTempData(DataResponseStatus.InvalidData);
+            return RedirectToAction("GetProfile");
+        }
+
+        DataResponse dataResponse = null;
+        if (formFile == null)
+            dataResponse = await _facultyStaffRepository.UpdateProfileAsync(facultyStaffInput, null);
+        else
+            dataResponse = await _facultyStaffRepository
+                .UpdateProfileAsync(facultyStaffInput, formFile.ToFileUploadModel());
+
+        AddTempData(dataResponse);
+
+        return RedirectToAction("GetProfile");
+    }
+
+    [Route("set-default-avatar")]
+    [HttpPost]
+    [WebAuthorize]
+    [AccountInfo(typeof(FacultyStaffOutput))]
+    public async Task<IActionResult> SetDefaultAvatar()
+    {
+        _accountManager.SetHttpContext(HttpContext);
+        AccountSession accountSession = _accountManager.GetSession();
+        DataResponse dataResponse = await _facultyStaffRepository.SetDefaultAvatarAsync(accountSession.UserId);
+
+        AddTempData(dataResponse);
+
+        return RedirectToAction("GetProfile");
     }
 }

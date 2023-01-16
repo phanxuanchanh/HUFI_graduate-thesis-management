@@ -77,10 +77,31 @@
 <link href="~/css/profiles.css" rel="stylesheet" />
 
 @section Scripts {
-    <script>
-        function uploadAvatar() {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 
+    <script>
+        function previewAvatar() {
+            let preview = document.querySelector('#avatar');
+            let file = document.querySelector('#formFile').files[0];
+            let reader = new FileReader();
+
+            reader.onloadend = function () {
+                preview.src = reader.result;
+            }
+
+            if (file) {
+                reader.readAsDataURL(file);
+            } else {
+                preview.src = "";
+            }
+        }
+
+        function openFileDialog() {
+            document.querySelector('#formFile').click();
         }
     </script>
+
 
 }

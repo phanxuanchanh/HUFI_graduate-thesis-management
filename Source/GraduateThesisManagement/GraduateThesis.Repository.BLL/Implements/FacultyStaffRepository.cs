@@ -11,6 +11,7 @@ using GraduateThesis.Repository.DTO;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -198,6 +199,64 @@ public class FacultyStaffRepository : SubRepository<FacultyStaff, FacultyStaffIn
             PageSize = pageSize,
             TotalItemCount = totalItemCount,
             Items = onePageOfData
+        };
+    }
+
+    public async Task<DataResponse> UpdateProfileAsync(FacultyStaffInput input, FileUploadModel avtUploadModel)
+    {
+        FacultyStaff facultyStaff_fromDb = await _context.FacultyStaffs.FindAsync(input.Id);
+        if (facultyStaff_fromDb == null)
+            return new DataResponse
+            {
+                Status = DataResponseStatus.NotFound,
+                Message = "Không tìm thấy tài khoản này!"
+            };
+        facultyStaff_fromDb.Email = input.Email;
+        facultyStaff_fromDb.Phone = input.Phone;
+        facultyStaff_fromDb.Address = input.Address;
+        facultyStaff_fromDb.Birthday = input.Birthday;
+
+        if (avtUploadModel != null)
+        {
+            avtUploadModel.FileName = $"facultyStaff-avatar_{facultyStaff_fromDb.Id}_{DateTime.Now.ToString("ddMMyyyyHHmmss")}.{_fileManager.GetExtension(avtUploadModel.ContentType)}";
+
+            _fileManager.SetPath(Path.Combine(_hostingEnvironment.WebRootPath, "avatar", "facultyStaff"));
+            _fileManager.Save(avtUploadModel);
+
+            facultyStaff_fromDb.Avatar = $"facultyStaff/{avtUploadModel.FileName}";
+        }
+
+        await _context.SaveChangesAsync();
+
+        return new DataResponse
+        {
+            Status = DataResponseStatus.Success,
+            Message = "Cập nhật thông tin cá nhân thành công!"
+        };
+    }
+
+
+    public async Task<DataResponse> SetDefaultAvatarAsync(string facultyStaffId)
+    {
+        FacultyStaff facultyStaff_fromDb = await _context.FacultyStaffs.FindAsync(facultyStaffId);
+        if (facultyStaff_fromDb == null)
+            return new DataResponse
+            {
+                Status = DataResponseStatus.NotFound,
+                Message = "Không tìm thấy tài khoản này!"
+            };
+
+        if (facultyStaff_fromDb.Gender == "Nam")
+            facultyStaff_fromDb.Avatar = "default-male-profile.png";
+        else
+            facultyStaff_fromDb.Avatar = "default-female-profile.png";
+
+        await _context.SaveChangesAsync();
+
+        return new DataResponse
+        {
+            Status = DataResponseStatus.Success,
+            Message = "Đã đặt ảnh đại diện mặc định thành công!"
         };
     }
 }
