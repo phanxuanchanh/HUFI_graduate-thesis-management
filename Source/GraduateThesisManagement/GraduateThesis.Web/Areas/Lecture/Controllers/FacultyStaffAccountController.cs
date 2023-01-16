@@ -3,6 +3,7 @@ using GraduateThesis.ApplicationCore.Authorization;
 using GraduateThesis.ApplicationCore.Email;
 using GraduateThesis.ApplicationCore.Enums;
 using GraduateThesis.ApplicationCore.Models;
+using GraduateThesis.ApplicationCore.WebAttributes;
 using GraduateThesis.Common.WebAttributes;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DTO;
@@ -155,5 +156,31 @@ public class FacultyStaffAccountController : WebControllerBase
         _accountManager.SetHttpContext(HttpContext);
         _accountManager.RemoveSession();
         return RedirectToAction("Index", "Home");
+    }
+
+    [Route("get-profile")]
+    [HttpGet]
+    [WebAuthorize]
+    [AccountInfo(typeof(FacultyStaffOutput))]
+    [PageName(Name = "Thông tin giảng viên")]
+    public async Task<IActionResult> GetProfile()
+    {
+        _accountManager.SetHttpContext(HttpContext);
+        AccountSession accountSession = _accountManager.GetSession();
+        FacultyStaffOutput facultyStaffOutput = await _facultyStaffRepository.GetAsync(accountSession.UserId);
+
+        if (string.IsNullOrEmpty(facultyStaffOutput.Avatar))
+            facultyStaffOutput.Avatar = "default-male-profile.png";
+
+        return View(facultyStaffOutput);
+    }
+
+    [Route("update-profile")]
+    [HttpPost]
+    [WebAuthorize]
+    [AccountInfo(typeof(FacultyStaffOutput))]
+    public IActionResult UpdateProfile(IFormFile formFile, FacultyStaffInput facultyStaffInput)
+    {
+        return View();
     }
 }
