@@ -1,6 +1,10 @@
 ﻿using GraduateThesis.ApplicationCore.Enums;
+using GraduateThesis.ApplicationCore.Models;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Internal;
+using NPOI.HPSF;
 using System.Collections.ObjectModel;
+using System.IO;
 
 #nullable disable
 
@@ -8,83 +12,31 @@ namespace GraduateThesis.ApplicationCore.File;
 
 public class FileManager : IFileManager
 {
+    private FileType _fileType;
+    private string _path;
     private bool disposedValue;
 
     public FileManager()
     {
-
+        _fileType = new FileType();
     }
 
-    public bool IsValidType(IFormFile formFile, string contentType)
+    public void Remove(string fileName)
     {
-        return (contentType == formFile.FileName);
+        string filePath = $"{_path}\\{fileName}";
+        if (System.IO.File.Exists(filePath))
+            System.IO.File.Delete(filePath);
+        else
+            throw new Exception("File does not exist!");
     }
 
-    public bool IsValidType(IFormFileCollection formFiles, string contentType)
-    {
-        return !formFiles.Any(f => f.ContentType != contentType);
-    }
-
-
-
-    public FileUploadStatus Upload(IFormFile formFile, string contentType, FileSaveOptions fileSaveOptions)
-    {
-        if(!IsValidType(formFile, contentType))
-            return FileUploadStatus.InvalidType;
-
-        if(fileSaveOptions == FileSaveOptions.GoogleCloud)
-        {
-            return FileUploadStatus.NotSupportedYet;
-        }
-
-        if (fileSaveOptions == FileSaveOptions.AmazonS3)
-        {
-            return FileUploadStatus.NotSupportedYet;
-        }
-
-        if (fileSaveOptions == FileSaveOptions.MicrosoftCloud)
-        {
-            return FileUploadStatus.NotSupportedYet;
-        }
-
-        SaveToLocal(formFile);
-        return FileUploadStatus.Success;
-    }
-
-    public async Task<FileUploadStatus> UploadAsync(IFormFile formFile, FileSaveOptions fileSaveOptions)
-    {
-        return await Task.Run(() =>
-        {
-            return Upload(formFile, "", fileSaveOptions);
-        });
-    }
-
-    private void SaveToLocal(IFormFile formFile)
+    public void Save(Stream stream, string fileName)
     {
         FileStream fileStream = null;
         try
         {
-            fileStream = new FileStream("", FileMode.Create);
-            formFile.CopyTo(fileStream);
-        }
-        catch(Exception ex)
-        {
-            throw new Exception("An error occurred while saving the file!", ex);
-        }
-        finally
-        {
-            if (fileStream != null)
-                fileStream.Dispose();
-        }
-    }
-
-    private async Task SaveToLocalAsync(IFormFile formFile)
-    {
-        FileStream fileStream = null;
-        try
-        {
-            fileStream = new FileStream("", FileMode.Create);
-            await formFile.CopyToAsync(fileStream);
+            fileStream = new FileStream($"{_path}\\{fileName}", FileMode.Create);
+            stream.CopyTo(fileStream);
         }
         catch (Exception ex)
         {
@@ -97,37 +49,46 @@ public class FileManager : IFileManager
         }
     }
 
-    public FileStream Read(string path, params string[] contentTypes)
+    public string GetExtension(string contentType)
+    {
+        return _fileType.GetExtension(contentType);
+    }
+
+    public string GetExtension(ExportTypeOptions exportTypeOptions)
+    {
+        return _fileType.GetExtension(exportTypeOptions);
+    }
+
+    public string GetContentType(ExportTypeOptions exportTypeOptions)
+    {
+        return _fileType.GetContentType(exportTypeOptions);
+    }
+
+    public void SetPath(string path)
+    {
+        _path = path;
+    }
+
+    public void Save(FileUploadModel uploadModel)
     {
         FileStream fileStream = null;
         try
         {
-            fileStream = new FileStream(path, FileMode.Open);
-
-            //bool checkContentType = contentTypes.Any(c => c == fileStream)
-
-            return fileStream;
-        }catch(Exception ex)
+            fileStream = new FileStream($"{_path}\\{uploadModel.FileName}", FileMode.Create);
+            uploadModel.Stream.CopyTo(fileStream);
+        }
+        catch (Exception ex)
         {
-            throw new Exception("", ex);
+            throw new Exception("An error occurred while saving the file!", ex);
         }
         finally
         {
+            if (uploadModel.Stream != null)
+                uploadModel.Stream.Dispose();
+
             if (fileStream != null)
                 fileStream.Dispose();
         }
-    }
-
-
-
-    public TModel Read<TModel>()
-    {
-        return default(TModel);
-    }
-
-    public ICollection<TModel> ReadMany<TModel>()
-    {
-        return new Collection<TModel>();
     }
 
     protected virtual void Dispose(bool disposing)
@@ -147,15 +108,5 @@ public class FileManager : IFileManager
     {
         Dispose(disposing: true);
         GC.SuppressFinalize(this);
-    }
-
-    public void Save()
-    {
-        throw new NotImplementedException();
-    }
-
-    public void Delete()
-    {
-        throw new NotImplementedException();
     }
 }

@@ -518,7 +518,7 @@
             </Location>
             <Size>
               <Width>208 px</Width>
-              <Height>331 px</Height>
+              <Height>382 px</Height>
             </Size>
             <DbOid>
               <Path>[HUFI_graduate-thesis].dbo.Students</Path>
@@ -583,7 +583,7 @@
               <Port xsi:type="LinkPort">
                 <Location>
                   <X>-6.0002006648574E-05 px</X>
-                  <Y>-79.5 px</Y>
+                  <Y>-54 px</Y>
                 </Location>
                 <Anchors>None</Anchors>
                 <Align>Bottom</Align>
@@ -595,8 +595,8 @@
               </Port>
             </PortAnchors>
             <CommentOffset>
-              <X>99 px</X>
-              <Y>-79 px</Y>
+              <X>58 px</X>
+              <Y>-79.9999399979934 px</Y>
             </CommentOffset>
           </Model>
           <Model xsi:type="TableModel">
@@ -671,7 +671,7 @@
               <Port>
                 <Location>
                   <X>0 px</X>
-                  <Y>183.327039274924 px</Y>
+                  <Y>211.573803634504 px</Y>
                 </Location>
                 <Anchors>Top Bottom</Anchors>
                 <Align>Left</Align>
@@ -688,7 +688,7 @@
               </PointD>
               <PointD>
                 <X>1649 px</X>
-                <Y>133.327039274924 px</Y>
+                <Y>161.573803634504 px</Y>
               </PointD>
             </BendPoints>
             <IsManuallyRouted>false</IsManuallyRouted>
@@ -708,7 +708,7 @@
               <Port xsi:type="LinkPort">
                 <Location>
                   <X>-170.5 px</X>
-                  <Y>-1.57704162597656 px</Y>
+                  <Y>-29.8238067626953 px</Y>
                 </Location>
                 <Anchors>None</Anchors>
                 <Align>Right</Align>
@@ -2754,10 +2754,10 @@
         </Children>
         <ViewPort>
           <ScaleMode>Free</ScaleMode>
-          <Scale>0.5</Scale>
+          <Scale>1.1</Scale>
           <Location>
-            <X>-1222.4 px</X>
-            <Y>-131.200000762939 px</Y>
+            <X>1362.18181818182 px</X>
+            <Y>145.454546148127 px</Y>
           </Location>
         </ViewPort>
       </Model>

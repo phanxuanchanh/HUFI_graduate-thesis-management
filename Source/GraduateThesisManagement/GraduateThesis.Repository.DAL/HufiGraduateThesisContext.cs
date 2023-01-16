@@ -466,6 +466,9 @@ public partial class HufiGraduateThesisContext : DbContext
                 .IsRequired()
                 .HasMaxLength(200)
                 .IsUnicode(false);
+            entity.Property(e => e.Gender)
+                .HasMaxLength(10)
+                .HasDefaultValueSql("(N'Nam')");
             entity.Property(e => e.Name)
                 .IsRequired()
                 .HasMaxLength(100);

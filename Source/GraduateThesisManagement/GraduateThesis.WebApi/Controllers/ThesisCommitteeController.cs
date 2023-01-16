@@ -1,5 +1,6 @@
 ﻿using GraduateThesis.ApplicationCore.ApiAttributes;
 using GraduateThesis.ApplicationCore.AppController;
+using GraduateThesis.ApplicationCore.File;
 using GraduateThesis.ApplicationCore.Models;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DTO;
@@ -15,7 +16,8 @@ namespace GraduateThesis.WebApi.Controllers;
 [ApiAuthorize()]
 public class ThesisCommitteeControler : ApiControllerBase<IThesisCommitteeRepository, ThesisCommitteeInput, ThesisCommitteeOutput, string>
 {
-    public ThesisCommitteeControler(IRepository repository) : base(repository.ThesisCommitteeRepository)
+    public ThesisCommitteeControler(IRepository repository, IFileManager fileManager) 
+        : base(repository.ThesisCommitteeRepository, fileManager)
     {
     }
 

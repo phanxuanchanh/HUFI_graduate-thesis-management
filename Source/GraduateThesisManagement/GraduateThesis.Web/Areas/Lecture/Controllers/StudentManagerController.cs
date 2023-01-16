@@ -24,8 +24,6 @@ public class StudentManagerController : WebControllerBase<IStudentRepository, St
         :base(repository.StudentRepository)
     {
         _studentRepository = repository.StudentRepository;
-        _studentRepository.EmailService = emailService;
-
         _studentClassRepository = repository.StudentClassRepository;
     }
 

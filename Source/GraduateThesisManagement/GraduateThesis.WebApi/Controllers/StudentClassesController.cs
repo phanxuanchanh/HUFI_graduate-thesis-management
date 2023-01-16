@@ -1,4 +1,5 @@
 ﻿using GraduateThesis.ApplicationCore.AppController;
+using GraduateThesis.ApplicationCore.File;
 using GraduateThesis.ApplicationCore.Models;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DTO;
@@ -13,7 +14,8 @@ namespace GraduateThesis.WebApi.Controllers;
 [ApiController]
 public class StudentClassController : ApiControllerBase<IStudentClassRepository, StudentClassInput, StudentClassOutput, string>
 {
-    public StudentClassController(IRepository repository) : base(repository.StudentClassRepository)
+    public StudentClassController(IRepository repository, IFileManager fileManager) 
+        : base(repository.StudentClassRepository, fileManager)
     {
     }
 

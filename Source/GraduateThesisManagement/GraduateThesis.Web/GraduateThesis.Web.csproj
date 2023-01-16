@@ -23,6 +23,7 @@
     <Folder Include="Areas\Lecture\Views\CouncilManager\" />
     <Folder Include="Areas\Student\Data\" />
     <Folder Include="Areas\Student\Models\" />
+    <Folder Include="wwwroot\avatar\student\" />
     <Folder Include="wwwroot\common-area\js\" />
   </ItemGroup>
 

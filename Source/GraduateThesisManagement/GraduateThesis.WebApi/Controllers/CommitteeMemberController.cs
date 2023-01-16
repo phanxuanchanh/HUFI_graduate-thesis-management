@@ -1,4 +1,5 @@
 ﻿using GraduateThesis.ApplicationCore.AppController;
+using GraduateThesis.ApplicationCore.File;
 using GraduateThesis.ApplicationCore.Models;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DTO;
@@ -13,8 +14,8 @@ namespace GraduateThesis.WebApi.Controllers
     [ApiController]
     public class CommitteeMemberControler : ApiControllerBase<ICommitteeMemberRepository, CommitteeMemberInput, CommitteeMemberOutput, string>
     {
-        public CommitteeMemberControler(IRepository repository) 
-            : base(repository.CommitteeMemberRepository)
+        public CommitteeMemberControler(IRepository repository, IFileManager fileManager) 
+            : base(repository.CommitteeMemberRepository, fileManager)
         {
         }
     

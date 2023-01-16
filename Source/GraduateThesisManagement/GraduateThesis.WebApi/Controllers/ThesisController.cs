@@ -1,4 +1,5 @@
 ﻿using GraduateThesis.ApplicationCore.AppController;
+using GraduateThesis.ApplicationCore.File;
 using GraduateThesis.ApplicationCore.Models;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DTO;
@@ -15,7 +16,8 @@ public class ThesisController : ApiControllerBase<IThesisRepository, ThesisInput
 {
     private IThesisRepository _thesisRepository;
 
-    public ThesisController(IRepository repository) : base(repository.ThesisRepository)
+    public ThesisController(IRepository repository, IFileManager fileManager) 
+        : base(repository.ThesisRepository, fileManager)
     {
         _thesisRepository = repository.ThesisRepository;
     }
