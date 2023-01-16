@@ -15,9 +15,9 @@ TEXTIMAGE_ON [PRIMARY]
 GO
 
 ALTER TABLE [dbo].[ThesisCommitteeResults]
-  ADD CONSTRAINT [FK_ThesisCommitteeResults_Theses_ID] FOREIGN KEY ([ThesisId]) REFERENCES [dbo].[Theses] ([ID])
+  ADD CONSTRAINT [FK_ThesisCommitteeResults_Theses_ID] FOREIGN KEY ([ThesisId]) REFERENCES [dbo].[Theses] ([ID]) ON DELETE CASCADE ON UPDATE CASCADE
 GO
 
 ALTER TABLE [dbo].[ThesisCommitteeResults]
-  ADD CONSTRAINT [FK_ThesisCommitteeResults_ThesisCommittees_ID] FOREIGN KEY ([ThesisCommitteeId]) REFERENCES [dbo].[ThesisCommittees] ([ID])
+  ADD CONSTRAINT [FK_ThesisCommitteeResults_ThesisCommittees_ID] FOREIGN KEY ([ThesisCommitteeId]) REFERENCES [dbo].[ThesisCommittees] ([ID]) ON DELETE CASCADE ON UPDATE CASCADE
 GO

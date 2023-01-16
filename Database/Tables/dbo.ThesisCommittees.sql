@@ -14,5 +14,5 @@ TEXTIMAGE_ON [PRIMARY]
 GO
 
 ALTER TABLE [dbo].[ThesisCommittees]
-  ADD CONSTRAINT [FK_ThesisCommittees_Councils_ID] FOREIGN KEY ([CouncilId]) REFERENCES [dbo].[Councils] ([ID])
+  ADD CONSTRAINT [FK_ThesisCommittees_Councils_ID] FOREIGN KEY ([CouncilId]) REFERENCES [dbo].[Councils] ([ID]) ON DELETE CASCADE
 GO
