@@ -36,25 +36,25 @@ TEXTIMAGE_ON [PRIMARY]
 GO
 
 ALTER TABLE [dbo].[Theses]
-  ADD CONSTRAINT [FK_Theses_FacultyStaffs_ID] FOREIGN KEY ([LectureId]) REFERENCES [dbo].[FacultyStaffs] ([ID])
+  ADD CONSTRAINT [FK_Theses_FacultyStaffs_ID] FOREIGN KEY ([LectureId]) REFERENCES [dbo].[FacultyStaffs] ([ID]) ON DELETE CASCADE ON UPDATE CASCADE
 GO
 
 ALTER TABLE [dbo].[Theses]
-  ADD CONSTRAINT [FK_Theses_Specializations_ID] FOREIGN KEY ([SpecializationId]) REFERENCES [dbo].[Specializations] ([ID])
+  ADD CONSTRAINT [FK_Theses_Specializations_ID] FOREIGN KEY ([SpecializationId]) REFERENCES [dbo].[Specializations] ([ID]) ON DELETE CASCADE ON UPDATE CASCADE
 GO
 
 ALTER TABLE [dbo].[Theses]
-  ADD CONSTRAINT [FK_Theses_ThesisGroups_ID] FOREIGN KEY ([ThesisGroupId]) REFERENCES [dbo].[ThesisGroups] ([ID])
+  ADD CONSTRAINT [FK_Theses_ThesisGroups_ID] FOREIGN KEY ([ThesisGroupId]) REFERENCES [dbo].[ThesisGroups] ([ID]) ON DELETE CASCADE
 GO
 
 ALTER TABLE [dbo].[Theses]
-  ADD CONSTRAINT [FK_Theses_Topics_ID] FOREIGN KEY ([TopicId]) REFERENCES [dbo].[Topics] ([ID])
+  ADD CONSTRAINT [FK_Theses_Topics_ID] FOREIGN KEY ([TopicId]) REFERENCES [dbo].[Topics] ([ID]) ON DELETE CASCADE ON UPDATE CASCADE
 GO
 
 ALTER TABLE [dbo].[Theses]
-  ADD CONSTRAINT [FK_Theses_TrainingForms_ID] FOREIGN KEY ([TrainingFormId]) REFERENCES [dbo].[TrainingForms] ([ID])
+  ADD CONSTRAINT [FK_Theses_TrainingForms_ID] FOREIGN KEY ([TrainingFormId]) REFERENCES [dbo].[TrainingForms] ([ID]) ON DELETE CASCADE ON UPDATE CASCADE
 GO
 
 ALTER TABLE [dbo].[Theses]
-  ADD CONSTRAINT [FK_Theses_TrainingLevels_ID] FOREIGN KEY ([TrainingLevelId]) REFERENCES [dbo].[TrainingLevels] ([ID])
+  ADD CONSTRAINT [FK_Theses_TrainingLevels_ID] FOREIGN KEY ([TrainingLevelId]) REFERENCES [dbo].[TrainingLevels] ([ID]) ON DELETE CASCADE ON UPDATE CASCADE
 GO
