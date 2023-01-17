@@ -314,8 +314,36 @@ public class ThesisRepository : SubRepository<Thesis, ThesisInput, ThesisOutput,
         };
     }
 
-    public Task<Pagination<ThesisOutput>> GetPgnOfApprovedThesis(int page, int pageSize, string keyword)
+    public async Task<Pagination<ThesisOutput>> GetPgnOfApprovedThesis(int page, int pageSize, string keyword)
     {
-        throw new NotImplementedException();
+        int n = (page - 1) * pageSize;
+        int totalItemCount = await _context.Theses
+            .Where(t => t.IsApproved == true && t.Finished == false && t.IsDeleted == false)
+            .Where(t => t.Id.Contains(keyword) || t.Name.Contains(keyword) || t.Description.Contains(keyword))
+            .CountAsync();
+
+        List<ThesisOutput> onePageOfData = await _context.Theses.Include(i => i.Lecture)
+            .Where(t => t.IsApproved == true && t.Finished == false && t.IsDeleted == false)
+            .Where(t => t.Id.Contains(keyword) || t.Name.Contains(keyword) || t.Description.Contains(keyword))
+            .Skip(n).Take(pageSize)
+            .Select(s => new ThesisOutput
+            {
+                Id = s.Id,
+                Name = s.Name,
+                Notes = s.Notes,
+                Lecturer = new FacultyStaffOutput
+                {
+                    Id = s.Lecture.Id,
+                    FullName = s.Lecture.FullName
+                }
+            }).ToListAsync();
+
+        return new Pagination<ThesisOutput>
+        {
+            Page = page,
+            PageSize = pageSize,
+            TotalItemCount = totalItemCount,
+            Items = onePageOfData
+        };
     }
 }

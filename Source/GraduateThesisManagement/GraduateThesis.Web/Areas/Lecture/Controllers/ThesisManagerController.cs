@@ -188,6 +188,20 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
 
         }
 
+        [Route("approved-list")]
+        [HttpGet]
+        [PageName(Name = "Danh sách đề tài đã được duyệt")]
+        public async Task<IActionResult> GetApprovedList(int page = 1, int pageSize = 10, string keyword = "")
+        {
+            Pagination<ThesisOutput> pagination = await _thesisRepository.GetPgnOfApprovedThesis(page, pageSize, keyword);
+            StaticPagedList<ThesisOutput> pagedList = pagination.ToStaticPagedList();
+
+            ViewData["PagedList"] = pagedList;
+            ViewData["Keyword"] = keyword;
+
+            return View();
+        }
+
         [Route("rejected-list")]
         [HttpGet]
         [PageName(Name = "Danh sách đề tài bị từ chối xét duyệt")]
