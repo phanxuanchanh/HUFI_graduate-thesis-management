@@ -1,6 +1,6 @@
-﻿@model StudentOutput
+﻿@model FacultyStaffOutput
 
-@await Component.InvokeAsync("StudentLayout_StatusArea")
+@await Component.InvokeAsync("FacultyStaffLayout_StatusArea")
 
 <div class="container-xl px-4 mt-4">
     <!-- Account page navigation-->
@@ -12,7 +12,7 @@
     <hr class="mt-0 mb-4">
     <form id="defaultAvatar" asp-action="SetDefaultAvatar" method="post"></form>
     <form asp-action="UpdateProfile" method="post" enctype="multipart/form-data">
-        <input type="hidden" asp-for="StudentClassId" value="@Model.StudentClass.Id" />
+        <input type="hidden" asp-for="FacultyId" value="@Model.Faculty.Id" />
         <div class="row">
             <div class="col-xl-4">
                 <div class="card mb-4 mb-xl-0">
@@ -37,12 +37,12 @@
                         </div>
                         <div class="row gx-3 mb-3">
                             <div class="col-md-6">
-                                <label class="small mb-1" asp-for="Name"></label>
-                                <input class="form-control" asp-for="Name" readonly />
+                                <label class="small mb-1" asp-for="FullName"></label>
+                                <input class="form-control" asp-for="FullName" readonly />
                             </div>
                             <div class="col-md-6">
-                                <label class="small mb-1" asp-for="StudentClass.Name"></label>
-                                <input class="form-control" asp-for="StudentClass.Name" readonly />
+                                <label class="small mb-1" asp-for="Faculty.Name"></label>
+                                <input class="form-control" asp-for="Faculty.Name" readonly />
                             </div>
                         </div>
                         <div class="mb-3">
@@ -73,7 +73,7 @@
                             </select>
                             <span asp-validation-for="Gender" class="text-danger"></span>
                         </div>
-                        
+
                         <button class="btn btn-primary" type="submit">Cập nhật</button>
 
                     </div>
@@ -94,24 +94,23 @@
 
     <script>
         function previewAvatar() {
-          let preview = document.querySelector('#avatar');
-          let file    = document.querySelector('#formFile').files[0];
-          let reader  = new FileReader();
+            let preview = document.querySelector('#avatar');
+            let file = document.querySelector('#formFile').files[0];
+            let reader = new FileReader();
 
-          reader.onloadend = function () {
-            preview.src = reader.result;
-          }
+            reader.onloadend = function () {
+                preview.src = reader.result;
+            }
 
-          if (file) {
-            reader.readAsDataURL(file);
-          } else {
-            preview.src = "";
-          }
+            if (file) {
+                reader.readAsDataURL(file);
+            } else {
+                preview.src = "";
+            }
         }
 
-        function openFileDialog(){
+        function openFileDialog() {
             document.querySelector('#formFile').click();
         }
     </script>
-
 }

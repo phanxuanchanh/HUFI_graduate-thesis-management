@@ -1,5 +1,6 @@
 ﻿using GraduateThesis.ApplicationCore.Email;
 using GraduateThesis.ApplicationCore.Enums;
+using GraduateThesis.ApplicationCore.File;
 using GraduateThesis.ApplicationCore.Hash;
 using GraduateThesis.ApplicationCore.Models;
 using GraduateThesis.ApplicationCore.Repository;
@@ -7,9 +8,12 @@ using GraduateThesis.ExtensionMethods;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DAL;
 using GraduateThesis.Repository.DTO;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -18,13 +22,17 @@ namespace GraduateThesis.Repository.BLL.Implements;
 public class StudentRepository : SubRepository<Student, StudentInput, StudentOutput, string>, IStudentRepository
 {
     private HufiGraduateThesisContext _context;
+    private IHostingEnvironment _hostingEnvironment;
+    private IEmailService _emailService;
+    private IFileManager _fileManager;
 
-    public IEmailService EmailService { get; set; }
-
-    internal StudentRepository(HufiGraduateThesisContext context)
+    internal StudentRepository(HufiGraduateThesisContext context, IHostingEnvironment hostingEnvironment, IEmailService emailService, IFileManager fileManager)
         : base(context, context.Students)
     {
         _context = context;
+        _hostingEnvironment = hostingEnvironment;
+        _emailService = emailService;
+        _fileManager = fileManager;
     }
 
     protected override void ConfigureIncludes()
@@ -56,6 +64,7 @@ public class StudentRepository : SubRepository<Student, StudentInput, StudentOut
             Address = s.Address,
             Avatar = s.Avatar,
             Birthday = s.Birthday,
+            Gender = s.Gender,
             Description = s.Description,
             StudentClass = new StudentClassOutput
             {
@@ -85,7 +94,7 @@ public class StudentRepository : SubRepository<Student, StudentInput, StudentOut
             Address = input.Address,
             Birthday = input.Birthday,
             StudentClassId = input.StudentClassId,
-            Password = BCrypt.Net.BCrypt.HashPassword($"{input.Password}>>>{salt}"),
+            //Password = BCrypt.Net.BCrypt.HashPassword($"{input.Password}>>>{salt}"),
             Salt = salt,
             CreatedAt = DateTime.Now
         };
@@ -149,7 +158,7 @@ public class StudentRepository : SubRepository<Student, StudentInput, StudentOut
         student.VerificationCode = random.NextString(24);
         await _context.SaveChangesAsync();
 
-        EmailService.Send(
+        _emailService.Send(
             student.Email,
             "Khôi phục mật khẩu",
             $"Mã xác nhận của bạn là: {student.VerificationCode}"
@@ -288,5 +297,63 @@ public class StudentRepository : SubRepository<Student, StudentInput, StudentOut
                     Name = s.StudentClass.Name
                 }
             }).SingleOrDefaultAsync();
+    }
+
+    public async Task<DataResponse> UpdateProfileAsync(StudentInput input, FileUploadModel avtUploadModel)
+    {
+        Student student_fromDb = await _context.Students.FindAsync(input.Id);
+        if (student_fromDb == null)
+            return new DataResponse
+            {
+                Status = DataResponseStatus.NotFound,
+                Message = "Không tìm thấy tài khoản này!"
+            };
+
+        student_fromDb.Email = input.Email;
+        student_fromDb.Phone = input.Phone;
+        student_fromDb.Address = input.Address;
+        student_fromDb.Birthday = input.Birthday;
+        student_fromDb.Gender = input.Gender;
+
+        if (avtUploadModel != null)
+        {
+            avtUploadModel.FileName = $"student-avatar_{student_fromDb.Id}_{DateTime.Now.ToString("ddMMyyyyHHmmss")}.{_fileManager.GetExtension(avtUploadModel.ContentType)}";
+
+            _fileManager.SetPath(Path.Combine(_hostingEnvironment.WebRootPath, "avatar", "student"));
+            _fileManager.Save(avtUploadModel);
+
+            student_fromDb.Avatar = $"student/{avtUploadModel.FileName}";
+        }
+
+        await _context.SaveChangesAsync();
+
+        return new DataResponse
+        {
+            Status = DataResponseStatus.Success,
+            Message = "Cập nhật thông tin cá nhân thành công!"
+        };
+    }
+
+    public async Task<DataResponse> SetDefaultAvatarAsync(string studentId)
+    {
+        Student student_fromDb = await _context.Students.FindAsync(studentId);
+        if (student_fromDb == null)
+            return new DataResponse
+            {
+                Status = DataResponseStatus.NotFound,
+                Message = "Không tìm thấy tài khoản này!"
+            };
+
+        if (student_fromDb.Gender == "Nam")
+            student_fromDb.Avatar = "default-male-profile.png";
+        else
+            student_fromDb.Avatar = "default-female-profile.png";
+
+        await _context.SaveChangesAsync();
+
+        return new DataResponse {
+            Status = DataResponseStatus.Success,
+            Message = "Đã đặt ảnh đại diện mặc định thành công!"
+        };
     }
 }

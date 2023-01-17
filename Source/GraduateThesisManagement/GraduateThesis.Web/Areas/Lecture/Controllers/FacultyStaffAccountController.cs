@@ -1,12 +1,15 @@
 ﻿using GraduateThesis.ApplicationCore.AppController;
 using GraduateThesis.ApplicationCore.Authorization;
-using GraduateThesis.ApplicationCore.Email;
 using GraduateThesis.ApplicationCore.Enums;
 using GraduateThesis.ApplicationCore.Models;
+using GraduateThesis.ApplicationCore.WebAttributes;
 using GraduateThesis.Common.WebAttributes;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DTO;
+using GraduateThesis.WebExtensions;
 using Microsoft.AspNetCore.Mvc;
+
+#nullable disable
 
 namespace GraduateThesis.Web.Areas.Lecture.Controllers;
 
@@ -15,16 +18,12 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers;
 public class FacultyStaffAccountController : WebControllerBase
 {
     private IFacultyStaffRepository _facultyStaffRepository;
-    private IThesisRepository _thesisRepository;
     private IAccountManager _accountManager;
 
-    public FacultyStaffAccountController(IRepository repository, IEmailService emailService, IAccountManager accountManager)
+    public FacultyStaffAccountController(IRepository repository, IAccountManager accountManager)
     {
         _facultyStaffRepository = repository.FacultyStaffRepository;
-        _thesisRepository = repository.ThesisRepository;
         _accountManager = accountManager;
-
-        _facultyStaffRepository.EmailService = emailService;
     }
 
     [Route("sign-in")]
@@ -95,7 +94,6 @@ public class FacultyStaffAccountController : WebControllerBase
             return View("Verify", accountVerification);
         }
             
-
         AddViewData(accountVerification);
         return View(forgotPasswordModel);
     }
@@ -155,5 +153,58 @@ public class FacultyStaffAccountController : WebControllerBase
         _accountManager.SetHttpContext(HttpContext);
         _accountManager.RemoveSession();
         return RedirectToAction("Index", "Home");
+    }
+
+    [Route("get-profile")]
+    [HttpGet]
+    [WebAuthorize]
+    [AccountInfo(typeof(FacultyStaffOutput))]
+    [PageName(Name = "Thông tin giảng viên")]
+    public async Task<IActionResult> GetProfile()
+    {
+        _accountManager.SetHttpContext(HttpContext);
+        AccountSession accountSession = _accountManager.GetSession();
+        FacultyStaffOutput facultyStaffOutput = await _facultyStaffRepository.GetAsync(accountSession.UserId);
+
+        return View(facultyStaffOutput);
+    }
+
+    [Route("update-profile")]
+    [HttpPost]
+    [WebAuthorize]
+    [AccountInfo(typeof(FacultyStaffOutput))]
+    public async Task<IActionResult> UpdateProfile(IFormFile formFile, FacultyStaffInput facultyStaffInput)
+    {
+        if (!ModelState.IsValid)
+        {
+            AddTempData(DataResponseStatus.InvalidData);
+            return RedirectToAction("GetProfile");
+        }
+
+        DataResponse dataResponse = null;
+        if (formFile == null)
+            dataResponse = await _facultyStaffRepository.UpdateProfileAsync(facultyStaffInput, null);
+        else
+            dataResponse = await _facultyStaffRepository
+                .UpdateProfileAsync(facultyStaffInput, formFile.ToFileUploadModel());
+
+        AddTempData(dataResponse);
+
+        return RedirectToAction("GetProfile");
+    }
+
+    [Route("set-default-avatar")]
+    [HttpPost]
+    [WebAuthorize]
+    [AccountInfo(typeof(FacultyStaffOutput))]
+    public async Task<IActionResult> SetDefaultAvatar()
+    {
+        _accountManager.SetHttpContext(HttpContext);
+        AccountSession accountSession = _accountManager.GetSession();
+        DataResponse dataResponse = await _facultyStaffRepository.SetDefaultAvatarAsync(accountSession.UserId);
+
+        AddTempData(dataResponse);
+
+        return RedirectToAction("GetProfile");
     }
 }

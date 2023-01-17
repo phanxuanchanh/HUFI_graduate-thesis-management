@@ -21,9 +21,9 @@
 <body>
     <div id="app">
         @await Component.InvokeAsync("FacultyStaffLayout_Sidebar")
-        <div id="main">
+        <div id="main" class="layout-navbar">
             @await Component.InvokeAsync("FacultyStaffLayout_PageHeader")
-            <div id="main-content" class="pt-0">
+            <div id="main-content" class="pt-1">
                 <div class="page-heading">
                     <h3>@ViewData["PageName"]</h3>
                 </div>

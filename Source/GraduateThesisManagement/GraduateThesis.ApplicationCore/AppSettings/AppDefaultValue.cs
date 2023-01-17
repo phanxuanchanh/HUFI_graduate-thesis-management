@@ -7,6 +7,9 @@ public class AppDefaultValue
 {
     public static string ConnectionString = null;
 
+    public static string AccountAssetsPath = null;
+    public static string ThesisAssetsPath = null;
+
     public static string SuccessMsg = null;
     public static string AlreadyExistsMsg = null;
     public static string NotFoundMsg = null;

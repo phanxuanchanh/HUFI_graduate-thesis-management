@@ -1,5 +1,6 @@
 ﻿using GraduateThesis.ApplicationCore.Email;
 using GraduateThesis.ApplicationCore.Enums;
+using GraduateThesis.ApplicationCore.File;
 using GraduateThesis.ApplicationCore.Hash;
 using GraduateThesis.ApplicationCore.Models;
 using GraduateThesis.ApplicationCore.Repository;
@@ -7,9 +8,11 @@ using GraduateThesis.ExtensionMethods;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DAL;
 using GraduateThesis.Repository.DTO;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -18,13 +21,17 @@ namespace GraduateThesis.Repository.BLL.Implements;
 public class FacultyStaffRepository : SubRepository<FacultyStaff, FacultyStaffInput, FacultyStaffOutput, string>, IFacultyStaffRepository
 {
     private HufiGraduateThesisContext _context;
+    private IHostingEnvironment _hostingEnvironment;
+    private IEmailService _emailService;
+    private IFileManager _fileManager;
 
-    public IEmailService EmailService { get; set; }
-
-    internal FacultyStaffRepository(HufiGraduateThesisContext context)
+    internal FacultyStaffRepository(HufiGraduateThesisContext context, IHostingEnvironment hostingEnvironment, IEmailService emailService, IFileManager fileManager)
         : base(context, context.FacultyStaffs)
     {
         _context = context;
+        _hostingEnvironment = hostingEnvironment;
+        _emailService = emailService;
+        _fileManager = fileManager;
     }
 
     protected override void ConfigureIncludes()
@@ -49,6 +56,14 @@ public class FacultyStaffRepository : SubRepository<FacultyStaff, FacultyStaffIn
             FullName = s.FullName,
             Email = s.Email,
             Phone = s.Phone,
+            Address = s.Address,
+            Avatar = s.Avatar,
+            Birthday = s.Birthday,
+            Gender = s.Gender,
+            Faculty = new FacultyOutput { 
+                Id = s.Faculty.Id,
+                Name = s.Faculty.Name
+            }
         };
 
         SimpleImportSelector = r => new FacultyStaff
@@ -104,7 +119,7 @@ public class FacultyStaffRepository : SubRepository<FacultyStaff, FacultyStaffIn
         facultyStaff.CodeExpTime = DateTime.Now.AddMinutes(5);
         await _context.SaveChangesAsync();
 
-        EmailService.Send(
+        _emailService.Send(
             facultyStaff.Email,
             "Khôi phục mật khẩu",
             $"Mã xác nhận của bạn là: {facultyStaff.VerificationCode}"
@@ -195,6 +210,65 @@ public class FacultyStaffRepository : SubRepository<FacultyStaff, FacultyStaffIn
             PageSize = pageSize,
             TotalItemCount = totalItemCount,
             Items = onePageOfData
+        };
+    }
+
+    public async Task<DataResponse> UpdateProfileAsync(FacultyStaffInput input, FileUploadModel avtUploadModel)
+    {
+        FacultyStaff facultyStaff_fromDb = await _context.FacultyStaffs.FindAsync(input.Id);
+        if (facultyStaff_fromDb == null)
+            return new DataResponse
+            {
+                Status = DataResponseStatus.NotFound,
+                Message = "Không tìm thấy tài khoản này!"
+            };
+
+        facultyStaff_fromDb.Email = input.Email;
+        facultyStaff_fromDb.Phone = input.Phone;
+        facultyStaff_fromDb.Address = input.Address;
+        facultyStaff_fromDb.Birthday = input.Birthday;
+        facultyStaff_fromDb.Gender = input.Gender;
+
+        if (avtUploadModel != null)
+        {
+            avtUploadModel.FileName = $"faculty-staff-avatar_{facultyStaff_fromDb.Id}_{DateTime.Now.ToString("ddMMyyyyHHmmss")}.{_fileManager.GetExtension(avtUploadModel.ContentType)}";
+
+            _fileManager.SetPath(Path.Combine(_hostingEnvironment.WebRootPath, "avatar", "faculty-staff"));
+            _fileManager.Save(avtUploadModel);
+
+            facultyStaff_fromDb.Avatar = $"faculty-staff/{avtUploadModel.FileName}";
+        }
+
+        await _context.SaveChangesAsync();
+
+        return new DataResponse
+        {
+            Status = DataResponseStatus.Success,
+            Message = "Cập nhật thông tin cá nhân thành công!"
+        };
+    }
+
+    public async Task<DataResponse> SetDefaultAvatarAsync(string facultyStaffId)
+    {
+        FacultyStaff facultyStaff_fromDb = await _context.FacultyStaffs.FindAsync(facultyStaffId);
+        if (facultyStaff_fromDb == null)
+            return new DataResponse
+            {
+                Status = DataResponseStatus.NotFound,
+                Message = "Không tìm thấy tài khoản này!"
+            };
+
+        if (facultyStaff_fromDb.Gender == "Nam")
+            facultyStaff_fromDb.Avatar = "default-male-profile.png";
+        else
+            facultyStaff_fromDb.Avatar = "default-female-profile.png";
+
+        await _context.SaveChangesAsync();
+
+        return new DataResponse
+        {
+            Status = DataResponseStatus.Success,
+            Message = "Đã đặt ảnh đại diện mặc định thành công!"
         };
     }
 }

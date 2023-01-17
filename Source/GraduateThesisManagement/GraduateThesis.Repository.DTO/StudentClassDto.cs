@@ -10,7 +10,7 @@ public class StudentClassInput
     [Required(ErrorMessage = "{0} Bắt buộc nhập ")]
     public string Id { get; set; }
 
-    [Display(Name = "Tên chuyên ngành")]
+    [Display(Name = "Tên lớp")]
     [Required(ErrorMessage = "{0} không được để trống")]
     public string Name { get; set; }
 
