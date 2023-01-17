@@ -8,6 +8,7 @@ using GraduateThesis.ExtensionMethods;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DAL;
 using GraduateThesis.Repository.DTO;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -20,13 +21,15 @@ namespace GraduateThesis.Repository.BLL.Implements;
 public class FacultyStaffRepository : SubRepository<FacultyStaff, FacultyStaffInput, FacultyStaffOutput, string>, IFacultyStaffRepository
 {
     private HufiGraduateThesisContext _context;
+    private IHostingEnvironment _hostingEnvironment;
     private IEmailService _emailService;
     private IFileManager _fileManager;
 
-    internal FacultyStaffRepository(HufiGraduateThesisContext context, IEmailService emailService, IFileManager fileManager)
+    internal FacultyStaffRepository(HufiGraduateThesisContext context, IHostingEnvironment hostingEnvironment, IEmailService emailService, IFileManager fileManager)
         : base(context, context.FacultyStaffs)
     {
         _context = context;
+        _hostingEnvironment = hostingEnvironment;
         _emailService = emailService;
         _fileManager = fileManager;
     }
@@ -53,6 +56,14 @@ public class FacultyStaffRepository : SubRepository<FacultyStaff, FacultyStaffIn
             FullName = s.FullName,
             Email = s.Email,
             Phone = s.Phone,
+            Address = s.Address,
+            Avatar = s.Avatar,
+            Birthday = s.Birthday,
+            Gender = s.Gender,
+            Faculty = new FacultyOutput { 
+                Id = s.Faculty.Id,
+                Name = s.Faculty.Name
+            }
         };
 
         SimpleImportSelector = r => new FacultyStaff
@@ -211,19 +222,21 @@ public class FacultyStaffRepository : SubRepository<FacultyStaff, FacultyStaffIn
                 Status = DataResponseStatus.NotFound,
                 Message = "Không tìm thấy tài khoản này!"
             };
+
         facultyStaff_fromDb.Email = input.Email;
         facultyStaff_fromDb.Phone = input.Phone;
         facultyStaff_fromDb.Address = input.Address;
         facultyStaff_fromDb.Birthday = input.Birthday;
+        facultyStaff_fromDb.Gender = input.Gender;
 
         if (avtUploadModel != null)
         {
-            avtUploadModel.FileName = $"facultyStaff-avatar_{facultyStaff_fromDb.Id}_{DateTime.Now.ToString("ddMMyyyyHHmmss")}.{_fileManager.GetExtension(avtUploadModel.ContentType)}";
+            avtUploadModel.FileName = $"faculty-staff-avatar_{facultyStaff_fromDb.Id}_{DateTime.Now.ToString("ddMMyyyyHHmmss")}.{_fileManager.GetExtension(avtUploadModel.ContentType)}";
 
-            _fileManager.SetPath(Path.Combine(_hostingEnvironment.WebRootPath, "avatar", "facultyStaff"));
+            _fileManager.SetPath(Path.Combine(_hostingEnvironment.WebRootPath, "avatar", "faculty-staff"));
             _fileManager.Save(avtUploadModel);
 
-            facultyStaff_fromDb.Avatar = $"facultyStaff/{avtUploadModel.FileName}";
+            facultyStaff_fromDb.Avatar = $"faculty-staff/{avtUploadModel.FileName}";
         }
 
         await _context.SaveChangesAsync();
@@ -234,7 +247,6 @@ public class FacultyStaffRepository : SubRepository<FacultyStaff, FacultyStaffIn
             Message = "Cập nhật thông tin cá nhân thành công!"
         };
     }
-
 
     public async Task<DataResponse> SetDefaultAvatarAsync(string facultyStaffId)
     {

@@ -37,8 +37,14 @@ public class StudentInput
     [Display(Name = "Mô tả")]
     public string Description { get; set; }
 
-    [Display(Name = "Lớp")]
+    [Display(Name = "Mã lớp")]
+    [Required(ErrorMessage = "{0} không được để trống")]
     public string StudentClassId { get; set; }
+
+    [Display(Name = "Giới tính")]
+    [RegularExpression("Nam|Nữ", ErrorMessage = "{0} chỉ có 'Nam' hoặc 'Nữ'")]
+    [Required(ErrorMessage = "{0} không được để trống")]
+    public string Gender { get; set; }
 }
 
 public class StudentOutput : StudentInput

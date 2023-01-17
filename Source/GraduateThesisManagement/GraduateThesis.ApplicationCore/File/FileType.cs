@@ -1,5 +1,4 @@
-﻿
-using GraduateThesis.ApplicationCore.Enums;
+﻿using GraduateThesis.ApplicationCore.Enums;
 
 namespace GraduateThesis.ApplicationCore.File;
 

@@ -42,7 +42,7 @@ public class Repository : IRepository
 
     public IThesisCommitteeRepository ThesisCommitteeRepository => new ThesisCommitteeRepository(_context);
 
-    public IFacultyStaffRepository FacultyStaffRepository => new FacultyStaffRepository(_context, _emailService, _fileManager);
+    public IFacultyStaffRepository FacultyStaffRepository => new FacultyStaffRepository(_context, _hostingEnvironment, _emailService, _fileManager);
 
     public ITrainingFormRepository TrainingFormRepository => new TrainingFormRepository(_context);
 

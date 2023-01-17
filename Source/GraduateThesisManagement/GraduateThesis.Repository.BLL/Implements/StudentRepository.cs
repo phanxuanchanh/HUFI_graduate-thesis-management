@@ -64,6 +64,7 @@ public class StudentRepository : SubRepository<Student, StudentInput, StudentOut
             Address = s.Address,
             Avatar = s.Avatar,
             Birthday = s.Birthday,
+            Gender = s.Gender,
             Description = s.Description,
             StudentClass = new StudentClassOutput
             {
@@ -312,6 +313,7 @@ public class StudentRepository : SubRepository<Student, StudentInput, StudentOut
         student_fromDb.Phone = input.Phone;
         student_fromDb.Address = input.Address;
         student_fromDb.Birthday = input.Birthday;
+        student_fromDb.Gender = input.Gender;
 
         if (avtUploadModel != null)
         {

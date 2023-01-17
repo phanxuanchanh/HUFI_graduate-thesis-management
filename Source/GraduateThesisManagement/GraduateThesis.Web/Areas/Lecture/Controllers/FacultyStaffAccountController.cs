@@ -4,11 +4,12 @@ using GraduateThesis.ApplicationCore.Enums;
 using GraduateThesis.ApplicationCore.Models;
 using GraduateThesis.ApplicationCore.WebAttributes;
 using GraduateThesis.Common.WebAttributes;
-using GraduateThesis.Repository.BLL.Implements;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DTO;
 using GraduateThesis.WebExtensions;
 using Microsoft.AspNetCore.Mvc;
+
+#nullable disable
 
 namespace GraduateThesis.Web.Areas.Lecture.Controllers;
 
@@ -17,13 +18,11 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers;
 public class FacultyStaffAccountController : WebControllerBase
 {
     private IFacultyStaffRepository _facultyStaffRepository;
-    private IThesisRepository _thesisRepository;
     private IAccountManager _accountManager;
 
     public FacultyStaffAccountController(IRepository repository, IAccountManager accountManager)
     {
         _facultyStaffRepository = repository.FacultyStaffRepository;
-        _thesisRepository = repository.ThesisRepository;
         _accountManager = accountManager;
     }
 
@@ -95,7 +94,6 @@ public class FacultyStaffAccountController : WebControllerBase
             return View("Verify", accountVerification);
         }
             
-
         AddViewData(accountVerification);
         return View(forgotPasswordModel);
     }
@@ -167,9 +165,6 @@ public class FacultyStaffAccountController : WebControllerBase
         _accountManager.SetHttpContext(HttpContext);
         AccountSession accountSession = _accountManager.GetSession();
         FacultyStaffOutput facultyStaffOutput = await _facultyStaffRepository.GetAsync(accountSession.UserId);
-
-        if (string.IsNullOrEmpty(facultyStaffOutput.Avatar))
-            facultyStaffOutput.Avatar = "default-male-profile.png";
 
         return View(facultyStaffOutput);
     }

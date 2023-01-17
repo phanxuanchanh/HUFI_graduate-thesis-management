@@ -147,7 +147,7 @@ public class WebControllerBase : Controller
     [NonAction]
     protected void AddTempData(DataResponseStatus dataResponseStatus)
     {
-        AddViewData(new DataResponse { Status = dataResponseStatus });
+        AddTempData(new DataResponse { Status = dataResponseStatus });
     }
 
     [NonAction]
@@ -159,7 +159,7 @@ public class WebControllerBase : Controller
     [NonAction]
     protected void AddTempData(AccountStatus accountStatus)
     {
-        AddViewData(new AccountAuthModel { Status = accountStatus });
+        AddTempData(new AccountAuthModel { Status = accountStatus });
     }
 
     [NonAction]
@@ -171,7 +171,7 @@ public class WebControllerBase : Controller
     [NonAction]
     protected void AddTempData(DataResponseStatus dataResponseStatus, string message)
     {
-        AddViewData(new DataResponse { Status = dataResponseStatus, Message = message });
+        AddTempData(new DataResponse { Status = dataResponseStatus, Message = message });
     }
 
     [NonAction]
@@ -183,7 +183,7 @@ public class WebControllerBase : Controller
     [NonAction]
     protected void AddTempData(AccountStatus accountStatus, string message)
     {
-        AddViewData(new AccountAuthModel { Status = accountStatus, Message = message });
+        AddTempData(new AccountAuthModel { Status = accountStatus, Message = message });
     }
 }
 

@@ -1,34 +1,28 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-using System.Xml.Linq;
 
 namespace GraduateThesis.Repository.DTO;
 
 public class FacultyStaffInput
 {
     [Display(Name = " Mã giảng viên khoa")]
-    [Required(ErrorMessage = "{0} không được để trống ")]
+    [Required(ErrorMessage = "{0} không được để trống")]
     public string Id { get; set; }
 
     [Display(Name = "Mã khoa")]
-    [Required(ErrorMessage = "{0} không được để trống ")]
+    [Required(ErrorMessage = "{0} không được để trống")]
     public string FacultyId { get; set; }
 
-
-    [Display(Name = "Mã vai trò trong khoa")]
-    [Required(ErrorMessage = "{0} không được để trống ")]
-    public string FacultyRoleId { get; set; }
-
     [Display(Name = "Tên giảng viên")]
-    [Required(ErrorMessage = "{0} không được để trống ")]
+    [Required(ErrorMessage = "{0} không được để trống")]
     public string FullName { get; set; }
 
     [Display(Name = "Mô tả")]
     public string Description { get; set; }
 
-    [StringLength(1, MinimumLength = 1, ErrorMessage = "Giới tính có 1 kí tự.")]
-    [RegularExpression("Nam|Nữ", ErrorMessage = "Giới tính chỉ có 'Nam' hoặc 'Nữ'.")]
-    [Required(ErrorMessage = "{0} Gioi tính Nam hoặc Nữ")]
+    [Display(Name = "Giới tính")]
+    [RegularExpression("Nam|Nữ", ErrorMessage = "{0} chỉ có 'Nam' hoặc 'Nữ'")]
+    [Required(ErrorMessage = "{0} không được để trống")]
     public string Gender { get; set; }
 
     [Display(Name = "Số điện thoại")]
@@ -58,14 +52,6 @@ public class FacultyStaffInput
 
     [Display(Name = "Ghi chú")]
     public string Notes { get; set; }
-
-    [Display(Name = "Mật khẩu")]
-    [Required(ErrorMessage = "{0} bắt buộc nhập ")]
-    [DataType(DataType.Password, ErrorMessage = "{0} có kiểu dữ liệu không hợp lệ")]
-    public string Password { get; set; }
-
-    [DataType(DataType.Password, ErrorMessage = "{0} có kiểu dữ liệu không hợp lệ")]
-    public string Salt { get; set; }
 }
 
 public class FacultyStaffOutput : FacultyStaffInput
