@@ -7,6 +7,8 @@ using GraduateThesis.Common.WebAttributes;
 using GraduateThesis.ApplicationCore.WebAttributes;
 using GraduateThesis.ApplicationCore.Models;
 using GraduateThesis.ApplicationCore.AppController;
+using X.PagedList;
+using GraduateThesis.WebExtensions;
 
 namespace GraduateThesis.Web.Areas.Lecture.Controllers
 {
@@ -146,6 +148,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
         {
             throw new NotImplementedException();
         }
+
         [Route("list-thesis")]
         [HttpGet]
         [PageName(Name = "Danh sách đề tài xét duyệt")]
@@ -154,6 +157,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
             List<ThesisOutput> thesisOutputs = await _thesisRepository.GetApprovalThesisAsync();
             return View(thesisOutputs);
         }
+
         [Route("approve-thesis/{thesisId}")]
         [HttpGet]
         [PageName(Name = "Xét duyệt đề tài")]
@@ -166,13 +170,13 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
         [Route("approve-thesis/{thesisId}")]
         [HttpPost]
         [PageName(Name = "Xét duyệt đề tài")]
-
         public async Task<IActionResult> ApproveThesis([Required] string thesisId)
         {
             DataResponse dataResponse = await _thesisRepository.ApprovalThesisAsync(thesisId);
             AddTempData(dataResponse);
             return RedirectToAction("ApprovalThesis",new { thesisId= thesisId });
         }
+
         [Route("reject-thesis/{thesisId}")]
         [HttpPost]
         [PageName(Name = "Từ chối xét duyệt đề tài")]
@@ -184,6 +188,19 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
 
         }
 
+        [Route("rejected-list")]
+        [HttpGet]
+        [PageName(Name = "Danh sách đề tài bị từ chối xét duyệt")]
+        public async Task<IActionResult> GetRejectedList(int page = 1, int pageSize = 10, string keyword = "")
+        {
+            Pagination<ThesisOutput> pagination = await _thesisRepository.GetPgnOfRejectedThesis(page, pageSize, keyword);
+            StaticPagedList<ThesisOutput> pagedList = pagination.ToStaticPagedList();
+
+            ViewData["PagedList"] = pagedList;
+            ViewData["Keyword"] = keyword;
+
+            return View();
+        }
     }
 }
 

@@ -191,7 +191,9 @@ public class FacultyStaffRepository : SubRepository<FacultyStaff, FacultyStaffIn
     {
         int n = (page - 1) * pageSize;
         int totalItemCount = await _context.AppUserRoles
-            .Where(f => f.RoleId == roleId && f.User.IsDeleted == false).CountAsync();
+            .Where(f => f.RoleId == roleId && f.User.IsDeleted == false)
+            .Where(f => f.User.Id.Contains(keyword) || f.User.FullName.Contains(keyword) || f.User.Email.Contains(keyword))
+            .CountAsync();
 
         List<FacultyStaffOutput> onePageOfData = await _context.AppUserRoles.Include(i => i.User)
             .Where(f => f.RoleId == roleId && f.User.IsDeleted == false)

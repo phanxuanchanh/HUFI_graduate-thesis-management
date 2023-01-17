@@ -61,9 +61,9 @@ public partial class Thesis
 
     public string ThesisGroupId { get; set; }
 
-    public long? IsRejected { get; set; }
+    public bool IsRejected { get; set; }
 
-    public long? IsPublished { get; set; }
+    public bool IsPublished { get; set; }
 
     public virtual ICollection<CommitteeMemberResult> CommitteeMemberResults { get; } = new List<CommitteeMemberResult>();
 

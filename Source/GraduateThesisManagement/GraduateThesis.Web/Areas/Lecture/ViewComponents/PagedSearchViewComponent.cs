@@ -10,8 +10,11 @@ public class PagedSearchViewComponent : ViewComponent
 
     }
 
-    public IViewComponentResult Invoke()
+    public IViewComponentResult Invoke(string action = "Index", bool enableOrder = true)
     {
+        ViewData["Action"] = action;
+        ViewData["EnableOrder"] = enableOrder;
+
         return View();
     }
 }

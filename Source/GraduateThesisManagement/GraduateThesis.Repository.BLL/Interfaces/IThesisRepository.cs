@@ -14,4 +14,6 @@ public interface IThesisRepository : ISubRepository<ThesisInput, ThesisOutput, s
     Task<DataResponse> RejectThesisAsync(ThesisInput thesisInput, string thesisId); 
     Task<DataResponse> CheckMaxStudentNumberAsync(string thesisId, int currentStudentNumber);
     Task<List<ThesisOutput>> GetApprovalThesisAsync();
+    Task<Pagination<ThesisOutput>> GetPgnOfRejectedThesis(int page, int pageSize, string keyword);
+    Task<Pagination<ThesisOutput>> GetPgnOfApprovedThesis(int page, int pageSize, string keyword);
 }

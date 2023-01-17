@@ -269,8 +269,6 @@ public class ThesisRepository : SubRepository<Thesis, ThesisInput, ThesisOutput,
 
     }
 
-
-
     public async Task<DataResponse> CheckMaxStudentNumberAsync(string thesisId, int currentStudentNumber)
     {
         Thesis thesis = await _context.Theses.FindAsync(thesisId);
@@ -281,5 +279,43 @@ public class ThesisRepository : SubRepository<Thesis, ThesisInput, ThesisOutput,
             return new DataResponse { Status = DataResponseStatus.Failed };
 
         return new DataResponse { Status = DataResponseStatus.Success };
+    }
+
+    public async Task<Pagination<ThesisOutput>> GetPgnOfRejectedThesis(int page, int pageSize, string keyword)
+    {
+        int n = (page - 1) * pageSize;
+        int totalItemCount = await _context.Theses
+            .Where(t => t.IsRejected == true && t.IsDeleted == false)
+            .Where(t => t.Id.Contains(keyword) || t.Name.Contains(keyword) || t.Description.Contains(keyword))
+            .CountAsync();
+
+        List<ThesisOutput> onePageOfData = await _context.Theses.Include(i => i.Lecture)
+            .Where(t => t.IsRejected == true && t.IsDeleted == false)
+            .Where(t => t.Id.Contains(keyword) || t.Name.Contains(keyword) || t.Description.Contains(keyword))
+            .Skip(n).Take(pageSize)
+            .Select(s => new ThesisOutput
+            {
+                Id = s.Id,
+                Name = s.Name,
+                Notes = s.Notes,
+                Lecturer = new FacultyStaffOutput
+                {
+                    Id = s.Lecture.Id,
+                    FullName = s.Lecture.FullName
+                }
+            }).ToListAsync();
+
+        return new Pagination<ThesisOutput>
+        {
+            Page = page,
+            PageSize = pageSize,
+            TotalItemCount = totalItemCount,
+            Items = onePageOfData
+        };
+    }
+
+    public Task<Pagination<ThesisOutput>> GetPgnOfApprovedThesis(int page, int pageSize, string keyword)
+    {
+        throw new NotImplementedException();
     }
 }
