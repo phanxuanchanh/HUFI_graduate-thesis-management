@@ -1,0 +1,102 @@
+﻿@model ThesisApprovalInput
+@{
+    ThesisOutput thesisOutput = (ViewData["Thesis"] as ThesisOutput)!;
+}
+
+@await Component.InvokeAsync("FacultyStaffLayout_StatusArea")
+
+<section id="basic-horizontal-layouts">
+    <div class="row match-height">
+        <div class="col-md-12 col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title">@ViewData["PageName"]: "@thesisOutput.Name"</h4>
+                </div>
+                <div class="card-content">
+                    <div class="card-body">
+                        <form class="form form-horizontal">
+                            <div class="form-body">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <label>Mã đề tài</label>
+                                    </div>
+                                    <div class="col-md-8 form-group">
+                                        <input class="form-control" value="@thesisOutput.Id" disabled />
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label>Tên đề tài</label>
+                                    </div>
+                                    <div class="col-md-8 form-group">
+                                        <input class="form-control" value="@thesisOutput.Name" placeholder="Nhập tên đề tài" disabled />
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label>Mô tả đề tài</label>
+                                    </div>
+                                    <div class="col-md-8 form-group">
+                                        <textarea class="form-control" placeholder="Mô tả" style="height: 350px;" disabled></textarea>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label>Giảng viên ra đề</label>
+                                    </div>
+                                    <div class="col-md-8 form-group">
+                                        <input class="form-control" value="@thesisOutput.Lecturer.FullName" placeholder="Nhập tên giảng viên ra đề tài" disabled />
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label>Ngày tạo</label>
+                                    </div>
+                                    <div class="col-md-8 form-group">
+                                        <input class="form-control" value="@thesisOutput.CreatedAt" disabled />
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label>Ngày cập nhật</label>
+                                    </div>
+                                    <div class="col-md-8 form-group">
+                                        <input class="form-control" value="@thesisOutput.UpdatedAt" disabled />
+                                    </div>
+
+                                    <div class="col-sm-12 d-flex justify-content-end">
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="basic-horizontal-layouts">
+    <div class="row match-height">
+        <div class="col-md-12 col-12">
+            <div class="card">
+                <div class="card-header">
+                </div>
+                <div class="card-content">
+                    <div class="card-body">
+                        <form class="form form-horizontal" asp-action="ApproveThesis" method="post" id="approveOrRejectThesis">
+                            <input type="hidden" asp-for="ThesisId" />
+                            <div class="form-body">
+                                <div class="form-group">
+                                    <label class="form-label" asp-for="Notes"></label>
+                                    <textarea asp-for="Notes" class="form-control" placeholder="Mô tả" style="height: 250px;"></textarea>
+                                    <span asp-validation-for="Notes" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </form>
+                        <div class="d-flex justify-content-center">
+                            <button type="submit" form="approveOrRejectThesis" formaction="@Url.Action("RejectThesis", new { thesisId = @Model.ThesisId })" class="btn btn-danger me-1 mb-1">Từ chối</button>
+                            <button type="submit" form="approveOrRejectThesis" formaction="@Url.Action("ApproveThesis", new { thesisId = Model.ThesisId })" class="btn btn-success me-1 mb-1">Phê duyệt</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
