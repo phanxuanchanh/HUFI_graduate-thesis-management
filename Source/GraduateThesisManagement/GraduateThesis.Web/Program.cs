@@ -53,6 +53,7 @@ builder.Services.AddSession();
 
 AppConfiguration.ConfigConnectionString(connectionString);
 AppConfiguration.ConfigDefaultMessage();
+AppConfiguration.ConfigBackupAndRestore(builder.Configuration.GetSection("Backup"));
 
 var app = builder.Build();
 

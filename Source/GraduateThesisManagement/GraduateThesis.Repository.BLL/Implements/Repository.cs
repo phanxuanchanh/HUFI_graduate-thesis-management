@@ -56,16 +56,8 @@ public class Repository : IRepository
 
     public IAppPageRepository AppPageRepository => new AppPageRepository(_context);
 
+    public ISystemRepository SystemRepository => new SystemRepository(_context);
 
-    public int ExecuteNonQuery(FormattableString sql)
-    {
-        return _context.Database.ExecuteSql(sql);
-    }
-
-    public T ExecuteScalar<T>(FormattableString sql)
-    {
-        return _context.Database.SqlQuery<T>(sql).SingleOrDefault();
-    }
 
     protected virtual void Dispose(bool disposing)
     {

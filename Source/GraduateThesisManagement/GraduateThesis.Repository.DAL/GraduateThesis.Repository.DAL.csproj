@@ -17,4 +17,8 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\GraduateThesis.Repository.DTO\GraduateThesis.Repository.DTO.csproj" />
+  </ItemGroup>
+
 </Project>

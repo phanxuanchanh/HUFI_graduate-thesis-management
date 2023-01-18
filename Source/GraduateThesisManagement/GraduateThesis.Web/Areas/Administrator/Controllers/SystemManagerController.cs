@@ -1,4 +1,7 @@
 ﻿using GraduateThesis.ApplicationCore.AppController;
+using GraduateThesis.ApplicationCore.AppSettings;
+using GraduateThesis.ApplicationCore.Enums;
+using GraduateThesis.Common.WebAttributes;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DTO;
 using Microsoft.AspNetCore.Mvc;
@@ -11,11 +14,11 @@ namespace GraduateThesis.Web.Areas.Administrator.Controllers;
 [Route("system-manager")]
 public class SystemManagerController : WebControllerBase
 {
-    private IRepository _repository;
+    private ISystemRepository _systemRepository;
 
     public SystemManagerController(IRepository repository)
     {
-        _repository = repository;
+        _systemRepository = repository.SystemRepository;
     }
 
     [Route("exec-query")]
@@ -31,7 +34,7 @@ public class SystemManagerController : WebControllerBase
     {
         if (ModelState.IsValid)
         {
-            int affected = _repository.ExecuteNonQuery($"{execQueryInput.Query}");
+            //int affected = _repository.ExecuteNonQuery($"{execQueryInput.Query}");
             return View();
         }
 
@@ -50,5 +53,34 @@ public class SystemManagerController : WebControllerBase
     public IActionResult Command(IFormCollection form)
     {
         return View();
+    }
+
+    [Route("backup-database-view")]
+    [HttpGet]
+    [PageName(Name = "Sao lưu cơ sở dữ liệu")]
+    public IActionResult LoadBackupDbView()
+    {
+        ViewData["DbName"] = AppDefaultValue.DbName;
+        ViewData["DbBackupFilePath"] = AppDefaultValue.DbBackupFilePath;
+
+        return View();
+    }
+
+    [Route("backup-database")]
+    [HttpPost]
+    public IActionResult BackupDatabase()
+    {
+        _systemRepository.Backup();
+        AddTempData(DataResponseStatus.Success);
+
+        return RedirectToAction("GetDbBackupHistory");
+    }
+
+    [Route("backup-database-history")]
+    [HttpGet]
+    [PageName(Name = "Lịch sử sao lưu cơ sở dữ liệu")]
+    public IActionResult GetDbBackupHistory()
+    {
+        return View(_systemRepository.GetDbBackupHistory());
     }
 }

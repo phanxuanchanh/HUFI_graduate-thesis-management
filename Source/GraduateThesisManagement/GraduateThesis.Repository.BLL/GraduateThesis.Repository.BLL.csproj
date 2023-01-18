@@ -19,4 +19,19 @@
     <ProjectReference Include="..\GraduateThesis.Repository.DTO\GraduateThesis.Repository.DTO.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Update="Resources\SqlQueryResource.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>SqlQueryResource.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Resources\SqlQueryResource.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>SqlQueryResource.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
 </Project>

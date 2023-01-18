@@ -10,6 +10,9 @@ public class AppDefaultValue
     public static string AccountAssetsPath = null;
     public static string ThesisAssetsPath = null;
 
+    public static string DbName = null;
+    public static string DbBackupFilePath = null;
+
     public static string SuccessMsg = null;
     public static string AlreadyExistsMsg = null;
     public static string NotFoundMsg = null;

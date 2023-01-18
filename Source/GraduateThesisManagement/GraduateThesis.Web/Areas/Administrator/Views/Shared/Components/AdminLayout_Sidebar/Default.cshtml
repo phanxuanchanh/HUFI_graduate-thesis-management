@@ -49,6 +49,27 @@
                 </li>
 
                 <li class="sidebar-item has-sub">
+                    <a asp-action="Index" asp-controller="SystemManager" class='sidebar-link'>
+                        <i class="bi bi-stack"></i>
+                        <span>Sao lưu và phục hồi</span>
+                    </a>
+                    <ul class="submenu has-sub">
+                        <li class="submenu-item ">
+                            <a asp-action="LoadBackupDbView" asp-controller="SystemManager">Sao lưu database</a>
+                        </li>
+                        <li class="submenu-item ">
+                            <a asp-action="Grant" asp-controller="AppRoleManager">Sao lưu tập tin</a>
+                        </li>
+                        <li class="submenu-item ">
+                            <a asp-action="Grant" asp-controller="AppRoleManager">Phục hồi database</a>
+                        </li>
+                        <li class="submenu-item ">
+                            <a asp-action="Grant" asp-controller="AppRoleManager">Phục hồi tập tin</a>
+                        </li>
+                    </ul>
+                </li>
+
+                <li class="sidebar-item has-sub">
                     <a asp-action="Index" asp-controller="AppPageManager" class='sidebar-link'>
                         <i class="bi bi-stack"></i>
                         <span>Trang</span>
@@ -81,26 +102,7 @@
                     </ul>
                 </li>
 
-                <li class="sidebar-item has-sub">
-                    <a asp-action="Index" asp-controller="AppRoleManager" class='sidebar-link'>
-                        <i class="bi bi-stack"></i>
-                        <span>Sao lưu và phục hồi</span>
-                    </a>
-                    <ul class="submenu has-sub">
-                        <li class="submenu-item ">
-                            <a asp-action="Index" asp-controller="AppRoleManager">Sao lưu database</a>
-                        </li>
-                        <li class="submenu-item ">
-                            <a asp-action="Grant" asp-controller="AppRoleManager">Sao lưu tập tin</a>
-                        </li>
-                        <li class="submenu-item ">
-                            <a asp-action="Grant" asp-controller="AppRoleManager">Phục hồi database</a>
-                        </li>
-                        <li class="submenu-item ">
-                            <a asp-action="Grant" asp-controller="AppRoleManager">Phục hồi tập tin</a>
-                        </li>
-                    </ul>
-                </li>
+                
 
                 <li class="sidebar-item has-sub">
                     <a asp-action="Index" asp-controller="AppRoleManager" class='sidebar-link'>
