@@ -27,8 +27,8 @@
   [LectureId] [varchar](50) NOT NULL,
   [Semester] [int] NOT NULL,
   [ThesisGroupId] [varchar](50) NULL,
-  [IsRejected] [bigint] NULL,
-  [IsPublished] [bigint] NULL,
+  [IsRejected] [bit] NOT NULL,
+  [IsPublished] [bit] NOT NULL,
   CONSTRAINT [PK_Thesis_ID] PRIMARY KEY CLUSTERED ([ID])
 )
 ON [PRIMARY]

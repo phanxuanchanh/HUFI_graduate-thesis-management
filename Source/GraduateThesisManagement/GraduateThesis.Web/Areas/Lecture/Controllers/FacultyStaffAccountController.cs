@@ -59,7 +59,7 @@ public class FacultyStaffAccountController : WebControllerBase
                 AccountModel = facultyStaff
             });
 
-            return RedirectToAction("Index", "LectureDashboard");
+            return RedirectToAction("Index", "FacultyStaffDashboard");
         }
 
         AddViewData(signInResultModel);

@@ -38,9 +38,12 @@ public class AppRoleManagerController : WebControllerBase<IAppRoleRepository, Ap
         return await IndexResult(page, pageSize, orderBy, orderOptions, keyword);
     }
 
-    public override Task<IActionResult> GetTrash(int count = 50)
+    [Route("trash")]
+    [HttpGet]
+    [PageName(Name = "Thùng rác")]
+    public override async Task<IActionResult> GetTrash(int count = 50)
     {
-        throw new NotImplementedException();
+        return await GetTrashResult(count);
     }
 
     [Route("details/{id}")]
@@ -85,23 +88,23 @@ public class AppRoleManagerController : WebControllerBase<IAppRoleRepository, Ap
 
     [Route("batch-delete/{id}")]
     [HttpPost]
-    public override Task<IActionResult> BatchDelete([Required] string id)
+    public override async Task<IActionResult> BatchDelete([Required] string id)
     {
-        throw new NotImplementedException();
+        return await BatchDeleteResult(id);
     }
 
     [Route("restore/{id}")]
     [HttpPost]
-    public override Task<IActionResult> Restore([Required] string id)
+    public override async Task<IActionResult> Restore([Required] string id)
     {
-        throw new NotImplementedException();
+        return await RestoreResult(id);
     }
 
     [Route("force-delete/{id}")]
     [HttpPost]
-    public override Task<IActionResult> ForceDelete([Required] string id)
+    public override async Task<IActionResult> ForceDelete([Required] string id)
     {
-        throw new NotImplementedException();
+        return await ForceDeleteResult(id);
     }
 
     [NonAction]

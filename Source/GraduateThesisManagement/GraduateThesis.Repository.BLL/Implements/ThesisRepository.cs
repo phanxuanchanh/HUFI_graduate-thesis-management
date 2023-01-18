@@ -65,6 +65,11 @@ public class ThesisRepository : SubRepository<Thesis, ThesisInput, ThesisOutput,
                 Description = s.Topic.Description,
                 Id = s.Topic.Id,
             },
+            Lecturer = new FacultyStaffOutput
+            {
+                Id = s.Lecture.Id,
+                FullName = s.Lecture.FullName
+            },
             ThesisGroup = (s.ThesisGroup == null) ? null : new ThesisGroupOutput
             {
                 Id = s.ThesisGroup.Id,
@@ -200,9 +205,9 @@ public class ThesisRepository : SubRepository<Thesis, ThesisInput, ThesisOutput,
         };
     }
 
-    public async Task<DataResponse> ApprovalThesisAsync(string thesisId)
+    public async Task<DataResponse> ApproveThesisAsync(ThesisApprovalInput approvalInput)
     {
-        Thesis thesis = await _context.Theses.FindAsync(thesisId);
+        Thesis thesis = await _context.Theses.FindAsync(approvalInput.ThesisId);
         if (thesis == null)
             return new DataResponse
             {
@@ -210,8 +215,12 @@ public class ThesisRepository : SubRepository<Thesis, ThesisInput, ThesisOutput,
                 Message = "Không tìm thấy đề tài có mã này!"
             };
 
+        thesis.Notes = approvalInput.Notes;
+        thesis.IsRejected = false;
         thesis.IsApproved = true;
+
         await _context.SaveChangesAsync();
+
         return new DataResponse
         {
             Status = DataResponseStatus.Success,
@@ -219,9 +228,9 @@ public class ThesisRepository : SubRepository<Thesis, ThesisInput, ThesisOutput,
         };
     }
 
-    public async Task<DataResponse> RejectThesisAsync(ThesisInput thesisInput, string thesisId)
+    public async Task<DataResponse> RejectThesisAsync(ThesisApprovalInput approvalInput)
     {
-        Thesis thesis = await _context.Theses.FindAsync(thesisId);
+        Thesis thesis = await _context.Theses.FindAsync(approvalInput.ThesisId);
         if (thesis == null)
             return new DataResponse
             {
@@ -229,9 +238,12 @@ public class ThesisRepository : SubRepository<Thesis, ThesisInput, ThesisOutput,
                 Message = "Không tìm thấy đề tài có mã này!"
             };
 
+        thesis.Notes = approvalInput.Notes;
+        thesis.IsRejected = true;
         thesis.IsApproved = false;
-        thesis.Notes = thesisInput.Notes;
+        
         await _context.SaveChangesAsync();
+
         return new DataResponse
         {
             Status = DataResponseStatus.Success,
@@ -241,7 +253,6 @@ public class ThesisRepository : SubRepository<Thesis, ThesisInput, ThesisOutput,
 
     public async Task<List<ThesisOutput>> GetApprovalThesisAsync()
     {
-
         await _context.Theses.Include(x => x.Lecture).Where(predicate => predicate.IsDeleted == false)
             .Select(tb => new ThesisOutput
             {
@@ -269,8 +280,6 @@ public class ThesisRepository : SubRepository<Thesis, ThesisInput, ThesisOutput,
 
     }
 
-
-
     public async Task<DataResponse> CheckMaxStudentNumberAsync(string thesisId, int currentStudentNumber)
     {
         Thesis thesis = await _context.Theses.FindAsync(thesisId);
@@ -281,5 +290,71 @@ public class ThesisRepository : SubRepository<Thesis, ThesisInput, ThesisOutput,
             return new DataResponse { Status = DataResponseStatus.Failed };
 
         return new DataResponse { Status = DataResponseStatus.Success };
+    }
+
+    public async Task<Pagination<ThesisOutput>> GetPgnOfRejectedThesis(int page, int pageSize, string keyword)
+    {
+        int n = (page - 1) * pageSize;
+        int totalItemCount = await _context.Theses
+            .Where(t => t.IsRejected == true && t.IsDeleted == false)
+            .Where(t => t.Id.Contains(keyword) || t.Name.Contains(keyword) || t.Description.Contains(keyword))
+            .CountAsync();
+
+        List<ThesisOutput> onePageOfData = await _context.Theses.Include(i => i.Lecture)
+            .Where(t => t.IsRejected == true && t.IsDeleted == false)
+            .Where(t => t.Id.Contains(keyword) || t.Name.Contains(keyword) || t.Description.Contains(keyword))
+            .Skip(n).Take(pageSize)
+            .Select(s => new ThesisOutput
+            {
+                Id = s.Id,
+                Name = s.Name,
+                Notes = s.Notes,
+                Lecturer = new FacultyStaffOutput
+                {
+                    Id = s.Lecture.Id,
+                    FullName = s.Lecture.FullName
+                }
+            }).ToListAsync();
+
+        return new Pagination<ThesisOutput>
+        {
+            Page = page,
+            PageSize = pageSize,
+            TotalItemCount = totalItemCount,
+            Items = onePageOfData
+        };
+    }
+
+    public async Task<Pagination<ThesisOutput>> GetPgnOfApprovedThesis(int page, int pageSize, string keyword)
+    {
+        int n = (page - 1) * pageSize;
+        int totalItemCount = await _context.Theses
+            .Where(t => t.IsApproved == true && t.Finished == false && t.IsDeleted == false)
+            .Where(t => t.Id.Contains(keyword) || t.Name.Contains(keyword) || t.Description.Contains(keyword))
+            .CountAsync();
+
+        List<ThesisOutput> onePageOfData = await _context.Theses.Include(i => i.Lecture)
+            .Where(t => t.IsApproved == true && t.Finished == false && t.IsDeleted == false)
+            .Where(t => t.Id.Contains(keyword) || t.Name.Contains(keyword) || t.Description.Contains(keyword))
+            .Skip(n).Take(pageSize)
+            .Select(s => new ThesisOutput
+            {
+                Id = s.Id,
+                Name = s.Name,
+                Notes = s.Notes,
+                Lecturer = new FacultyStaffOutput
+                {
+                    Id = s.Lecture.Id,
+                    FullName = s.Lecture.FullName
+                }
+            }).ToListAsync();
+
+        return new Pagination<ThesisOutput>
+        {
+            Page = page,
+            PageSize = pageSize,
+            TotalItemCount = totalItemCount,
+            Items = onePageOfData
+        };
     }
 }

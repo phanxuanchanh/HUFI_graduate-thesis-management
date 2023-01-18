@@ -7,6 +7,11 @@ using GraduateThesis.Common.WebAttributes;
 using GraduateThesis.ApplicationCore.WebAttributes;
 using GraduateThesis.ApplicationCore.Models;
 using GraduateThesis.ApplicationCore.AppController;
+using X.PagedList;
+using GraduateThesis.WebExtensions;
+using System.Dynamic;
+using NPOI.OpenXmlFormats.Dml;
+using GraduateThesis.ApplicationCore.Enums;
 
 namespace GraduateThesis.Web.Areas.Lecture.Controllers
 {
@@ -146,6 +151,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
         {
             throw new NotImplementedException();
         }
+
         [Route("list-thesis")]
         [HttpGet]
         [PageName(Name = "Danh sách đề tài xét duyệt")]
@@ -154,36 +160,73 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
             List<ThesisOutput> thesisOutputs = await _thesisRepository.GetApprovalThesisAsync();
             return View(thesisOutputs);
         }
+
         [Route("approve-thesis/{thesisId}")]
         [HttpGet]
         [PageName(Name = "Xét duyệt đề tài")]
-
-        public async Task<IActionResult> ApprovalThesis([Required] string thesisId)
+        public async Task<IActionResult> ApproveThesis([Required] string thesisId)
         {
-            return await GetDetailsResult(thesisId);
+            ThesisOutput thesis = await _thesisRepository.GetAsync(thesisId);
+            ViewData["Thesis"] = thesis;
+
+            return View(new ThesisApprovalInput { ThesisId = thesis.Id });
         }
 
         [Route("approve-thesis/{thesisId}")]
         [HttpPost]
         [PageName(Name = "Xét duyệt đề tài")]
-
-        public async Task<IActionResult> ApproveThesis([Required] string thesisId)
+        public async Task<IActionResult> ApproveThesis(ThesisApprovalInput approvalInput)
         {
-            DataResponse dataResponse = await _thesisRepository.ApprovalThesisAsync(thesisId);
+            if (!ModelState.IsValid)
+            {
+                AddTempData(DataResponseStatus.InvalidData);
+                return RedirectToAction("ApproveThesis", new { thesisId = approvalInput.ThesisId });
+            }
+
+            DataResponse dataResponse = await _thesisRepository.ApproveThesisAsync(approvalInput);
             AddTempData(dataResponse);
-            return RedirectToAction("ApprovalThesis",new { thesisId= thesisId });
+
+            return RedirectToAction("ApproveThesis",new { thesisId= approvalInput.ThesisId });
         }
+
         [Route("reject-thesis/{thesisId}")]
         [HttpPost]
         [PageName(Name = "Từ chối xét duyệt đề tài")]
-        public async Task<IActionResult> RejectThesis([Required] ThesisInput thesisInput, string thesisId)
+        public async Task<IActionResult> RejectThesis(ThesisApprovalInput approvalInput)
         {
-            DataResponse dataResponse = await _thesisRepository.RejectThesisAsync(thesisInput, thesisId);
+            DataResponse dataResponse = await _thesisRepository.RejectThesisAsync(approvalInput);
             AddTempData(dataResponse);
-            return RedirectToAction("ApprovalThesis", new { thesisId = thesisId });
 
+            return RedirectToAction("ApproveThesis", new { thesisId = approvalInput.ThesisId });
         }
 
+        [Route("approved-list")]
+        [HttpGet]
+        [PageName(Name = "Danh sách đề tài đã được duyệt")]
+        public async Task<IActionResult> GetApprovedList(int page = 1, int pageSize = 10, string keyword = "")
+        {
+            Pagination<ThesisOutput> pagination = await _thesisRepository.GetPgnOfApprovedThesis(page, pageSize, keyword);
+            StaticPagedList<ThesisOutput> pagedList = pagination.ToStaticPagedList();
+
+            ViewData["PagedList"] = pagedList;
+            ViewData["Keyword"] = keyword;
+
+            return View();
+        }
+
+        [Route("rejected-list")]
+        [HttpGet]
+        [PageName(Name = "Danh sách đề tài bị từ chối xét duyệt")]
+        public async Task<IActionResult> GetRejectedList(int page = 1, int pageSize = 10, string keyword = "")
+        {
+            Pagination<ThesisOutput> pagination = await _thesisRepository.GetPgnOfRejectedThesis(page, pageSize, keyword);
+            StaticPagedList<ThesisOutput> pagedList = pagination.ToStaticPagedList();
+
+            ViewData["PagedList"] = pagedList;
+            ViewData["Keyword"] = keyword;
+
+            return View();
+        }
     }
 }
 
