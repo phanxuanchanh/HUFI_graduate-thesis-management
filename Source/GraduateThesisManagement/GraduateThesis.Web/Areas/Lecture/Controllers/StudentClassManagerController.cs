@@ -1,10 +1,10 @@
 ﻿using GraduateThesis.ApplicationCore.AppController;
-using GraduateThesis.ApplicationCore.Models;
 using GraduateThesis.ApplicationCore.WebAttributes;
 using GraduateThesis.Common.WebAttributes;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DTO;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
 
 namespace GraduateThesis.Web.Areas.Lecture.Controllers;
@@ -12,12 +12,21 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers;
 [Area("Lecture")]
 [Route("lecture/student-class-manager")]
 [WebAuthorize]
+[AccountInfo(typeof(FacultyStaffOutput))]
 public class StudentClassManagerController : WebControllerBase<IStudentClassRepository, StudentClassInput, StudentClassOutput, string>
 {
+    private readonly IFacultyRepository _facultyRepository;
+
     public StudentClassManagerController(IRepository repository) 
         : base(repository.StudentClassRepository)
     {
+        _facultyRepository = repository.FacultyRepository;
+    }
 
+    protected override async Task LoadSelectListAsync()
+    {
+        List<FacultyOutput> faculties = await _facultyRepository.GetListAsync(10);
+        ViewData["FacultySelectList"] = new SelectList(faculties, "Id", "Name");
     }
 
     [Route("batch-delete/{id}")]
@@ -60,14 +69,14 @@ public class StudentClassManagerController : WebControllerBase<IStudentClassRepo
     }
 
     [Route("edit/{id}")]
-    [HttpGet]
+    [HttpPost]
     [PageName(Name = "Chỉnh sửa lớp học")]
     public override async Task<IActionResult> Edit([Required] string id, StudentClassInput input)
     {
         return await EditResult(id, input);
     }
 
-    [Route("export")]
+    [NonAction]
     public override Task<IActionResult> Export()
     {
         throw new NotImplementedException();
@@ -88,19 +97,16 @@ public class StudentClassManagerController : WebControllerBase<IStudentClassRepo
         return await GetTrashResult(count);
     }
 
-    [Route("import")]
-    [HttpGet]
-    [PageName(Name = "Nhập dữ liệu vào hệ thống")]
-    public override async Task<IActionResult> Import()
+    [NonAction]
+    public override Task<IActionResult> Import()
     {
-        return await ImportResult();
+        throw new NotImplementedException();
     }
 
-    [Route("import")]
-    [HttpPost]
-    public override async Task<IActionResult> Import([FromForm] IFormFile formFile)
+    [NonAction]
+    public override Task<IActionResult> Import([FromForm] IFormFile formFile)
     {
-        return await ImportResult(formFile, new ImportMetadata());
+        throw new NotImplementedException();
     }
 
     [Route("list")]

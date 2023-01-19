@@ -1,4 +1,5 @@
-﻿using GraduateThesis.ApplicationCore.Repository;
+﻿using GraduateThesis.ApplicationCore.Enums;
+using GraduateThesis.ApplicationCore.Repository;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DAL;
 using GraduateThesis.Repository.DTO;
@@ -10,7 +11,7 @@ public class SpecializationRepository : SubRepository<Specialization, Specializa
     internal SpecializationRepository(HufiGraduateThesisContext context) 
         : base(context, context.Specializations)
     {
-
+        GenerateUidOptions = UidOptions.ShortUid;
     }
 
     protected override void ConfigureIncludes()
@@ -22,14 +23,23 @@ public class SpecializationRepository : SubRepository<Specialization, Specializa
     {
         PaginationSelector = s => new SpecializationOutput
         {
-
+            Id = s.Id,
+            Name = s.Name,
+            CreatedAt = s.CreatedAt,
+            UpdatedAt = s.UpdatedAt,
+            DeletedAt = s.DeletedAt
         };
 
         ListSelector = PaginationSelector;
 
         SingleSelector = s => new SpecializationOutput
         {
-
+            Id = s.Id,
+            Name = s.Name,
+            Description = s.Description,
+            CreatedAt = s.CreatedAt,
+            UpdatedAt = s.UpdatedAt,
+            DeletedAt = s.DeletedAt
         };
     }
 }
