@@ -7,7 +7,6 @@ namespace GraduateThesis.Repository.DTO;
 public class FacultyInput
 {
     [Display(Name = "Mã khoa")]
-    [Required(ErrorMessage = "{0} không được để trống ")]
     public string Id { get; set; }
 
     [Display(Name = " Tên khoa ")]
@@ -24,6 +23,6 @@ public class FacultyOutput : FacultyInput
     public DateTime? UpdatedAt { get; set; }
     public DateTime? DeletedAt { get; set; }
 
-    public List<FacultyStaffOutput> FacultyStaffs { get; set; }
-    public List<StudentClassOutput> StudentClasses { get; set; }
+    //public List<FacultyStaffOutput> FacultyStaffs { get; set; }
+    //public List<StudentClassOutput> StudentClasses { get; set; }
 }

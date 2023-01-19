@@ -10,9 +10,9 @@
   [Credits] [int] NOT NULL,
   [Year] [nvarchar](100) NOT NULL,
   [Notes] [nvarchar](200) NULL,
-  [TopicId] [varchar](50) NOT NULL,
+  [TopicId] [varchar](50) NOT NULL DEFAULT ('rkrKd_KtQJemI'),
   [TrainingFormId] [varchar](50) NULL,
-  [TrainingLevelId] [varchar](50) NOT NULL,
+  [TrainingLevelId] [varchar](50) NOT NULL DEFAULT ('sHUaEg-qBhVh'),
   [IsApproved] [bit] NOT NULL,
   [IsNew] [bit] NOT NULL,
   [InProgess] [bit] NOT NULL,
@@ -48,13 +48,13 @@ ALTER TABLE [dbo].[Theses]
 GO
 
 ALTER TABLE [dbo].[Theses]
-  ADD CONSTRAINT [FK_Theses_Topics_ID] FOREIGN KEY ([TopicId]) REFERENCES [dbo].[Topics] ([ID]) ON DELETE CASCADE ON UPDATE CASCADE
+  ADD CONSTRAINT [FK_Theses_Topics_ID] FOREIGN KEY ([TopicId]) REFERENCES [dbo].[Topics] ([ID]) ON DELETE SET DEFAULT ON UPDATE CASCADE
 GO
 
 ALTER TABLE [dbo].[Theses]
-  ADD CONSTRAINT [FK_Theses_TrainingForms_ID] FOREIGN KEY ([TrainingFormId]) REFERENCES [dbo].[TrainingForms] ([ID]) ON DELETE CASCADE ON UPDATE CASCADE
+  ADD CONSTRAINT [FK_Theses_TrainingForms_ID] FOREIGN KEY ([TrainingFormId]) REFERENCES [dbo].[TrainingForms] ([ID]) ON DELETE SET NULL ON UPDATE CASCADE
 GO
 
 ALTER TABLE [dbo].[Theses]
-  ADD CONSTRAINT [FK_Theses_TrainingLevels_ID] FOREIGN KEY ([TrainingLevelId]) REFERENCES [dbo].[TrainingLevels] ([ID]) ON DELETE CASCADE ON UPDATE CASCADE
+  ADD CONSTRAINT [FK_Theses_TrainingLevels_ID] FOREIGN KEY ([TrainingLevelId]) REFERENCES [dbo].[TrainingLevels] ([ID]) ON DELETE SET DEFAULT ON UPDATE CASCADE
 GO

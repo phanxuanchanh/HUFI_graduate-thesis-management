@@ -26,13 +26,18 @@ builder.Services.AddDbContextPool<HufiGraduateThesisContext>(options =>
 
 IConfigurationSection smtpSection = builder.Configuration.GetSection("SMTP");
 
-string host = smtpSection.GetValue<string>("Host");
-int port = smtpSection.GetValue<int>("Port");
-string user = smtpSection.GetValue<string>("User");
-string password = smtpSection.GetValue<string>("Password");
-bool enableSsl = smtpSection.GetValue<bool>("EnableSsl");
+builder.Services.AddSingleton<SmtpConfiguration>(new SmtpConfiguration
+{
+    Host = smtpSection.GetValue<string>("Host"),
+    Port = smtpSection.GetValue<int>("Port"),
+    User = smtpSection.GetValue<string>("User"),
+    Password = smtpSection.GetValue<string>("Password"),
+    EnableSsl = smtpSection.GetValue<bool>("EnableSsl"),
+    Address = smtpSection.GetValue<string>("Address"),
+    DisplayName = smtpSection.GetValue<string>("DisplayName")
+});
 
-builder.Services.AddScoped<IEmailService>(e => new SmtpService(host, port, user, password, enableSsl));
+builder.Services.AddScoped(typeof(IEmailService), typeof(SmtpService));
 builder.Services.AddScoped(typeof(IAccountManager), typeof(AccountManager));
 builder.Services.AddScoped(typeof(IRoleManager), typeof(RoleManager));
 builder.Services.AddScoped(typeof(IFileManager), typeof(FileManager));
@@ -53,6 +58,7 @@ builder.Services.AddSession();
 
 AppConfiguration.ConfigConnectionString(connectionString);
 AppConfiguration.ConfigDefaultMessage();
+AppConfiguration.ConfigBackupAndRestore(builder.Configuration.GetSection("Backup"));
 
 var app = builder.Build();
 

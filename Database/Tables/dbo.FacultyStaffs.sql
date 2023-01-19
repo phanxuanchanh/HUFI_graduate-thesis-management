@@ -1,6 +1,6 @@
 ﻿CREATE TABLE [dbo].[FacultyStaffs] (
   [ID] [varchar](50) NOT NULL,
-  [FacultyId] [varchar](50) NOT NULL,
+  [FacultyId] [varchar](50) NOT NULL DEFAULT ('BHyFWSywrk'),
   [FacultyRoleId] [varchar](50) NOT NULL,
   [FullName] [nvarchar](100) NOT NULL,
   [Description] [ntext] NULL,
@@ -28,5 +28,5 @@ TEXTIMAGE_ON [PRIMARY]
 GO
 
 ALTER TABLE [dbo].[FacultyStaffs]
-  ADD CONSTRAINT [FK_FacultyStaffs_Faculties_ID] FOREIGN KEY ([FacultyId]) REFERENCES [dbo].[Faculties] ([ID]) ON DELETE CASCADE
+  ADD CONSTRAINT [FK_FacultyStaffs_Faculties_ID] FOREIGN KEY ([FacultyId]) REFERENCES [dbo].[Faculties] ([ID]) ON DELETE SET DEFAULT ON UPDATE CASCADE
 GO

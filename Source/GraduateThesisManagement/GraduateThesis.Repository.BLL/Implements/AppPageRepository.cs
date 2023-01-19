@@ -53,6 +53,14 @@ public class AppPageRepository : SubRepository<AppPage, AppPageInput, AppPageOut
         };
     }
 
+    public override async Task<Pagination<AppPageOutput>> GetPaginationAsync(Pagination<AppPageOutput> pagination)
+    {
+        pagination.OrderBy = "ControllerName";
+        pagination.OrderOptions = OrderOptions.ASC;
+
+        return await base.GetPaginationAsync(pagination);
+    }
+
     public async Task<Pagination<AppPageOutput>> GetPgnHasRoleIdAsync(string roleId, int page, int pageSize, string keyword)
     {
         int n = (page - 1) * pageSize;

@@ -8,6 +8,7 @@ using GraduateThesis.ExtensionMethods;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DAL;
 using GraduateThesis.Repository.DTO;
+using MathNet.Numerics.Distributions;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -119,10 +120,13 @@ public class FacultyStaffRepository : SubRepository<FacultyStaff, FacultyStaffIn
         facultyStaff.CodeExpTime = DateTime.Now.AddMinutes(5);
         await _context.SaveChangesAsync();
 
+        string mailContent = Resources.EmailResource.account_verification;
+        mailContent = mailContent.Replace("@verificationCode", facultyStaff.VerificationCode);
+
         _emailService.Send(
             facultyStaff.Email,
             "Khôi phục mật khẩu",
-            $"Mã xác nhận của bạn là: {facultyStaff.VerificationCode}"
+            mailContent
         );
 
         return new AccountVerificationModel

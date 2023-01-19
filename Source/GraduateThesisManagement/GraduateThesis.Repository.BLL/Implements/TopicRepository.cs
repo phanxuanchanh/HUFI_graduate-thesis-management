@@ -59,11 +59,11 @@ public class TopicRepository : SubRepository<Topic, TopicInput, TopicOutput, str
         };
     }
 
-    public override Task<DataResponse> ForceDeleteAsync(string id)
-    {
-        return _genericRepository.ForceDeleteAsync(id, async () =>
-        {
-            return !await _context.Theses.AnyAsync(t => t.TopicId == id);
-        });
-    }
+    //public override Task<DataResponse> ForceDeleteAsync(string id)
+    //{
+    //    return _genericRepository.ForceDeleteAsync(id, async () =>
+    //    {
+    //        return !await _context.Theses.AnyAsync(t => t.TopicId == id);
+    //    });
+    //}
 }

@@ -4,6 +4,7 @@ namespace GraduateThesis.Repository.BLL.Interfaces;
 
 public interface IRepository : IDisposable
 {
+    ISystemRepository SystemRepository { get; }
     IStudentRepository StudentRepository { get; }
     IStudentClassRepository StudentClassRepository { get; }
     IThesisRepository ThesisRepository { get; }
@@ -19,7 +20,4 @@ public interface IRepository : IDisposable
     IAppRoleRepository AppRolesRepository { get; }
     IThesisRevisionRepository ThesisRevisionRepository { get; }
     IAppPageRepository AppPageRepository { get; }
-
-    int ExecuteNonQuery(FormattableString sql);
-    T ExecuteScalar<T>(FormattableString sql);
 }

@@ -1,6 +1,6 @@
 ﻿@model IEnumerable<TrainingLevelOutput>
 
-@await Component.InvokeAsync("FacultyStaffLayout_Toolbar")
+@await Component.InvokeAsync("FacultyStaffLayout_Toolbar", new { showImportButton = false, showExportButton = false, showPrintButton = false })
 
 @await Component.InvokeAsync("FacultyStaffLayout_StatusArea")
 

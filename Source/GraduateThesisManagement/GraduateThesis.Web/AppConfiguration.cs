@@ -25,4 +25,10 @@ public static class AppConfiguration
         AppDefaultValue.AccAuthNotActivatedMsg = "Tài khoản chưa được kích hoạt!";
         AppDefaultValue.AccAuthFailedMsg = "Thất bại!";
     }
+
+    public static void ConfigBackupAndRestore(IConfigurationSection backupSection)
+    {
+        AppDefaultValue.DbName = backupSection.GetValue<string>("DbName");
+        AppDefaultValue.DbBackupFilePath = backupSection.GetValue<string>("DbBackupFilePath");
+    }
 }

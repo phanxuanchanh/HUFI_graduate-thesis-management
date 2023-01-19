@@ -3,8 +3,6 @@ using GraduateThesis.Repository.DTO;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 using GraduateThesis.Common.WebAttributes;
-using GraduateThesis.ApplicationCore.Models;
-using GraduateThesis.ApplicationCore.Enums;
 using GraduateThesis.ApplicationCore.AppController;
 using GraduateThesis.ApplicationCore.WebAttributes;
 
@@ -31,20 +29,20 @@ public class TopicManagerController : WebControllerBase<ITopicRepository, TopicI
         return await IndexResult(page, pageSize, orderBy, orderOptions, keyword);
     }
 
-    [Route("create")]
-    [HttpGet]
-    [PageName(Name = "Tạo mới chủ đề khóa luận")]
-    public override async Task<IActionResult> Create()
-    {
-        return await CreateResult();
-    }
-
     [Route("details/{id}")]
     [HttpGet]
     [PageName(Name = "Chi tiết chủ đề khóa luận")]
     public override async Task<IActionResult> Details([Required] string id)
     {
         return await GetDetailsResult(id);
+    }
+
+    [Route("create")]
+    [HttpGet]
+    [PageName(Name = "Tạo mới chủ đề khóa luận")]
+    public override async Task<IActionResult> Create()
+    {
+        return await CreateResult();
     }
 
     [Route("create")]
@@ -85,45 +83,22 @@ public class TopicManagerController : WebControllerBase<ITopicRepository, TopicI
         return await ForceDeleteResult(id);
     }
 
-    [Route("export")]
-    [HttpGet]
-    public override async Task<IActionResult> Export()
+    [NonAction]
+    public override Task<IActionResult> Export()
     {
-        RecordFilter recordFilter = new RecordFilter();
-        recordFilter.AddFilter();
-
-        ExportMetadata exportMetadata = new ExportMetadata
-        {
-            FileName = "Topic",
-            TypeOptions = ExportTypeOptions.XLSX,
-            SheetName = "Default",
-            MaxRecordNumber = 1000,
-            IncludeProperties = new string[] { "Id", "Name", "Description" }
-        };
-
-        return await ExportResult(recordFilter, exportMetadata);
+        throw new NotImplementedException();
     }
 
-    [Route("import")]
-    [HttpGet]
-    [PageName(Name = "Nhập dữ liệu vào hệ thống")]
-    public override async Task<IActionResult> Import()
+    [NonAction]
+    public override Task<IActionResult> Import()
     {
-        return await ImportResult();
+        throw new NotImplementedException();
     }
 
-    [Route("import")]
-    [HttpPost]
-    [PageName(Name = "Nhập dữ liệu vào hệ thống")]
-    public override async Task<IActionResult> Import([FromForm] IFormFile formFile)
+    [NonAction]
+    public override Task<IActionResult> Import([FromForm] IFormFile formFile)
     {
-        ImportMetadata importMetadata = new ImportMetadata
-        {
-            StartFromRow = 1,
-            TypeOptions = ImportTypeOptions.XLSX
-        };
-
-        return await ImportResult(formFile, importMetadata);
+        throw new NotImplementedException();
     }
 
     [Route("trash")]

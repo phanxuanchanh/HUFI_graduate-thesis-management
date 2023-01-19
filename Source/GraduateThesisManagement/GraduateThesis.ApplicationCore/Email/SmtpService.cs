@@ -6,25 +6,34 @@ namespace GraduateThesis.ApplicationCore.Email;
 public class SmtpService : IEmailService
 {
     private SmtpClient _smtp;
-    private string _user;
+    private SmtpConfiguration _smtpConfiguration;
     private bool disposedValue;
 
-    public SmtpService(string host, int port, string user, string password, bool enableSsl)
+    public SmtpService(SmtpConfiguration smtpConfiguration)
     {
         _smtp = new SmtpClient();
         _smtp.UseDefaultCredentials = false;
 
-        _smtp.Host = host;
-        _smtp.Port = port;
-        _smtp.EnableSsl = enableSsl;
-        _smtp.Credentials = new NetworkCredential(user, password);
+        _smtp.Host = smtpConfiguration.Host;
+        _smtp.Port = smtpConfiguration.Port;
+        _smtp.EnableSsl = smtpConfiguration.EnableSsl;
+        _smtp.Credentials = new NetworkCredential(smtpConfiguration.User, smtpConfiguration.Password);
 
-        _user = user;
+        _smtpConfiguration = smtpConfiguration;
     }
 
     public void Send(string recipients, string subject, string content)
     {
-        _smtp.Send(_user, recipients, subject, content);
+        MailAddress from = new MailAddress(_smtpConfiguration.Address, _smtpConfiguration.DisplayName);
+        MailAddress to = new MailAddress(recipients);
+
+        MailMessage mailMessage = new MailMessage(from, to);
+        mailMessage.Subject = subject;
+        mailMessage.Body = content;
+
+        mailMessage.IsBodyHtml = true;
+
+        _smtp.Send(mailMessage);
     }
 
     protected virtual void Dispose(bool disposing)
