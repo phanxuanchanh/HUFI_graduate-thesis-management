@@ -320,7 +320,8 @@ public partial class HufiGraduateThesisContext : DbContext
             entity.Property(e => e.FacultyId)
                 .IsRequired()
                 .HasMaxLength(50)
-                .IsUnicode(false);
+                .IsUnicode(false)
+                .HasDefaultValueSql("('BHyFWSywrk')");
             entity.Property(e => e.FacultyRoleId)
                 .IsRequired()
                 .HasMaxLength(50)
@@ -350,6 +351,7 @@ public partial class HufiGraduateThesisContext : DbContext
 
             entity.HasOne(d => d.Faculty).WithMany(p => p.FacultyStaffs)
                 .HasForeignKey(d => d.FacultyId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_FacultyStaffs_Faculties_ID");
         });
 
@@ -512,7 +514,8 @@ public partial class HufiGraduateThesisContext : DbContext
             entity.Property(e => e.FacultyId)
                 .IsRequired()
                 .HasMaxLength(50)
-                .IsUnicode(false);
+                .IsUnicode(false)
+                .HasDefaultValueSql("('BHyFWSywrk')");
             entity.Property(e => e.Name)
                 .IsRequired()
                 .HasMaxLength(100);
@@ -520,6 +523,7 @@ public partial class HufiGraduateThesisContext : DbContext
 
             entity.HasOne(d => d.Faculty).WithMany(p => p.StudentClasses)
                 .HasForeignKey(d => d.FacultyId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_StudentClasses_Faculties_ID");
         });
 
@@ -578,14 +582,16 @@ public partial class HufiGraduateThesisContext : DbContext
             entity.Property(e => e.TopicId)
                 .IsRequired()
                 .HasMaxLength(50)
-                .IsUnicode(false);
+                .IsUnicode(false)
+                .HasDefaultValueSql("('rkrKd_KtQJemI')");
             entity.Property(e => e.TrainingFormId)
                 .HasMaxLength(50)
                 .IsUnicode(false);
             entity.Property(e => e.TrainingLevelId)
                 .IsRequired()
                 .HasMaxLength(50)
-                .IsUnicode(false);
+                .IsUnicode(false)
+                .HasDefaultValueSql("('sHUaEg-qBhVh')");
             entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
             entity.Property(e => e.Year)
                 .IsRequired()
@@ -606,15 +612,17 @@ public partial class HufiGraduateThesisContext : DbContext
 
             entity.HasOne(d => d.Topic).WithMany(p => p.Theses)
                 .HasForeignKey(d => d.TopicId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Theses_Topics_ID");
 
             entity.HasOne(d => d.TrainingForm).WithMany(p => p.Theses)
                 .HasForeignKey(d => d.TrainingFormId)
-                .OnDelete(DeleteBehavior.Cascade)
+                .OnDelete(DeleteBehavior.SetNull)
                 .HasConstraintName("FK_Theses_TrainingForms_ID");
 
             entity.HasOne(d => d.TrainingLevel).WithMany(p => p.Theses)
                 .HasForeignKey(d => d.TrainingLevelId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Theses_TrainingLevels_ID");
         });
 
