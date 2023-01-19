@@ -117,37 +117,8 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="BackupDb" xml:space="preserve">
-    <value>BACKUP DATABASE {0}
-TO DISK = {1}
-WITH EXPIREDATE = {2}</value>
-  </data>
-  <data name="ClearDbBackupHistory" xml:space="preserve">
-    <value>EXEC msdb.dbo.sp_delete_database_backuphistory @database_name = {0}</value>
-  </data>
-  <data name="DbBackupHistory" xml:space="preserve">
-    <value>SELECT 
-   CONVERT(CHAR(100), SERVERPROPERTY('Servername')) AS [Server], 
-   msdb.dbo.backupset.[database_name] AS DatabaseName, 
-   msdb.dbo.backupset.backup_start_date AS StartDate, 
-   msdb.dbo.backupset.backup_finish_date AS FinishDate, 
-   msdb.dbo.backupset.expiration_date AS ExpirationDate, 
-   CASE msdb..backupset.type 
-      WHEN 'D' THEN 'Database' 
-      WHEN 'L' THEN 'Log' 
-      END AS BackupType, 
-   msdb.dbo.backupset.backup_size AS BackupSize, 
-   msdb.dbo.backupmediafamily.logical_device_name AS LogicalDeviceName, 
-   msdb.dbo.backupmediafamily.physical_device_name AS PhysicalDeviceName, 
-   msdb.dbo.backupset.name AS BackupSetName, 
-   msdb.dbo.backupset.[description] AS [Description]
-FROM 
-   msdb.dbo.backupmediafamily 
-   INNER JOIN msdb.dbo.backupset ON msdb.dbo.backupmediafamily.media_set_id = msdb.dbo.backupset.media_set_id 
-WHERE 
-   (CONVERT(datetime, msdb.dbo.backupset.backup_start_date, 102) &gt;= GETDATE() - 7) 
-ORDER BY 
-   msdb.dbo.backupset.[database_name], 
-   msdb.dbo.backupset.backup_finish_date</value>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="SubmitThesis" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>SubmitThesis.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
 </root>

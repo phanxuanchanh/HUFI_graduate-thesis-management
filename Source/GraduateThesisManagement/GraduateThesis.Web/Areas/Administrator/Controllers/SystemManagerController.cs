@@ -70,7 +70,7 @@ public class SystemManagerController : WebControllerBase
     [HttpPost]
     public IActionResult BackupDatabase()
     {
-        _systemRepository.Backup();
+        _systemRepository.BackupDatabase();
         AddTempData(DataResponseStatus.Success);
 
         return RedirectToAction("GetDbBackupHistory");
@@ -82,5 +82,37 @@ public class SystemManagerController : WebControllerBase
     public IActionResult GetDbBackupHistory()
     {
         return View(_systemRepository.GetDbBackupHistory());
+    }
+
+    [Route("clear-database-backup-history")]
+    [HttpPost]
+    public IActionResult ClearDbBackupHistory()
+    {
+        _systemRepository.ClearDbBackupHistory();
+        AddTempData(DataResponseStatus.Success);
+
+        return RedirectToAction("GetDbBackupHistory");
+    }
+
+    [Route("restore-database/{mediaSetId}")]
+    [HttpGet]
+    [PageName(Name = "Xem và xác nhận phục hồi bản sao lưu")]
+    public IActionResult RestoreDatabase(int mediaSetId)
+    {
+        DbBackupHistoryOutput dbBackupHistory = _systemRepository.GetBackupHistoryDt(mediaSetId);
+        if (dbBackupHistory == null)
+            return RedirectToAction("GetDbBackupHistory");
+
+        return View(dbBackupHistory);
+    }
+
+    [Route("restore-database/{mediaSetId}")]
+    [HttpPost]
+    public IActionResult RestoreDbComfirmed(int mediaSetId)
+    {
+        _systemRepository.RestoreDatabase(mediaSetId);
+        AddTempData(DataResponseStatus.Success);
+
+        return RedirectToAction("RestoreDatabase", new { mediaSetId = mediaSetId });
     }
 }

@@ -6,7 +6,9 @@ namespace GraduateThesis.Repository.BLL.Interfaces;
 
 public interface ISystemRepository
 {
-    void Backup();
+    void BackupDatabase();
     List<DbBackupHistoryOutput> GetDbBackupHistory();
-    void Restore();
+    DbBackupHistoryOutput GetBackupHistoryDt(int mediaSetId);
+    void ClearDbBackupHistory();
+    void RestoreDatabase(int mediaSetId);
 }

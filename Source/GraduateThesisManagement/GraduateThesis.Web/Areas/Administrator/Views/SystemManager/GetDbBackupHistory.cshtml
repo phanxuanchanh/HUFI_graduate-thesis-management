@@ -4,6 +4,11 @@
 
 <section class="section">
     <div class="card">
+        <div class="card-header">
+            <form asp-action="ClearDbBackupHistory" method="post">
+                <button type="submit" class="btn btn-danger btn-sm">Xóa lịch sử sao lưu</button>
+            </form>
+        </div>
         <div class="card-body">
             <div class="dataTable-wrapper dataTable-loading no-footer sortable searchable fixed-columns">
                 <div class="dataTable-container">
@@ -39,9 +44,7 @@
                                     <td>@dbBackupHistory.FinishDate</td>
                                     <td>@dbBackupHistory.PhysicalDeviceName</td>
                                     <td>
-                                        <button type="submit" form="restore_@count" class="btn btn-primary btn-sm"><i class="fas fa-restore"></i> Khôi phục</button>
-                                        <form asp-action="Restore" asp-route-id="@dbBackupHistory.DatabaseName" id="restore_@count" method="post">
-                                        </form>
+                                        <a asp-action="RestoreDatabase" asp-route-mediaSetId="@dbBackupHistory.MediaSetId" class="btn btn-primary btn-sm">Khôi phục</a>
                                     </td>
                                 </tr>
                                 count++;

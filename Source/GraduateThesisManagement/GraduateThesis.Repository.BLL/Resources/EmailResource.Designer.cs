@@ -22,14 +22,14 @@ namespace GraduateThesis.Repository.BLL.Resources {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class SqlQueryResource {
+    internal class EmailResource {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal SqlQueryResource() {
+        internal EmailResource() {
         }
         
         /// <summary>
@@ -39,7 +39,7 @@ namespace GraduateThesis.Repository.BLL.Resources {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("GraduateThesis.Repository.BLL.Resources.SqlQueryResource", typeof(SqlQueryResource).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("GraduateThesis.Repository.BLL.Resources.EmailResource", typeof(EmailResource).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,42 +61,11 @@ namespace GraduateThesis.Repository.BLL.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to BACKUP DATABASE {0}
-        ///TO DISK = {1}
-        ///WITH EXPIREDATE = {2}.
+        ///   Looks up a localized string similar to .
         /// </summary>
-        internal static string BackupDb {
+        internal static string SubmitThesis {
             get {
-                return ResourceManager.GetString("BackupDb", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to EXEC msdb.dbo.sp_delete_database_backuphistory @database_name = {0}.
-        /// </summary>
-        internal static string ClearDbBackupHistory {
-            get {
-                return ResourceManager.GetString("ClearDbBackupHistory", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to SELECT 
-        ///   CONVERT(CHAR(100), SERVERPROPERTY(&apos;Servername&apos;)) AS [Server], 
-        ///   msdb.dbo.backupset.[database_name] AS DatabaseName, 
-        ///   msdb.dbo.backupset.backup_start_date AS StartDate, 
-        ///   msdb.dbo.backupset.backup_finish_date AS FinishDate, 
-        ///   msdb.dbo.backupset.expiration_date AS ExpirationDate, 
-        ///   CASE msdb..backupset.type 
-        ///      WHEN &apos;D&apos; THEN &apos;Database&apos; 
-        ///      WHEN &apos;L&apos; THEN &apos;Log&apos; 
-        ///      END AS BackupType, 
-        ///   msdb.dbo.backupset.backup_size AS BackupSize, 
-        ///   msdb.dbo.backupmediafamily.logica [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string DbBackupHistory {
-            get {
-                return ResourceManager.GetString("DbBackupHistory", resourceCulture);
+                return ResourceManager.GetString("SubmitThesis", resourceCulture);
             }
         }
     }
