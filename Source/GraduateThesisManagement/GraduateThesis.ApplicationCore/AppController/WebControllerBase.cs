@@ -250,38 +250,14 @@ public abstract class WebControllerBase<TSubRepository, TInput, TOutput, T_ID> :
     [NonAction]
     protected async Task<IActionResult> CreateResult()
     {
-        return await Task.Run(() =>
-        {
-            return View();
-        });
-    }
-
-    [NonAction]
-    protected async Task<IActionResult> CreateResult(Func<Task> loadDependency)
-    {
-        await loadDependency();
+        await LoadSelectListAsync();
         return View();
     }
 
     [NonAction]
     protected async Task<IActionResult> CreateResult(TInput input)
     {
-        if (ModelState.IsValid)
-        {
-            DataResponse<TOutput> dataResponse = await _subRepository.CreateAsync(input);
-            AddViewData(dataResponse);
-
-            return View(input);
-        }
-
-        AddViewData(DataResponseStatus.InvalidData);
-        return View(input);
-    }
-
-    [NonAction]
-    protected async Task<IActionResult> CreateResult(TInput input, Func<Task> loadDependency)
-    {
-        await loadDependency();
+        await LoadSelectListAsync();
         if (ModelState.IsValid)
         {
             DataResponse<TOutput> dataResponse = await _subRepository.CreateAsync(input);
@@ -301,17 +277,7 @@ public abstract class WebControllerBase<TSubRepository, TInput, TOutput, T_ID> :
         if (output == null)
             return RedirectToAction("Index");
 
-        return View(output);
-    }
-
-    [NonAction]
-    protected async Task<IActionResult> EditResult(T_ID id, Func<Task> loadDependency)
-    {
-        TOutput output = await _subRepository.GetAsync(id);
-        if (output == null)
-            return RedirectToAction("Index");
-
-        await loadDependency();
+        await LoadSelectListAsync();
 
         return View(output);
     }
@@ -319,6 +285,7 @@ public abstract class WebControllerBase<TSubRepository, TInput, TOutput, T_ID> :
     [NonAction]
     protected async Task<IActionResult> EditResult(T_ID id, TInput input)
     {
+        await LoadSelectListAsync();
         if (ModelState.IsValid)
         {
             DataResponse<TOutput> dataResponse = await _subRepository.UpdateAsync(id, input);
@@ -390,6 +357,11 @@ public abstract class WebControllerBase<TSubRepository, TInput, TOutput, T_ID> :
             if (memoryStream != null)
                 memoryStream.Dispose();
         }
+    }
+
+    protected virtual Task LoadSelectListAsync()
+    {
+        return Task.CompletedTask;
     }
 
     //public abstract Task<IActionResult> Index(Pagination<TOutput> pagination);

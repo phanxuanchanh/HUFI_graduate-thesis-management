@@ -27,6 +27,12 @@ public class StudentManagerController : WebControllerBase<IStudentRepository, St
         _studentClassRepository = repository.StudentClassRepository;
     }
 
+    protected override async Task LoadSelectListAsync()
+    {
+        List<StudentClassOutput> studentClasses = await _studentClassRepository.GetListAsync(50);
+        ViewData["StudentClassList"] = new SelectList(studentClasses, "Id", "Name");
+    }
+
     [Route("list")]
     [HttpGet]
     [PageName(Name = "Danh sách sinh viên của khoa")]
@@ -48,13 +54,7 @@ public class StudentManagerController : WebControllerBase<IStudentRepository, St
     [PageName(Name = "Tạo mới sinh viên của khoa")]
     public override async Task<IActionResult> Create()
     {
-        Func<Task> dependency = async () =>
-        {
-            List<StudentClassOutput> studentClasses = await _studentClassRepository.GetListAsync(50);
-            ViewData["StudentClassList"] = new SelectList(studentClasses, "Id", "Name");
-        };
-
-        return await CreateResult(dependency);
+        return await CreateResult();
     }
 
     [Route("create")]
@@ -62,13 +62,7 @@ public class StudentManagerController : WebControllerBase<IStudentRepository, St
     [PageName(Name = "Tạo mới sinh viên của khoa")]
     public override async Task<IActionResult> Create(StudentInput studentInput)
     {
-        Func<Task> dependency = async () =>
-        {
-            List<StudentClassOutput> studentClasses = await _studentClassRepository.GetListAsync(50);
-            ViewData["StudentClassList"] = new SelectList(studentClasses, "Id", "Name");
-        };
-
-        return await CreateResult(studentInput, dependency);
+        return await CreateResult(studentInput);
     }
 
     [Route("edit/{id}")]
@@ -76,13 +70,7 @@ public class StudentManagerController : WebControllerBase<IStudentRepository, St
     [PageName(Name = "Chỉnh sửa thông tin sinh viên của khoa")]
     public override async Task<IActionResult> Edit([Required] string id)
     {
-        Func<Task> dependency = async () =>
-        {
-            List<StudentClassOutput> studentClasses = await _studentClassRepository.GetListAsync(50);
-            ViewData["StudentClassList"] = new SelectList(studentClasses, "Id", "Name");
-        };
-
-        return await EditResult(id, dependency);
+        return await EditResult(id);
     }
 
     [Route("edit/{id}")]
@@ -90,13 +78,7 @@ public class StudentManagerController : WebControllerBase<IStudentRepository, St
     [PageName(Name = "Chỉnh sửa thông tin sinh viên của khoa")]
     public override async Task<IActionResult> Edit([Required] string id, StudentInput studentInput)
     {
-        Func<Task> dependency = async () =>
-        {
-            List<StudentClassOutput> studentClasses = await _studentClassRepository.GetListAsync(50);
-            ViewData["StudentClassList"] = new SelectList(studentClasses, "Id", "Name");
-        };
-
-        return await Edit(id, studentInput);
+        return await Edit(id);
     }
 
     [Route("delete/{id}")]

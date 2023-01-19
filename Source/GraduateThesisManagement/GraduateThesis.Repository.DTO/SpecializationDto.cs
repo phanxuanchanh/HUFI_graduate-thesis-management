@@ -6,7 +6,6 @@ namespace GraduateThesis.Repository.DTO;
 public class SpecializationInput
 {
     [Display(Name = "Mã chuyên ngành")]
-    [Required(ErrorMessage = "{0} không được để trống ")]
     public string Id { get; set; }
 
     [Display(Name = "Tên chuyên ngành")]

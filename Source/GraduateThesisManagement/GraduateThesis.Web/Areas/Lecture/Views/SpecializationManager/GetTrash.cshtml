@@ -1,6 +1,4 @@
-﻿@model IEnumerable<StudentClassOutput>
-
-@await Component.InvokeAsync("FacultyStaffLayout_Toolbar", new { showImportButton = false, showExportButton = false, showPrintButton = false })
+﻿@model IEnumerable<SpecializationOutput>
 
 @await Component.InvokeAsync("FacultyStaffLayout_StatusArea")
 
@@ -10,7 +8,6 @@
         </div>
         <div class="card-body">
             <div class="dataTable-wrapper dataTable-loading no-footer sortable searchable fixed-columns">
-                @await Component.InvokeAsync("FacultyStaffLayout_PagedSearch")
                 <div class="dataTable-container">
                     <table class="table table-striped dataTable-table" id="table1">
                         <thead>
@@ -33,22 +30,19 @@
                             @{
                                 int count = 1;
                             }
-                            @foreach (StudentClassOutput studentClass in (IEnumerable<StudentClassOutput>)ViewData["PagedList"]!)
+                            @foreach (SpecializationOutput specialization in Model)
                             {
                                 <tr>
                                     <td>@count</td>
-                                    <td>@studentClass.Id</td>
-                                    <td>@studentClass.Name</td>
+                                    <td>@specialization.Id</td>
+                                    <td>@specialization.Name</td>
                                     <td>
-                                        <a class="btn btn-success btn-sm" asp-action="Details" asp-route-id="@studentClass.Id">
-                                            <i class="fas fa-folder"></i> Chi tiết
-                                        </a>
-                                        <a class="btn btn-primary btn-sm" asp-action="Edit" asp-route-id="@studentClass.Id">
-                                            <i class="fas fa-folder"></i> Sửa
-                                        </a>
-                                        <button type="submit" form="delete_@count" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i> Xóa</button>
-                                        <form asp-action="BatchDelete" asp-route-id="@studentClass.Id" id="delete_@count" method="post">
-                                        </form>      
+                                        <button type="submit" form="restore_@count" class="btn btn-primary btn-sm"><i class="fas fa-restore"></i> Khôi phục</button>
+                                        <button type="submit" form="delete_@count" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i> Xóa vĩnh viễn</button>
+                                        <form asp-action="Restore" asp-route-id="@specialization.Id" id="restore_@count" method="post">
+                                        </form>
+                                        <form asp-action="ForceDelete" asp-route-id="@specialization.Id" id="delete_@count" method="post">
+                                        </form>
                                     </td>
                                 </tr>
                                 count++;
@@ -56,7 +50,6 @@
                         </tbody>
                     </table>
                 </div>
-                @await Component.InvokeAsync("FacultyStaffLayout_Paged")
             </div>
         </div>
     </div>
