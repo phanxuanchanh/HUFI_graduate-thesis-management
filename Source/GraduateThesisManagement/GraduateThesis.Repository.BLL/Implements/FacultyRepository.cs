@@ -1,4 +1,5 @@
-﻿using GraduateThesis.ApplicationCore.Repository;
+﻿using GraduateThesis.ApplicationCore.Enums;
+using GraduateThesis.ApplicationCore.Repository;
 using GraduateThesis.ApplicationCore.Uuid;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DAL;
@@ -16,6 +17,7 @@ public class FacultyRepository : SubRepository<Faculty, FacultyInput, FacultyOut
         : base(context, context.Faculties)
     {
         _context = context;
+        GenerateUidOptions = UidOptions.ShortUid;
     }
 
     protected override void ConfigureIncludes()
@@ -41,11 +43,6 @@ public class FacultyRepository : SubRepository<Faculty, FacultyInput, FacultyOut
             Id = s.Id,
             Name = s.Name,
             Description = s.Description,
-            FacultyStaffs = s.FacultyStaffs.Select(f => new FacultyStaffOutput
-            {
-                Id = f.Id,
-                FullName = f.FullName
-            }).ToList(),
             CreatedAt = s.CreatedAt,
             UpdatedAt = s.UpdatedAt,
             DeletedAt = s.DeletedAt

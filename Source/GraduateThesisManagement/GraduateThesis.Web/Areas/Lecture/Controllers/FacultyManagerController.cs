@@ -1,5 +1,5 @@
 ﻿using GraduateThesis.ApplicationCore.AppController;
-using GraduateThesis.ApplicationCore.Models;
+using GraduateThesis.ApplicationCore.WebAttributes;
 using GraduateThesis.Common.WebAttributes;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DTO;
@@ -10,6 +10,8 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers;
 
 [Area("Lecture")]
 [Route("lecture/faculty-manager")]
+[WebAuthorize]
+[AccountInfo(typeof(FacultyStaffOutput))]
 public class FacultyManagerController : WebControllerBase<IFacultyRepository, FacultyInput, FacultyOutput, string>
 {
     public FacultyManagerController(IRepository repository) 
@@ -65,10 +67,10 @@ public class FacultyManagerController : WebControllerBase<IFacultyRepository, Fa
         return await EditResult(id, input);
     }
 
-    [Route("export")]
-    public override async Task<IActionResult> Export()
+    [NonAction]
+    public override Task<IActionResult> Export()
     {
-        return await ExportResult(null, null);
+        throw new NotImplementedException();
     }
 
     [Route("force-delete/{id}")]
@@ -86,19 +88,16 @@ public class FacultyManagerController : WebControllerBase<IFacultyRepository, Fa
         return await GetTrashResult(count);
     }
 
-    [Route("import")]
-    [HttpGet]
-    [PageName(Name = "Nhập dữ liệu vào hệ thống")]
-    public override async Task<IActionResult> Import()
+    [NonAction]
+    public override Task<IActionResult> Import()
     {
-        return await ImportResult();
+        throw new NotImplementedException();
     }
 
-    [Route("import")]
-    [HttpPost]
-    public override async Task<IActionResult> Import([FromForm] IFormFile formFile)
+    [NonAction]
+    public override Task<IActionResult> Import([FromForm] IFormFile formFile)
     {
-        return await ImportResult(formFile, new ImportMetadata());
+        throw new NotImplementedException();
     }
 
     [Route("list")]

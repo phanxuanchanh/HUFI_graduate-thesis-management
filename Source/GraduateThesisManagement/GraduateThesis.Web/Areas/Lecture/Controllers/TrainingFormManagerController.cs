@@ -12,6 +12,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers;
 [Area("Lecture")]
 [Route("training-form-manager")]
 [WebAuthorize]
+[AccountInfo(typeof(FacultyStaffOutput))]
 public class TrainingFormManagerController : WebControllerBase<ITrainingFormRepository, TrainingFormInput, TrainingFormOutput, string>
 {
     public TrainingFormManagerController(IRepository repository) 
@@ -67,9 +68,9 @@ public class TrainingFormManagerController : WebControllerBase<ITrainingFormRepo
     }
 
     [NonAction]
-    public override async Task<IActionResult> Export()
+    public override Task<IActionResult> Export()
     {
-        return await ExportResult(null, null);
+        throw new NotImplementedException();
     }
 
     [Route("force-delete")]
@@ -88,16 +89,15 @@ public class TrainingFormManagerController : WebControllerBase<ITrainingFormRepo
     }
 
     [NonAction]
-    [PageName(Name = "Nhập dữ liệu vào hệ thống")]
-    public override async Task<IActionResult> Import()
+    public override Task<IActionResult> Import()
     {
-        return await ImportResult();
+        throw new NotImplementedException();
     }
 
     [NonAction]
-    public override async Task<IActionResult> Import([FromForm] IFormFile formFile)
+    public override Task<IActionResult> Import([FromForm] IFormFile formFile)
     {
-        return await ImportResult(formFile, new ImportMetadata());
+        throw new NotImplementedException();
     }
 
     [Route("index")]

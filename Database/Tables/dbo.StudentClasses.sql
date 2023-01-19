@@ -3,7 +3,7 @@
   [Name] [nvarchar](100) NOT NULL,
   [Description] [nvarchar](200) NULL,
   [StudentQuantity] [int] NOT NULL,
-  [FacultyId] [varchar](50) NOT NULL,
+  [FacultyId] [varchar](50) NOT NULL DEFAULT ('BHyFWSywrk'),
   [CreatedAt] [datetime] NULL,
   [UpdatedAt] [datetime] NULL,
   [DeletedAt] [datetime] NULL,
@@ -14,5 +14,5 @@ ON [PRIMARY]
 GO
 
 ALTER TABLE [dbo].[StudentClasses]
-  ADD CONSTRAINT [FK_StudentClasses_Faculties_ID] FOREIGN KEY ([FacultyId]) REFERENCES [dbo].[Faculties] ([ID]) ON DELETE CASCADE
+  ADD CONSTRAINT [FK_StudentClasses_Faculties_ID] FOREIGN KEY ([FacultyId]) REFERENCES [dbo].[Faculties] ([ID]) ON DELETE SET DEFAULT ON UPDATE CASCADE
 GO
