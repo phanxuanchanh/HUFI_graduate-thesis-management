@@ -156,12 +156,16 @@ public class StudentRepository : SubRepository<Student, StudentInput, StudentOut
 
         Random random = new Random();
         student.VerificationCode = random.NextString(24);
+        student.CodeExpTime = DateTime.Now.AddMinutes(5);
         await _context.SaveChangesAsync();
+
+        string mailContent = Resources.EmailResource.account_verification;
+        mailContent = mailContent.Replace("@verificationCode", student.VerificationCode);
 
         _emailService.Send(
             student.Email,
             "Khôi phục mật khẩu",
-            $"Mã xác nhận của bạn là: {student.VerificationCode}"
+            mailContent
         );
 
         return new AccountVerificationModel
