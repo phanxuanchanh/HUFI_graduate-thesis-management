@@ -22,12 +22,30 @@ public class SmtpService : IEmailService
         _smtpConfiguration = smtpConfiguration;
     }
 
-    public void Send(string recipients, string subject, string content)
+    public void Send(string recipient, string subject, string content)
     {
         MailAddress from = new MailAddress(_smtpConfiguration.Address, _smtpConfiguration.DisplayName);
-        MailAddress to = new MailAddress(recipients);
+        MailAddress to = new MailAddress(recipient);
 
         MailMessage mailMessage = new MailMessage(from, to);
+        mailMessage.Subject = subject;
+        mailMessage.Body = content;
+
+        mailMessage.IsBodyHtml = true;
+
+        _smtp.Send(mailMessage);
+    }
+
+    public void Send(string[] recipients, string subject, string content)
+    {
+        MailMessage mailMessage = new MailMessage();
+        mailMessage.From = new MailAddress(_smtpConfiguration.Address, _smtpConfiguration.DisplayName);
+
+        foreach(string recipient in recipients)
+        {
+            mailMessage.To.Add(new MailAddress(recipient));
+        }
+
         mailMessage.Subject = subject;
         mailMessage.Body = content;
 
