@@ -1,4 +1,4 @@
-﻿@model TopicInput
+﻿@model StudentClassInput
 
 @await Component.InvokeAsync("FacultyStaffLayout_StatusArea")
 
@@ -26,6 +26,14 @@
                                     <div class="col-md-8 form-group">
                                         <input asp-for="Name" class="form-control" placeholder="Nhập tên chủ đề" />
                                         <span asp-validation-for="Name" class="text-danger"></span>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label asp-for="FacultyId">Khoa</label>
+                                    </div>
+                                    <div class="col-md-8 form-group">
+                                        <select asp-for="FacultyId" asp-items="@((SelectList)ViewData["FacultySelectList"]!)" class="form-control">
+                                        </select>
+                                        <span asp-validation-for="FacultyId" class="text-danger"></span>
                                     </div>
                                     <div class="col-md-4">
                                         <label asp-for="Description"></label>

@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using GraduateThesis.Common.WebAttributes;
 using GraduateThesis.ApplicationCore.AppController;
 using GraduateThesis.ApplicationCore.WebAttributes;
+using GraduateThesis.ApplicationCore.Models;
 
 namespace GraduateThesis.Web.Areas.Lecture.Controllers;
 
@@ -96,7 +97,7 @@ public class TopicManagerController : WebControllerBase<ITopicRepository, TopicI
     }
 
     [NonAction]
-    public override Task<IActionResult> Import([FromForm] IFormFile formFile)
+    public override Task<IActionResult> Import([FromForm] IFormFile formFile, ImportMetadata importMetadata)
     {
         throw new NotImplementedException();
     }

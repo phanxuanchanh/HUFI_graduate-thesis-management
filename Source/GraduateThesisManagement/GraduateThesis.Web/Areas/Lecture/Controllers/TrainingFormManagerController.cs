@@ -95,7 +95,7 @@ public class TrainingFormManagerController : WebControllerBase<ITrainingFormRepo
     }
 
     [NonAction]
-    public override Task<IActionResult> Import([FromForm] IFormFile formFile)
+    public override Task<IActionResult> Import([FromForm] IFormFile formFile, ImportMetadata importMetadata)
     {
         throw new NotImplementedException();
     }

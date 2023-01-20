@@ -1,10 +1,8 @@
 ﻿using GraduateThesis.ApplicationCore.Enums;
 using GraduateThesis.ApplicationCore.Repository;
-using GraduateThesis.ApplicationCore.Uuid;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DAL;
 using GraduateThesis.Repository.DTO;
-using System;
 
 namespace GraduateThesis.Repository.BLL.Implements;
 
@@ -43,13 +41,6 @@ public class TrainingFormRepository : SubRepository<TrainingForm, TrainingFormIn
             CreatedAt = s.CreatedAt,
             UpdatedAt = s.UpdatedAt,
             DeletedAt = s.DeletedAt
-        };
-
-        SimpleImportSelector = r => new TrainingForm
-        {
-            Id = UidHelper.GetShortUid(),
-            Name = r[1] as string,
-            CreatedAt = DateTime.Now
         };
     }
 }

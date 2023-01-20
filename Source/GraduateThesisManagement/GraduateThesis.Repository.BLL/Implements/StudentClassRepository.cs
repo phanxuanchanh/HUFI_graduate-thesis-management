@@ -1,4 +1,5 @@
-﻿using GraduateThesis.ApplicationCore.Repository;
+﻿using GraduateThesis.ApplicationCore.Enums;
+using GraduateThesis.ApplicationCore.Repository;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DAL;
 using GraduateThesis.Repository.DTO;
@@ -14,6 +15,7 @@ public class StudentClassRepository : SubRepository<StudentClass, StudentClassIn
         :base(context, context.StudentClasses)
     {
         _context = context;
+        GenerateUidOptions = UidOptions.None;
     }
 
     protected override void ConfigureIncludes()

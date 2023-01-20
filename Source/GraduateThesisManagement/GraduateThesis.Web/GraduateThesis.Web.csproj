@@ -26,6 +26,7 @@
     <Folder Include="wwwroot\avatar\faculty-staff\" />
     <Folder Include="wwwroot\avatar\student\" />
     <Folder Include="wwwroot\common-area\js\" />
+    <Folder Include="wwwroot\logo\" />
   </ItemGroup>
 
   <ItemGroup>

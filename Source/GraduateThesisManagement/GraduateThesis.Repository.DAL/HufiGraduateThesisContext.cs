@@ -447,7 +447,7 @@ public partial class HufiGraduateThesisContext : DbContext
         {
             entity.HasKey(e => e.Id).HasName("PK_Students_ID");
 
-            entity.HasIndex(e => e.Phone, "UQ__Students__5C7E359E8767B4AD").IsUnique();
+            entity.HasIndex(e => e.Phone, "UQ__Students__5C7E359E8423B8F5").IsUnique();
 
             entity.HasIndex(e => e.Email, "UQ__Students__A9D105343DDCBD48").IsUnique();
 
@@ -455,9 +455,7 @@ public partial class HufiGraduateThesisContext : DbContext
                 .HasMaxLength(50)
                 .IsUnicode(false)
                 .HasColumnName("ID");
-            entity.Property(e => e.Address)
-                .IsRequired()
-                .HasMaxLength(400);
+            entity.Property(e => e.Address).HasMaxLength(400);
             entity.Property(e => e.Avatar)
                 .HasMaxLength(200)
                 .IsUnicode(false);
@@ -480,7 +478,6 @@ public partial class HufiGraduateThesisContext : DbContext
                 .IsRequired()
                 .HasMaxLength(100);
             entity.Property(e => e.Phone)
-                .IsRequired()
                 .HasMaxLength(20)
                 .IsUnicode(false);
             entity.Property(e => e.Salt)

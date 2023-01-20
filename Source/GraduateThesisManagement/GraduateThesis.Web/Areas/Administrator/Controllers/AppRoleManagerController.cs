@@ -120,7 +120,7 @@ public class AppRoleManagerController : WebControllerBase<IAppRoleRepository, Ap
     }
 
     [NonAction]
-    public override Task<IActionResult> Import([FromForm] IFormFile formFile)
+    public override Task<IActionResult> Import([FromForm] IFormFile formFile, ImportMetadata importMetadata)
     {
         throw new NotImplementedException();
     }

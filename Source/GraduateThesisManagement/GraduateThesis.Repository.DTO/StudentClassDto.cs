@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace GraduateThesis.Repository.DTO;
@@ -7,7 +6,7 @@ namespace GraduateThesis.Repository.DTO;
 public class StudentClassInput
 {
     [Display(Name = "Mã lớp học")]
-    [Required(ErrorMessage = "{0} Bắt buộc nhập ")]
+    [Required(ErrorMessage = "{0} không được để trống")]
     public string Id { get; set; }
 
     [Display(Name = "Tên lớp")]
@@ -18,7 +17,7 @@ public class StudentClassInput
     public string Description { get; set; }
 
     [Display(Name = "Số lượng sinh viên của lớp")]
-    public int StudentQuantity { get; set; }
+    public int? StudentQuantity { get; set; }
 
     [Display(Name = "Mã khoa")]
     [Required(ErrorMessage = "{0} không được để trống")]
@@ -32,5 +31,4 @@ public class StudentClassOutput : StudentClassInput
     public DateTime? DeletedAt { get; set; }
 
     public FacultyOutput Faculty { get; set; }
-    public List<StudentOutput> Students { get; set; }
 }

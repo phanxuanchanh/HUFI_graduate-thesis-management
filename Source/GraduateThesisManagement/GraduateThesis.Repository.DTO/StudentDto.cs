@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace GraduateThesis.Repository.DTO;
@@ -29,7 +28,7 @@ public class StudentInput
 
     [Display(Name = "Ngày sinh")]
     [DataType(DataType.Date, ErrorMessage = "{0} có kiểu dữ liệu không hợp lệ")]
-    public DateTime Birthday { get; set; }
+    public DateTime? Birthday { get; set; }
 
     [Display(Name = "Ảnh nhân viên")]
     public string Avatar { get; set; }
@@ -54,5 +53,4 @@ public class StudentOutput : StudentInput
     public DateTime? DeletedAt { get; set; }
 
     public StudentClassOutput StudentClass { get; set; }
-    public List<ThesisGroupOutput> ThesisGroups { get; set; }
 }

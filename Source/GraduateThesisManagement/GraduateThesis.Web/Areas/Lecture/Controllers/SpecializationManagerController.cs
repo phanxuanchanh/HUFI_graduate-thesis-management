@@ -1,5 +1,7 @@
 ﻿using GraduateThesis.ApplicationCore.AppController;
+using GraduateThesis.ApplicationCore.Models;
 using GraduateThesis.ApplicationCore.WebAttributes;
+using GraduateThesis.Common.WebAttributes;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DTO;
 using Microsoft.AspNetCore.Mvc;
@@ -19,73 +21,99 @@ public class SpecializationManagerController : WebControllerBase<ISpecialization
 
     }
 
-    public override Task<IActionResult> BatchDelete([Required] string id)
+    [Route("batch-delete/{id}")]
+    [HttpPost]
+    public override async Task<IActionResult> BatchDelete([Required] string id)
     {
-        throw new NotImplementedException();
+        return await BatchDeleteResult(id);
     }
 
-    public override Task<IActionResult> Create()
+    [Route("create")]
+    [HttpGet]
+    [PageName(Name = "Tạo mới chuyên ngành")]
+    public override async Task<IActionResult> Create()
     {
-        throw new NotImplementedException();
+        return await CreateResult();
     }
 
-    public override Task<IActionResult> Create(SpecializationInput input)
+    [Route("create")]
+    [HttpPost]
+    [PageName(Name = "Tạo mới chuyên ngành")]
+    public override async Task<IActionResult> Create(SpecializationInput input)
     {
-        throw new NotImplementedException();
+        return await CreateResult(input);
     }
 
-    public override Task<IActionResult> Details([Required] string id)
+    [Route("details/{id}")]
+    [HttpGet]
+    [PageName(Name = "Chi tiết chuyên ngành")]
+    public override async Task<IActionResult> Details([Required] string id)
     {
-        throw new NotImplementedException();
+        return await GetDetailsResult(id);
     }
 
-    public override Task<IActionResult> Edit([Required] string id)
+    [Route("edit/{id}")]
+    [HttpGet]
+    [PageName(Name = "Chỉnh sửa chuyên ngành")]
+    public override async Task<IActionResult> Edit([Required] string id)
     {
-        throw new NotImplementedException();
+        return await EditResult(id);
     }
 
-    public override Task<IActionResult> Edit([Required] string id, SpecializationInput input)
+    [Route("edit/{id}")]
+    [HttpPost]
+    [PageName(Name = "Chỉnh sửa chuyên ngành")]
+    public override async Task<IActionResult> Edit([Required] string id, SpecializationInput input)
     {
-        throw new NotImplementedException();
+        return await EditResult(id, input);
     }
 
+    [NonAction]
     public override Task<IActionResult> Export()
     {
         throw new NotImplementedException();
     }
 
-    public override Task<IActionResult> ForceDelete([Required] string id)
+    [Route("force-delete/{id}")]
+    [HttpPost]
+    public override async Task<IActionResult> ForceDelete([Required] string id)
     {
-        throw new NotImplementedException();
+        return await ForceDeleteResult(id);
     }
 
-    public override Task<IActionResult> GetTrash(int count = 50)
+
+    [Route("trash")]
+    [HttpGet]
+    [PageName(Name = "Thùng rác")]
+    public override async Task<IActionResult> GetTrash(int count = 50)
     {
-        throw new NotImplementedException();
+        return await GetTrashResult(count);
     }
 
+    [NonAction]
     public override Task<IActionResult> Import()
     {
         throw new NotImplementedException();
     }
 
-    public override Task<IActionResult> Import([FromForm] IFormFile formFile)
+    [NonAction]
+    public override Task<IActionResult> Import([FromForm] IFormFile formFile, ImportMetadata importMetadata)
     {
         throw new NotImplementedException();
     }
 
-    public IActionResult Index()
+    [Route("list")]
+    [HttpGet]
+    [PageName(Name = "Danh sách các chuyên ngành")]
+    public override async Task<IActionResult> Index(int page = 1, int pageSize = 10, string orderBy = "", string orderOptions = "ASC", string keyword = "")
     {
-        return View();
+        return await IndexResult(page, pageSize, orderBy, orderOptions, keyword);
     }
 
-    public override Task<IActionResult> Index(int page = 1, int pageSize = 10, string orderBy = "", string orderOptions = "ASC", string keyword = "")
+    [Route("restore/{id}")]
+    [HttpPost]
+    public override async Task<IActionResult> Restore([Required] string id)
     {
-        throw new NotImplementedException();
-    }
-
-    public override Task<IActionResult> Restore([Required] string id)
-    {
-        throw new NotImplementedException();
+        return await RestoreResult(id);
     }
 }

@@ -2,7 +2,7 @@
   [ID] [varchar](50) NOT NULL,
   [Name] [nvarchar](100) NOT NULL,
   [Description] [nvarchar](200) NULL,
-  [StudentQuantity] [int] NOT NULL,
+  [StudentQuantity] [int] NULL,
   [FacultyId] [varchar](50) NOT NULL DEFAULT ('BHyFWSywrk'),
   [CreatedAt] [datetime] NULL,
   [UpdatedAt] [datetime] NULL,

@@ -1,12 +1,9 @@
 ﻿using GraduateThesis.ApplicationCore.AppController;
-using GraduateThesis.ApplicationCore.Authorization;
 using GraduateThesis.ApplicationCore.Models;
 using GraduateThesis.ApplicationCore.WebAttributes;
 using GraduateThesis.Common.WebAttributes;
-using GraduateThesis.Repository.BLL.Implements;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DTO;
-using GraduateThesis.WebExtensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
@@ -34,6 +31,15 @@ public class FacultyStaffManagerController : WebControllerBase<IFacultyStaffRepo
         _appRolesRepository = repository.AppRolesRepository;
     }
 
+    protected override async Task LoadSelectListAsync()
+    {
+        List<FacultyOutput> faculties = await _facultyRepository.GetListAsync(50);
+        ViewData["FacultyList"] = new SelectList(faculties, "Id", "Name");
+
+        List<AppRoleOutput> facultyStaffRoles = await _appRolesRepository.GetListAsync(50);
+        ViewData["facultyStaffRolesList"] = new SelectList(facultyStaffRoles, "Id", "Name");
+    }
+
     [Route("list")]
     [HttpGet]
     [PageName(Name = "Danh sách giảng viên")]
@@ -55,32 +61,14 @@ public class FacultyStaffManagerController : WebControllerBase<IFacultyStaffRepo
     [PageName(Name = "Tạo mới giảng viên")]
     public override async Task<IActionResult> Create()
     {
-        Func<Task> dependency = async () =>
-        {
-            List<FacultyOutput> faculties = await _facultyRepository.GetListAsync(50);
-            ViewData["FacultyList"] = new SelectList(faculties, "Id", "Name");
-
-            List<AppRoleOutput> facultyStaffRoles = await _appRolesRepository.GetListAsync(50);
-            ViewData["facultyStaffRolesList"] = new SelectList(facultyStaffRoles, "Id", "Name");
-        };
-
-        return await CreateResult(dependency);
+        return await CreateResult();
     }
 
     [Route("create")]
     [HttpPost]
     public override async Task<IActionResult> Create(FacultyStaffInput facultyStaffInput)
     {
-        Func<Task> dependency = async () =>
-        {
-            List<FacultyOutput> faculties = await _facultyRepository.GetListAsync(50);
-            ViewData["FacultyList"] = new SelectList(faculties, "Id", "Name");
-
-            List<AppRoleOutput> facultyStaffRoles = await _appRolesRepository.GetListAsync(50);
-            ViewData["facultyStaffRolesList"] = new SelectList(facultyStaffRoles, "Id", "Name");
-        };
-
-        return await CreateResult(facultyStaffInput, dependency);
+        return await CreateResult(facultyStaffInput);
     }
 
     [Route("edit/{id}")]
@@ -88,32 +76,14 @@ public class FacultyStaffManagerController : WebControllerBase<IFacultyStaffRepo
     [PageName(Name = "Chỉnh sửa giảng viên")]
     public override async Task<IActionResult> Edit([Required] string id)
     {
-        Func<Task> dependency = async () =>
-        {
-            List<FacultyOutput> faculties = await _facultyRepository.GetListAsync(50);
-            ViewData["FacultyList"] = new SelectList(faculties, "Id", "Name");
-
-            List<AppRoleOutput> facultyStaffRoles = await _appRolesRepository.GetListAsync(50);
-            ViewData["facultyStaffRolesList"] = new SelectList(facultyStaffRoles, "Id", "Name");
-        };
-
-        return await EditResult(id, dependency);
+        return await EditResult(id);
     }
 
     [Route("edit/{id}")]
     [HttpPost]
     public override async Task<IActionResult> Edit([Required] string id, FacultyStaffInput facultyStaffInput)
     {
-        Func<Task> dependency = async () =>
-        {
-            List<FacultyOutput> faculties = await _facultyRepository.GetListAsync(50);
-            ViewData["FacultyList"] = new SelectList(faculties, "Id", "Name");
-
-            List<AppRoleOutput> facultyStaffRoles = await _appRolesRepository.GetListAsync(50);
-            ViewData["facultyStaffRolesList"] = new SelectList(facultyStaffRoles, "Id", "Name");
-        };
-
-        return await EditResult(id, facultyStaffInput);
+        return await EditResult(id);
     }
 
     [Route("delete/{id}")]
@@ -133,7 +103,7 @@ public class FacultyStaffManagerController : WebControllerBase<IFacultyStaffRepo
         return await ExportResult(null!, null!);
     }
 
-    public override async Task<IActionResult> Import(IFormFile formFile)
+    public override async Task<IActionResult> Import(IFormFile formFile, ImportMetadata importMetadata)
     {
         return await ImportResult(formFile, new ImportMetadata());
     }

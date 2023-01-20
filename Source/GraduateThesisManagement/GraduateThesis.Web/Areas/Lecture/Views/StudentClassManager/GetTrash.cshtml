@@ -1,4 +1,4 @@
-﻿@model IEnumerable<TopicOutput>
+﻿@model IEnumerable<StudentClassOutput>
 
 @await Component.InvokeAsync("FacultyStaffLayout_StatusArea")
 
@@ -30,18 +30,18 @@
                             @{
                                 int count = 1;
                             }
-                            @foreach (TopicOutput topic in Model)
+                            @foreach (StudentClassOutput studentClass in Model)
                             {
                                 <tr>
                                     <td>@count</td>
-                                    <td>@topic.Id</td>
-                                    <td>@topic.Name</td>
+                                    <td>@studentClass.Id</td>
+                                    <td>@studentClass.Name</td>
                                     <td>
                                         <button type="submit" form="restore_@count" class="btn btn-primary btn-sm"><i class="fas fa-restore"></i> Khôi phục</button>
                                         <button type="submit" form="delete_@count" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i> Xóa vĩnh viễn</button>
-                                        <form asp-action="Restore" asp-route-id="@topic.Id" id="restore_@count" method="post">
+                                        <form asp-action="Restore" asp-route-id="@studentClass.Id" id="restore_@count" method="post">
                                         </form>
-                                        <form asp-action="ForceDelete" asp-route-id="@topic.Id" id="delete_@count" method="post">
+                                        <form asp-action="ForceDelete" asp-route-id="@studentClass.Id" id="delete_@count" method="post">
                                         </form>
                                     </td>
                                 </tr>
