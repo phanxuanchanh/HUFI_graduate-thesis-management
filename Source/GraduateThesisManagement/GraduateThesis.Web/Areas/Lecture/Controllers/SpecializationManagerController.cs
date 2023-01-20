@@ -1,4 +1,5 @@
 ﻿using GraduateThesis.ApplicationCore.AppController;
+using GraduateThesis.ApplicationCore.Models;
 using GraduateThesis.ApplicationCore.WebAttributes;
 using GraduateThesis.Common.WebAttributes;
 using GraduateThesis.Repository.BLL.Interfaces;
@@ -96,7 +97,7 @@ public class SpecializationManagerController : WebControllerBase<ISpecialization
     }
 
     [NonAction]
-    public override Task<IActionResult> Import([FromForm] IFormFile formFile)
+    public override Task<IActionResult> Import([FromForm] IFormFile formFile, ImportMetadata importMetadata)
     {
         throw new NotImplementedException();
     }

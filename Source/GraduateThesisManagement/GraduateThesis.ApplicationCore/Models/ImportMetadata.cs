@@ -1,4 +1,5 @@
 ﻿using GraduateThesis.ApplicationCore.Enums;
+using System.ComponentModel.DataAnnotations;
 
 #nullable disable
 

@@ -9,7 +9,6 @@ using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DAL;
 using GraduateThesis.Repository.DTO;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -50,8 +49,7 @@ public class StudentRepository : SubRepository<Student, StudentInput, StudentOut
             Email = s.Email,
             Address = s.Address,
             CreatedAt = s.StudentClass.CreatedAt,
-            UpdatedAt = s.StudentClass.UpdatedAt,
-            DeletedAt = s.StudentClass.DeletedAt
+            UpdatedAt = s.StudentClass.UpdatedAt
         };
 
         ListSelector = PaginationSelector;
@@ -79,6 +77,44 @@ public class StudentRepository : SubRepository<Student, StudentInput, StudentOut
             UpdatedAt = s.StudentClass.UpdatedAt,
             DeletedAt = s.StudentClass.DeletedAt
         };
+
+        AdvancedImportSelector = s =>
+        {
+            Student student = new Student();
+
+            student.Id = s[1] as string;
+            student.Name = $"{s[2] as string} {s[3] as string}";
+            student.Email = s[4] as string;
+            student.Birthday = DateTime.ParseExact(s[5] as string, "dd/MM/yyyy", null);
+
+            string studentClassId = s[6] as string;
+            if(!_context.StudentClasses.Any(s => s.Id == studentClassId))
+            {
+                _context.StudentClasses.Add(new StudentClass
+                {
+                    Id = studentClassId,
+                    Name = studentClassId,
+                    CreatedAt = DateTime.Now
+                });
+
+                _context.SaveChanges();
+            }
+
+            student.StudentClassId = s[6] as string;
+            student.Password = "default";
+            student.Salt = "default";
+            student.Phone = student.Id;
+
+            return student;
+        };
+    }
+
+    public override async Task<DataResponse> ImportAsync(Stream stream, ImportMetadata importMetadata)
+    {
+        return await _genericRepository.ImportAsync(stream, importMetadata, new ImportSelector<Student>
+        {
+            AdvancedImportSpreadsheet = AdvancedImportSelector
+        });
     }
 
     public override async Task<DataResponse<StudentOutput>> CreateAsync(StudentInput input)
@@ -149,7 +185,8 @@ public class StudentRepository : SubRepository<Student, StudentInput, StudentOut
            .SingleOrDefaultAsync();
 
         if (student == null)
-            return new AccountVerificationModel {
+            return new AccountVerificationModel
+            {
                 Status = AccountStatus.NotFound,
                 Message = "Không tìm thấy tài khoản này!"
             };
@@ -205,7 +242,8 @@ public class StudentRepository : SubRepository<Student, StudentInput, StudentOut
     {
         Student student = await _context.Students.FindAsync(signInModel.Code);
         if (student == null)
-            return new SignInResultModel { 
+            return new SignInResultModel
+            {
                 Status = AccountStatus.NotFound,
                 Message = "Không tìm thấy tài khoản này!"
             };
@@ -213,12 +251,14 @@ public class StudentRepository : SubRepository<Student, StudentInput, StudentOut
         string passwordAndSalt = $"{signInModel.Password}>>>{student.Salt}";
 
         if (!BCrypt.Net.BCrypt.Verify(passwordAndSalt, student.Password))
-            return new SignInResultModel { 
+            return new SignInResultModel
+            {
                 Status = AccountStatus.WrongPassword,
                 Message = "Mật khẩu không trùng khớp!"
             };
 
-        return new SignInResultModel {
+        return new SignInResultModel
+        {
             Status = AccountStatus.Success,
             Message = "Đã đăng nhập vào hệ thống thành công!"
         };
@@ -231,7 +271,8 @@ public class StudentRepository : SubRepository<Student, StudentInput, StudentOut
             ).SingleOrDefaultAsync();
 
         if (student == null)
-            return new NewPasswordModel { 
+            return new NewPasswordModel
+            {
                 Status = AccountStatus.NotFound,
                 Message = "Không tìm thấy tài khoản này!"
             };
@@ -355,7 +396,8 @@ public class StudentRepository : SubRepository<Student, StudentInput, StudentOut
 
         await _context.SaveChangesAsync();
 
-        return new DataResponse {
+        return new DataResponse
+        {
             Status = DataResponseStatus.Success,
             Message = "Đã đặt ảnh đại diện mặc định thành công!"
         };

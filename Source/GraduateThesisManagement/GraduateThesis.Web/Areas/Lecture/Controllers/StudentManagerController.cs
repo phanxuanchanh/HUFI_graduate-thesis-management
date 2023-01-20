@@ -1,11 +1,9 @@
 ﻿using GraduateThesis.ApplicationCore.AppController;
-using GraduateThesis.ApplicationCore.Email;
 using GraduateThesis.ApplicationCore.Models;
 using GraduateThesis.ApplicationCore.WebAttributes;
 using GraduateThesis.Common.WebAttributes;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DTO;
-using GraduateThesis.WebExtensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
@@ -15,12 +13,13 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers;
 [Area("Lecture")]
 [Route("lecture/student-manager")]
 [WebAuthorize]
+[AccountInfo(typeof(FacultyStaffOutput))]
 public class StudentManagerController : WebControllerBase<IStudentRepository, StudentInput, StudentOutput, string>
 {
     private IStudentRepository _studentRepository;
     private IStudentClassRepository _studentClassRepository;
 
-    public StudentManagerController(IRepository repository, IEmailService emailService)
+    public StudentManagerController(IRepository repository)
         :base(repository.StudentRepository)
     {
         _studentRepository = repository.StudentRepository;
@@ -30,7 +29,7 @@ public class StudentManagerController : WebControllerBase<IStudentRepository, St
     protected override async Task LoadSelectListAsync()
     {
         List<StudentClassOutput> studentClasses = await _studentClassRepository.GetListAsync(50);
-        ViewData["StudentClassList"] = new SelectList(studentClasses, "Id", "Name");
+        ViewData["StudentClassSelectList"] = new SelectList(studentClasses, "Id", "Name");
     }
 
     [Route("list")]
@@ -81,13 +80,15 @@ public class StudentManagerController : WebControllerBase<IStudentRepository, St
         return await Edit(id);
     }
 
-    [Route("delete/{id}")]
+    [Route("batch-delete/{id}")]
     [HttpPost]
     public override async Task<IActionResult> BatchDelete([Required] string id)
     {
         return await BatchDeleteResult(id);
     }
 
+    [Route("force-delete/{id}")]
+    [HttpPost]
     public override async Task<IActionResult> ForceDelete([Required] string id)
     {
         return await ForceDeleteResult(id);
@@ -98,23 +99,38 @@ public class StudentManagerController : WebControllerBase<IStudentRepository, St
         return await ExportResult(null!, null!);
     }
 
-    public override async Task<IActionResult> Import(IFormFile formFile)
+    [Route("import")]
+    [HttpPost]
+    [PageName(Name = "Nhập dữ liệu vào hệ thống")]
+    public override async Task<IActionResult> Import([Required][FromForm] IFormFile formFile, ImportMetadata importMetadata)
     {
-        return await ImportResult(formFile, new ImportMetadata());
+        if (string.IsNullOrEmpty(importMetadata.SheetName))
+            importMetadata.SheetName = "Default";
+
+        importMetadata.StartFromRow = 1;
+        return await ImportResult(formFile, importMetadata);
     }
 
-    public override Task<IActionResult> Import()
+    [Route("import")]
+    [HttpGet]
+    [PageName(Name = "Nhập dữ liệu vào hệ thống")]
+    public override async Task<IActionResult> Import()
     {
-        throw new NotImplementedException();
+        return await ImportResult();
     }
 
-    public override Task<IActionResult> GetTrash(int count = 50)
+    [Route("trash")]
+    [HttpGet]
+    [PageName(Name = "Thùng rác")]
+    public override async Task<IActionResult> GetTrash(int count = 50)
     {
-        throw new NotImplementedException();
+        return await GetTrashResult(count);
     }
 
-    public override Task<IActionResult> Restore([Required] string id)
+    [Route("restore/{id}")]
+    [HttpPost]
+    public override async Task<IActionResult> Restore([Required] string id)
     {
-        throw new NotImplementedException();
+        return await RestoreResult(id);
     }
 }

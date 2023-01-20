@@ -1,4 +1,5 @@
 ﻿using GraduateThesis.ApplicationCore.AppController;
+using GraduateThesis.ApplicationCore.Models;
 using GraduateThesis.Common.WebAttributes;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DTO;
@@ -93,7 +94,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers
             throw new NotImplementedException();
         }
 
-        public override Task<IActionResult> Import([FromForm] IFormFile formFile)
+        public override Task<IActionResult> Import([FromForm] IFormFile formFile, ImportMetadata importMetadata)
         {
             throw new NotImplementedException();
         }

@@ -103,7 +103,7 @@ public class FacultyStaffManagerController : WebControllerBase<IFacultyStaffRepo
         return await ExportResult(null!, null!);
     }
 
-    public override async Task<IActionResult> Import(IFormFile formFile)
+    public override async Task<IActionResult> Import(IFormFile formFile, ImportMetadata importMetadata)
     {
         return await ImportResult(formFile, new ImportMetadata());
     }

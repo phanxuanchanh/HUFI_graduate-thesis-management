@@ -306,7 +306,7 @@ public partial class GenericRepository<TEntity, TInput, TOutput>
         {
             if (importSelector.SimpleImportSpreadsheet != null)
                 return await _importHelper.ImportFromSpreadsheetAsync(stream, importMetadata.StartFromRow, importSelector.SimpleImportSpreadsheet);
-            else if (importSelector.SimpleImportSpreadsheet != null)
+            else if (importSelector.AdvancedImportSpreadsheet != null)
                 return await _importHelper.ImportFromSpreadsheetAsync(stream, importMetadata.StartFromRow, importMetadata.SheetName, importSelector.AdvancedImportSpreadsheet);
             else
                 throw new Exception("No matching selector found!");

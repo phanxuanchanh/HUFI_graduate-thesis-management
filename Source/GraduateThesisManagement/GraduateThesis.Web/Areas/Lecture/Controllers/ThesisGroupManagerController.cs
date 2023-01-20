@@ -1,4 +1,5 @@
 ﻿using GraduateThesis.ApplicationCore.AppController;
+using GraduateThesis.ApplicationCore.Models;
 using GraduateThesis.ApplicationCore.WebAttributes;
 using GraduateThesis.Common.WebAttributes;
 using GraduateThesis.Repository.BLL.Interfaces;
@@ -91,7 +92,7 @@ public class ThesisGroupManagerController : WebControllerBase<IThesisGroupReposi
         return await GetTrashResult(count);
     }
 
-    public override Task<IActionResult> Import(IFormFile formFile)
+    public override Task<IActionResult> Import(IFormFile formFile, ImportMetadata importMetadata)
     {
         throw new NotImplementedException();
     }

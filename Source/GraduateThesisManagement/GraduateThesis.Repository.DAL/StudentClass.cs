@@ -11,7 +11,7 @@ public partial class StudentClass
 
     public string Description { get; set; }
 
-    public int StudentQuantity { get; set; }
+    public int? StudentQuantity { get; set; }
 
     public string FacultyId { get; set; }
 

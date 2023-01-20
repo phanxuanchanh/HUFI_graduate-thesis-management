@@ -342,6 +342,12 @@ public abstract class WebControllerBase<TSubRepository, TInput, TOutput, T_ID> :
     [NonAction]
     protected async Task<IActionResult> ImportResult(IFormFile formFile, ImportMetadata importMetadata)
     {
+        if (!ModelState.IsValid)
+        {
+            AddViewData(DataResponseStatus.InvalidData);
+            return View();
+        }
+
         MemoryStream memoryStream = null;
         try
         {
@@ -377,5 +383,5 @@ public abstract class WebControllerBase<TSubRepository, TInput, TOutput, T_ID> :
     public abstract Task<IActionResult> ForceDelete([Required] T_ID id);
     public abstract Task<IActionResult> Export();
     public abstract Task<IActionResult> Import();
-    public abstract Task<IActionResult> Import([FromForm] IFormFile formFile);
+    public abstract Task<IActionResult> Import([Required][FromForm] IFormFile formFile, ImportMetadata importMetadata);
 }

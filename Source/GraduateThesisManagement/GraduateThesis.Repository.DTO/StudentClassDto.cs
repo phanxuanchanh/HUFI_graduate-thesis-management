@@ -17,7 +17,7 @@ public class StudentClassInput
     public string Description { get; set; }
 
     [Display(Name = "Số lượng sinh viên của lớp")]
-    public int StudentQuantity { get; set; }
+    public int? StudentQuantity { get; set; }
 
     [Display(Name = "Mã khoa")]
     [Required(ErrorMessage = "{0} không được để trống")]
