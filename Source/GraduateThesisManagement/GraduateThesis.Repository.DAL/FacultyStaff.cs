@@ -9,8 +9,6 @@ public partial class FacultyStaff
 
     public string FacultyId { get; set; }
 
-    public string FacultyRoleId { get; set; }
-
     public string FullName { get; set; }
 
     public string Description { get; set; }
@@ -23,7 +21,7 @@ public partial class FacultyStaff
 
     public string Email { get; set; }
 
-    public DateTime Birthday { get; set; }
+    public DateTime? Birthday { get; set; }
 
     public string Avatar { get; set; }
 

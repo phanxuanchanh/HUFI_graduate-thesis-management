@@ -18,15 +18,22 @@
                                         <label asp-for="Id"></label>
                                     </div>
                                     <div class="col-md-8 form-group">
-                                        <input asp-for="Id" class="form-control" placeholder="Nhập vào mã lớp" />
+                                        <input asp-for="Id" class="form-control" placeholder="Nhập vào mã sinh viên" />
                                         <span asp-validation-for="Id" class="text-danger"></span>
                                     </div>
                                     <div class="col-md-4">
                                         <label asp-for="Name"></label>
                                     </div>
                                     <div class="col-md-8 form-group">
-                                        <input asp-for="Name" class="form-control" placeholder="Nhập tên lớp" />
+                                        <input asp-for="Name" class="form-control" placeholder="Nhập tên sinh viên" />
                                         <span asp-validation-for="Name" class="text-danger"></span>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label asp-for="Email"></label>
+                                    </div>
+                                    <div class="col-md-8 form-group">
+                                        <input asp-for="Email" class="form-control" placeholder="Nhập địa chỉ Email" />
+                                        <span asp-validation-for="Email" class="text-danger"></span>
                                     </div>
                                     <div class="col-md-4">
                                         <label asp-for="StudentClassId">Khoa</label>

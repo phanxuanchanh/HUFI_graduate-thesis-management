@@ -1,114 +1,71 @@
-﻿@model GraduateThesis.Repository.DTO.FacultyStaffInput
-<h1 class="mt-4">@ViewData["PageName"]</h1>
-<ol class="breadcrumb mb-4">
-    <li class="breadcrumb-item active"></li>
-</ol>
+﻿@model FacultyStaffInput
 
-@await Component.InvokeAsync("StatusArea")
+@await Component.InvokeAsync("FacultyStaffLayout_StatusArea")
 
-<div class="card mb-4">
-
-    <div class="card-header">
-        <svg class="svg-inline--fa fa-table me-1" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="table" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg=""><path fill="currentColor" d="M448 32C483.3 32 512 60.65 512 96V416C512 451.3 483.3 480 448 480H64C28.65 480 0 451.3 0 416V96C0 60.65 28.65 32 64 32H448zM224 256V160H64V256H224zM64 320V416H224V320H64zM288 416H448V320H288V416zM448 256V160H288V256H448z"></path></svg><!-- <i class="fas fa-table me-1"></i> Font Awesome fontawesome.com -->
-        @ViewData["PageName"]
+<section id="basic-horizontal-layouts">
+    <div class="row match-height">
+        <div class="col-md-12 col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title">@ViewData["PageName"]</h4>
+                </div>
+                <div class="card-content">
+                    <div class="card-body">
+                        <form asp-action="Create" class="form form-horizontal" method="post">
+                            <div class="form-body">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <label asp-for="Id"></label>
+                                    </div>
+                                    <div class="col-md-8 form-group">
+                                        <input asp-for="Id" class="form-control" placeholder="Nhập vào mã giảng viên" />
+                                        <span asp-validation-for="Id" class="text-danger"></span>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label asp-for="FullName"></label>
+                                    </div>
+                                    <div class="col-md-8 form-group">
+                                        <input asp-for="FullName" class="form-control" placeholder="Nhập tên giảng viên" />
+                                        <span asp-validation-for="FullName" class="text-danger"></span>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label asp-for="Email"></label>
+                                    </div>
+                                    <div class="col-md-8 form-group">
+                                        <input asp-for="Email" class="form-control" placeholder="Nhập địa chỉ Email" />
+                                        <span asp-validation-for="Email" class="text-danger"></span>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label asp-for="FacultyId">Khoa</label>
+                                    </div>
+                                    <div class="col-md-8 form-group">
+                                        <select asp-for="FacultyId" asp-items="@((SelectList)ViewData["FacultySelectList"]!)" class="form-control">
+                                        </select>
+                                        <span asp-validation-for="FacultyId" class="text-danger"></span>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label asp-for="Description"></label>
+                                    </div>
+                                    <div class="col-md-8 form-group">
+                                        <textarea asp-for="Description" class="form-control" placeholder="Mô tả"></textarea>
+                                        <span asp-validation-for="Description" class="text-danger"></span>
+                                    </div>
+                                    <div class="col-sm-12 d-flex justify-content-end">
+                                        <a asp-action="Index" class="btn btn-light-secondary me-1 mb-1">Quay về danh sách</a>
+                                        <button type="submit" class="btn btn-primary me-1 mb-1">Tạo mới</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="card-body">
-        <form asp-action="Create" asp-controller="FacultyStaffManager" method="post">
-              <div class="form-group row my-3">
-                @Html.LabelFor(model => model.FacultyId, htmlAttributes: new { @class = "col-sm-2 col-form-label" })
-                <div class="col-smy-30">
-                    @Html.DropDownListFor(model => model.FacultyId, (SelectList)ViewData["FacultyList"], htmlAttributes: new { @class = "form-control" })
-                    @Html.ValidationMessageFor(model => model.FacultyId, "", new { @class = "text-danger" })
-                </div>
-            </div>
-            <div class="form-group row my-3">
-                @Html.LabelFor(model => model.FullName, htmlAttributes: new { @class = "col-sm-2 col-form-label" })
-                <div class="col-smy-30">
-                    @Html.EditorFor(model => model.FullName, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.ValidationMessageFor(model => model.FullName, "", new { @class = "text-danger" })
-                </div>
-            </div>
-             <div class="form-group row my-3">
-                @Html.LabelFor(model => model.Gender, htmlAttributes: new { @class = "col-sm-2 col-form-label" })
-                <div class="col-smy-30">
-                    @Html.EditorFor(model => model.Gender, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.ValidationMessageFor(model => model.Gender, "", new { @class = "text-danger" })
-                </div>
-            </div>
-            <div class="form-group row my-3">
-                @Html.LabelFor(model => model.Phone, htmlAttributes: new { @class = "col-sm-2 col-form-label" })
-                <div class="col-smy-30">
-                    @Html.EditorFor(model => model.Phone, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.ValidationMessageFor(model => model.Phone, "", new { @class = "text-danger" })
-                </div>
-            </div>
-            <div class="form-group row my-3">
-                @Html.LabelFor(model => model.Email, htmlAttributes: new { @class = "col-sm-2 col-form-label" })
-                <div class="col-smy-30">
-                    @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
-                </div>
-            </div>
+</section>
 
-            <div class="form-group row my-3">
-                @Html.LabelFor(model => model.Address, htmlAttributes: new { @class = "col-sm-2 col-form-label" })
-                <div class="col-smy-30">
-                    @Html.EditorFor(model => model.Address, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.ValidationMessageFor(model => model.Address, "", new { @class = "text-danger" })
-                </div>
-            </div>
-
-            <div class="form-group row my-3">
-                @Html.LabelFor(model => model.Birthday, htmlAttributes: new { @class = "col-sm-2 col-form-label" })
-                <div class="col-smy-30">
-                    @Html.EditorFor(model => model.Birthday, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.ValidationMessageFor(model => model.Birthday, "", new { @class = "text-danger" })
-                </div>
-            </div>
-
-            <div class="form-group row my-3">
-                @Html.LabelFor(model => model.Avatar, htmlAttributes: new { @class = "col-sm-2 col-form-label" })
-                <div class="col-smy-30">
-                    @Html.EditorFor(model => model.Avatar, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.ValidationMessageFor(model => model.Avatar, "", new { @class = "text-danger" })
-                </div>
-            </div>
-
-            <div class="form-group row my-3">
-                @Html.LabelFor(model => model.Description, htmlAttributes: new { @class = "col-sm-2 col-form-label" })
-                <div class="col-smy-30">
-                    @Html.EditorFor(model => model.Description, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
-                </div>
-            </div>
-
-            <div class="form-group row my-3">
-                @Html.LabelFor(model => model.Position, htmlAttributes: new { @class = "col-sm-2 col-form-label" })
-                <div class="col-smy-30">
-                    @Html.EditorFor(model => model.Position, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.ValidationMessageFor(model => model.Position, "", new { @class = "text-danger" })
-                </div>
-            </div>
-
-
-            <div class="form-group row my-3">
-                @Html.LabelFor(model => model.Degree, htmlAttributes: new { @class = "col-sm-2 col-form-label" })
-                <div class="col-smy-30">
-                    @Html.EditorFor(model => model.Degree, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.ValidationMessageFor(model => model.Degree, "", new { @class = "text-danger" })
-                </div>
-            </div>
-
-            <div class="form-group row my-3">
-                <div class="col-smy-30">
-                    <button type="submit" class="btn btn-primary">Đăng Ký</button>
-                </div>
-            </div>
-        </form>
-    </div>
-
-</div>
-
-@section Scripts{
-
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

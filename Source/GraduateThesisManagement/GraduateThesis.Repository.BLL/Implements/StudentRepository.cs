@@ -45,9 +45,12 @@ public class StudentRepository : SubRepository<Student, StudentInput, StudentOut
         {
             Id = s.Id,
             Name = s.Name,
-            Phone = s.Phone,
-            Email = s.Email,
             Address = s.Address,
+            StudentClass = new StudentClassOutput
+            {
+                Id = s.StudentClass.Id,
+                Name = s.StudentClass.Name
+            },
             CreatedAt = s.StudentClass.CreatedAt,
             UpdatedAt = s.StudentClass.UpdatedAt
         };
@@ -69,9 +72,6 @@ public class StudentRepository : SubRepository<Student, StudentInput, StudentOut
                 Id = s.StudentClass.Id,
                 Name = s.StudentClass.Name,
                 Description = s.StudentClass.Description,
-                CreatedAt = s.StudentClass.CreatedAt,
-                UpdatedAt = s.StudentClass.UpdatedAt,
-                DeletedAt = s.StudentClass.DeletedAt
             },
             CreatedAt = s.StudentClass.CreatedAt,
             UpdatedAt = s.StudentClass.UpdatedAt,
@@ -119,7 +119,6 @@ public class StudentRepository : SubRepository<Student, StudentInput, StudentOut
 
     public override async Task<DataResponse<StudentOutput>> CreateAsync(StudentInput input)
     {
-        string salt = HashFunctions.GetMD5($"{input.Id}|{input.Name}|{DateTime.Now}");
         Student student = new Student
         {
             Id = input.Id,
@@ -130,16 +129,13 @@ public class StudentRepository : SubRepository<Student, StudentInput, StudentOut
             Address = input.Address,
             Birthday = input.Birthday,
             StudentClassId = input.StudentClassId,
-            //Password = BCrypt.Net.BCrypt.HashPassword($"{input.Password}>>>{salt}"),
-            Salt = salt,
+            Password = "default",
+            Salt = "default",
             CreatedAt = DateTime.Now
         };
 
         await _context.Students.AddAsync(student);
-        int affected = await _context.SaveChangesAsync();
-
-        if (affected == 0)
-            return new DataResponse<StudentOutput> { Status = DataResponseStatus.Failed };
+        await _context.SaveChangesAsync();
 
         return new DataResponse<StudentOutput>
         {

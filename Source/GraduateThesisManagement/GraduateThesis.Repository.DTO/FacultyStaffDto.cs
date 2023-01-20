@@ -22,7 +22,6 @@ public class FacultyStaffInput
 
     [Display(Name = "Giới tính")]
     [RegularExpression("Nam|Nữ", ErrorMessage = "{0} chỉ có 'Nam' hoặc 'Nữ'")]
-    [Required(ErrorMessage = "{0} không được để trống")]
     public string Gender { get; set; }
 
     [Display(Name = "Số điện thoại")]
@@ -39,7 +38,7 @@ public class FacultyStaffInput
 
     [Display(Name = "Ngày sinh")]
     [DataType(DataType.Date, ErrorMessage = "{0} có kiểu dữ liệu không hợp lệ")]
-    public DateTime Birthday { get; set; }
+    public DateTime? Birthday { get; set; }
 
     [Display(Name = "Ảnh đại diện")]
     public string Avatar { get; set; }
@@ -61,6 +60,5 @@ public class FacultyStaffOutput : FacultyStaffInput
     public DateTime? DeletedAt { get; set; }
 
     public FacultyOutput Faculty { get; set; }
-    public AppRoleInput FacultyStaffRole { get; set; }
 }
 
