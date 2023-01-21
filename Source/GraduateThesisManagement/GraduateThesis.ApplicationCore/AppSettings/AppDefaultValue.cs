@@ -13,6 +13,8 @@ public class AppDefaultValue
     public static string DbName = null;
     public static string DbBackupFilePath = null;
 
+    public static bool ShowError = false;
+
     public static string SuccessMsg = null;
     public static string AlreadyExistsMsg = null;
     public static string NotFoundMsg = null;

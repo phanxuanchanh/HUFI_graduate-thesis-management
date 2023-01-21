@@ -15,6 +15,9 @@ namespace GraduateThesis.Repository.DTO
         public string GroupDescription { get; set; }
 
         [Required]
+        public string RegisteredStudentId { get; set; }
+
+        [Required]
         public string StudentIdList { get; set; }
     }
 }

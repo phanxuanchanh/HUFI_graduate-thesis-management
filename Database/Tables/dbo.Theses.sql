@@ -1,6 +1,6 @@
 ﻿CREATE TABLE [dbo].[Theses] (
   [ID] [varchar](50) NOT NULL,
-  [Name] [nvarchar](100) NOT NULL,
+  [Name] [nvarchar](400) NOT NULL,
   [Description] [ntext] NOT NULL,
   [MaxStudentNumber] [int] NOT NULL,
   [DocumentFile] [nvarchar](50) NULL,
@@ -44,7 +44,7 @@ ALTER TABLE [dbo].[Theses]
 GO
 
 ALTER TABLE [dbo].[Theses]
-  ADD CONSTRAINT [FK_Theses_ThesisGroups_ID] FOREIGN KEY ([ThesisGroupId]) REFERENCES [dbo].[ThesisGroups] ([ID]) ON DELETE CASCADE
+  ADD CONSTRAINT [FK_Theses_ThesisGroups_ID] FOREIGN KEY ([ThesisGroupId]) REFERENCES [dbo].[ThesisGroups] ([ID]) ON DELETE SET NULL
 GO
 
 ALTER TABLE [dbo].[Theses]

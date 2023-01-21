@@ -1,12 +1,11 @@
 ﻿@model ThesisRegistrationInput;
 
 @{
-#nullable disable
-
-    StudentOutput student = (ViewData["AccountModel"] as StudentOutput);
+    StudentOutput student = (ViewData["AccountModel"] as StudentOutput)!;
 }
 
 <form class="form form-vertical" asp-action="Register">
+    <input type="hidden" asp-for="RegisteredStudentId" value="@student.Id" />
     <input type="hidden" asp-for="StudentIdList" id="selectedStudentInput" value="@student.Id" />
     <section id="basic-vertical-layouts">
         <div class="row match-height">

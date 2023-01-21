@@ -3,9 +3,7 @@ using GraduateThesis.ApplicationCore.File;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DAL;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
 using System;
-using System.Linq;
 
 namespace GraduateThesis.Repository.BLL.Implements;
 
@@ -30,7 +28,7 @@ public class Repository : IRepository
 
     public IStudentClassRepository StudentClassRepository => new StudentClassRepository(_context);
 
-    public IThesisRepository ThesisRepository => new ThesisRepository(_context);
+    public IThesisRepository ThesisRepository => new ThesisRepository(_context, _emailService);
 
     public ITopicRepository TopicRepository => new TopicRepository(_context);
 

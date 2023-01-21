@@ -553,7 +553,7 @@ public partial class HufiGraduateThesisContext : DbContext
                 .IsUnicode(false);
             entity.Property(e => e.Name)
                 .IsRequired()
-                .HasMaxLength(100);
+                .HasMaxLength(400);
             entity.Property(e => e.Notes).HasMaxLength(200);
             entity.Property(e => e.PdfFile).HasMaxLength(50);
             entity.Property(e => e.PresentationFile).HasMaxLength(50);
@@ -593,7 +593,7 @@ public partial class HufiGraduateThesisContext : DbContext
 
             entity.HasOne(d => d.ThesisGroup).WithMany(p => p.Theses)
                 .HasForeignKey(d => d.ThesisGroupId)
-                .OnDelete(DeleteBehavior.Cascade)
+                .OnDelete(DeleteBehavior.SetNull)
                 .HasConstraintName("FK_Theses_ThesisGroups_ID");
 
             entity.HasOne(d => d.Topic).WithMany(p => p.Theses)
@@ -705,7 +705,6 @@ public partial class HufiGraduateThesisContext : DbContext
 
             entity.HasOne(d => d.StudentThesisGroup).WithMany(p => p.ThesisGroupDetails)
                 .HasForeignKey(d => d.StudentThesisGroupId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_ThesisGroupDetails_ThesisGroups_ID");
         });
 
