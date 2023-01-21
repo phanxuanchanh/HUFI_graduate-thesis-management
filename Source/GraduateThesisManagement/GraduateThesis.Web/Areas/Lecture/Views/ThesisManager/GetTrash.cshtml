@@ -1,7 +1,5 @@
 ﻿@model IEnumerable<ThesisOutput>
 
-@await Component.InvokeAsync("FacultyStaffLayout_Toolbar")
-
 @await Component.InvokeAsync("FacultyStaffLayout_StatusArea")
 
 <section class="section">
@@ -10,7 +8,6 @@
         </div>
         <div class="card-body">
             <div class="dataTable-wrapper dataTable-loading no-footer sortable searchable fixed-columns">
-                @await Component.InvokeAsync("FacultyStaffLayout_PagedSearch")
                 <div class="dataTable-container">
                     <table class="table table-striped dataTable-table" id="table1">
                         <thead>
@@ -33,22 +30,19 @@
                             @{
                                 int count = 1;
                             }
-                            @foreach (ThesisOutput thesis in (IEnumerable<ThesisOutput>)ViewData["PagedList"]!)
+                            @foreach (ThesisOutput thesis in Model)
                             {
                                 <tr>
                                     <td>@count</td>
                                     <td>@thesis.Id</td>
                                     <td>@thesis.Name</td>
                                     <td>
-                                        <a class="btn btn-success btn-sm" asp-action="Details" asp-route-id="@thesis.Id">
-                                            <i class="fas fa-folder"></i> Chi tiết
-                                        </a>
-                                        <a class="btn btn-primary btn-sm" asp-action="Edit" asp-route-id="@thesis.Id">
-                                            <i class="fas fa-folder"></i> Sửa
-                                        </a>
-                                        <button type="submit" form="delete_@count" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i> Xóa</button>
-                                        <form asp-action="BatchDelete" asp-route-id="@thesis.Id" id="delete_@count" method="post">
-                                        </form>      
+                                        <button type="submit" form="restore_@count" class="btn btn-primary btn-sm"><i class="fas fa-restore"></i> Khôi phục</button>
+                                        <button type="submit" form="delete_@count" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i> Xóa vĩnh viễn</button>
+                                        <form asp-action="Restore" asp-route-id="@thesis.Id" id="restore_@count" method="post">
+                                        </form>
+                                        <form asp-action="ForceDelete" asp-route-id="@thesis.Id" id="delete_@count" method="post">
+                                        </form>
                                     </td>
                                 </tr>
                                 count++;
@@ -56,9 +50,9 @@
                         </tbody>
                     </table>
                 </div>
-                @await Component.InvokeAsync("FacultyStaffLayout_Paged")
             </div>
         </div>
     </div>
 
 </section>
+

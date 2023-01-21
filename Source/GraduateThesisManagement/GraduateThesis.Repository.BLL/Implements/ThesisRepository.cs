@@ -2,15 +2,14 @@
 using GraduateThesis.ApplicationCore.Models;
 using GraduateThesis.ApplicationCore.Repository;
 using GraduateThesis.ApplicationCore.Uuid;
-using GraduateThesis.ExtensionMethods;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DAL;
 using GraduateThesis.Repository.DTO;
-using MathNet.Numerics.Distributions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using X.PagedList;
@@ -25,6 +24,7 @@ public class ThesisRepository : SubRepository<Thesis, ThesisInput, ThesisOutput,
         : base(context, context.Theses)
     {
         _context = context;
+        GenerateUidOptions = UidOptions.ShortUid;
     }
 
     protected override void ConfigureIncludes()
@@ -59,11 +59,11 @@ public class ThesisRepository : SubRepository<Thesis, ThesisInput, ThesisOutput,
             SourceCode = s.SourceCode,
             Notes = s.Notes,
             TopicId = s.TopicId,
-            TopicClass = new TopicOutput
+            Topic = new TopicOutput
             {
-                Name = s.Topic.Name,
-                Description = s.Topic.Description,
                 Id = s.Topic.Id,
+                Name = s.Topic.Name,
+                Description = s.Topic.Description
             },
             Lecturer = new FacultyStaffOutput
             {
@@ -96,6 +96,20 @@ public class ThesisRepository : SubRepository<Thesis, ThesisInput, ThesisOutput,
             UpdatedAt = s.UpdatedAt,
             DeletedAt = s.DeletedAt
         };
+
+        AdvancedImportSelector = s =>
+        {
+
+            return null;
+        };
+    }
+
+    public override async Task<DataResponse> ImportAsync(Stream stream, ImportMetadata importMetadata)
+    {
+        return await _genericRepository.ImportAsync(stream, importMetadata, new ImportSelector<Thesis>
+        {
+            AdvancedImportSpreadsheet = AdvancedImportSelector
+        });
     }
 
     public override async Task<ThesisOutput> GetAsync(string id)
@@ -249,35 +263,6 @@ public class ThesisRepository : SubRepository<Thesis, ThesisInput, ThesisOutput,
             Status = DataResponseStatus.Success,
             Message = "Từ chối xét duyệt đề tài thành công!"
         };
-    }
-
-    public async Task<List<ThesisOutput>> GetApprovalThesisAsync()
-    {
-        await _context.Theses.Include(x => x.Lecture).Where(predicate => predicate.IsDeleted == false)
-            .Select(tb => new ThesisOutput
-            {
-                Id = tb.Id,
-                Lecturer = new FacultyStaffOutput
-                {
-                    FullName = tb.Lecture.FullName
-
-                }
-            }
-        ).ToListAsync();
-        int TotalItemCount = await _context.Theses.CountAsync();
-        List<ThesisOutput> pagination = await _context.Theses.Where(x => x.IsApproved == false)
-            .Select(t => new ThesisOutput
-            {
-                Id = t.Id,
-                Name = t.Name,
-                Description = t.Description,
-                MaxStudentNumber = t.MaxStudentNumber,
-                ThesisGroupId = t.ThesisGroupId,
-
-            }).ToListAsync();
-
-        return pagination;
-
     }
 
     public async Task<DataResponse> CheckMaxStudentNumberAsync(string thesisId, int currentStudentNumber)
