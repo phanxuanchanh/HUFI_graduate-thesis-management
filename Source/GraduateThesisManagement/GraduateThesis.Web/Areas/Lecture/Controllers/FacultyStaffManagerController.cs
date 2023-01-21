@@ -11,33 +11,23 @@ using System.ComponentModel.DataAnnotations;
 namespace GraduateThesis.Web.Areas.Lecture.Controllers;
 
 [Area("Lecture")]
-[Route("lecture/facutlystaff-manager")]
+[Route("lecture/facutly-staff-manager")]
 [WebAuthorize]
 [AccountInfo(typeof(FacultyStaffOutput))]
 public class FacultyStaffManagerController : WebControllerBase<IFacultyStaffRepository, FacultyStaffInput, FacultyStaffOutput, string>
 {
-    public string PageName { get; set; } = "Quản lý giảng viên";
-
-    private IFacultyStaffRepository _facultyStaffRepository;
-    private IFacultyRepository _facultyRepository;
-    private IAppRoleRepository _appRolesRepository;
-
+    private readonly IFacultyRepository _facultyRepository;
 
     public FacultyStaffManagerController(IRepository repository)
         :base(repository.FacultyStaffRepository)
     {
-        _facultyStaffRepository = repository.FacultyStaffRepository;
         _facultyRepository = repository.FacultyRepository;
-        _appRolesRepository = repository.AppRolesRepository;
     }
 
     protected override async Task LoadSelectListAsync()
     {
         List<FacultyOutput> faculties = await _facultyRepository.GetListAsync(50);
-        ViewData["FacultyList"] = new SelectList(faculties, "Id", "Name");
-
-        List<AppRoleOutput> facultyStaffRoles = await _appRolesRepository.GetListAsync(50);
-        ViewData["facultyStaffRolesList"] = new SelectList(facultyStaffRoles, "Id", "Name");
+        ViewData["FacultySelectList"] = new SelectList(faculties, "Id", "Name");
     }
 
     [Route("list")]
@@ -50,7 +40,7 @@ public class FacultyStaffManagerController : WebControllerBase<IFacultyStaffRepo
 
     [Route("details/{id}")]
     [HttpGet]
-    [PageName(Name = "Chỉnh sửa giảng viên")]
+    [PageName(Name = "Chi tiết giảng viên")]
     public override async Task<IActionResult> Details([Required] string id)
     {
         return await GetDetailsResult(id);
@@ -66,6 +56,7 @@ public class FacultyStaffManagerController : WebControllerBase<IFacultyStaffRepo
 
     [Route("create")]
     [HttpPost]
+    [PageName(Name = "Tạo mới giảng viên")]
     public override async Task<IActionResult> Create(FacultyStaffInput facultyStaffInput)
     {
         return await CreateResult(facultyStaffInput);
@@ -81,18 +72,21 @@ public class FacultyStaffManagerController : WebControllerBase<IFacultyStaffRepo
 
     [Route("edit/{id}")]
     [HttpPost]
+    [PageName(Name = "Chỉnh sửa giảng viên")]
     public override async Task<IActionResult> Edit([Required] string id, FacultyStaffInput facultyStaffInput)
     {
-        return await EditResult(id);
+        return await EditResult(id, facultyStaffInput);
     }
 
-    [Route("delete/{id}")]
+    [Route("batch-delete/{id}")]
     [HttpPost]
     public override async Task<IActionResult> BatchDelete([Required] string id)
     {
         return await BatchDeleteResult(id);
     }
 
+    [Route("force-delete/{id}")]
+    [HttpPost]
     public override async Task<IActionResult> ForceDelete([Required] string id)
     {
         return await ForceDeleteResult(id);
@@ -103,25 +97,34 @@ public class FacultyStaffManagerController : WebControllerBase<IFacultyStaffRepo
         return await ExportResult(null!, null!);
     }
 
+    [Route("import")]
+    [HttpPost]
+    [PageName(Name = "Nhập dữ liệu vào hệ thống")]
     public override async Task<IActionResult> Import(IFormFile formFile, ImportMetadata importMetadata)
     {
-        return await ImportResult(formFile, new ImportMetadata());
+        return await ImportResult(formFile, importMetadata);
     }
 
-    public override Task<IActionResult> Import()
+    [Route("import")]
+    [HttpGet]
+    [PageName(Name = "Nhập dữ liệu vào hệ thống")]
+    public override async Task<IActionResult> Import()
     {
-        throw new NotImplementedException();
+        return await ImportResult();
     }
 
-    public override Task<IActionResult> GetTrash(int count = 50)
+    [Route("trash")]
+    [HttpGet]
+    [PageName(Name = "Thùng rác")]
+    public override async Task<IActionResult> GetTrash(int count = 50)
     {
-        throw new NotImplementedException();
+        return await GetTrashResult(count);
     }
 
-    public override Task<IActionResult> Restore([Required] string id)
+    [Route("restore/{id}")]
+    [HttpPost]
+    public override async Task<IActionResult> Restore([Required] string id)
     {
-        throw new NotImplementedException();
+        return await RestoreResult(id);
     }
-
-   
 }

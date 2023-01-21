@@ -1,7 +1,6 @@
 ﻿using GraduateThesis.ApplicationCore.Models;
 using GraduateThesis.ApplicationCore.Repository;
 using GraduateThesis.Repository.DTO;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace GraduateThesis.Repository.BLL.Interfaces;
@@ -13,7 +12,6 @@ public interface IThesisRepository : ISubRepository<ThesisInput, ThesisOutput, s
     Task<DataResponse> ApproveThesisAsync(ThesisApprovalInput approvalInput); 
     Task<DataResponse> RejectThesisAsync(ThesisApprovalInput approvalInput); 
     Task<DataResponse> CheckMaxStudentNumberAsync(string thesisId, int currentStudentNumber);
-    Task<List<ThesisOutput>> GetApprovalThesisAsync();
     Task<Pagination<ThesisOutput>> GetPgnOfRejectedThesis(int page, int pageSize, string keyword);
     Task<Pagination<ThesisOutput>> GetPgnOfApprovedThesis(int page, int pageSize, string keyword);
 }

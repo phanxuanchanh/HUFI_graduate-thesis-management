@@ -300,18 +300,14 @@ public partial class HufiGraduateThesisContext : DbContext
                 .HasMaxLength(50)
                 .IsUnicode(false)
                 .HasColumnName("ID");
-            entity.Property(e => e.Address)
-                .IsRequired()
-                .HasMaxLength(50);
+            entity.Property(e => e.Address).HasMaxLength(50);
             entity.Property(e => e.Avatar)
                 .HasMaxLength(200)
                 .IsUnicode(false);
             entity.Property(e => e.Birthday).HasColumnType("date");
             entity.Property(e => e.CodeExpTime).HasColumnType("datetime");
             entity.Property(e => e.CreatedAt).HasColumnType("datetime");
-            entity.Property(e => e.Degree)
-                .IsRequired()
-                .HasMaxLength(50);
+            entity.Property(e => e.Degree).HasMaxLength(50);
             entity.Property(e => e.DeletedAt).HasColumnType("datetime");
             entity.Property(e => e.Description).HasColumnType("ntext");
             entity.Property(e => e.Email)
@@ -322,22 +318,15 @@ public partial class HufiGraduateThesisContext : DbContext
                 .HasMaxLength(50)
                 .IsUnicode(false)
                 .HasDefaultValueSql("('BHyFWSywrk')");
-            entity.Property(e => e.FacultyRoleId)
-                .IsRequired()
-                .HasMaxLength(50)
-                .IsUnicode(false);
             entity.Property(e => e.FullName)
                 .IsRequired()
                 .HasMaxLength(100);
-            entity.Property(e => e.Gender)
-                .IsRequired()
-                .HasMaxLength(10);
+            entity.Property(e => e.Gender).HasMaxLength(10);
             entity.Property(e => e.Notes).HasMaxLength(200);
             entity.Property(e => e.Password)
                 .IsRequired()
                 .HasMaxLength(100);
             entity.Property(e => e.Phone)
-                .IsRequired()
                 .HasMaxLength(20)
                 .IsUnicode(false);
             entity.Property(e => e.Position).HasMaxLength(50);

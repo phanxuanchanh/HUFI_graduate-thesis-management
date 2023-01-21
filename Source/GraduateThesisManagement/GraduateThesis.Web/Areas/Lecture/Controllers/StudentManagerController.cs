@@ -16,13 +16,11 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers;
 [AccountInfo(typeof(FacultyStaffOutput))]
 public class StudentManagerController : WebControllerBase<IStudentRepository, StudentInput, StudentOutput, string>
 {
-    private IStudentRepository _studentRepository;
-    private IStudentClassRepository _studentClassRepository;
+    private readonly IStudentClassRepository _studentClassRepository;
 
     public StudentManagerController(IRepository repository)
         :base(repository.StudentRepository)
     {
-        _studentRepository = repository.StudentRepository;
         _studentClassRepository = repository.StudentClassRepository;
     }
 
@@ -35,7 +33,7 @@ public class StudentManagerController : WebControllerBase<IStudentRepository, St
     [Route("list")]
     [HttpGet]
     [PageName(Name = "Danh sách sinh viên của khoa")]
-    public override async Task<IActionResult> Index(int page = 1, int pageSize = 10, string orderBy = "", string orderOptions = "ASC", string keyword = "")
+    public override async Task<IActionResult> Index(int page = 1, int pageSize = 20, string orderBy = "", string orderOptions = "ASC", string keyword = "")
     {
         return await IndexResult(page, pageSize, orderBy, orderOptions, keyword);
     }
@@ -77,7 +75,7 @@ public class StudentManagerController : WebControllerBase<IStudentRepository, St
     [PageName(Name = "Chỉnh sửa thông tin sinh viên của khoa")]
     public override async Task<IActionResult> Edit([Required] string id, StudentInput studentInput)
     {
-        return await Edit(id);
+        return await EditResult(id, studentInput);
     }
 
     [Route("batch-delete/{id}")]
@@ -94,6 +92,8 @@ public class StudentManagerController : WebControllerBase<IStudentRepository, St
         return await ForceDeleteResult(id);
     }
 
+    [Route("export")]
+    [HttpPost]
     public override async Task<IActionResult> Export()
     {
         return await ExportResult(null!, null!);

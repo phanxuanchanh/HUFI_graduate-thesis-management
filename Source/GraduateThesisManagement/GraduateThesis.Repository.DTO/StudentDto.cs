@@ -6,6 +6,7 @@ namespace GraduateThesis.Repository.DTO;
 public class StudentInput
 {
     [Display(Name = "Mã sinh viên")]
+    [Required(ErrorMessage = "{0} không được để trống")]
     public string Id { get; set; }
 
     [Display(Name = "Tên sinh viên")]
@@ -42,7 +43,6 @@ public class StudentInput
 
     [Display(Name = "Giới tính")]
     [RegularExpression("Nam|Nữ", ErrorMessage = "{0} chỉ có 'Nam' hoặc 'Nữ'")]
-    [Required(ErrorMessage = "{0} không được để trống")]
     public string Gender { get; set; }
 }
 

@@ -15,7 +15,7 @@
                 <li class="sidebar-title">Menu</li>
 
                 <li class="sidebar-item active ">
-                    <a href="index.html" class='sidebar-link'>
+                    <a asp-action="Index" asp-controller="FacultyStaffDashboard" class='sidebar-link'>
                         <i class="bi bi-grid-fill"></i>
                         <span>Dashboard</span>
                     </a>
@@ -49,7 +49,7 @@
                 </li>
 
                 <li class="sidebar-item  has-sub">
-                    <a asp-action="Index" asp-controller="FacultyStaffManager" class='sidebar-link'>
+                    <a href="#" class='sidebar-link'>
                         <i class="bi bi-stack"></i>
                         <span>Nhân viên khoa</span>
                     </a>
@@ -70,13 +70,19 @@
                 </li>
 
                 <li class="sidebar-item  has-sub">
-                    <a asp-action="Index" asp-controller="StudentManager" class='sidebar-link'>
+                    <a href="#" class='sidebar-link'>
                         <i class="bi bi-stack"></i>
                         <span>Sinh viên</span>
                     </a>
                     <ul class="submenu ">
                         <li class="submenu-item ">
                             <a asp-action="Index" asp-controller="StudentManager">Danh sách</a>
+                        </li>
+                        <li class="submenu-item ">
+                            <a asp-action="Index" asp-controller="StudentManager">Chưa đăng ký đề tài</a>
+                        </li>
+                        <li class="submenu-item ">
+                            <a asp-action="Index" asp-controller="StudentManager">Đã đăng ký đề tài</a>
                         </li>
                         <li class="submenu-item ">
                             <a asp-action="Import" asp-controller="StudentManager">Nhập</a>
@@ -91,16 +97,13 @@
                 </li>
 
                 <li class="sidebar-item  has-sub">
-                    <a asp-action="Index" asp-controller="CouncilManager" class='sidebar-link'>
+                    <a href="#" class='sidebar-link'>
                         <i class="bi bi-stack"></i>
                         <span>Hội đồng chấm luận văn</span>
                     </a>
                     <ul class="submenu ">
                         <li class="submenu-item ">
                             <a asp-action="Index" asp-controller="CouncilManager">Danh sách</a>
-                        </li>
-                        <li class="submenu-item ">
-                            <a asp-action="Import" asp-controller="CouncilManager">Nhập</a>
                         </li>
                         <li class="submenu-item ">
                             <a asp-action="Export" asp-controller="CouncilManager">Xuất</a>
@@ -112,16 +115,13 @@
                 </li>
 
                 <li class="sidebar-item  has-sub">
-                    <a asp-action="" asp-controller="" class='sidebar-link'>
+                    <a href="#" class='sidebar-link'>
                         <i class="bi bi-stack"></i>
                         <span>Đề tài khóa luận</span>
                     </a>
                     <ul class="submenu ">
                         <li class="submenu-item ">
-                            <a asp-action="" asp-controller="">Danh sách</a>
-                        </li>
-                        <li class="submenu-item ">
-                            <a asp-action="Index" asp-controller="ThesisManager">Xét duyệt đề tài</a>
+                            <a asp-action="Index" asp-controller="ThesisManager">Danh sách</a>
                         </li>
                         <li class="submenu-item ">
                             <a asp-action="GetApprovedList" asp-controller="ThesisManager">Đề tài đã được duyệt</a>
@@ -142,22 +142,19 @@
                 </li>
 
                 <li class="sidebar-item  has-sub">
-                    <a asp-action="" asp-controller="" class='sidebar-link'>
+                    <a href="#" class='sidebar-link'>
                         <i class="bi bi-stack"></i>
                         <span>Nhóm sinh viên thực hiện đề tài</span>
                     </a>
                     <ul class="submenu ">
                         <li class="submenu-item ">
-                            <a asp-action="" asp-controller="">Danh sách</a>
+                            <a asp-action="Index" asp-controller="ThesisGroupManager">Danh sách</a>
                         </li>
                         <li class="submenu-item ">
-                            <a asp-action="" asp-controller="">Nhập</a>
+                            <a asp-action="Export" asp-controller="ThesisGroupManager">Xuất</a>
                         </li>
                         <li class="submenu-item ">
-                            <a asp-action="" asp-controller="">Xuất</a>
-                        </li>
-                        <li class="submenu-item ">
-                            <a asp-action="" asp-controller="">Thùng rác</a>
+                            <a asp-action="Trash" asp-controller="ThesisGroupManager">Thùng rác</a>
                         </li>
                     </ul>
                 </li>

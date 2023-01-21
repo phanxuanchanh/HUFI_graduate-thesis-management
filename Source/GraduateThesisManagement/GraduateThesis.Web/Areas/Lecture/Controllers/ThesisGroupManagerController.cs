@@ -10,19 +10,17 @@ using System.ComponentModel.DataAnnotations;
 namespace GraduateThesis.Web.Areas.Lecture.Controllers;
 
 [Area("Lecture")]
-[Route("lecture/thesisgroup-manager")]
+[Route("lecture/thesis-group-manager")]
 [WebAuthorize]
 [AccountInfo(typeof(FacultyStaffOutput))]
 public class ThesisGroupManagerController : WebControllerBase<IThesisGroupRepository, ThesisGroupInput, ThesisGroupOutput, string>
 {
-    private IThesisGroupRepository _thesisGroupRepository;
+    private readonly IThesisGroupRepository _thesisGroupRepository;
 
     public ThesisGroupManagerController(IRepository repository)
         :base(repository.ThesisGroupRepository)
-        
     {
-        _thesisGroupRepository = repository.ThesisGroupRepository;
-       
+        _thesisGroupRepository = repository.ThesisGroupRepository; 
     }
 
     [Route("batch-delete/{id}")]
@@ -32,20 +30,16 @@ public class ThesisGroupManagerController : WebControllerBase<IThesisGroupReposi
         return await BatchDeleteResult(id);
     }
 
-    [Route("create")]
-    [HttpGet]
-    [PageName(Name = "Tạo mới nhóm đề tài")]
-    public override async Task<IActionResult> Create()
+    [NonAction]
+    public override Task<IActionResult> Create()
     {
-        return await CreateResult();
+        throw new NotImplementedException();
     }
 
-    [Route("create")]
-    [HttpPost]
-    [PageName(Name = "Tạo mới nhóm đề tài")]
-    public override async Task<IActionResult> Create(ThesisGroupInput input)
+    [NonAction]
+    public override Task<IActionResult> Create(ThesisGroupInput input)
     {
-        return await CreateResult(input);
+        throw new NotImplementedException();
     }
 
     [Route("details/{id}")]
@@ -87,17 +81,19 @@ public class ThesisGroupManagerController : WebControllerBase<IThesisGroupReposi
 
     [Route("trash")]
     [HttpGet]
+    [PageName(Name = "Thùng rác")]
     public override async Task<IActionResult> GetTrash(int count = 50)
     {
         return await GetTrashResult(count);
     }
 
-    public override Task<IActionResult> Import(IFormFile formFile, ImportMetadata importMetadata)
+    [NonAction]
+    public override Task<IActionResult> Import([Required][FromForm] IFormFile formFile, ImportMetadata importMetadata)
     {
         throw new NotImplementedException();
     }
 
-
+    [NonAction]
     public override Task<IActionResult> Import()
     {
         throw new NotImplementedException();

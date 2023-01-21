@@ -58,6 +58,7 @@ public class Repository : IRepository
 
     public ISystemRepository SystemRepository => new SystemRepository(_context);
 
+    public IReportRepository ReportRepository => new ReportRepository(_context);
 
     protected virtual void Dispose(bool disposing)
     {

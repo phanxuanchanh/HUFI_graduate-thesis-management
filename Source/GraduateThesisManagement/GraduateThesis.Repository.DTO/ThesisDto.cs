@@ -62,7 +62,7 @@ public class ThesisOutput : ThesisInput
     public DateTime? UpdatedAt { get; set; }
     public DateTime? DeletedAt { get; set; }
 
-    public TopicOutput TopicClass { get; set; }
+    public TopicOutput Topic { get; set; }
 
     public ThesisGroupOutput ThesisGroup { get; set; }
 

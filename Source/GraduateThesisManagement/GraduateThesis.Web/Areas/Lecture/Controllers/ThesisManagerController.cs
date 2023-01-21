@@ -9,8 +9,6 @@ using GraduateThesis.ApplicationCore.Models;
 using GraduateThesis.ApplicationCore.AppController;
 using X.PagedList;
 using GraduateThesis.WebExtensions;
-using System.Dynamic;
-using NPOI.OpenXmlFormats.Dml;
 using GraduateThesis.ApplicationCore.Enums;
 
 namespace GraduateThesis.Web.Areas.Lecture.Controllers;
@@ -21,13 +19,13 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers;
 [AccountInfo(typeof(FacultyStaffOutput))]
 public class ThesisManagerController : WebControllerBase<IThesisRepository, ThesisInput, ThesisOutput, string>
 {
-    private ITopicRepository _topicRepository;
-    private IThesisGroupRepository _studentThesisGroupRepository;
-    private ITrainingFormRepository _trainingFormRepository;
-    private IFacultyStaffRepository _facultyStaffRepository;
-    private ITrainingLevelRepository _trainingLevelRepository;
-    private IThesisRepository _thesisRepository;
-    private ISpecializationRepository _specializationRepository;
+    private readonly ITopicRepository _topicRepository;
+    private readonly IThesisGroupRepository _studentThesisGroupRepository;
+    private readonly ITrainingFormRepository _trainingFormRepository;
+    private readonly IFacultyStaffRepository _facultyStaffRepository;
+    private readonly ITrainingLevelRepository _trainingLevelRepository;
+    private readonly IThesisRepository _thesisRepository;
+    private readonly ISpecializationRepository _specializationRepository;
 
     public ThesisManagerController(IRepository repository)
         : base(repository.ThesisRepository)
@@ -110,13 +108,15 @@ public class ThesisManagerController : WebControllerBase<IThesisRepository, Thes
         return await EditResult(id, thesisInput);
     }
 
-    [Route("delete/{id}")]
+    [Route("batch-delete/{id}")]
     [HttpPost]
     public override async Task<IActionResult> BatchDelete([Required] string id)
     {
         return await BatchDeleteResult(id);
     }
 
+    [Route("force-delete/{id}")]
+    [HttpPost]
     public override async Task<IActionResult> ForceDelete([Required] string id)
     {
         return await ForceDeleteResult(id);
@@ -127,33 +127,35 @@ public class ThesisManagerController : WebControllerBase<IThesisRepository, Thes
         return await ExportResult(null!, null!);
     }
 
-    public override async Task<IActionResult> Import(IFormFile formFile, ImportMetadata importMetadata)
+    [Route("import")]
+    [HttpPost]
+    [PageName(Name = "Nhập dữ liệu vào hệ thống")]
+    public override async Task<IActionResult> Import([Required][FromForm] IFormFile formFile, ImportMetadata importMetadata)
     {
-        return await ImportResult(formFile, new ImportMetadata());
+        return await ImportResult(formFile, importMetadata);
     }
 
-    public override Task<IActionResult> Import()
-    {
-        throw new NotImplementedException();
-    }
-
-    public override Task<IActionResult> GetTrash(int count = 50)
-    {
-        throw new NotImplementedException();
-    }
-
-    public override Task<IActionResult> Restore([Required] string id)
-    {
-        throw new NotImplementedException();
-    }
-
-    [Route("list-thesis")]
+    [Route("import")]
     [HttpGet]
-    [PageName(Name = "Danh sách đề tài xét duyệt")]
-    public async Task<IActionResult> GetApprovalThesis()
+    [PageName(Name = "Nhập dữ liệu vào hệ thống")]
+    public override async Task<IActionResult> Import()
     {
-        List<ThesisOutput> thesisOutputs = await _thesisRepository.GetApprovalThesisAsync();
-        return View(thesisOutputs);
+        return await ImportResult();
+    }
+
+    [Route("trash")]
+    [HttpGet]
+    [PageName(Name = "Thùng rác")]
+    public override async Task<IActionResult> GetTrash(int count = 50)
+    {
+        return await GetTrashResult(count);
+    }
+
+    [Route("restore/{id}")]
+    [HttpPost]
+    public override async Task<IActionResult> Restore([Required] string id)
+    {
+        return await RestoreResult(id);
     }
 
     [Route("approve-thesis/{thesisId}")]

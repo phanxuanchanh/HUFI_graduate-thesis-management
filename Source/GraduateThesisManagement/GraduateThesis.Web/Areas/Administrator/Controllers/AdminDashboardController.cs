@@ -5,9 +5,10 @@ namespace GraduateThesis.Web.Areas.Administrator.Controllers;
 
 [Area("Administrator")]
 [Route("admin/dashboard")]
-public class DashboardController : WebControllerBase
+public class AdminDashboardController : WebControllerBase
 {
-    [Route("index")]
+    [Route("overview")]
+    [HttpGet]
     public IActionResult Index()
     {
         return View();

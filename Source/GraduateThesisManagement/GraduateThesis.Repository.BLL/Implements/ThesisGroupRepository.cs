@@ -19,6 +19,7 @@ public class ThesisGroupRepository : SubRepository<ThesisGroup, ThesisGroupInput
         : base(context, context.ThesisGroups)
     {
         _context = context;
+        GenerateUidOptions = UidOptions.ShortUid;
     }
 
     protected override void ConfigureIncludes()
@@ -51,7 +52,22 @@ public class ThesisGroupRepository : SubRepository<ThesisGroup, ThesisGroupInput
         ListSelector = PaginationSelector;
         SingleSelector = s => new ThesisGroupOutput
         {
+            Id = s.Id,
+            Name = s.Name,
+            Description = s.Description,
+            StudentQuantity = s.StudentQuantity,
+            Notes = s.Notes,
+            Thesis = s.Theses.Select(ts => new ThesisOutput
+            {
+                Id = ts.Id,
+                Name = ts.Name,
+                Description = ts.Description,
+                SourceCode = ts.SourceCode,
+                Notes = ts.Notes,
+                TopicId = ts.Notes,
+                MaxStudentNumber = ts.MaxStudentNumber,
 
+            }).FirstOrDefault()
         };
     }
 

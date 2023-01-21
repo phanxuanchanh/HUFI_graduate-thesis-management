@@ -8,7 +8,6 @@ using GraduateThesis.ExtensionMethods;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DAL;
 using GraduateThesis.Repository.DTO;
-using MathNet.Numerics.Distributions;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -37,7 +36,7 @@ public class FacultyStaffRepository : SubRepository<FacultyStaff, FacultyStaffIn
 
     protected override void ConfigureIncludes()
     {
-
+        IncludeMany(i => i.Faculty);
     }
 
     protected override void ConfigureSelectors()
@@ -47,7 +46,14 @@ public class FacultyStaffRepository : SubRepository<FacultyStaff, FacultyStaffIn
             Id = s.Id,
             FullName = s.FullName,
             Email = s.Email,
-            Phone = s.Phone
+            Phone = s.Phone,
+            Faculty = new FacultyOutput
+            {
+                Id = s.Faculty.Id,
+                Name = s.Faculty.Name
+            },
+            CreatedAt = s.CreatedAt,
+            UpdatedAt = s.UpdatedAt
         };
 
         ListSelector = PaginationSelector;
@@ -64,17 +70,57 @@ public class FacultyStaffRepository : SubRepository<FacultyStaff, FacultyStaffIn
             Faculty = new FacultyOutput { 
                 Id = s.Faculty.Id,
                 Name = s.Faculty.Name
-            }
+            },
+            CreatedAt = s.CreatedAt,
+            UpdatedAt = s.UpdatedAt
         };
 
-        SimpleImportSelector = r => new FacultyStaff
+        AdvancedImportSelector = s => new FacultyStaff
         {
-            Id = r[0] as string,
-            FullName = r[1] as string,
-            Email = r[2] as string,
-            Phone = r[3] as string,
-            Description = r[4] as string,
+            Id = s[0] as string,
+            FullName = s[0] as string,
+            Email = s[0] as string,
             CreatedAt = DateTime.Now
+        };
+    }
+
+    public override async Task<DataResponse> ImportAsync(Stream stream, ImportMetadata importMetadata)
+    {
+        return await _genericRepository.ImportAsync(stream, importMetadata, new ImportSelector<FacultyStaff>
+        {
+            AdvancedImportSpreadsheet = AdvancedImportSelector
+        });
+    }
+
+    public override async Task<DataResponse<FacultyStaffOutput>> CreateAsync(FacultyStaffInput input)
+    {
+        FacultyStaff facultyStaff = new FacultyStaff
+        {
+            Id = input.Id,
+            FullName = input.FullName,
+            Description = input.Description,
+            Email = input.Email,
+            Phone = input.Phone,
+            Address = input.Address,
+            Birthday = input.Birthday,
+            FacultyId = input.FacultyId,
+            Password = "default",
+            Salt = "default",
+            CreatedAt = DateTime.Now
+        };
+
+        await _context.FacultyStaffs.AddAsync(facultyStaff);
+        await _context.SaveChangesAsync();
+
+        return new DataResponse<FacultyStaffOutput>
+        {
+            Status = DataResponseStatus.Success,
+            Data = new FacultyStaffOutput
+            {
+                Id = input.Id,
+                FullName = input.FullName,
+                Email = input.Email
+            }
         };
     }
 
