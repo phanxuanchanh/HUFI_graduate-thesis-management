@@ -15,7 +15,7 @@
                 <li class="sidebar-title">Menu</li>
 
                 <li class="sidebar-item active ">
-                    <a href="index.html" class='sidebar-link'>
+                    <a asp-action="Index" asp-controller="FacultyStaffDashboard" class='sidebar-link'>
                         <i class="bi bi-grid-fill"></i>
                         <span>Dashboard</span>
                     </a>
@@ -106,9 +106,6 @@
                             <a asp-action="Index" asp-controller="CouncilManager">Danh sách</a>
                         </li>
                         <li class="submenu-item ">
-                            <a asp-action="Import" asp-controller="CouncilManager">Nhập</a>
-                        </li>
-                        <li class="submenu-item ">
                             <a asp-action="Export" asp-controller="CouncilManager">Xuất</a>
                         </li>
                         <li class="submenu-item ">
@@ -154,13 +151,10 @@
                             <a asp-action="Index" asp-controller="ThesisGroupManager">Danh sách</a>
                         </li>
                         <li class="submenu-item ">
-                            <a asp-action="" asp-controller="">Nhập</a>
+                            <a asp-action="Export" asp-controller="ThesisGroupManager">Xuất</a>
                         </li>
                         <li class="submenu-item ">
-                            <a asp-action="" asp-controller="">Xuất</a>
-                        </li>
-                        <li class="submenu-item ">
-                            <a asp-action="" asp-controller="">Thùng rác</a>
+                            <a asp-action="Trash" asp-controller="ThesisGroupManager">Thùng rác</a>
                         </li>
                     </ul>
                 </li>

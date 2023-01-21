@@ -20,4 +20,5 @@ public interface IRepository : IDisposable
     IAppRoleRepository AppRolesRepository { get; }
     IThesisRevisionRepository ThesisRevisionRepository { get; }
     IAppPageRepository AppPageRepository { get; }
+    IReportRepository ReportRepository { get; }
 }

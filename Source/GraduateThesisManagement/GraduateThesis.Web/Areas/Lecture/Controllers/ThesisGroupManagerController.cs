@@ -10,7 +10,7 @@ using System.ComponentModel.DataAnnotations;
 namespace GraduateThesis.Web.Areas.Lecture.Controllers;
 
 [Area("Lecture")]
-[Route("lecture/thesisgroup-manager")]
+[Route("lecture/thesis-group-manager")]
 [WebAuthorize]
 [AccountInfo(typeof(FacultyStaffOutput))]
 public class ThesisGroupManagerController : WebControllerBase<IThesisGroupRepository, ThesisGroupInput, ThesisGroupOutput, string>
