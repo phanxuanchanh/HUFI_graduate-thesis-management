@@ -43,9 +43,9 @@ public partial class Thesis
 
     public string SpecializationId { get; set; }
 
-    public DateTime DateFrom { get; set; }
+    public DateTime? DateFrom { get; set; }
 
-    public DateTime DateTo { get; set; }
+    public DateTime? DateTo { get; set; }
 
     public DateTime? CreatedAt { get; set; }
 

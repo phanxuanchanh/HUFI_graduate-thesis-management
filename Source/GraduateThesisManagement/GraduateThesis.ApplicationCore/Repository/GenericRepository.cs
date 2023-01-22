@@ -109,7 +109,6 @@ public partial class GenericRepository<TEntity, TInput, TOutput>
                 Message = "Property named 'ID' not found"
             };
 
-        object id = idPropertyInfo.GetValue(entity, null);
         if (idPropertyInfo.PropertyType == typeof(string) && uidOptions == UidOptions.ShortUid)
             idPropertyInfo.SetValue(entity, UidHelper.GetShortUid());
 

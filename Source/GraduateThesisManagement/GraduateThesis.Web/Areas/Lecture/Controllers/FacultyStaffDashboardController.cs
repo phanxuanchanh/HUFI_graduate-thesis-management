@@ -34,7 +34,7 @@ public class FacultyStaffDashboardController : WebControllerBase
         ViewData["FStaffAreaStats"] = await _reportRepository.GetFacultyStaffAreaStats();
 
         _accountManager.SetHttpContext(HttpContext);
-        ViewData["AppPages"] = await _pageManager.GetPagesAsync(_accountManager.GetSession().UserId);
+        ViewData["AppPages"] = await _pageManager.GetPagesAsync(_accountManager.GetUserId());
 
         return View();
     }

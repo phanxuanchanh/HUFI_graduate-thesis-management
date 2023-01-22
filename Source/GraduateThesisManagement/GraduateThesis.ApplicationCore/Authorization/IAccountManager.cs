@@ -9,4 +9,7 @@ public interface IAccountManager
     AccountSession GetSession();
     void SetSession(AccountSession accountSession);
     void RemoveSession();
+    string GetUserId();
+    object GetUser(Type type);
+    TUser GetUser<TUser>();
 }

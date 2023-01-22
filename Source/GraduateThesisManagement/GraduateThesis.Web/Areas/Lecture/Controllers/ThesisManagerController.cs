@@ -10,6 +10,7 @@ using GraduateThesis.ApplicationCore.AppController;
 using X.PagedList;
 using GraduateThesis.WebExtensions;
 using GraduateThesis.ApplicationCore.Enums;
+using GraduateThesis.ApplicationCore.Authorization;
 
 namespace GraduateThesis.Web.Areas.Lecture.Controllers;
 
@@ -19,6 +20,7 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers;
 [AccountInfo(typeof(FacultyStaffOutput))]
 public class ThesisManagerController : WebControllerBase<IThesisRepository, ThesisInput, ThesisOutput, string>
 {
+    private IAccountManager _accountManager;
     private readonly ITopicRepository _topicRepository;
     private readonly IThesisGroupRepository _studentThesisGroupRepository;
     private readonly ITrainingFormRepository _trainingFormRepository;
@@ -27,7 +29,7 @@ public class ThesisManagerController : WebControllerBase<IThesisRepository, Thes
     private readonly IThesisRepository _thesisRepository;
     private readonly ISpecializationRepository _specializationRepository;
 
-    public ThesisManagerController(IRepository repository)
+    public ThesisManagerController(IRepository repository, IAuthorizationManager authorizationManager)
         : base(repository.ThesisRepository)
     {
         _thesisRepository = repository.ThesisRepository;
@@ -37,27 +39,22 @@ public class ThesisManagerController : WebControllerBase<IThesisRepository, Thes
         _facultyStaffRepository = repository.FacultyStaffRepository;
         _topicRepository = repository.TopicRepository;
         _specializationRepository = repository.SpecializationRepository;
+        _accountManager = authorizationManager.AccountManager;
     }
 
     protected override async Task LoadSelectListAsync()
     {
-        List<TopicOutput> topicClasses = await _topicRepository.GetListAsync(50);
-        ViewData["TopicList"] = new SelectList(topicClasses, "Id", "Name");
+        List<TopicOutput> topics = await _topicRepository.GetListAsync(50);
+        ViewData["TopicSelectList"] = new SelectList(topics, "Id", "Name");
 
-        List<ThesisGroupOutput> StudentThesisGrouClasses = await _studentThesisGroupRepository.GetListAsync(50);
-        ViewData["StudentThesisGroupList"] = new SelectList(StudentThesisGrouClasses, "Id", "Name");
+        List<TrainingLevelOutput> trainingLevels = await _trainingLevelRepository.GetListAsync(50);
+        ViewData["TrainingLevelSelectList"] = new SelectList(trainingLevels, "Id", "Name");
 
-        List<TrainingFormOutput> trainingFormsClass = await _trainingFormRepository.GetListAsync(50);
-        ViewData["TrainingFormList"] = new SelectList(trainingFormsClass, "Id", "Name");
+        List<TrainingFormOutput> trainingForms = await _trainingFormRepository.GetListAsync(50);
+        ViewData["TrainingFormSelectList"] = new SelectList(trainingForms, "Id", "Name");
 
-        List<TrainingLevelOutput> trainingLevelsClass = await _trainingLevelRepository.GetListAsync(50);
-        ViewData["TrainingLevelList"] = new SelectList(trainingLevelsClass, "Id", "Name");
-
-        List<FacultyStaffOutput> facultyStaffClass = await _facultyStaffRepository.GetListAsync(50);
-        ViewData["FacultyStaffList"] = new SelectList(facultyStaffClass, "Id", "FullName");
-
-        List<SpecializationOutput> specializationsClass = await _specializationRepository.GetListAsync(50);
-        ViewData["SpecializationsClass"] = new SelectList(specializationsClass, "Id", "Name");
+        List<SpecializationOutput> specializations = await _specializationRepository.GetListAsync(50);
+        ViewData["SpecializationsSelectList"] = new SelectList(specializations, "Id", "Name");
     }
 
     [Route("list")]
@@ -224,7 +221,21 @@ public class ThesisManagerController : WebControllerBase<IThesisRepository, Thes
 
         return View();
     }
+
+    [Route("my-thesis")]
+    [HttpGet]
+    [PageName(Name = "Danh sách đề tài của tôi")]
+    public async Task<IActionResult> GetThesisOfLecturer(int page = 1, int pageSize = 10, string keyword = "")
+    {
+        _accountManager.SetHttpContext(HttpContext);
+        string userId = _accountManager.GetUserId();
+
+        Pagination<ThesisOutput> pagination = await _thesisRepository.GetPgnOfApprovedThesis(userId, page, pageSize, keyword);
+        StaticPagedList<ThesisOutput> pagedList = pagination.ToStaticPagedList();
+
+        ViewData["PagedList"] = pagedList;
+        ViewData["Keyword"] = keyword;
+
+        return View();
+    }
 }
-
-
-

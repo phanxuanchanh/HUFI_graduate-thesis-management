@@ -207,6 +207,10 @@
                                 </li>
                             }
 
+                            <li class="submenu-item ">
+                                <a asp-action="Index" asp-controller="ThesisManager">Đề tài của tôi</a>
+                            </li>
+
                             @if (appPages.Any(p => p.ControllerName == "ThesisManager" && p.ActionName == "GetApprovedList"))
                             {
                                 <li class="submenu-item ">

@@ -90,7 +90,12 @@
 
                         @if (appPages.Any(p => p.ControllerName == "ThesisManager" && p.ActionName == "Create"))
                         {
-                            <a asp-action="Create" asp-controller="ThesisManager" class="btn btn-sm btn-success me-1 mb-1">Tạo mới đề tài</a>
+                            <a asp-action="Create" asp-controller="ThesisManager" class="btn btn-sm btn-success me-1 mb-1">Đề tài của tôi</a>
+                        }
+
+                        @if (appPages.Any(p => p.ControllerName == "ThesisManager" && p.ActionName == "GetRejectedList"))
+                        {
+                            <a asp-action="Create" asp-controller="ThesisManager" class="btn btn-sm btn-success me-1 mb-1">Đề tài bị từ chối xét duyệt</a>
                         }
 
                         @if (appPages.Any(p => p.ControllerName == "AdminDashboard" && p.ActionName == "Index"))

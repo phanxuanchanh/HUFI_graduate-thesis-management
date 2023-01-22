@@ -17,4 +17,7 @@ public interface IThesisRepository : ISubRepository<ThesisInput, ThesisOutput, s
     Task<Pagination<ThesisOutput>> GetPgnOfPublishedThesis(int page, int pageSize, string keyword);
     Task<Pagination<ThesisOutput>> GetPgnOfRejectedThesis(int page, int pageSize, string keyword);
     Task<Pagination<ThesisOutput>> GetPgnOfApprovedThesis(int page, int pageSize, string keyword);
+    Task<Pagination<ThesisOutput>> GetPgnOfPublishedThesis(string lecturerId, int page, int pageSize, string keyword);
+    Task<Pagination<ThesisOutput>> GetPgnOfRejectedThesis(string lecturerId, int page, int pageSize, string keyword);
+    Task<Pagination<ThesisOutput>> GetPgnOfApprovedThesis(string lecturerId, int page, int pageSize, string keyword);
 }

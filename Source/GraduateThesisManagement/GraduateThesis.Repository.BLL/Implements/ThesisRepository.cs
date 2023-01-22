@@ -14,6 +14,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 using X.PagedList;
 
 namespace GraduateThesis.Repository.BLL.Implements;
@@ -48,7 +49,6 @@ public class ThesisRepository : SubRepository<Thesis, ThesisInput, ThesisOutput,
         {
             Id = s.Id,
             Name = s.Name,
-            Description = s.Description,
             MaxStudentNumber = s.MaxStudentNumber,
             ThesisGroupId = s.ThesisGroupId
         };
@@ -120,6 +120,8 @@ public class ThesisRepository : SubRepository<Thesis, ThesisInput, ThesisOutput,
     {
         ThesisOutput thesis = await base.GetAsync(id);
 
+        thesis.Description = HttpUtility.HtmlDecode(thesis.Description);
+
         thesis.CriticalLecturer = await _context.CounterArgumentResults.Include(i => i.Lecture)
             .Where(c => c.ThesisId == id && c.IsDeleted == false)
             .Select(s => new FacultyStaffOutput { Id = s.Lecture.Id, FullName = s.Lecture.FullName })
@@ -131,6 +133,14 @@ public class ThesisRepository : SubRepository<Thesis, ThesisInput, ThesisOutput,
             .SingleOrDefaultAsync();
 
         return thesis;
+    }
+
+    public override Task<DataResponse<ThesisOutput>> CreateAsync(ThesisInput input)
+    {
+        input.Description = HttpUtility.HtmlEncode(input.Description);
+        input.IsNew = true;
+
+        return base.CreateAsync(input);
     }
 
     public async Task<DataResponse> RegisterThesisAsync(ThesisRegistrationInput thesisRegistrationInput)
@@ -420,6 +430,108 @@ public class ThesisRepository : SubRepository<Thesis, ThesisInput, ThesisOutput,
 
         List<ThesisOutput> onePageOfData = await _context.Theses.Include(i => i.Lecture)
             .Where(t => t.IsPublished == true && t.IsDeleted == false)
+            .Where(t => t.Id.Contains(keyword) || t.Name.Contains(keyword) || t.Description.Contains(keyword))
+            .Skip(n).Take(pageSize)
+            .Select(s => new ThesisOutput
+            {
+                Id = s.Id,
+                Name = s.Name,
+                MaxStudentNumber = s.MaxStudentNumber,
+                ThesisGroupId = s.ThesisGroupId,
+                Lecturer = new FacultyStaffOutput
+                {
+                    Id = s.Lecture.Id,
+                    FullName = s.Lecture.FullName
+                }
+            }).ToListAsync();
+
+        return new Pagination<ThesisOutput>
+        {
+            Page = page,
+            PageSize = pageSize,
+            TotalItemCount = totalItemCount,
+            Items = onePageOfData
+        };
+    }
+
+    public async Task<Pagination<ThesisOutput>> GetPgnOfPublishedThesis(string lecturerId, int page, int pageSize, string keyword)
+    {
+        int n = (page - 1) * pageSize;
+        int totalItemCount = await _context.Theses
+            .Where(t => t.LectureId == lecturerId && t.IsPublished == true && t.IsDeleted == false)
+            .Where(t => t.Id.Contains(keyword) || t.Name.Contains(keyword) || t.Description.Contains(keyword))
+            .CountAsync();
+
+        List<ThesisOutput> onePageOfData = await _context.Theses.Include(i => i.Lecture)
+            .Where(t => t.LectureId == lecturerId && t.IsPublished == true && t.IsDeleted == false)
+            .Where(t => t.Id.Contains(keyword) || t.Name.Contains(keyword) || t.Description.Contains(keyword))
+            .Skip(n).Take(pageSize)
+            .Select(s => new ThesisOutput
+            {
+                Id = s.Id,
+                Name = s.Name,
+                MaxStudentNumber = s.MaxStudentNumber,
+                ThesisGroupId = s.ThesisGroupId,
+                Lecturer = new FacultyStaffOutput
+                {
+                    Id = s.Lecture.Id,
+                    FullName = s.Lecture.FullName
+                }
+            }).ToListAsync();
+
+        return new Pagination<ThesisOutput>
+        {
+            Page = page,
+            PageSize = pageSize,
+            TotalItemCount = totalItemCount,
+            Items = onePageOfData
+        };
+    }
+
+    public async Task<Pagination<ThesisOutput>> GetPgnOfRejectedThesis(string lecturerId, int page, int pageSize, string keyword)
+    {
+        int n = (page - 1) * pageSize;
+        int totalItemCount = await _context.Theses
+            .Where(t => t.LectureId == lecturerId && t.IsRejected == true && t.IsDeleted == false)
+            .Where(t => t.Id.Contains(keyword) || t.Name.Contains(keyword) || t.Description.Contains(keyword))
+            .CountAsync();
+
+        List<ThesisOutput> onePageOfData = await _context.Theses.Include(i => i.Lecture)
+            .Where(t => t.LectureId == lecturerId && t.IsRejected == true && t.IsDeleted == false)
+            .Where(t => t.Id.Contains(keyword) || t.Name.Contains(keyword) || t.Description.Contains(keyword))
+            .Skip(n).Take(pageSize)
+            .Select(s => new ThesisOutput
+            {
+                Id = s.Id,
+                Name = s.Name,
+                MaxStudentNumber = s.MaxStudentNumber,
+                ThesisGroupId = s.ThesisGroupId,
+                Lecturer = new FacultyStaffOutput
+                {
+                    Id = s.Lecture.Id,
+                    FullName = s.Lecture.FullName
+                }
+            }).ToListAsync();
+
+        return new Pagination<ThesisOutput>
+        {
+            Page = page,
+            PageSize = pageSize,
+            TotalItemCount = totalItemCount,
+            Items = onePageOfData
+        };
+    }
+
+    public async Task<Pagination<ThesisOutput>> GetPgnOfApprovedThesis(string lecturerId, int page, int pageSize, string keyword)
+    {
+        int n = (page - 1) * pageSize;
+        int totalItemCount = await _context.Theses
+            .Where(t => t.LectureId == lecturerId && t.IsApproved == true && t.IsDeleted == false)
+            .Where(t => t.Id.Contains(keyword) || t.Name.Contains(keyword) || t.Description.Contains(keyword))
+            .CountAsync();
+
+        List<ThesisOutput> onePageOfData = await _context.Theses.Include(i => i.Lecture)
+            .Where(t => t.LectureId == lecturerId && t.IsApproved == true && t.IsDeleted == false)
             .Where(t => t.Id.Contains(keyword) || t.Name.Contains(keyword) || t.Description.Contains(keyword))
             .Skip(n).Take(pageSize)
             .Select(s => new ThesisOutput
