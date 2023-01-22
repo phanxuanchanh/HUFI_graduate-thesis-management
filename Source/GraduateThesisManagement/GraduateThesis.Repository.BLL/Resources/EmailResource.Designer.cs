@@ -122,6 +122,23 @@ namespace GraduateThesis.Repository.BLL.Resources {
         ///	&lt;meta http-equiv=&quot;X-UA-Compatible&quot; content=&quot;IE=edge&quot;&gt; &lt;!-- Use the latest (edge) version of IE rendering engine --&gt;
         ///	&lt;meta name=&quot;x-apple-disable-message-reformatting&quot;&gt; &lt;!-- Di [rest of string was truncated]&quot;;.
         /// </summary>
+        internal static string thesis_registered_for_member {
+            get {
+                return ResourceManager.GetString("thesis_registered_for_member", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &lt;!DOCTYPE html&gt;
+        ///&lt;html lang=&quot;en&quot; xmlns=&quot;http://www.w3.org/1999/xhtml&quot; xmlns:v=&quot;urn:schemas-microsoft-com:vml&quot;
+        ///	xmlns:o=&quot;urn:schemas-microsoft-com:office:office&quot;&gt;
+        ///
+        ///&lt;head&gt;
+        ///	&lt;meta charset=&quot;utf-8&quot;&gt; &lt;!-- utf-8 works for most cases --&gt;
+        ///	&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width&quot;&gt; &lt;!-- Forcing initial-scale shouldn&apos;t be necessary --&gt;
+        ///	&lt;meta http-equiv=&quot;X-UA-Compatible&quot; content=&quot;IE=edge&quot;&gt; &lt;!-- Use the latest (edge) version of IE rendering engine --&gt;
+        ///	&lt;meta name=&quot;x-apple-disable-message-reformatting&quot;&gt; &lt;!-- Di [rest of string was truncated]&quot;;.
+        /// </summary>
         internal static string thesis_rejected {
             get {
                 return ResourceManager.GetString("thesis_rejected", resourceCulture);

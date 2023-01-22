@@ -38,8 +38,7 @@ builder.Services.AddSingleton<SmtpConfiguration>(new SmtpConfiguration
 });
 
 builder.Services.AddScoped(typeof(IEmailService), typeof(SmtpService));
-builder.Services.AddScoped(typeof(IAccountManager), typeof(AccountManager));
-builder.Services.AddScoped(typeof(IRoleManager), typeof(RoleManager));
+builder.Services.AddScoped(typeof(IAuthorizationManager), typeof(AuthorizationManager));
 builder.Services.AddScoped(typeof(IFileManager), typeof(FileManager));
 builder.Services.AddScoped(typeof(IRepository), typeof(Repository));
 

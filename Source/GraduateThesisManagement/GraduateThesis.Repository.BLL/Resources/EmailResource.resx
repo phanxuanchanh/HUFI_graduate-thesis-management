@@ -127,6 +127,9 @@
   <data name="thesis_registered" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>thesis-registered.html;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
+  <data name="thesis_registered_for_member" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>thesis-registered-for-member.html;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
   <data name="thesis_rejected" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>thesis-rejected.html;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>

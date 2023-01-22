@@ -36,9 +36,9 @@ public class StudentThesisController : WebControllerBase
     {
         Pagination<ThesisOutput> pagination;
         if (orderOptions == "ASC")
-            pagination = await _thesisRepository.GetPaginationAsync(page, pageSize, orderBy, OrderOptions.ASC, keyword);
+            pagination = await _thesisRepository.GetPgnOfPublishedThesis(page, pageSize, keyword);
         else
-            pagination = await _thesisRepository.GetPaginationAsync(page, pageSize, orderBy, OrderOptions.ASC, keyword);
+            pagination = await _thesisRepository.GetPgnOfPublishedThesis(page, pageSize, keyword);
 
         StaticPagedList<ThesisOutput> pagedList = pagination.ToStaticPagedList();
         ViewData["PagedList"] = pagedList;
@@ -65,14 +65,7 @@ public class StudentThesisController : WebControllerBase
     [HttpGet]
     public async Task<IActionResult> CheckAvailable([Required] string id)
     {
-        ThesisOutput thesis = await _thesisRepository.GetAsync(id);
-        if (thesis == null)
-            return Json(new DataResponse<ThesisOutput> { Status = DataResponseStatus.NotFound });
-
-        if(string.IsNullOrEmpty(thesis.ThesisGroupId))
-            return Json(new DataResponse<string> { Status = DataResponseStatus.Success, Data = "Available" });
-
-        return Json(new DataResponse<string> { Status = DataResponseStatus.Success, Data = "Unavailable" });
+        return Json(await _thesisRepository.CheckThesisAvailable(id));
     }
 
     [Route("search-students")]

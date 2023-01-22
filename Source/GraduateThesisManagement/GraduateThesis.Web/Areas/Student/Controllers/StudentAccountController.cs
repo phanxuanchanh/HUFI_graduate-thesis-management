@@ -23,11 +23,11 @@ public class StudentAccountController : WebControllerBase
     private IThesisGroupRepository _studentThesisGroupRepository;
     private IAccountManager _accountManager;
 
-    public StudentAccountController(IRepository repository, IAccountManager accountManager)
+    public StudentAccountController(IRepository repository, IAuthorizationManager authorizationManager)
     {
         _studentRepository = repository.StudentRepository;
         _studentThesisGroupRepository = repository.ThesisGroupRepository;
-        _accountManager = accountManager;
+        _accountManager = authorizationManager.AccountManager;
     }
 
     [Route("sign-in")]
