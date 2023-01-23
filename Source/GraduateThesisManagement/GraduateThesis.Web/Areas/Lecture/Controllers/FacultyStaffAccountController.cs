@@ -20,10 +20,10 @@ public class FacultyStaffAccountController : WebControllerBase
     private IFacultyStaffRepository _facultyStaffRepository;
     private IAccountManager _accountManager;
 
-    public FacultyStaffAccountController(IRepository repository, IAccountManager accountManager)
+    public FacultyStaffAccountController(IRepository repository, IAuthorizationManager authorizationManager)
     {
         _facultyStaffRepository = repository.FacultyStaffRepository;
-        _accountManager = accountManager;
+        _accountManager = authorizationManager.AccountManager;
     }
 
     [Route("sign-in")]

@@ -1,6 +1,7 @@
 ﻿@{
     FacultyStaffOutput facultyStaff = (ViewData["AccountModel"] as FacultyStaffOutput)!;
     FStaffAreaStatsOutput fStaffAreaStats = (ViewData["FStaffAreaStats"] as FStaffAreaStatsOutput)!;
+    List<AppPage> appPages = (ViewData["AppPages"] as List<AppPage>)!;
 }
 
 <section class="row">
@@ -82,6 +83,25 @@
                         <h4>Truy cập nhanh</h4>
                     </div>
                     <div class="card-body">
+                        @if (appPages.Any(p => p.ControllerName == "ThesisManager" && p.ActionName == "Create"))
+                        {
+                            <a asp-action="Create" asp-controller="ThesisManager" class="btn btn-sm btn-success me-1 mb-1">Tạo mới đề tài</a>
+                        }
+
+                        @if (appPages.Any(p => p.ControllerName == "ThesisManager" && p.ActionName == "Create"))
+                        {
+                            <a asp-action="Create" asp-controller="ThesisManager" class="btn btn-sm btn-success me-1 mb-1">Đề tài của tôi</a>
+                        }
+
+                        @if (appPages.Any(p => p.ControllerName == "ThesisManager" && p.ActionName == "GetRejectedList"))
+                        {
+                            <a asp-action="Create" asp-controller="ThesisManager" class="btn btn-sm btn-success me-1 mb-1">Đề tài bị từ chối xét duyệt</a>
+                        }
+
+                        @if (appPages.Any(p => p.ControllerName == "AdminDashboard" && p.ActionName == "Index"))
+                        {
+                            <a asp-action="Index" asp-controller="AdminDashboard" class="btn btn-sm btn-success me-1 mb-1">Quản trị hệ thống</a>
+                        }
                         <div id="chart-profile-visit"></div>
                     </div>
                 </div>

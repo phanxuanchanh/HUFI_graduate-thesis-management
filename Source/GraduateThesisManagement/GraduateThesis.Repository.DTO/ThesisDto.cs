@@ -9,50 +9,76 @@ public class ThesisInput
     public string Id { get; set; }
 
     [Display(Name = "Tên đề tài")]
+    [Required(ErrorMessage = "{0} không được để trống")]
     public string Name { get; set; }
 
     [Display(Name = "Các mô tả, yêu cầu")]
     public string Description { get; set; }
 
     [Display(Name = "Số sinh viên tối đa")]
+    [Required(ErrorMessage = "{0} không được để trống")]
+    [Range(1, 3, ErrorMessage = "{0} có giá từ 1 đến 3")]
     public int MaxStudentNumber { get; set; }
 
-    [Display(Name = "File tài liệu")]
     public string DocumentFile { get; set; }
+
     public string PresentationFile { get; set; }
 
-    [Display(Name = "File PDF")]
     public string PdfFile { get; set; }
+
     public string SourceCode { get; set; }
+
+    [Display(Name = "Số tín chỉ")]
+    [Required(ErrorMessage = "{0} không được để trống")]
+    [Range(4, 8, ErrorMessage = "{0} có giá trị từ 4 đến 8")]
     public int Credits { get; set; }
+
+    [Display(Name = "Năm học")]
+    [Required(ErrorMessage = "{0} không được để trống")]
     public string Year { get; set; }
 
     [Display(Name = "Ghi chú")]
     public string Notes { get; set; }
 
     [Display(Name = "Chủ đề")]
+    [Required(ErrorMessage = "{0} không được để trống")]
     public string TopicId { get; set; }
+
+    [Display(Name = "Hình thức đào tạo")]
+    [Required(ErrorMessage = "{0} không được để trống")]
     public string TrainingFormId { get; set; }
+
+    [Display(Name = "Bậc đào tạo")]
+    [Required(ErrorMessage = "{0} không được để trống")]
     public string TrainingLevelId { get; set; }
+
     public bool IsApproved { get; set; }
+
     public bool IsNew { get; set; }
 
-    [Display(Name = "Đang tiến hành")]
     public bool InProgess { get; set; }
 
-    [Display(Name = "Đã hoàn thành")]
     public bool Finished { get; set; }
+
+    [Display(Name = "Chuyên ngành")]
+    [Required(ErrorMessage = "{0} không được để trống")]
     public string SpecializationId { get; set; }
 
     [Display(Name = "Từ ngày")]
-    public DateTime DateFrom { get; set; }
+    public DateTime? DateFrom { get; set; }
 
     [Display(Name = "Đến ngày")]
-    public DateTime DateTo { get; set; }
+    public DateTime? DateTo { get; set; }
+
+    [Display(Name = "Giảng viên ra đề")]
+    [Required(ErrorMessage = "{0} không được để trống")]
     public string LectureId { get; set; }
 
     [Display(Name = "Học kỳ")]
+    [Required(ErrorMessage = "{0} không được để trống")]
+    [Range(1, 3, ErrorMessage = "{0} có giá trì từ 1 đến 3")]
     public int Semester { get; set; }
+
     public string ThesisGroupId { get; set; }
 }
 

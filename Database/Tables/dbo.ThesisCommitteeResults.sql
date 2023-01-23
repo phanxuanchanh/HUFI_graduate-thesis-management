@@ -3,7 +3,7 @@
   [ThesisCommitteeId] [varchar](50) NOT NULL,
   [Contents] [ntext] NULL,
   [Conclusions] [ntext] NULL,
-  [Point] [decimal] NULL,
+  [Point] [decimal](5, 2) NULL,
   [CreatedAt] [datetime] NULL,
   [UpdatedAt] [datetime] NULL,
   [DeletedAt] [datetime] NULL,

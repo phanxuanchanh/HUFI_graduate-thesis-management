@@ -31,4 +31,9 @@ public static class AppConfiguration
         AppDefaultValue.DbName = backupSection.GetValue<string>("DbName");
         AppDefaultValue.DbBackupFilePath = backupSection.GetValue<string>("DbBackupFilePath");
     }
+
+    public static void ConfigErrorHandler(IConfigurationSection errorHandlerSection)
+    {
+        AppDefaultValue.ShowError = errorHandlerSection.GetValue<bool>("ShowError");
+    }
 }

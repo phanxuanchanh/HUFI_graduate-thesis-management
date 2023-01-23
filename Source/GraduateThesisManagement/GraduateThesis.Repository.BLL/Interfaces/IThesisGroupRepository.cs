@@ -10,6 +10,6 @@ public interface IThesisGroupRepository : ISubRepository<ThesisGroupInput, Thesi
 {
     Task<List<ThesisGroupOutput>> GetListAsync(string studentId);
     Task<ThesisGroupOutput> GetAsync(string studentId, string thesisId);
-    Task<DataResponse> ApprovalStudentThesisGroupAsync(string StudentThesisGroupId);
-    Task<DataResponse> RefuseApprovalStudentThesisGroupAsync(string StudentThesisGroupId);
+    Task<DataResponse> JoinToGroupAsync(string studentId, string thesisGroupId);
+    Task<DataResponse> DenyFromGroupAsync(string studentId, string thesisGroupId);
 }

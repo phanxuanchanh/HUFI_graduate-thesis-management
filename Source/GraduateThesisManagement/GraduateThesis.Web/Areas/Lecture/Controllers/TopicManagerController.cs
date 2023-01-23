@@ -90,6 +90,11 @@ public class TopicManagerController : WebControllerBase<ITopicRepository, TopicI
         throw new NotImplementedException();
     }
 
+    public override Task<IActionResult> Export(ExportMetadata exportMetadata)
+    {
+        throw new NotImplementedException();
+    }
+
     [NonAction]
     public override Task<IActionResult> Import()
     {

@@ -19,5 +19,5 @@ ALTER TABLE [dbo].[ThesisGroupDetails]
 GO
 
 ALTER TABLE [dbo].[ThesisGroupDetails]
-  ADD CONSTRAINT [FK_ThesisGroupDetails_ThesisGroups_ID] FOREIGN KEY ([StudentThesisGroupId]) REFERENCES [dbo].[ThesisGroups] ([ID])
+  ADD CONSTRAINT [FK_ThesisGroupDetails_ThesisGroups_ID] FOREIGN KEY ([StudentThesisGroupId]) REFERENCES [dbo].[ThesisGroups] ([ID]) ON DELETE CASCADE ON UPDATE CASCADE
 GO

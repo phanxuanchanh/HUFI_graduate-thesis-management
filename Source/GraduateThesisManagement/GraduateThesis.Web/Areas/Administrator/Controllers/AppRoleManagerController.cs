@@ -272,4 +272,10 @@ public class AppRoleManagerController : WebControllerBase<IAppRoleRepository, Ap
         AddTempData(DataResponseStatus.InvalidData);
         return RedirectToAction("RevokeFromPage", new { roleId = input.RoleId });
     }
+
+    [NonAction]
+    public override Task<IActionResult> Export(ExportMetadata exportMetadata)
+    {
+        throw new NotImplementedException();
+    }
 }

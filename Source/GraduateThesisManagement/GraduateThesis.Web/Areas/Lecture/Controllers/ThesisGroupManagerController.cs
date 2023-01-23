@@ -72,6 +72,13 @@ public class ThesisGroupManagerController : WebControllerBase<IThesisGroupReposi
         throw new NotImplementedException();
     }
 
+    [Route("export")]
+    [HttpPost]
+    public override Task<IActionResult> Export(ExportMetadata exportMetadata)
+    {
+        throw new NotImplementedException();
+    }
+
     [Route("force-delete/{id}")]
     [HttpPost]
     public override async Task<IActionResult> ForceDelete([Required] string id)

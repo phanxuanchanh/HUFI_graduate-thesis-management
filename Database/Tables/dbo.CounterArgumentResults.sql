@@ -8,7 +8,7 @@
   [Defects] [ntext] NULL,
   [Conclusions] [ntext] NULL,
   [Questions] [ntext] NULL,
-  [Point] [decimal] NULL,
+  [Point] [decimal](5, 2) NULL,
   [IsCompleted] [bit] NOT NULL,
   [CreatedAt] [datetime] NULL,
   [UpdatedAt] [datetime] NULL,

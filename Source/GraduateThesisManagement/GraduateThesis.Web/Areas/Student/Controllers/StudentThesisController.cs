@@ -1,4 +1,5 @@
 ﻿using GraduateThesis.ApplicationCore.AppController;
+using GraduateThesis.ApplicationCore.Authorization;
 using GraduateThesis.ApplicationCore.Enums;
 using GraduateThesis.ApplicationCore.Models;
 using GraduateThesis.ApplicationCore.WebAttributes;
@@ -18,15 +19,17 @@ namespace GraduateThesis.Web.Areas.Student.Controllers;
 [AccountInfo(typeof(StudentOutput))]
 public class StudentThesisController : WebControllerBase
 {
+    private IAccountManager _accountManager;
     private IThesisRepository _thesisRepository;
     private IStudentRepository _studentRepository;
     private IThesisGroupRepository _thesisGroupRepository;
 
-    public StudentThesisController(IRepository repository)
+    public StudentThesisController(IRepository repository, IAuthorizationManager authorizationManager)
     {
         _thesisRepository = repository.ThesisRepository;
         _studentRepository = repository.StudentRepository;
         _thesisGroupRepository = repository.ThesisGroupRepository;
+        _accountManager = authorizationManager.AccountManager;
     }
 
     [Route("list")]
@@ -36,9 +39,9 @@ public class StudentThesisController : WebControllerBase
     {
         Pagination<ThesisOutput> pagination;
         if (orderOptions == "ASC")
-            pagination = await _thesisRepository.GetPaginationAsync(page, pageSize, orderBy, OrderOptions.ASC, keyword);
+            pagination = await _thesisRepository.GetPgnOfPublishedThesis(page, pageSize, keyword);
         else
-            pagination = await _thesisRepository.GetPaginationAsync(page, pageSize, orderBy, OrderOptions.ASC, keyword);
+            pagination = await _thesisRepository.GetPgnOfPublishedThesis(page, pageSize, keyword);
 
         StaticPagedList<ThesisOutput> pagedList = pagination.ToStaticPagedList();
         ViewData["PagedList"] = pagedList;
@@ -65,14 +68,7 @@ public class StudentThesisController : WebControllerBase
     [HttpGet]
     public async Task<IActionResult> CheckAvailable([Required] string id)
     {
-        ThesisOutput thesis = await _thesisRepository.GetAsync(id);
-        if (thesis == null)
-            return Json(new DataResponse<ThesisOutput> { Status = DataResponseStatus.NotFound });
-
-        if(string.IsNullOrEmpty(thesis.ThesisGroupId))
-            return Json(new DataResponse<string> { Status = DataResponseStatus.Success, Data = "Available" });
-
-        return Json(new DataResponse<string> { Status = DataResponseStatus.Success, Data = "Unavailable" });
+        return Json(await _thesisRepository.CheckThesisAvailable(id));
     }
 
     [Route("search-students")]
@@ -124,6 +120,28 @@ public class StudentThesisController : WebControllerBase
 
         AddTempData(DataResponseStatus.InvalidData);
         return View(thesisRegistrationInput);
+    }
+
+    [Route("join-to-group")]
+    [HttpPost]
+    public async Task<IActionResult> JoinToGroupAsync([Required] string groupId)
+    {
+        _accountManager.SetHttpContext(HttpContext);
+        DataResponse dataResponse = await _thesisGroupRepository.JoinToGroupAsync(_accountManager.GetUserId(), groupId);
+        AddTempData(dataResponse);
+
+        return RedirectToAction("YourStudentThesisGroup");
+    }
+
+    [Route("deny-from-group")]
+    [HttpPost]
+    public async Task<IActionResult> DenyFromGroupAsync([Required] string groupId)
+    {
+        _accountManager.SetHttpContext(HttpContext);
+        DataResponse dataResponse = await _thesisGroupRepository.DenyFromGroupAsync(_accountManager.GetUserId(), groupId);
+        AddTempData(dataResponse);
+
+        return RedirectToAction("YourStudentThesisGroup");
     }
 
     public async Task<IActionResult> GetThesisGroup()

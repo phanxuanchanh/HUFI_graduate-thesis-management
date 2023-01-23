@@ -27,8 +27,8 @@ public class ReportRepository : IReportRepository
         {
             ThesisNumber = await _context.Theses.Where(t => t.IsDeleted == false).CountAsync(),
             ThesisGroupNumber = await _context.ThesisGroups.Where(t => t.IsDeleted == false).CountAsync(),
-            FacultyStaffNumber = await _context.FacultyStaffs.Where(f => f.IsDeleted == false).CountAsync(),
-            StudentNumber = await _context.Students.Where(f => f.IsDeleted == false).CountAsync(),
+            FacultyStaffNumber = await _context.FacultyStaffs.Where(t => t.IsDeleted == false).CountAsync(),
+            StudentNumber = await _context.Students.Where(t => t.IsDeleted == false).CountAsync(),
         };
     }
 

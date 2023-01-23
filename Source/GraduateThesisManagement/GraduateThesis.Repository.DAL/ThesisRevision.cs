@@ -21,6 +21,12 @@ public partial class ThesisRevision
 
     public string SourceCode { get; set; }
 
+    public bool Reviewed { get; set; }
+
+    public string LecturerComment { get; set; }
+
+    public decimal? Point { get; set; }
+
     public DateTime? CreatedAt { get; set; }
 
     public DateTime? UpdatedAt { get; set; }

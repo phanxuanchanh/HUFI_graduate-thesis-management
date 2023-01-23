@@ -1,4 +1,5 @@
-﻿using GraduateThesis.ApplicationCore.Context;
+﻿using GraduateThesis.ApplicationCore.AppDatabase;
+using GraduateThesis.ApplicationCore.Context;
 using Microsoft.EntityFrameworkCore;
 
 namespace GraduateThesis.ApplicationCore.Authorization;
@@ -10,6 +11,20 @@ public class RoleManager : IRoleManager
     public RoleManager(AppDbContext context)
     {
         _context = context;
+    }
+
+    public async Task<List<AppRole>> GetRolesAsync(string userId)
+    {
+        return await _context.AppUserRoles.Include(i => i.Role)
+            .Where(ur => ur.UserId == userId && ur.Role.IsDeleted == false)
+            .Select(s => new AppRole { Id = s.Role.Id, Name = s.Role.Name }).ToListAsync();
+    }
+
+    public async Task<List<AppRole>> GetRolesAsync(string controllerName, string actionName)
+    {
+        return await _context.AppRoleMappings.Include(i => i.Page).Include(i => i.Role)
+            .Where(rm => rm.Page.ControllerName == controllerName && rm.Page.ActionName == actionName && rm.Page.IsDeleted == false && rm.Role.IsDeleted == false)
+            .Select(s => new AppRole { Id = s.Role.Id, Name = s.Role.Name }).ToListAsync();
     }
 
     public async Task<bool> IsValidAsync(string userId, string controllerName, string actionName)

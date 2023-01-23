@@ -124,4 +124,10 @@ public class StudentClassManagerController : WebControllerBase<IStudentClassRepo
     {
         return await RestoreResult(id);
     }
+
+    [NonAction]
+    public override Task<IActionResult> Export(ExportMetadata exportMetadata)
+    {
+        throw new NotImplementedException();
+    }
 }

@@ -2,6 +2,7 @@
 using GraduateThesis.ApplicationCore.Models;
 using GraduateThesis.ApplicationCore.Session;
 using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
 
 #nullable disable
 
@@ -22,6 +23,33 @@ public class AccountManager: IAccountManager
     {
         SessionManager sessionManager = new SessionManager(_httpContext);
         return sessionManager.GetSession<AccountSession>("account-session");
+    }
+
+    public TUser GetUser<TUser>()
+    {
+        AccountSession accountSession = GetSession();
+        if(accountSession == null)
+            throw new Exception("Session must not be null!");
+
+        return JsonConvert.DeserializeObject<TUser>(accountSession.AccountModel.ToString());
+    }
+
+    public object GetUser(Type type)
+    {
+        AccountSession accountSession = GetSession();
+        if (accountSession == null)
+            throw new Exception("Session must not be null!");
+
+        return JsonConvert.DeserializeObject(accountSession.AccountModel.ToString(), type);
+    }
+
+    public string GetUserId()
+    {
+        AccountSession accountSession = GetSession();
+        if (accountSession == null)
+            throw new Exception("Session must not be null!");
+
+        return accountSession.UserId;
     }
 
     public void RemoveSession()

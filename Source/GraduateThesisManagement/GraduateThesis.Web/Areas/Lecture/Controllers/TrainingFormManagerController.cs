@@ -73,6 +73,12 @@ public class TrainingFormManagerController : WebControllerBase<ITrainingFormRepo
         throw new NotImplementedException();
     }
 
+    [NonAction]
+    public override Task<IActionResult> Export(ExportMetadata exportMetadata)
+    {
+        throw new NotImplementedException();
+    }
+
     [Route("force-delete")]
     [HttpPost]
     public override async Task<IActionResult> ForceDelete([Required] string id)

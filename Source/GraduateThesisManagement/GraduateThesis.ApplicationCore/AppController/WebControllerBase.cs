@@ -325,6 +325,15 @@ public abstract class WebControllerBase<TSubRepository, TInput, TOutput, T_ID> :
     }
 
     [NonAction]
+    protected async Task<IActionResult> ExportResult()
+    {
+        return await Task.Run(() =>
+        {
+            return View();
+        });
+    }
+
+    [NonAction]
     protected async Task<IActionResult> ExportResult(RecordFilter recordFilter, ExportMetadata exportMetadata)
     {
         return File(await _subRepository.ExportAsync(recordFilter, exportMetadata), ContentTypeConsts.XLSX);
@@ -382,6 +391,7 @@ public abstract class WebControllerBase<TSubRepository, TInput, TOutput, T_ID> :
     public abstract Task<IActionResult> Restore([Required] T_ID id);
     public abstract Task<IActionResult> ForceDelete([Required] T_ID id);
     public abstract Task<IActionResult> Export();
+    public abstract Task<IActionResult> Export(ExportMetadata exportMetadata);
     public abstract Task<IActionResult> Import();
     public abstract Task<IActionResult> Import([Required][FromForm] IFormFile formFile, ImportMetadata importMetadata);
 }
