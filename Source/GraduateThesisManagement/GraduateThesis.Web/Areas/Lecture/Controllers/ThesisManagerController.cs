@@ -22,9 +22,7 @@ public class ThesisManagerController : WebControllerBase<IThesisRepository, Thes
 {
     private readonly IAccountManager _accountManager;
     private readonly ITopicRepository _topicRepository;
-    private readonly IThesisGroupRepository _studentThesisGroupRepository;
     private readonly ITrainingFormRepository _trainingFormRepository;
-    private readonly IFacultyStaffRepository _facultyStaffRepository;
     private readonly ITrainingLevelRepository _trainingLevelRepository;
     private readonly IThesisRepository _thesisRepository;
     private readonly IThesisRevisionRepository _thesisRevisionRepository;
@@ -35,10 +33,8 @@ public class ThesisManagerController : WebControllerBase<IThesisRepository, Thes
     {
         _thesisRepository = repository.ThesisRepository;
         _thesisRevisionRepository = repository.ThesisRevisionRepository;
-        _studentThesisGroupRepository = repository.ThesisGroupRepository;
         _trainingFormRepository = repository.TrainingFormRepository;
         _trainingLevelRepository = repository.TrainingLevelRepository;
-        _facultyStaffRepository = repository.FacultyStaffRepository;
         _topicRepository = repository.TopicRepository;
         _specializationRepository = repository.SpecializationRepository;
         _accountManager = authorizationManager.AccountManager;
@@ -170,6 +166,12 @@ public class ThesisManagerController : WebControllerBase<IThesisRepository, Thes
     public async Task<IActionResult> ApproveThesis([Required] string thesisId)
     {
         ThesisOutput thesis = await _thesisRepository.GetAsync(thesisId);
+        if (thesis == null)
+            return NotFound();
+
+        if (thesis.IsApproved)
+            return RedirectToAction("GetRejectedList");
+
         ViewData["Thesis"] = thesis;
 
         return View(new ThesisApprovalInput { ThesisId = thesis.Id });
@@ -254,5 +256,42 @@ public class ThesisManagerController : WebControllerBase<IThesisRepository, Thes
     public async Task<IActionResult> GetRevisions(string thesisId)
     {
         return View(await _thesisRevisionRepository.GetRevsByThesisIdAsync(thesisId));
+    }
+
+    [Route("review-revision/{revisionId}")]
+    [HttpGet]
+    [PageName(Name = "Nhận xét về bản thay đổi")]
+    public async Task<IActionResult> ReviewRevision(string revisionId)
+    {
+        ThesisRevisionOutput thesisRevision = await _thesisRevisionRepository.GetAsync(revisionId);
+        if (thesisRevision == null)
+            return NotFound();
+
+        if (thesisRevision.Reviewed)
+            return RedirectToAction("GetRevisions", new { thesisId = thesisRevision.Thesis.Id });
+
+        ViewData["ThesisRevision"] = thesisRevision;
+
+        return View(new ThesisRevReviewInput { RevisionId = thesisRevision.Id });
+    }
+
+    [Route("review-revision/{revisionId}")]
+    [HttpPost]
+    [PageName(Name = "Nhận xét về bản thay đổi")]
+    public async Task<IActionResult> ReviewRevision(ThesisRevReviewInput thesisRevReview)
+    {
+        ThesisRevisionOutput thesisRevision = await _thesisRevisionRepository.GetAsync(thesisRevReview.RevisionId);
+        if (!ModelState.IsValid)
+        {
+            AddViewData(DataResponseStatus.InvalidData);
+            ViewData["ThesisRevision"] = thesisRevision;
+
+            return View(new ThesisRevReviewInput { RevisionId = thesisRevision.Id });
+        }
+
+        DataResponse dataResponse = await _thesisRevisionRepository.ReviewRevisionAsync(thesisRevReview);
+        AddTempData(dataResponse);
+
+        return RedirectToAction("GetRevisions", new { thesisId = thesisRevision.Thesis.Id });
     }
 }

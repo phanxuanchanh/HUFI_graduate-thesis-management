@@ -1,6 +1,9 @@
-﻿@{
+﻿@using Microsoft.AspNetCore.Html
+@{
     List<ThesisRevisionOutput> thesisRevisions = Model;
 }
+
+@await Component.InvokeAsync("FacultyStaffLayout_StatusArea")
 
 <section class="list-group-navigation">
     <div class="card">
@@ -52,7 +55,7 @@
                                         {
                                             <div class="lecturer-comment mt-4">
                                                 <p class="fw-bold">Nhận xét của giảng viên hướng dẫn:</p>
-                                                @thesisRevision.LecturerComment
+                                                @(new HtmlString(thesisRevision.LecturerComment))
                                             </div>
                                             <div class="create-at mt-4">
                                                 <p><span class="fw-bold">Điểm quá trình</span>: @thesisRevision.Point</p>
@@ -61,7 +64,7 @@
                                         else
                                         {
                                             <div class="review mt-4">
-                                                <button class="btn btn-success">Thực hiện đánh giá</button>
+                                                <a asp-action="ReviewRevision" asp-route-revisionId="@thesisRevision.Id" class="btn btn-success">Thực hiện đánh giá</a>
                                             </div>
                                         }
                                     </div>

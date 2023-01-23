@@ -267,7 +267,9 @@ public class ThesisRepository : SubRepository<Thesis, ThesisInput, ThesisOutput,
 
     public async Task<DataResponse> ApproveThesisAsync(ThesisApprovalInput approvalInput)
     {
-        Thesis thesis = await _context.Theses.FindAsync(approvalInput.ThesisId);
+        Thesis thesis = await _context.Theses
+            .Where(t => t.Id == approvalInput.ThesisId && t.IsDeleted == false).SingleOrDefaultAsync();
+
         if (thesis == null)
             return new DataResponse
             {
@@ -297,7 +299,9 @@ public class ThesisRepository : SubRepository<Thesis, ThesisInput, ThesisOutput,
 
     public async Task<DataResponse> RejectThesisAsync(ThesisApprovalInput approvalInput)
     {
-        Thesis thesis = await _context.Theses.FindAsync(approvalInput.ThesisId);
+        Thesis thesis = await _context.Theses
+            .Where(t => t.Id == approvalInput.ThesisId && t.IsDeleted == false).SingleOrDefaultAsync();
+
         if (thesis == null)
             return new DataResponse
             {

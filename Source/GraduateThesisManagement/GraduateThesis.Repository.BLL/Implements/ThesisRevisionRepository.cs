@@ -5,10 +5,10 @@ using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DAL;
 using GraduateThesis.Repository.DTO;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace GraduateThesis.Repository.BLL.Implements;
 
@@ -46,6 +46,9 @@ public class ThesisRevisionRepository : SubRepository<ThesisRevision, ThesisRevi
             PresentationFile = s.PresentationFile,
             PdfFile = s.PdfFile,
             SourceCode = s.SourceCode,
+            Reviewed = s.Reviewed,
+            LecturerComment = s.LecturerComment,
+            Point = s.Point,
             Thesis = new ThesisOutput
             {
                 Id = s.Thesis.Id,
@@ -59,7 +62,8 @@ public class ThesisRevisionRepository : SubRepository<ThesisRevision, ThesisRevi
 
     public async Task<List<ThesisRevisionOutput>> GetRevsByThesisIdAsync(string thesisId)
     {
-        return await _context.ThesisRevisions.Where(tr => tr.ThesisId == thesisId && tr.IsDeleted == false)
+        List<ThesisRevisionOutput> thesisRevisions = await _context.ThesisRevisions
+            .Where(tr => tr.ThesisId == thesisId && tr.IsDeleted == false)
             .Select(s => new ThesisRevisionOutput
             {
                 Id = s.Id,
@@ -81,11 +85,17 @@ public class ThesisRevisionRepository : SubRepository<ThesisRevision, ThesisRevi
                 UpdatedAt = s.UpdatedAt,
                 DeletedAt = s.DeletedAt
             }).OrderByDescending(tr => tr.CreatedAt).ToListAsync();
+
+        return thesisRevisions
+            .Select(s => { s.LecturerComment = HttpUtility.HtmlDecode(s.LecturerComment); return s; })
+            .ToList();
     }
 
-    public async Task<DataResponse> ReviewRevision(ThesisRevRevisionOutput thesisRevRevision)
+    public async Task<DataResponse> ReviewRevisionAsync(ThesisRevReviewInput thesisRevReview)
     {
-        ThesisRevision thesisRevision = await _context.ThesisRevisions.FindAsync(thesisRevRevision.RevisionId);
+        ThesisRevision thesisRevision = await _context.ThesisRevisions
+            .Where(tr => tr.Id == thesisRevReview.RevisionId && tr.IsDeleted == false).SingleOrDefaultAsync();
+
         if (thesisRevision == null)
             return new DataResponse
             {
@@ -94,14 +104,14 @@ public class ThesisRevisionRepository : SubRepository<ThesisRevision, ThesisRevi
             };
 
         thesisRevision.Reviewed = true;
-        thesisRevision.LecturerComment = thesisRevRevision.Comment;
-        thesisRevision.Point = thesisRevRevision.Point;
+        thesisRevision.LecturerComment = HttpUtility.HtmlEncode(thesisRevReview.Comment);
+        thesisRevision.Point = thesisRevReview.Point;
 
         await _context.SaveChangesAsync();
 
         return new DataResponse
         {
-            Status = DataResponseStatus.NotFound,
+            Status = DataResponseStatus.Success,
             Message = "Đã đánh giá cho quá trình thực hiện đề tài thành công!"
         };
     }

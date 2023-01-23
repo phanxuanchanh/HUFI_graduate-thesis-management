@@ -9,5 +9,5 @@ namespace GraduateThesis.Repository.BLL.Interfaces;
 public interface IThesisRevisionRepository : ISubRepository<ThesisRevisionInput, ThesisRevisionOutput, string>
 {
     Task<List<ThesisRevisionOutput>> GetRevsByThesisIdAsync(string thesisId);
-    Task<DataResponse> ReviewRevision(ThesisRevRevisionOutput thesisRevRevision);
+    Task<DataResponse> ReviewRevisionAsync(ThesisRevReviewInput thesisRevReview);
 }
