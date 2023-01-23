@@ -1,4 +1,6 @@
-﻿using GraduateThesis.ApplicationCore.Repository;
+﻿using GraduateThesis.ApplicationCore.Enums;
+using GraduateThesis.ApplicationCore.Models;
+using GraduateThesis.ApplicationCore.Repository;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DAL;
 using GraduateThesis.Repository.DTO;
@@ -55,9 +57,9 @@ public class ThesisRevisionRepository : SubRepository<ThesisRevision, ThesisRevi
         };
     }
 
-    public async Task<List<ThesisRevisionOutput>> GetRevByThesisIdAsync(string thesisId)
+    public async Task<List<ThesisRevisionOutput>> GetRevsByThesisIdAsync(string thesisId)
     {
-        return await _context.ThesisRevisions.Where(tv => tv.ThesisId == thesisId && tv.IsDeleted == false)
+        return await _context.ThesisRevisions.Where(tr => tr.ThesisId == thesisId && tr.IsDeleted == false)
             .Select(s => new ThesisRevisionOutput
             {
                 Id = s.Id,
@@ -67,6 +69,9 @@ public class ThesisRevisionRepository : SubRepository<ThesisRevision, ThesisRevi
                 PresentationFile = s.PresentationFile,
                 PdfFile = s.PdfFile,
                 SourceCode = s.SourceCode,
+                Reviewed = s.Reviewed,
+                LecturerComment = s.LecturerComment,
+                Point = s.Point,
                 Thesis = new ThesisOutput
                 {
                     Id = s.Thesis.Id,
@@ -75,6 +80,29 @@ public class ThesisRevisionRepository : SubRepository<ThesisRevision, ThesisRevi
                 CreatedAt = s.CreatedAt,
                 UpdatedAt = s.UpdatedAt,
                 DeletedAt = s.DeletedAt
-            }).ToListAsync();
+            }).OrderByDescending(tr => tr.CreatedAt).ToListAsync();
+    }
+
+    public async Task<DataResponse> ReviewRevision(ThesisRevRevisionOutput thesisRevRevision)
+    {
+        ThesisRevision thesisRevision = await _context.ThesisRevisions.FindAsync(thesisRevRevision.RevisionId);
+        if (thesisRevision == null)
+            return new DataResponse
+            {
+                Status = DataResponseStatus.NotFound,
+                Message = "Không tìm thấy phiên bản có mã này!"
+            };
+
+        thesisRevision.Reviewed = true;
+        thesisRevision.LecturerComment = thesisRevRevision.Comment;
+        thesisRevision.Point = thesisRevRevision.Point;
+
+        await _context.SaveChangesAsync();
+
+        return new DataResponse
+        {
+            Status = DataResponseStatus.NotFound,
+            Message = "Đã đánh giá cho quá trình thực hiện đề tài thành công!"
+        };
     }
 }

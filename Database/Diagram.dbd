@@ -1281,7 +1281,7 @@
             </Location>
             <Size>
               <Width>236 px</Width>
-              <Height>280 px</Height>
+              <Height>331 px</Height>
             </Size>
             <DbOid>
               <Path>[HUFI_graduate-thesis].dbo.ThesisRevisions</Path>
@@ -1360,7 +1360,7 @@
               <Port xsi:type="LinkPort">
                 <Location>
                   <X>172 px</X>
-                  <Y>-120 px</Y>
+                  <Y>-69 px</Y>
                 </Location>
                 <Anchors>None</Anchors>
                 <Align>Bottom</Align>
@@ -2764,10 +2764,10 @@
         </Children>
         <ViewPort>
           <ScaleMode>Free</ScaleMode>
-          <Scale>0.9</Scale>
+          <Scale>0.5</Scale>
           <Location>
-            <X>199.111111111111 px</X>
-            <Y>480.888889100817 px</Y>
+            <X>-145.6 px</X>
+            <Y>-81.5999992370606 px</Y>
           </Location>
         </ViewPort>
       </Model>

@@ -20,19 +20,21 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers;
 [AccountInfo(typeof(FacultyStaffOutput))]
 public class ThesisManagerController : WebControllerBase<IThesisRepository, ThesisInput, ThesisOutput, string>
 {
-    private IAccountManager _accountManager;
+    private readonly IAccountManager _accountManager;
     private readonly ITopicRepository _topicRepository;
     private readonly IThesisGroupRepository _studentThesisGroupRepository;
     private readonly ITrainingFormRepository _trainingFormRepository;
     private readonly IFacultyStaffRepository _facultyStaffRepository;
     private readonly ITrainingLevelRepository _trainingLevelRepository;
     private readonly IThesisRepository _thesisRepository;
+    private readonly IThesisRevisionRepository _thesisRevisionRepository;
     private readonly ISpecializationRepository _specializationRepository;
 
     public ThesisManagerController(IRepository repository, IAuthorizationManager authorizationManager)
         : base(repository.ThesisRepository)
     {
         _thesisRepository = repository.ThesisRepository;
+        _thesisRevisionRepository = repository.ThesisRevisionRepository;
         _studentThesisGroupRepository = repository.ThesisGroupRepository;
         _trainingFormRepository = repository.TrainingFormRepository;
         _trainingLevelRepository = repository.TrainingLevelRepository;
@@ -244,5 +246,13 @@ public class ThesisManagerController : WebControllerBase<IThesisRepository, Thes
         ViewData["Keyword"] = keyword;
 
         return View();
+    }
+
+    [Route("revisions/{thesisId}")]
+    [HttpGet]
+    [PageName(Name = "Tiến độ của đề tài")]
+    public async Task<IActionResult> GetRevisions(string thesisId)
+    {
+        return View(await _thesisRevisionRepository.GetRevsByThesisIdAsync(thesisId));
     }
 }

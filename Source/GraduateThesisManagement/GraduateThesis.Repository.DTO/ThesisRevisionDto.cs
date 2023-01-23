@@ -6,7 +6,6 @@ namespace GraduateThesis.Repository.DTO;
 public class ThesisRevisionInput
 {
     [Display(Name = "Mã đề tài chỉnh sửa")]
-    [Required(ErrorMessage = "{0} không được để trống")]
     public string Id { get; set; }
 
     [Display(Name = "Mã đề tài ")]
@@ -30,6 +29,14 @@ public class ThesisRevisionInput
 
     [Display(Name = "Source code")]
     public string SourceCode { get; set; }
+
+    public bool Reviewed { get; set; }
+
+    [Display(Name = "Nhận xét của giáo viên")]
+    public string LecturerComment { get; set; }
+
+    [Display(Name = "Điểm quá trình")]
+    public decimal? Point { get; set; }
 }
 
 public class ThesisRevisionOutput : ThesisRevisionInput

@@ -6,7 +6,7 @@
   [Results] [ntext] NULL,
   [Conclusions] [nvarchar](100) NULL,
   [IsCompleted] [bit] NOT NULL,
-  [Point] [int] NULL,
+  [Point] [decimal](5, 2) NULL,
   [Notes] [nvarchar](200) NULL,
   [CreatedAt] [datetime] NULL,
   [UpdatedAt] [datetime] NULL,

@@ -209,7 +209,7 @@ public partial class HufiGraduateThesisContext : DbContext
                 .IsRequired()
                 .HasMaxLength(50)
                 .IsUnicode(false);
-            entity.Property(e => e.Point).HasColumnType("decimal(18, 0)");
+            entity.Property(e => e.Point).HasColumnType("decimal(5, 2)");
             entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
             entity.HasOne(d => d.CommitteeMember).WithMany(p => p.CommitteeMemberResults)
@@ -258,7 +258,7 @@ public partial class HufiGraduateThesisContext : DbContext
                 .IsRequired()
                 .HasMaxLength(50)
                 .IsUnicode(false);
-            entity.Property(e => e.Point).HasColumnType("decimal(18, 0)");
+            entity.Property(e => e.Point).HasColumnType("decimal(5, 2)");
             entity.Property(e => e.PracticalResults).HasColumnType("ntext");
             entity.Property(e => e.Questions).HasColumnType("ntext");
             entity.Property(e => e.ResearchMethods).HasColumnType("ntext");
@@ -650,7 +650,7 @@ public partial class HufiGraduateThesisContext : DbContext
             entity.Property(e => e.Contents).HasColumnType("ntext");
             entity.Property(e => e.CreatedAt).HasColumnType("datetime");
             entity.Property(e => e.DeletedAt).HasColumnType("datetime");
-            entity.Property(e => e.Point).HasColumnType("decimal(18, 0)");
+            entity.Property(e => e.Point).HasColumnType("decimal(5, 2)");
             entity.Property(e => e.ThesisCommitteeId)
                 .IsRequired()
                 .HasMaxLength(50)
@@ -718,6 +718,8 @@ public partial class HufiGraduateThesisContext : DbContext
                 .HasColumnName("ID");
             entity.Property(e => e.CreatedAt).HasColumnType("datetime");
             entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+            entity.Property(e => e.LecturerComment).HasMaxLength(450);
+            entity.Property(e => e.Point).HasColumnType("decimal(5, 2)");
             entity.Property(e => e.Summary).HasMaxLength(450);
             entity.Property(e => e.ThesisId)
                 .IsRequired()
@@ -750,6 +752,7 @@ public partial class HufiGraduateThesisContext : DbContext
                 .HasMaxLength(50)
                 .IsUnicode(false);
             entity.Property(e => e.Notes).HasMaxLength(200);
+            entity.Property(e => e.Point).HasColumnType("decimal(5, 2)");
             entity.Property(e => e.Results).HasColumnType("ntext");
             entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
