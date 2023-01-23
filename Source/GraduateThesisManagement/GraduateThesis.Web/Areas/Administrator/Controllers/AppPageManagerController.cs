@@ -73,6 +73,12 @@ public class AppPageManagerController : WebControllerBase<IAppPageRepository, Ap
         throw new NotImplementedException();
     }
 
+    [NonAction]
+    public override Task<IActionResult> Export(ExportMetadata exportMetadata)
+    {
+        throw new NotImplementedException();
+    }
+
     [Route("force-delete/{id}")]
     [HttpPost]
     public override async Task<IActionResult> ForceDelete([Required] string id)

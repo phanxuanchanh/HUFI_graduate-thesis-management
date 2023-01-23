@@ -26,8 +26,8 @@ public class StudentManagerController : WebControllerBase<IStudentRepository, St
 
     protected override async Task LoadSelectListAsync()
     {
-        List<StudentClassOutput> studentClasses = await _studentClassRepository.GetListAsync(50);
-        ViewData["StudentClassSelectList"] = new SelectList(studentClasses, "Id", "Name");
+        List<StudentClassOutput> students = await _studentClassRepository.GetListAsync(50);
+        ViewData["StudentClassSelectList"] = new SelectList(students, "Id", "Name");
     }
 
     [Route("list")]
@@ -93,10 +93,18 @@ public class StudentManagerController : WebControllerBase<IStudentRepository, St
     }
 
     [Route("export")]
-    [HttpPost]
+    [HttpGet]
+    [PageName(Name = "Xuất dữ liệu ra khỏi hệ thống")]
     public override async Task<IActionResult> Export()
     {
-        return await ExportResult(null!, null!);
+        return await ExportResult();
+    }
+
+    [Route("export")]
+    [HttpPost]
+    public override async Task<IActionResult> Export(ExportMetadata exportMetadata)
+    {
+        return await ExportResult(null, exportMetadata);
     }
 
     [Route("import")]

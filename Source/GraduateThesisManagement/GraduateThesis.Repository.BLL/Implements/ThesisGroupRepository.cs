@@ -83,45 +83,6 @@ public class ThesisGroupRepository : SubRepository<ThesisGroup, ThesisGroupInput
         return thesisGroup;
     }
 
-    public async Task<DataResponse> ApprovalStudentThesisGroupAsync(string StudentThesisGroupId)
-    {
-        ThesisGroupDetail thesisGroupDetail = await _context.ThesisGroupDetails.FindAsync(StudentThesisGroupId);
-        if (thesisGroupDetail == null)
-            return new DataResponse
-            {
-                Status = DataResponseStatus.NotFound,
-                Message = "Không tìm thấy nhóm có mã này!"
-            };
-
-        thesisGroupDetail.IsApproved = true;
-        await _context.SaveChangesAsync();
-        return new DataResponse
-        {
-            Status = DataResponseStatus.Success,
-            Message = "Bạn đã vào nhóm thành công!"
-        };
-    }
-
-    public async Task<DataResponse> RefuseApprovalStudentThesisGroupAsync(string StudentThesisGroupId)
-    {
-
-        ThesisGroupDetail thesisGroupDetail = await _context.ThesisGroupDetails.FindAsync(StudentThesisGroupId);
-        if (thesisGroupDetail == null)
-            return new DataResponse
-            {
-                Status = DataResponseStatus.NotFound,
-                Message = "Không tìm thấy nhóm có mã này!"
-            };
-
-        thesisGroupDetail.IsApproved = false;
-        await _context.SaveChangesAsync();
-        return new DataResponse
-        {
-            Status = DataResponseStatus.Success,
-            Message = "Bạn đã từ chối vào nhóm thành công!"
-        };
-    }
-
     public async Task<ThesisGroupOutput> GetAsync(string studentId, string thesisId)
     {
         ThesisGroupOutput thesisGroup = await _context.ThesisGroupDetails
@@ -161,5 +122,51 @@ public class ThesisGroupRepository : SubRepository<ThesisGroup, ThesisGroupInput
                 Name = s.StudentThesisGroup.Name,
                 Description = s.StudentThesisGroup.Description
             }).ToListAsync();
+    }
+
+    public async Task<DataResponse> JoinToGroupAsync(string studentId, string thesisGroupId)
+    {
+        ThesisGroupDetail thesisGroupDetail = await _context.ThesisGroupDetails
+            .Where(gd => gd.StudentId == studentId && gd.StudentThesisGroupId == thesisGroupId && gd.IsDeleted == false)
+            .SingleOrDefaultAsync();
+
+        if (thesisGroupDetail == null)
+            return new DataResponse
+            {
+                Status = DataResponseStatus.NotFound,
+                Message = "Không tìm thấy nhóm có mã này!"
+            };
+
+        thesisGroupDetail.IsApproved = true;
+        await _context.SaveChangesAsync();
+
+        return new DataResponse
+        {
+            Status = DataResponseStatus.Success,
+            Message = "Bạn đã vào nhóm thành công!"
+        };
+    }
+
+    public async Task<DataResponse> DenyFromGroupAsync(string studentId, string thesisGroupId)
+    {
+        ThesisGroupDetail thesisGroupDetail = await _context.ThesisGroupDetails
+            .Where(gd => gd.StudentId == studentId && gd.StudentThesisGroupId == thesisGroupId && gd.IsDeleted == false)
+            .SingleOrDefaultAsync();
+
+        if (thesisGroupDetail == null)
+            return new DataResponse
+            {
+                Status = DataResponseStatus.NotFound,
+                Message = "Không tìm thấy nhóm có mã này!"
+            };
+
+        thesisGroupDetail.IsApproved = false;
+        await _context.SaveChangesAsync();
+
+        return new DataResponse
+        {
+            Status = DataResponseStatus.Success,
+            Message = "Bạn đã từ chối tham gia nhóm thành công!"
+        };
     }
 }

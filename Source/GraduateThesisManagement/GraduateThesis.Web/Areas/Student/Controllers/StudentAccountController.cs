@@ -8,8 +8,6 @@ using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DTO;
 using GraduateThesis.WebExtensions;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
-using System.ComponentModel.DataAnnotations;
 
 #nullable disable
 
@@ -20,13 +18,11 @@ namespace GraduateThesis.Web.Areas.Student.Controllers;
 public class StudentAccountController : WebControllerBase
 {
     private IStudentRepository _studentRepository;
-    private IThesisGroupRepository _studentThesisGroupRepository;
     private IAccountManager _accountManager;
 
     public StudentAccountController(IRepository repository, IAuthorizationManager authorizationManager)
     {
         _studentRepository = repository.StudentRepository;
-        _studentThesisGroupRepository = repository.ThesisGroupRepository;
         _accountManager = authorizationManager.AccountManager;
     }
 
@@ -159,25 +155,6 @@ public class StudentAccountController : WebControllerBase
         _accountManager.SetHttpContext(HttpContext);
         _accountManager.RemoveSession();
         return RedirectToAction("SignIn", "StudentAccount");
-    }
-
-    [Route("join-to-group")]
-    [HttpPost]
-    public async Task<IActionResult> JoinToGroupAsync([Required] string groupId)
-    {
-        DataResponse dataResponse = await _studentThesisGroupRepository.ApprovalStudentThesisGroupAsync(groupId);
-        AddTempData(dataResponse);
-        return RedirectToAction("YourStudentThesisGroup");
-    }
-
-
-    [Route("deny-from-group")]
-    [HttpPost]
-    public async Task<IActionResult> DenyFromGroupAsync([Required] string groupId)
-    {
-        DataResponse dataResponse = await _studentThesisGroupRepository.RefuseApprovalStudentThesisGroupAsync(groupId);
-        AddTempData(dataResponse);
-        return RedirectToAction("YourStudentThesisGroup");
     }
 
     [Route("get-profile")]

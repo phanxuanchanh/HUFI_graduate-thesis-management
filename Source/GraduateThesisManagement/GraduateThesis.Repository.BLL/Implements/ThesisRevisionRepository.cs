@@ -2,7 +2,11 @@
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DAL;
 using GraduateThesis.Repository.DTO;
+using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace GraduateThesis.Repository.BLL.Implements;
 
@@ -15,9 +19,10 @@ public class ThesisRevisionRepository : SubRepository<ThesisRevision, ThesisRevi
     {
         _context = context;
     }
+
     protected override void ConfigureIncludes()
     {
-        _genericRepository.IncludeMany(i => i.Thesis);
+        IncludeMany(i => i.Thesis);
     }
 
     protected override void ConfigureSelectors()
@@ -26,12 +31,7 @@ public class ThesisRevisionRepository : SubRepository<ThesisRevision, ThesisRevi
         {
             Id = s.Id,
             Title = s.Title,
-            Summary = s.Summary,
-            DocumentFile = s.DocumentFile,
-            PresentationFile = s.PresentationFile,
-            PdfFile = s.PdfFile,
-            SourceCode = s.SourceCode,
-           
+            Summary = s.Summary
         };
 
         ListSelector = PaginationSelector;
@@ -48,36 +48,33 @@ public class ThesisRevisionRepository : SubRepository<ThesisRevision, ThesisRevi
             {
                 Id = s.Thesis.Id,
                 Name = s.Thesis.Name,
-                Description = s.Thesis.Description,
-                DocumentFile = s.Thesis.DocumentFile,
-                PdfFile = s.Thesis.PdfFile,
-                PresentationFile = s.Thesis.PresentationFile,
-                SourceCode = s.Thesis.SourceCode,
-                MaxStudentNumber = s.Thesis.MaxStudentNumber,
-                Credits = s.Thesis.Credits,
-                Year = s.Thesis.Year,
-                Notes = s.Thesis.Notes,
-                TopicId = s.Thesis.TopicId,
-                TrainingFormId = s.Thesis.TrainingFormId,
-                TrainingLevelId = s.Thesis.TrainingLevelId,
-                IsApproved = s.Thesis.IsApproved,
-                IsNew = s.Thesis.IsNew,
-                InProgess = s.Thesis.InProgess,
-                Finished = s.Thesis.Finished,
-                SpecializationId = s.Thesis.SpecializationId,
-                DateFrom = s.Thesis.DateFrom,
-                DateTo = s.Thesis.DateTo,
-                LectureId = s.Thesis.LectureId,
-                Semester = s.Thesis.Semester,
-                ThesisGroupId = s.Thesis.ThesisGroupId,
-                CreatedAt = s.Thesis.CreatedAt,
-                UpdatedAt = s.Thesis.UpdatedAt,
-                DeletedAt = s.Thesis.DeletedAt
-
             },
-            CreatedAt = (DateTime)s.Thesis.CreatedAt,
-            UpdatedAt = (DateTime)s.Thesis.UpdatedAt,
-            DeletedAt = (DateTime)s.Thesis.DeletedAt
+            CreatedAt = s.CreatedAt,
+            UpdatedAt = s.UpdatedAt,
+            DeletedAt = s.DeletedAt
         };
+    }
+
+    public async Task<List<ThesisRevisionOutput>> GetRevByThesisIdAsync(string thesisId)
+    {
+        return await _context.ThesisRevisions.Where(tv => tv.ThesisId == thesisId && tv.IsDeleted == false)
+            .Select(s => new ThesisRevisionOutput
+            {
+                Id = s.Id,
+                Title = s.Title,
+                Summary = s.Summary,
+                DocumentFile = s.DocumentFile,
+                PresentationFile = s.PresentationFile,
+                PdfFile = s.PdfFile,
+                SourceCode = s.SourceCode,
+                Thesis = new ThesisOutput
+                {
+                    Id = s.Thesis.Id,
+                    Name = s.Thesis.Name,
+                },
+                CreatedAt = s.CreatedAt,
+                UpdatedAt = s.UpdatedAt,
+                DeletedAt = s.DeletedAt
+            }).ToListAsync();
     }
 }

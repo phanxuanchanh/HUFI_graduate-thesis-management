@@ -124,6 +124,13 @@ public class ThesisManagerController : WebControllerBase<IThesisRepository, Thes
         return await ExportResult(null!, null!);
     }
 
+    [Route("export")]
+    [HttpPost]
+    public override Task<IActionResult> Export(ExportMetadata exportMetadata)
+    {
+        throw new NotImplementedException();
+    }
+
     [Route("import")]
     [HttpPost]
     [PageName(Name = "Nhập dữ liệu vào hệ thống")]
