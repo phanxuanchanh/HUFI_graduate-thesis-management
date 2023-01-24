@@ -9,7 +9,6 @@ public interface IStudentRepository : ISubRepository<StudentInput, StudentOutput
 {
     Task<DataResponse> UpdateProfileAsync(StudentInput input, FileUploadModel avtUploadModel);
     Task<DataResponse> SetDefaultAvatarAsync(string studentId);
-    Task<StudentThesisOutput> GetStudentThesisAsync(string studentId);
     Task<object> SearchForThesisRegAsync(string keyword);
     Task<object> GetForThesisRegAsync(string studentId);
     //Task<Pagination<StudentOutput>> GetPgnOf();

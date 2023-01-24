@@ -144,10 +144,16 @@ public class StudentThesisController : WebControllerBase
         return RedirectToAction("YourStudentThesisGroup");
     }
 
-    public async Task<IActionResult> GetThesisGroup()
+    [Route("thesis-groups")]
+    [HttpGet]
+    [PageName(Name = "Danh sách nhóm đồ án của bạn")]
+    public async Task<IActionResult> GetThesisGroups()
     {
-         //_thesisGroupRepository
-        return View();
+        _accountManager.SetHttpContext(HttpContext);
+        List<ThesisGroupDtOutput> thesisGroups = await _thesisGroupRepository
+            .GetGrpsByStdntIdAsync(_accountManager.GetUserId());
+
+        return View(thesisGroups);
     }
 
     [Route("my-thesis/{thesisId}")]

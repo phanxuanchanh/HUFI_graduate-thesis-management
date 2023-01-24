@@ -197,7 +197,7 @@ public class StudentRepository : SubRepository<Student, StudentInput, StudentOut
 
         _emailService.Send(
             student.Email,
-            "Khôi phục mật khẩu",
+            $"Khôi phục mật khẩu [{DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")}]",
             mailContent
         );
 
@@ -206,31 +206,6 @@ public class StudentRepository : SubRepository<Student, StudentInput, StudentOut
             Status = AccountStatus.Success,
             Message = "Thực hiện bước 1 của quá trình lấy lại mật khẩu thành công!",
             Email = forgotPasswordModel.Email
-        };
-    }
-
-    public async Task<StudentThesisOutput> GetStudentThesisAsync(string studentId)
-    {
-        ThesisGroup thesisGroup = await _context.ThesisGroupDetails
-            .Include(i => i.StudentThesisGroup)
-            .Where(s => s.StudentId == studentId).Select(s => new ThesisGroup
-            {
-
-            }).SingleOrDefaultAsync();
-
-        List<StudentOutput> students = await _context.ThesisGroupDetails
-            .Where(s => s.StudentId == studentId).Include(i => i.Student)
-            .Select(s => new StudentOutput
-            {
-                Id = s.Student.Id,
-                Name = s.Student.Name
-            }).ToListAsync();
-
-        return new StudentThesisOutput
-        {
-            //Thesis = thesisOutput,
-            //StudentThesisGroup = studentThesisGroup,
-            Students = students
         };
     }
 

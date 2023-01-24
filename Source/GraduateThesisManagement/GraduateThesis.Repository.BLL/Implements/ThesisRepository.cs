@@ -155,13 +155,15 @@ public class ThesisRepository : SubRepository<Thesis, ThesisInput, ThesisOutput,
                 return new DataResponse { Status = DataResponseStatus.NotFound };
 
             string groupId = UidHelper.GetShortUid();
+            DateTime currentDatetime = DateTime.Now;
 
             ThesisGroup studentThesisGroup = new ThesisGroup
             {
                 Id = groupId,
                 Name = thesisRegistrationInput.GroupName,
                 Description = thesisRegistrationInput.GroupDescription,
-                StudentQuantity = 0
+                StudentQuantity = 0,
+                CreatedAt = currentDatetime
             };
 
             await _context.ThesisGroups.AddAsync(studentThesisGroup);
@@ -175,12 +177,18 @@ public class ThesisRepository : SubRepository<Thesis, ThesisInput, ThesisOutput,
 
             foreach (string studentId in studentIdList)
             {
-                thesisGroupDetails.Add(new ThesisGroupDetail
+                ThesisGroupDetail thesisGroupDetail = new ThesisGroupDetail
                 {
                     StudentThesisGroupId = groupId,
                     StudentId = studentId,
-                    IsApproved = false
-                });
+                    IsApproved = false,
+                    CreatedAt = currentDatetime
+                };
+
+                if (studentId == thesisRegistrationInput.RegisteredStudentId)
+                    thesisGroupDetail.IsLeader = true;
+
+                thesisGroupDetails.Add(thesisGroupDetail);
             }
 
             await _context.ThesisGroupDetails.AddRangeAsync(thesisGroupDetails);
@@ -210,13 +218,13 @@ public class ThesisRepository : SubRepository<Thesis, ThesisInput, ThesisOutput,
 
             await _emailService.SendAsync(
                 registeredStudent.Email,
-                "Bạn đã đăng ký đề tài thành công!",
+                $"Bạn đã đăng ký đề tài thành công! [{DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")}]",
                 mailContForRegdStudent
             );
 
             await _emailService.SendAsync(
                 students.Where(s => s.Id != registeredStudent.Id).Select(s => s.Email).ToArray(),
-                "Bạn đã được mời tham gia vào nhóm đề tài!",
+                $"Bạn đã được mời tham gia vào nhóm đề tài! [{DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")}]",
                 mailContForMembers
             );
 
@@ -288,7 +296,8 @@ public class ThesisRepository : SubRepository<Thesis, ThesisInput, ThesisOutput,
 
         string mailContent = Resources.EmailResource.thesis_approved;
         mailContent = mailContent.Replace("@thesisName", thesis.Name);
-        await _emailService.SendAsync(facultyStaffEmail, "Đề tài của bạn đã được duyệt!", mailContent);
+        string mailSubject = $"Đề tài của bạn đã được duyệt! [{DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")}]";
+        await _emailService.SendAsync(facultyStaffEmail, mailSubject, mailContent);
 
         return new DataResponse
         {
@@ -320,7 +329,8 @@ public class ThesisRepository : SubRepository<Thesis, ThesisInput, ThesisOutput,
 
         string mailContent = Resources.EmailResource.thesis_rejected;
         mailContent = mailContent.Replace("@thesisName", thesis.Name).Replace("@notes", approvalInput.Notes);
-        await _emailService.SendAsync(facultyStaffEmail, "Đề tài của bạn bị từ chối phê duyệt!", mailContent);
+        string mailSubject = $"Đề tài của bạn bị từ chối phê duyệt! [{DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")}]";
+        await _emailService.SendAsync(facultyStaffEmail, mailSubject, mailContent);
 
         return new DataResponse
         {

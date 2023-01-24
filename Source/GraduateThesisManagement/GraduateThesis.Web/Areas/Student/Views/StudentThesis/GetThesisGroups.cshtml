@@ -1,0 +1,47 @@
+﻿@{
+    List<ThesisGroupDtOutput> thesisGroupDts = (Model as List<ThesisGroupDtOutput>)!;
+}
+
+@if (thesisGroupDts.Count == 0)
+{
+    <section class="list-group-navigation">
+        <div class="card">
+            <div class="card-body text-center">
+                <p class="text-danger">Bạn chưa tham gia vào nhóm đề tài!</p>
+            </div>
+        </div>
+    </section>
+}
+
+@foreach (ThesisGroupDtOutput thesisGroupDt in Model)
+{
+    <section id="basic-horizontal-layouts">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title">Tên đề tài: "@thesisGroupDt.ThesisName"</h4>
+                <div class="mt-3">
+                    <p class="m-0">Tên nhóm: @thesisGroupDt.GroupName</p>
+                    <p class="m-0">Số thành viên: @thesisGroupDt.StudentQuantity</p>
+                    <p class="m-0">Ngày đăng ký: @thesisGroupDt.RegistrationDate</p>
+                </div>
+            </div>
+            <div class="card-content">
+                <div class="card-body">
+                    <div class="d-flex justify-content-center">
+                        <a asp-action="GetThesisGroup" class="btn btn-success me-1 mb-1">Xem</a>
+                    </div>
+                    
+                    @if (thesisGroupDt.Group_IsFinished && thesisGroupDt.Group_IsCompleted)
+                    {
+
+                    }
+
+                    @if(thesisGroupDt.Member_IsApproved){
+
+                    }
+
+                </div>
+            </div>
+        </div>
+    </section>
+}

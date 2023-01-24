@@ -171,7 +171,7 @@ public class FacultyStaffRepository : SubRepository<FacultyStaff, FacultyStaffIn
 
         _emailService.Send(
             facultyStaff.Email,
-            "Khôi phục mật khẩu",
+            $"Khôi phục mật khẩu [{DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")}]",
             mailContent
         );
 

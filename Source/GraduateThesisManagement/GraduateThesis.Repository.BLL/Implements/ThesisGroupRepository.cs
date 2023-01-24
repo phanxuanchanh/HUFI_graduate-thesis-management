@@ -36,7 +36,7 @@ public class ThesisGroupRepository : SubRepository<ThesisGroup, ThesisGroupInput
             Description = s.Description,
             StudentQuantity = s.StudentQuantity,
             Notes = s.Notes,
-            Thesis = s.Theses.Select(ts=> new ThesisOutput
+            Thesis = s.Theses.Select(ts => new ThesisOutput
             {
                 Id = ts.Id,
                 Name = ts.Name,
@@ -45,7 +45,7 @@ public class ThesisGroupRepository : SubRepository<ThesisGroup, ThesisGroupInput
                 Notes = ts.Notes,
                 TopicId = ts.Notes,
                 MaxStudentNumber = ts.MaxStudentNumber,
-               
+
             }).FirstOrDefault()
         };
 
@@ -75,10 +75,10 @@ public class ThesisGroupRepository : SubRepository<ThesisGroup, ThesisGroupInput
     {
         ThesisGroupOutput thesisGroup = await base.GetAsync(id);
 
-        thesisGroup.Students = await _context.ThesisGroupDetails.Include(i => i.Student)
-            .Where(s => s.StudentThesisGroupId == id && s.IsDeleted == false)
-            .Select(s => new StudentOutput { Id = s.Student.Id, Name = s.Student.Name })
-            .ToListAsync();
+        //thesisGroup.Students = await _context.ThesisGroupDetails.Include(i => i.Student)
+        //    .Where(s => s.StudentThesisGroupId == id && s.IsDeleted == false)
+        //    .Select(s => new StudentOutput { Id = s.Student.Id, Name = s.Student.Name })
+        //    .ToListAsync();
 
         return thesisGroup;
     }
@@ -104,10 +104,10 @@ public class ThesisGroupRepository : SubRepository<ThesisGroup, ThesisGroupInput
                 }
             ).SingleOrDefaultAsync();
 
-        thesisGroup.Students = await _context.ThesisGroupDetails.Include(i => i.Student)
-            .Where(s => s.StudentThesisGroupId == thesisGroup.Id && s.IsDeleted == false)
-            .Select(s => new StudentOutput { Id = s.Student.Id, Name = s.Student.Name })
-            .ToListAsync();
+        //thesisGroup.Students = await _context.ThesisGroupDetails.Include(i => i.Student)
+        //    .Where(s => s.StudentThesisGroupId == thesisGroup.Id && s.IsDeleted == false)
+        //    .Select(s => new StudentOutput { Id = s.Student.Id, Name = s.Student.Name })
+        //    .ToListAsync();
 
         return thesisGroup;
     }
@@ -138,6 +138,16 @@ public class ThesisGroupRepository : SubRepository<ThesisGroup, ThesisGroupInput
             };
 
         thesisGroupDetail.IsApproved = true;
+
+        int studentQuantity = await _context.ThesisGroupDetails
+            .Where(gd => gd.StudentThesisGroupId == thesisGroupId && gd.IsApproved == true && gd.IsDeleted == false)
+            .CountAsync();
+
+        ThesisGroup thesisGroup = await _context.ThesisGroups
+            .Where(tg => tg.Id == thesisGroupId && tg.IsDeleted == false)
+            .SingleOrDefaultAsync();
+
+        thesisGroup.StudentQuantity = studentQuantity;
         await _context.SaveChangesAsync();
 
         return new DataResponse
@@ -161,6 +171,16 @@ public class ThesisGroupRepository : SubRepository<ThesisGroup, ThesisGroupInput
             };
 
         thesisGroupDetail.IsApproved = false;
+
+        int studentQuantity = await _context.ThesisGroupDetails
+            .Where(gd => gd.StudentThesisGroupId == thesisGroupId && gd.IsApproved == true && gd.IsDeleted == false)
+            .CountAsync();
+
+        ThesisGroup thesisGroup = await _context.ThesisGroups
+            .Where(tg => tg.Id == thesisGroupId && tg.IsDeleted == false)
+            .SingleOrDefaultAsync();
+
+        thesisGroup.StudentQuantity = studentQuantity;
         await _context.SaveChangesAsync();
 
         return new DataResponse
@@ -168,5 +188,33 @@ public class ThesisGroupRepository : SubRepository<ThesisGroup, ThesisGroupInput
             Status = DataResponseStatus.Success,
             Message = "Bạn đã từ chối tham gia nhóm thành công!"
         };
+    }
+
+    public async Task<List<ThesisGroupDtOutput>> GetGrpsByStdntIdAsync(string studentId)
+    {
+        return await _context.ThesisGroupDetails.Include(i => i.StudentThesisGroup)
+            .Where(gd => gd.StudentId == studentId && gd.IsDeleted == false && gd.StudentThesisGroup.IsDeleted == false)
+            .Join(
+                _context.Theses.Where(t => t.IsDeleted == false),
+                groupDetail => groupDetail.StudentThesisGroup.Id,
+                thesis => thesis.ThesisGroupId,
+                (groupDetail, thesis) => new ThesisGroupDtOutput
+                {
+                    ThesisId = thesis.Id,
+                    ThesisName = thesis.Name,
+                    GroupId = groupDetail.StudentThesisGroup.Id,
+                    GroupName = groupDetail.StudentThesisGroup.Name,
+                    GroupDescription = groupDetail.StudentThesisGroup.Description,
+                    StudentQuantity = groupDetail.StudentThesisGroup.StudentQuantity,
+                    RegistrationDate = groupDetail.StudentThesisGroup.CreatedAt,
+                    GroupNotes = groupDetail.StudentThesisGroup.Notes,
+                    Group_IsCompleted = groupDetail.StudentThesisGroup.IsCompleted,
+                    Group_IsFinished = groupDetail.StudentThesisGroup.IsFinished,
+                    MemberNotes = groupDetail.Notes,
+                    Member_IsApproved = groupDetail.IsApproved,
+                    Member_IsCompleted = groupDetail.IsCompleted,
+                    Member_IsFinished = groupDetail.IsFinished
+                }
+            ).ToListAsync();
     }
 }
