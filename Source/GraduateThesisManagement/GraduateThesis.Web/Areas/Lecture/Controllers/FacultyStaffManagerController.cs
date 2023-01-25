@@ -1,4 +1,6 @@
 ﻿using GraduateThesis.ApplicationCore.AppController;
+using GraduateThesis.ApplicationCore.Enums;
+using GraduateThesis.ApplicationCore.File;
 using GraduateThesis.ApplicationCore.Models;
 using GraduateThesis.ApplicationCore.WebAttributes;
 using GraduateThesis.Common.WebAttributes;
@@ -6,7 +8,9 @@ using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DTO;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Net.Http.Headers;
 using System.ComponentModel.DataAnnotations;
+using System.Net.Mime;
 
 namespace GraduateThesis.Web.Areas.Lecture.Controllers;
 
@@ -17,11 +21,13 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers;
 public class FacultyStaffManagerController : WebControllerBase<IFacultyStaffRepository, FacultyStaffInput, FacultyStaffOutput, string>
 {
     private readonly IFacultyRepository _facultyRepository;
+    private readonly IFacultyStaffRepository _facultyStaffRepository;
 
     public FacultyStaffManagerController(IRepository repository)
         :base(repository.FacultyStaffRepository)
     {
         _facultyRepository = repository.FacultyRepository;
+        _facultyStaffRepository = repository.FacultyStaffRepository;
     }
 
     protected override async Task LoadSelectListAsync()
@@ -92,9 +98,27 @@ public class FacultyStaffManagerController : WebControllerBase<IFacultyStaffRepo
         return await ForceDeleteResult(id);
     }
 
+    [Route("export")]
+    [HttpGet]
+    [PageName(Name = "Xuất dữ liệu ra khỏi hệ thống")]
     public override async Task<IActionResult> Export()
     {
-        return await ExportResult(null!, null!);
+        return await ExportResult();
+    }
+
+    [Route("export")]
+    [HttpPost]
+    public override async Task<IActionResult> Export(ExportMetadata exportMetadata)
+    {
+        byte[] bytes = await _facultyStaffRepository.ExportAsync();
+        ContentDisposition contentDisposition = new ContentDisposition
+        {
+            FileName = $"faculty-staff_{DateTime.Now.ToString("ddMMyyyy_HHmmss")}.xlsx"
+        };
+
+        Response.Headers.Add(HeaderNames.ContentDisposition, contentDisposition.ToString());
+
+        return File(bytes, ContentTypeConsts.XLSX);
     }
 
     [Route("import")]
@@ -126,11 +150,5 @@ public class FacultyStaffManagerController : WebControllerBase<IFacultyStaffRepo
     public override async Task<IActionResult> Restore([Required] string id)
     {
         return await RestoreResult(id);
-    }
-
-    [NonAction]
-    public override Task<IActionResult> Export(ExportMetadata exportMetadata)
-    {
-        throw new NotImplementedException();
     }
 }

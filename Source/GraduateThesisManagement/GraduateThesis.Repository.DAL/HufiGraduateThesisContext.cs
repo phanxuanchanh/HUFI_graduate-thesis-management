@@ -318,10 +318,8 @@ public partial class HufiGraduateThesisContext : DbContext
                 .HasMaxLength(50)
                 .IsUnicode(false)
                 .HasDefaultValueSql("('BHyFWSywrk')");
-            entity.Property(e => e.FullName)
-                .IsRequired()
-                .HasMaxLength(100);
             entity.Property(e => e.Gender).HasMaxLength(10);
+            entity.Property(e => e.Name).HasMaxLength(100);
             entity.Property(e => e.Notes).HasMaxLength(200);
             entity.Property(e => e.Password)
                 .IsRequired()
@@ -333,6 +331,7 @@ public partial class HufiGraduateThesisContext : DbContext
             entity.Property(e => e.Salt)
                 .IsRequired()
                 .HasMaxLength(100);
+            entity.Property(e => e.Surname).HasMaxLength(200);
             entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
             entity.Property(e => e.VerificationCode)
                 .HasMaxLength(100)

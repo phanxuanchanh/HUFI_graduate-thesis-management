@@ -10,4 +10,5 @@ public interface IFacultyStaffRepository : ISubRepository<FacultyStaffInput, Fac
     Task<Pagination<FacultyStaffOutput>> GetPgnHasRoleIdAsync(string roleId, int page, int pageSize, string keyword);    
     Task<DataResponse> UpdateProfileAsync(FacultyStaffInput input, FileUploadModel avtUploadModel);
     Task<DataResponse> SetDefaultAvatarAsync(string facultyStaffId);
+    Task<byte[]> ExportAsync();
 }

@@ -21,11 +21,18 @@
                                         <input asp-for="Id" class="form-control" disabled />
                                     </div>
                                     <div class="col-md-4">
-                                        <label asp-for="FullName"></label>
+                                        <label asp-for="Surname"></label>
                                     </div>
                                     <div class="col-md-8 form-group">
-                                        <input asp-for="FullName" class="form-control" placeholder="Nhập tên giảng viên" />
-                                        <span asp-validation-for="FullName" class="text-danger"></span>
+                                        <input asp-for="Surname" class="form-control" placeholder="Nhập họ giảng viên" />
+                                        <span asp-validation-for="Surname" class="text-danger"></span>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label asp-for="Name"></label>
+                                    </div>
+                                    <div class="col-md-8 form-group">
+                                        <input asp-for="Name" class="form-control" placeholder="Nhập tên giảng viên" />
+                                        <span asp-validation-for="Name" class="text-danger"></span>
                                     </div>
                                     <div class="col-md-4">
                                         <label asp-for="Email"></label>

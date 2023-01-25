@@ -11,6 +11,9 @@ public interface IStudentRepository : ISubRepository<StudentInput, StudentOutput
     Task<DataResponse> SetDefaultAvatarAsync(string studentId);
     Task<object> SearchForThesisRegAsync(string keyword);
     Task<object> GetForThesisRegAsync(string studentId);
-    //Task<Pagination<StudentOutput>> GetPgnOf();
-    //Task<Pagination<StudentOutput>> GetPgnOf2();
+    Task<Pagination<StudentOutput>> GetPgnOfUnRegdStdntAsync(int page, int pageSize, string keyword);
+    Task<Pagination<StudentOutput>> GetPgnOfRegdStdntAsync(int page, int pageSize, string keyword);
+    Task<byte[]> ExportUnRegdStdntAsync(ExportMetadata exportMetadata);
+    Task<byte[]> ExportRegdStdntAsync(ExportMetadata exportMetadata);
+    
 }

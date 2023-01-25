@@ -10,8 +10,15 @@ using GraduateThesis.Repository.DAL;
 using GraduateThesis.Repository.DTO;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
+using MiniExcelLibs;
+using MiniExcelLibs.Attributes;
+using MiniExcelLibs.OpenXml;
+using NPOI.HSSF.UserModel;
+using NPOI.SS.UserModel;
+using NPOI.XSSF.UserModel;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -44,7 +51,8 @@ public class FacultyStaffRepository : SubRepository<FacultyStaff, FacultyStaffIn
         PaginationSelector = s => new FacultyStaffOutput
         {
             Id = s.Id,
-            FullName = s.FullName,
+            Surname = s.Surname,
+            Name = s.Name,
             Email = s.Email,
             Phone = s.Phone,
             Faculty = new FacultyOutput
@@ -60,7 +68,8 @@ public class FacultyStaffRepository : SubRepository<FacultyStaff, FacultyStaffIn
         SingleSelector = s => new FacultyStaffOutput
         {
             Id = s.Id,
-            FullName = s.FullName,
+            Surname = s.Surname,
+            Name = s.Name,
             Email = s.Email,
             Phone = s.Phone,
             Address = s.Address,
@@ -77,8 +86,9 @@ public class FacultyStaffRepository : SubRepository<FacultyStaff, FacultyStaffIn
 
         AdvancedImportSelector = s => new FacultyStaff
         {
-            Id = s[0] as string,
-            FullName = s[0] as string,
+            Id = s[1] as string,
+            Surname = s[2] as string,
+            Name = s[3] as string,
             Email = s[0] as string,
             CreatedAt = DateTime.Now
         };
@@ -97,7 +107,8 @@ public class FacultyStaffRepository : SubRepository<FacultyStaff, FacultyStaffIn
         FacultyStaff facultyStaff = new FacultyStaff
         {
             Id = input.Id,
-            FullName = input.FullName,
+            Surname = input.Surname,
+            Name = input.Name,
             Description = input.Description,
             Email = input.Email,
             Phone = input.Phone,
@@ -118,7 +129,8 @@ public class FacultyStaffRepository : SubRepository<FacultyStaff, FacultyStaffIn
             Data = new FacultyStaffOutput
             {
                 Id = input.Id,
-                FullName = input.FullName,
+                Surname = input.Surname,
+                Name = input.Name,
                 Email = input.Email
             }
         };
@@ -137,7 +149,7 @@ public class FacultyStaffRepository : SubRepository<FacultyStaff, FacultyStaffIn
                 Message = "Không tìm thấy tài khoản này!"
             };
 
-        facultyStaff.Salt = HashFunctions.GetMD5($"{facultyStaff.Id}|{facultyStaff.FullName}|{DateTime.Now}");
+        facultyStaff.Salt = HashFunctions.GetMD5($"{facultyStaff.Id}|{facultyStaff.Surname}|{facultyStaff.Name}|{DateTime.Now}");
         facultyStaff.Password = BCrypt.Net.BCrypt.HashPassword($"{newPasswordModel.Password}>>>{facultyStaff.Salt}");
 
         await _context.SaveChangesAsync();
@@ -242,17 +254,18 @@ public class FacultyStaffRepository : SubRepository<FacultyStaff, FacultyStaffIn
         int n = (page - 1) * pageSize;
         int totalItemCount = await _context.AppUserRoles
             .Where(f => f.RoleId == roleId && f.User.IsDeleted == false)
-            .Where(f => f.User.Id.Contains(keyword) || f.User.FullName.Contains(keyword) || f.User.Email.Contains(keyword))
+            .Where(f => f.User.Id.Contains(keyword) || f.User.Surname.Contains(keyword) || f.User.Name.Contains(keyword) || f.User.Email.Contains(keyword))
             .CountAsync();
 
         List<FacultyStaffOutput> onePageOfData = await _context.AppUserRoles.Include(i => i.User)
             .Where(f => f.RoleId == roleId && f.User.IsDeleted == false)
-            .Where(f => f.User.Id.Contains(keyword) || f.User.FullName.Contains(keyword) || f.User.Email.Contains(keyword))
+            .Where(f => f.User.Id.Contains(keyword) || f.User.Surname.Contains(keyword) || f.User.Name.Contains(keyword) || f.User.Email.Contains(keyword))
             .Skip(n).Take(pageSize)
             .Select(s => new FacultyStaffOutput
             {
                 Id = s.User.Id,
-                FullName = s.User.FullName,
+                Surname = s.User.Surname,
+                Name = s.User.Name,
                 Email = s.User.Email
             }).ToListAsync();
 
@@ -322,5 +335,38 @@ public class FacultyStaffRepository : SubRepository<FacultyStaff, FacultyStaffIn
             Status = DataResponseStatus.Success,
             Message = "Đã đặt ảnh đại diện mặc định thành công!"
         };
+    }
+
+    public async Task<byte[]> ExportAsync()
+    {
+        MemoryStream memoryStream = null;
+        try
+        {
+            string path = Path.Combine(_hostingEnvironment.WebRootPath, "reports", "faculty-staff_export.xlsx");
+            memoryStream = new MemoryStream();
+            int count = 1;
+
+            List<FacultyStaff> facultyStaffs = await _context.FacultyStaffs
+            .Where(f => f.IsDeleted == false).OrderBy(f => f.Name).ToListAsync();
+
+            await MiniExcel.SaveAsByTemplateAsync(memoryStream, path, new
+            {
+                Items = facultyStaffs.Select(s => new FacultyStaffExport
+                {
+                    Index = count++,
+                    Surname = s.Surname,
+                    Name = s.Name,
+                    Email = s.Email,
+                    Birthday = s.Birthday
+                }).ToList()
+            });
+
+            return memoryStream.ToArray();
+        }
+        finally
+        {
+            if (memoryStream != null)
+                memoryStream.Dispose();
+        }
     }
 }

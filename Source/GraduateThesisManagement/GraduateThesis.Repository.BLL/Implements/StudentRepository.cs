@@ -373,4 +373,26 @@ public class StudentRepository : SubRepository<Student, StudentInput, StudentOut
             Message = "Đã đặt ảnh đại diện mặc định thành công!"
         };
     }
+
+    public Task<byte[]> ExportUnRegdStdntAsync(ExportMetadata exportMetadata)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<byte[]> ExportRegdStdntAsync(ExportMetadata exportMetadata)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<Pagination<StudentOutput>> GetPgnOfUnRegdStdntAsync(int page, int pageSize, string keyword)
+    {
+
+        throw new NotImplementedException();
+    }
+
+    public Task<Pagination<StudentOutput>> GetPgnOfRegdStdntAsync(int page, int pageSize, string keyword)
+    {
+
+        throw new NotImplementedException();
+    }
 }

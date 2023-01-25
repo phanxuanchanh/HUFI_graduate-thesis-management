@@ -72,7 +72,8 @@ public class ThesisRepository : SubRepository<Thesis, ThesisInput, ThesisOutput,
             Lecturer = new FacultyStaffOutput
             {
                 Id = s.Lecture.Id,
-                FullName = s.Lecture.FullName
+                Surname = s.Lecture.Surname,
+                Name = s.Lecture.Name
             },
             ThesisGroup = (s.ThesisGroup == null) ? null : new ThesisGroupOutput
             {
@@ -124,12 +125,12 @@ public class ThesisRepository : SubRepository<Thesis, ThesisInput, ThesisOutput,
 
         thesis.CriticalLecturer = await _context.CounterArgumentResults.Include(i => i.Lecture)
             .Where(c => c.ThesisId == id && c.IsDeleted == false)
-            .Select(s => new FacultyStaffOutput { Id = s.Lecture.Id, FullName = s.Lecture.FullName })
+            .Select(s => new FacultyStaffOutput { Id = s.Lecture.Id, Surname = s.Lecture.Surname, Name = s.Lecture.Name })
             .SingleOrDefaultAsync();
 
         thesis.ThesisSupervisor = await _context.ThesisSupervisors.Include(i => i.Lecture)
             .Where(t => t.ThesisId == id && t.IsDeleted == false)
-            .Select(s => new FacultyStaffOutput { Id = s.Lecture.Id, FullName = s.Lecture.FullName })
+            .Select(s => new FacultyStaffOutput { Id = s.Lecture.Id, Surname = s.Lecture.Surname, Name = s.Lecture.Name })
             .SingleOrDefaultAsync();
 
         return thesis;
@@ -371,7 +372,8 @@ public class ThesisRepository : SubRepository<Thesis, ThesisInput, ThesisOutput,
                 Lecturer = new FacultyStaffOutput
                 {
                     Id = s.Lecture.Id,
-                    FullName = s.Lecture.FullName
+                    Surname = s.Lecture.Surname,
+                    Name = s.Lecture.Name
                 }
             }).ToListAsync();
 
@@ -404,7 +406,8 @@ public class ThesisRepository : SubRepository<Thesis, ThesisInput, ThesisOutput,
                 Lecturer = new FacultyStaffOutput
                 {
                     Id = s.Lecture.Id,
-                    FullName = s.Lecture.FullName
+                    Surname = s.Lecture.Surname,
+                    Name = s.Lecture.Name
                 }
             }).ToListAsync();
 
@@ -455,7 +458,8 @@ public class ThesisRepository : SubRepository<Thesis, ThesisInput, ThesisOutput,
                 Lecturer = new FacultyStaffOutput
                 {
                     Id = s.Lecture.Id,
-                    FullName = s.Lecture.FullName
+                    Surname = s.Lecture.Surname,
+                    Name = s.Lecture.Name
                 }
             }).ToListAsync();
 
@@ -489,7 +493,8 @@ public class ThesisRepository : SubRepository<Thesis, ThesisInput, ThesisOutput,
                 Lecturer = new FacultyStaffOutput
                 {
                     Id = s.Lecture.Id,
-                    FullName = s.Lecture.FullName
+                    Surname = s.Lecture.Surname,
+                    Name = s.Lecture.Name
                 }
             }).ToListAsync();
 
@@ -523,7 +528,8 @@ public class ThesisRepository : SubRepository<Thesis, ThesisInput, ThesisOutput,
                 Lecturer = new FacultyStaffOutput
                 {
                     Id = s.Lecture.Id,
-                    FullName = s.Lecture.FullName
+                    Surname = s.Lecture.Surname,
+                    Name = s.Lecture.Name
                 }
             }).ToListAsync();
 
@@ -557,7 +563,8 @@ public class ThesisRepository : SubRepository<Thesis, ThesisInput, ThesisOutput,
                 Lecturer = new FacultyStaffOutput
                 {
                     Id = s.Lecture.Id,
-                    FullName = s.Lecture.FullName
+                    Surname = s.Lecture.Surname,
+                    Name = s.Lecture.Name
                 }
             }).ToListAsync();
 
