@@ -129,6 +129,24 @@ public partial class GenericRepository<TEntity, TInput, TOutput>
         };
     }
 
+    public DataResponse Create(TInput input, Action<TInput, TEntity> mapToEntity, Func<TInput, DataResponse> validate)
+    {
+        DataResponse validationResponse = validate(input);
+        if (validationResponse.Status != DataResponseStatus.Success)
+            return validationResponse;
+
+        return Create(input, mapToEntity);
+    }
+
+    public DataResponse<TOutput> Create(TInput input, Action<TInput, TEntity> mapToEntity, Action<TEntity, TOutput> mapToOutput, Func<TInput, DataResponse<TOutput>> validate)
+    {
+        DataResponse<TOutput> validationResponse = validate(input);
+        if (validationResponse.Status != DataResponseStatus.Success)
+            return validationResponse;
+
+        return Create(input, mapToEntity, mapToOutput);
+    }
+
     public DataResponse BulkInsert(IEnumerable<TInput> inputs, Func<TInput, TEntity> predicate)
     {
         _dbSet.BulkInsert(_converter.To<TInput, TEntity>(inputs, predicate));
@@ -162,6 +180,51 @@ public partial class GenericRepository<TEntity, TInput, TOutput>
         TEntity entity_fromDb = _dbSet.Find(id);
         if (entity_fromDb == null)
             return new DataResponse<TOutput> { Status = DataResponseStatus.NotFound };
+
+        mapToEntity(input, entity_fromDb);
+
+        int affected = _context.SaveChanges();
+        if (affected == 0)
+            return new DataResponse<TOutput> { Status = DataResponseStatus.Failed };
+
+        TOutput output = Activator.CreateInstance<TOutput>();
+        mapToOutput(entity_fromDb, output);
+
+        return new DataResponse<TOutput>
+        {
+            Status = DataResponseStatus.Success,
+            Data = output
+        };
+    }
+
+    public DataResponse Update(object id, TInput input, Action<TInput, TEntity> mapToEntity, Func<TInput, DataResponse> validate)
+    {
+        TEntity entity_fromDb = _dbSet.Find(id);
+        if (entity_fromDb == null)
+            return new DataResponse { Status = DataResponseStatus.NotFound };
+
+        DataResponse validationResponse = validate(input);
+        if (validationResponse.Status != DataResponseStatus.Success)
+            return validationResponse;
+
+        mapToEntity(input, entity_fromDb);
+
+        int affected = _context.SaveChanges();
+        if (affected == 0)
+            return new DataResponse { Status = DataResponseStatus.Failed };
+
+        return new DataResponse { Status = DataResponseStatus.Success };
+    }
+
+    public DataResponse<TOutput> Update(object id, TInput input, Action<TInput, TEntity> mapToEntity, Action<TEntity, TOutput> mapToOutput, Func<TInput, DataResponse<TOutput>> validate)
+    {
+        TEntity entity_fromDb = _dbSet.Find(id);
+        if (entity_fromDb == null)
+            return new DataResponse<TOutput> { Status = DataResponseStatus.NotFound };
+
+        DataResponse<TOutput> validationResponse = validate(input);
+        if (validationResponse.Status != DataResponseStatus.Success)
+            return validationResponse;
 
         mapToEntity(input, entity_fromDb);
 

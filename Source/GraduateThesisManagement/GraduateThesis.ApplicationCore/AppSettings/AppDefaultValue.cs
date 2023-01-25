@@ -24,6 +24,7 @@ public class AppDefaultValue
 
     public static string AccAuthSuccessMsg = null;
     public static string AccAuthNotActivatedMsg = null;
+    public static string AccAlreadyExistsMsg = null;
     public static string AccAuthLockedMsg = null;
     public static string AccAuthWrongPwdMsg = null;
     public static string AccAuthNotFoundMsg = null;

@@ -92,6 +92,24 @@ public partial class GenericRepository<TEntity, TInput, TOutput>
         };
     }
 
+    public async Task<DataResponse> CreateAsync(TInput input, Action<TInput, TEntity> mapToEntity, Func<TInput, Task<DataResponse>> validate)
+    {
+        DataResponse validationResponse = await validate(input);
+        if (validationResponse.Status != DataResponseStatus.Success)
+            return validationResponse;
+
+        return await CreateAsync(input, mapToEntity);
+    }
+
+    public async Task<DataResponse<TOutput>> CreateAsync(TInput input, Action<TInput, TEntity> mapToEntity, Action<TEntity, TOutput> mapToOutput, Func<TInput, Task<DataResponse<TOutput>>> validate)
+    {
+        DataResponse<TOutput> validationResponse = await validate(input);
+        if (validationResponse.Status != DataResponseStatus.Success)
+            return validationResponse;
+
+        return await CreateAsync(input, mapToEntity, mapToOutput);
+    }
+
     public async Task<DataResponse> BulkInsertAsync(IEnumerable<TInput> inputs, Func<TInput, TEntity> predicate)
     {
         await _dbSet.BulkInsertAsync(_converter.To<TInput, TEntity>(inputs, predicate));
@@ -124,6 +142,51 @@ public partial class GenericRepository<TEntity, TInput, TOutput>
         TEntity entity_fromDb = await _dbSet.FindAsync(id);
         if (entity_fromDb == null)
             return new DataResponse<TOutput> { Status = DataResponseStatus.NotFound };
+
+        mapToEntity(input, entity_fromDb);
+
+        int affected = await _context.SaveChangesAsync();
+        if (affected == 0)
+            return new DataResponse<TOutput> { Status = DataResponseStatus.Failed };
+
+        TOutput output = Activator.CreateInstance<TOutput>();
+        mapToOutput(entity_fromDb, output);
+
+        return new DataResponse<TOutput>
+        {
+            Status = DataResponseStatus.Success,
+            Data = output
+        };
+    }
+
+    public async Task<DataResponse> UpdateAsync(object id, TInput input, Action<TInput, TEntity> mapToEntity, Func<TInput, Task<DataResponse>> validate)
+    {
+        TEntity entity_fromDb = await _dbSet.FindAsync(id);
+        if (entity_fromDb == null)
+            return new DataResponse { Status = DataResponseStatus.NotFound };
+
+        DataResponse validationResponse = await validate(input);
+        if (validationResponse.Status != DataResponseStatus.Success)
+            return validationResponse;
+
+        mapToEntity(input, entity_fromDb);
+
+        int affected = await _context.SaveChangesAsync();
+        if (affected == 0)
+            return new DataResponse { Status = DataResponseStatus.Failed };
+
+        return new DataResponse { Status = DataResponseStatus.Success };
+    }
+
+    public async Task<DataResponse<TOutput>> UpdateAsync(object id, TInput input, Action<TInput, TEntity> mapToEntity, Action<TEntity, TOutput> mapToOutput, Func<TInput, Task<DataResponse<TOutput>>> validate)
+    {
+        TEntity entity_fromDb = await _dbSet.FindAsync(id);
+        if (entity_fromDb == null)
+            return new DataResponse<TOutput> { Status = DataResponseStatus.NotFound };
+
+        DataResponse<TOutput> validationResponse = await validate(input);
+        if (validationResponse.Status != DataResponseStatus.Success)
+            return validationResponse;
 
         mapToEntity(input, entity_fromDb);
 
