@@ -107,7 +107,6 @@ public class StudentRepository : SubRepository<Student, StudentInput, StudentOut
             student.Birthday = DateTime.ParseExact(s[6] as string, "dd/MM/yyyy", null);
             student.Password = "default";
             student.Salt = "default";
-            student.Phone = student.Id;
 
             return student;
         };

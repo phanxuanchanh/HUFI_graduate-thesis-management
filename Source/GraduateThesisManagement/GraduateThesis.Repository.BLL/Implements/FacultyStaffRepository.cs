@@ -33,6 +33,7 @@ public class FacultyStaffRepository : SubRepository<FacultyStaff, FacultyStaffIn
         _hostingEnvironment = hostingEnvironment;
         _emailService = emailService;
         _fileManager = fileManager;
+        GenerateUidOptions = UidOptions.None;
     }
 
     protected override void ConfigureIncludes()
@@ -83,7 +84,10 @@ public class FacultyStaffRepository : SubRepository<FacultyStaff, FacultyStaffIn
             Id = s[1] as string,
             Surname = s[2] as string,
             Name = s[3] as string,
-            Email = s[0] as string,
+            Email = s[4] as string,
+            Birthday = DateTime.ParseExact(s[5] as string, "dd/MM/yyyy", null),
+            Password = "default",
+            Salt = "default",
             CreatedAt = DateTime.Now
         };
     }

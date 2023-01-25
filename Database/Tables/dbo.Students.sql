@@ -19,7 +19,6 @@ CREATE TABLE [dbo].[Students] (
   [Gender] [nvarchar](10) NULL DEFAULT (N'Nam'),
   [Surname] [nvarchar](200) NOT NULL,
   CONSTRAINT [PK_Students_ID] PRIMARY KEY CLUSTERED ([ID]),
-  UNIQUE ([Phone]),
   UNIQUE ([Email])
 )
 ON [PRIMARY]

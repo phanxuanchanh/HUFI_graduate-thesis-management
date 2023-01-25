@@ -13,6 +13,8 @@
     <form id="defaultAvatar" asp-action="SetDefaultAvatar" method="post"></form>
     <form asp-action="UpdateProfile" method="post" enctype="multipart/form-data">
         <input type="hidden" asp-for="FacultyId" value="@Model.Faculty.Id" />
+        <input type="hidden" asp-for="Surname" />
+        <input type="hidden" asp-for="Name" />
         <div class="row">
             <div class="col-xl-4">
                 <div class="card mb-4 mb-xl-0">

@@ -351,3 +351,5 @@ MigrationBackup/
 /Source/GraduateThesisManagement/GraduateThesisManagement/appsettings.Development.json
 /Source/GraduateThesisManagement/GraduateThesis.Web/appsettings.Development.json
 /Source/GraduateThesisManagement/GraduateThesis.WebApi/appsettings.Development.json
+/Source/GraduateThesisManagement/GraduateThesis.Web/wwwroot/avatar/faculty-staff
+/Source/GraduateThesisManagement/GraduateThesis.Web/wwwroot/avatar/student

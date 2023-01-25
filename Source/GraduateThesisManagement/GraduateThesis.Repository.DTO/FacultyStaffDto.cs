@@ -22,9 +22,6 @@ public class FacultyStaffInput
     [Required(ErrorMessage = "{0} không được để trống")]
     public string Name { get; set; }
 
-    [Display(Name = "Tên giảng viên")]
-    public string FullName { get { return $"{Surname.Trim(' ')} {Name.Trim(' ')}"; } }
-
     [Display(Name = "Mô tả")]
     public string Description { get; set; }
 
@@ -63,6 +60,9 @@ public class FacultyStaffInput
 
 public class FacultyStaffOutput : FacultyStaffInput
 {
+    [Display(Name = "Tên giảng viên")]
+    public string FullName { get { return $"{Surname.Trim(' ')} {Name.Trim(' ')}"; } }
+
     public DateTime? CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
     public DateTime? DeletedAt { get; set; }

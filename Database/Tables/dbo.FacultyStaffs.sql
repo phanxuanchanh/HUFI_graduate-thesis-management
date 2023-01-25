@@ -21,7 +21,8 @@
   [CodeExpTime] [datetime] NULL,
   [Surname] [nvarchar](200) NULL,
   [Name] [nvarchar](100) NULL,
-  CONSTRAINT [PK_FacultyStaff_ID] PRIMARY KEY CLUSTERED ([ID])
+  CONSTRAINT [PK_FacultyStaff_ID] PRIMARY KEY CLUSTERED ([ID]),
+  UNIQUE ([Email])
 )
 ON [PRIMARY]
 TEXTIMAGE_ON [PRIMARY]

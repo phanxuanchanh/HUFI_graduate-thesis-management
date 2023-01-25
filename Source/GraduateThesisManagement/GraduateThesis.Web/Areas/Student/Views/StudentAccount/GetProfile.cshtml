@@ -13,6 +13,8 @@
     <form id="defaultAvatar" asp-action="SetDefaultAvatar" method="post"></form>
     <form asp-action="UpdateProfile" method="post" enctype="multipart/form-data">
         <input type="hidden" asp-for="StudentClassId" value="@Model.StudentClass.Id" />
+        <input type="hidden" asp-for="Surname" />
+        <input type="hidden" asp-for="Name" />
         <div class="row">
             <div class="col-xl-4">
                 <div class="card mb-4 mb-xl-0">
@@ -37,8 +39,8 @@
                         </div>
                         <div class="row gx-3 mb-3">
                             <div class="col-md-6">
-                                <label class="small mb-1" asp-for="Name"></label>
-                                <input class="form-control" asp-for="Name" readonly />
+                                <label class="small mb-1" asp-for="FullName"></label>
+                                <input class="form-control" asp-for="FullName" readonly />
                             </div>
                             <div class="col-md-6">
                                 <label class="small mb-1" asp-for="StudentClass.Name"></label>

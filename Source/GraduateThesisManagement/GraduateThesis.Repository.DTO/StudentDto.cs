@@ -18,9 +18,6 @@ public class StudentInput
     [Required(ErrorMessage = "{0} không được để trống")]
     public string Name { get; set; }
 
-    [Display(Name = "Tên giảng viên")]
-    public string FullName { get { return $"{Surname.Trim(' ')} {Name.Trim(' ')}"; } }
-
     [Display(Name = "Số điện thoại")]
     [StringLength(maximumLength: 11, MinimumLength = 10, ErrorMessage = "Độ dài điện thoại từ 10-11 kí tự")]
     [Phone(ErrorMessage = "{0} không hợp lệ")]
@@ -55,6 +52,9 @@ public class StudentInput
 
 public class StudentOutput : StudentInput
 {
+    [Display(Name = "Tên giảng viên")]
+    public string FullName { get { return $"{Surname.Trim(' ')} {Name.Trim(' ')}"; } }
+
     public DateTime? CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
     public DateTime? DeletedAt { get; set; }

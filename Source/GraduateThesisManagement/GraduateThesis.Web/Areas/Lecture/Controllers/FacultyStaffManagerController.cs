@@ -124,8 +124,12 @@ public class FacultyStaffManagerController : WebControllerBase<IFacultyStaffRepo
     [Route("import")]
     [HttpPost]
     [PageName(Name = "Nhập dữ liệu vào hệ thống")]
-    public override async Task<IActionResult> Import(IFormFile formFile, ImportMetadata importMetadata)
+    public override async Task<IActionResult> Import([Required][FromForm] IFormFile formFile, ImportMetadata importMetadata)
     {
+        if (string.IsNullOrEmpty(importMetadata.SheetName))
+            importMetadata.SheetName = "Default";
+
+        importMetadata.StartFromRow = 2;
         return await ImportResult(formFile, importMetadata);
     }
 
