@@ -11,7 +11,6 @@ using GraduateThesis.Repository.DTO;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using MiniExcelLibs;
-using NPOI.SS.Formula.Functions;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -71,6 +70,7 @@ public class FacultyStaffRepository : AsyncSubRepository<FacultyStaff, FacultySt
             Avatar = s.Avatar,
             Birthday = s.Birthday,
             Gender = s.Gender,
+            Description = s.Description,
             Faculty = new FacultyOutput { 
                 Id = s.Faculty.Id,
                 Name = s.Faculty.Name
@@ -123,10 +123,42 @@ public class FacultyStaffRepository : AsyncSubRepository<FacultyStaff, FacultySt
         entity.Phone = input.Phone;
         entity.Address = input.Address;
         entity.Birthday = input.Birthday;
+        entity.Gender = input.Gender;
         entity.FacultyId = input.FacultyId;
         entity.Password = "default";
         entity.Salt = "default";
         entity.CreatedAt = DateTime.Now;
+    }
+
+    protected override async Task<DataResponse<FacultyStaffOutput>> ValidateOnCreateAsync(FacultyStaffInput input)
+    {
+        bool checkExists = await _context.FacultyStaffs.AnyAsync(f => f.Id == input.Id || f.Email == input.Email || f.Phone == input.Phone);
+        if (checkExists)
+            return new DataResponse<FacultyStaffOutput> { 
+                Status = DataResponseStatus.AlreadyExists,
+                Message = "Thông tin bị trùng, vui lòng kiểm tra lại mã, địa chỉ email của giảng viên!"
+            };
+
+        return new DataResponse<FacultyStaffOutput> { Status = DataResponseStatus.Success };
+    }
+
+    protected override async Task<DataResponse<FacultyStaffOutput>> ValidateOnUpdateAsync(FacultyStaffInput input)
+    {
+        bool checkExists = false;
+        if(string.IsNullOrEmpty(input.Phone))
+            checkExists = await _context.FacultyStaffs
+                .AnyAsync(f => f.Email == input.Email && f.Id != input.Id);
+        else
+            checkExists = await _context.FacultyStaffs
+                .AnyAsync(f => (f.Email == input.Email || f.Phone == input.Phone) && f.Id != input.Id);
+
+        if (checkExists)
+            return new DataResponse<FacultyStaffOutput> { 
+                Status = DataResponseStatus.AlreadyExists,
+                Message = "Thông tin bị trùng, vui lòng kiểm tra lại mã, địa chỉ email, SĐT của giảng viên!"
+            };
+
+        return new DataResponse<FacultyStaffOutput> { Status = DataResponseStatus.Success };
     }
 
     public override async Task<DataResponse> ImportAsync(Stream stream, ImportMetadata importMetadata)

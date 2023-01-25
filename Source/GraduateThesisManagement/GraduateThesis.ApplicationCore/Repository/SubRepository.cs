@@ -26,6 +26,16 @@ public abstract class SubRepository<TEntity, TInput, TOutput, T_ID>
 
     }
 
+    protected virtual DataResponse<TOutput> ValidateOnCreate(TInput input)
+    {
+        return new DataResponse<TOutput> { Status = DataResponseStatus.Success };
+    }
+
+    protected virtual DataResponse<TOutput> ValidateOnUpdate(TInput input)
+    {
+        return new DataResponse<TOutput> { Status = DataResponseStatus.Success };
+    }
+
     public virtual DataResponse BatchDelete(T_ID id)
     {
         return _genericRepository.BatchDelete(id);
@@ -38,7 +48,7 @@ public abstract class SubRepository<TEntity, TInput, TOutput, T_ID>
 
     public virtual DataResponse<TOutput> Create(TInput input)
     {
-        return _genericRepository.Create(input, SetMapperToCreate, SetOutputMapper);
+        return _genericRepository.Create(input, SetMapperToCreate, SetOutputMapper, input => ValidateOnCreate(input));
     }
 
     public virtual byte[] Export(RecordFilter recordFilter, ExportMetadata exportMetadata)
@@ -76,7 +86,7 @@ public abstract class SubRepository<TEntity, TInput, TOutput, T_ID>
 
     public virtual DataResponse<TOutput> Update(T_ID id, TInput input)
     {
-        return _genericRepository.Update(id, input, SetMapperToUpdate, SetOutputMapper);
+        return _genericRepository.Update(id, input, SetMapperToUpdate, SetOutputMapper, input => ValidateOnUpdate(input));
     }
 
     public Pagination<TOutput> GetPagination(int page, int pageSize, string orderBy, OrderOptions orderOptions, string keyword)

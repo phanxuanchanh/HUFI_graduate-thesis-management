@@ -13,7 +13,7 @@ namespace GraduateThesis.ApplicationCore.Repository;
 /// <typeparam name="T_ID"></typeparam>
 
 public abstract class AsyncSubRepository<TEntity, TInput, TOutput, T_ID>
-    : SubRepository<TEntity, TInput, TOutput, T_ID>, IAsyncSubRepository<TInput, TOutput, T_ID>
+    : SubRepositoryBase<TEntity, TInput, TOutput, T_ID>, IAsyncSubRepository<TInput, TOutput, T_ID>
     where TEntity : class
     where TInput : class
     where TOutput : class
@@ -22,6 +22,18 @@ public abstract class AsyncSubRepository<TEntity, TInput, TOutput, T_ID>
         : base(dbContext, dbSet)
     {
 
+    }
+
+    protected virtual async Task<DataResponse<TOutput>> ValidateOnCreateAsync(TInput input)
+    {
+        await Task.CompletedTask;
+        return new DataResponse<TOutput> { Status = DataResponseStatus.Success };
+    }
+
+    protected virtual async Task<DataResponse<TOutput>> ValidateOnUpdateAsync(TInput input)
+    {
+        await Task.CompletedTask;
+        return new DataResponse<TOutput> { Status = DataResponseStatus.Success };
     }
 
     public virtual async Task<DataResponse> BatchDeleteAsync(T_ID id)
@@ -36,7 +48,7 @@ public abstract class AsyncSubRepository<TEntity, TInput, TOutput, T_ID>
 
     public virtual async Task<DataResponse<TOutput>> CreateAsync(TInput input)
     {
-        return await _genericRepository.CreateAsync(input, SetMapperToCreate, SetOutputMapper);
+        return await _genericRepository.CreateAsync(input, SetMapperToCreate, SetOutputMapper, input => ValidateOnCreateAsync(input));
     }
 
     public virtual async Task<byte[]> ExportAsync(RecordFilter recordFilter, ExportMetadata exportMetadata)
@@ -98,6 +110,6 @@ public abstract class AsyncSubRepository<TEntity, TInput, TOutput, T_ID>
 
     public virtual async Task<DataResponse<TOutput>> UpdateAsync(T_ID id, TInput input)
     {
-        return await _genericRepository.UpdateAsync(id, input, SetMapperToUpdate, SetOutputMapper);
+        return await _genericRepository.UpdateAsync(id, input, SetMapperToUpdate, SetOutputMapper, input => ValidateOnUpdateAsync(input));
     }
 }

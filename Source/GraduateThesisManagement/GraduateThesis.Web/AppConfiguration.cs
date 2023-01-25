@@ -19,7 +19,7 @@ public static class AppConfiguration
 
         AppDefaultValue.AccAuthSuccessMsg = "Đã thực hiện thành công!";
         AppDefaultValue.AccAuthWrongPwdMsg = "Mật khẩu không khớp!";
-        AppDefaultValue.AlreadyExistsMsg = "Đã tồn tại tài khoản trong hệ thống!";
+        AppDefaultValue.AccAlreadyExistsMsg = "Đã tồn tại tài khoản trong hệ thống!";
         AppDefaultValue.AccAuthInvalidDataMsg = "Không hợp lệ!";
         AppDefaultValue.AccAuthLockedMsg = "Tài khoản đã bị khóa!";
         AppDefaultValue.AccAuthNotActivatedMsg = "Tài khoản chưa được kích hoạt!";

@@ -26,6 +26,8 @@ public class WebControllerBase : Controller
             ViewData["Message"] = AppDefaultValue.SuccessMsg;
         else if (dataResponseStatus == DataResponseStatus.InvalidData && !string.IsNullOrEmpty(AppDefaultValue.InvalidDataMsg))
             ViewData["Message"] = AppDefaultValue.InvalidDataMsg;
+        else if (dataResponseStatus == DataResponseStatus.AlreadyExists && !string.IsNullOrEmpty(AppDefaultValue.AlreadyExistsMsg))
+            ViewData["Message"] = AppDefaultValue.AlreadyExistsMsg;
         else if (dataResponseStatus == DataResponseStatus.NotFound && !string.IsNullOrEmpty(AppDefaultValue.NotFoundMsg))
             ViewData["Message"] = AppDefaultValue.NotFoundMsg;
         else if (dataResponseStatus == DataResponseStatus.HasConstraint && !string.IsNullOrEmpty(AppDefaultValue.HasConstraintMsg))
@@ -42,6 +44,8 @@ public class WebControllerBase : Controller
             TempData["Message"] = AppDefaultValue.SuccessMsg;
         else if (dataResponseStatus == DataResponseStatus.InvalidData && !string.IsNullOrEmpty(AppDefaultValue.InvalidDataMsg))
             TempData["Message"] = AppDefaultValue.InvalidDataMsg;
+        else if (dataResponseStatus == DataResponseStatus.AlreadyExists && !string.IsNullOrEmpty(AppDefaultValue.AlreadyExistsMsg))
+            ViewData["Message"] = AppDefaultValue.AlreadyExistsMsg;
         else if (dataResponseStatus == DataResponseStatus.NotFound && !string.IsNullOrEmpty(AppDefaultValue.NotFoundMsg))
             TempData["Message"] = AppDefaultValue.NotFoundMsg;
         else if (dataResponseStatus == DataResponseStatus.HasConstraint && !string.IsNullOrEmpty(AppDefaultValue.HasConstraintMsg))
@@ -58,6 +62,8 @@ public class WebControllerBase : Controller
             ViewData["Message"] = AppDefaultValue.AccAuthSuccessMsg;
         else if (accountStatus == AccountStatus.InvalidData && !string.IsNullOrEmpty(AppDefaultValue.AccAuthInvalidDataMsg))
             ViewData["Message"] = AppDefaultValue.AccAuthInvalidDataMsg;
+        else if (accountStatus == AccountStatus.AlreadyExists && !string.IsNullOrEmpty(AppDefaultValue.AccAlreadyExistsMsg))
+            ViewData["Message"] = AppDefaultValue.AccAlreadyExistsMsg;
         else if (accountStatus == AccountStatus.NotFound && !string.IsNullOrEmpty(AppDefaultValue.AccAuthNotFoundMsg))
             ViewData["Message"] = AppDefaultValue.AccAuthNotFoundMsg;
         else if (accountStatus == AccountStatus.WrongPassword && !string.IsNullOrEmpty(AppDefaultValue.AccAuthWrongPwdMsg))
@@ -78,6 +84,8 @@ public class WebControllerBase : Controller
             TempData["Message"] = AppDefaultValue.AccAuthSuccessMsg;
         else if (accountStatus == AccountStatus.InvalidData && !string.IsNullOrEmpty(AppDefaultValue.AccAuthInvalidDataMsg))
             TempData["Message"] = AppDefaultValue.AccAuthInvalidDataMsg;
+        else if (accountStatus == AccountStatus.AlreadyExists && !string.IsNullOrEmpty(AppDefaultValue.AccAlreadyExistsMsg))
+            ViewData["Message"] = AppDefaultValue.AccAlreadyExistsMsg;
         else if (accountStatus == AccountStatus.NotFound && !string.IsNullOrEmpty(AppDefaultValue.AccAuthNotFoundMsg))
             TempData["Message"] = AppDefaultValue.AccAuthNotFoundMsg;
         else if (accountStatus == AccountStatus.WrongPassword && !string.IsNullOrEmpty(AppDefaultValue.AccAuthWrongPwdMsg))
