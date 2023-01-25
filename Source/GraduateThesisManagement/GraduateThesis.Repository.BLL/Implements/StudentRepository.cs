@@ -10,6 +10,7 @@ using GraduateThesis.Repository.DAL;
 using GraduateThesis.Repository.DTO;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
+using MiniExcelLibs;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -44,6 +45,7 @@ public class StudentRepository : SubRepository<Student, StudentInput, StudentOut
         PaginationSelector = s => new StudentOutput
         {
             Id = s.Id,
+            Surname = s.Surname,
             Name = s.Name,
             Address = s.Address,
             StudentClass = new StudentClassOutput
@@ -59,6 +61,7 @@ public class StudentRepository : SubRepository<Student, StudentInput, StudentOut
         SingleSelector = s => new StudentOutput
         {
             Id = s.Id,
+            Surname = s.Surname,
             Name = s.Name,
             Phone = s.Phone,
             Email = s.Email,
@@ -83,11 +86,10 @@ public class StudentRepository : SubRepository<Student, StudentInput, StudentOut
             Student student = new Student();
 
             student.Id = s[1] as string;
-            student.Name = $"{s[2] as string} {s[3] as string}";
-            student.Email = s[4] as string;
-            student.Birthday = DateTime.ParseExact(s[5] as string, "dd/MM/yyyy", null);
+            student.Surname = s[2] as string;
+            student.Name = s[3] as string;
 
-            string studentClassId = s[6] as string;
+            string studentClassId = s[4] as string;
             if(!_context.StudentClasses.Any(s => s.Id == studentClassId))
             {
                 _context.StudentClasses.Add(new StudentClass
@@ -100,7 +102,9 @@ public class StudentRepository : SubRepository<Student, StudentInput, StudentOut
                 _context.SaveChanges();
             }
 
-            student.StudentClassId = s[6] as string;
+            student.StudentClassId = s[4] as string;
+            student.Email = s[5] as string;
+            student.Birthday = DateTime.ParseExact(s[6] as string, "dd/MM/yyyy", null);
             student.Password = "default";
             student.Salt = "default";
             student.Phone = student.Id;
@@ -122,6 +126,7 @@ public class StudentRepository : SubRepository<Student, StudentInput, StudentOut
         Student student = new Student
         {
             Id = input.Id,
+            Surname = input.Surname,
             Name = input.Name,
             Description = input.Description,
             Email = input.Email,
@@ -143,6 +148,7 @@ public class StudentRepository : SubRepository<Student, StudentInput, StudentOut
             Data = new StudentOutput
             {
                 Id = input.Id,
+                Surname = input.Surname,
                 Name = input.Name,
                 Email = input.Email,
             }
@@ -291,6 +297,7 @@ public class StudentRepository : SubRepository<Student, StudentInput, StudentOut
             .Take(50).Select(s => new
             {
                 Id = s.Id,
+                Surname = s.Surname,
                 Name = s.Name,
                 StudentClass = new
                 {
@@ -306,6 +313,7 @@ public class StudentRepository : SubRepository<Student, StudentInput, StudentOut
             .Select(s => new
             {
                 Id = s.Id,
+                Surname = s.Surname,
                 Name = s.Name,
                 StudentClass = new
                 {
@@ -394,5 +402,40 @@ public class StudentRepository : SubRepository<Student, StudentInput, StudentOut
     {
 
         throw new NotImplementedException();
+    }
+
+    public async Task<byte[]> ExportAsync()
+    {
+        MemoryStream memoryStream = null;
+        try
+        {
+            string path = Path.Combine(_hostingEnvironment.WebRootPath, "reports", "student_export.xlsx");
+            memoryStream = new MemoryStream();
+            int count = 1;
+
+            List<Student> students = await _context.Students.Include(i => i.StudentClass)
+            .Where(f => f.IsDeleted == false).OrderBy(f => f.Name).ToListAsync();
+
+            await MiniExcel.SaveAsByTemplateAsync(memoryStream, path, new
+            {
+                Items = students.Select(s => new StudentExport
+                {
+                    Index = count++,
+                    Id = s.Id,
+                    Surname = s.Surname,
+                    Name = s.Name,
+                    ClassName = s.StudentClass.Name,
+                    Email = s.Email,
+                    Birthday = s.Birthday
+                }).ToList()
+            });
+
+            return memoryStream.ToArray();
+        }
+        finally
+        {
+            if (memoryStream != null)
+                memoryStream.Dispose();
+        }
     }
 }

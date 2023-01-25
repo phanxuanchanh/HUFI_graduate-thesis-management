@@ -13,6 +13,7 @@ public interface IStudentRepository : ISubRepository<StudentInput, StudentOutput
     Task<object> GetForThesisRegAsync(string studentId);
     Task<Pagination<StudentOutput>> GetPgnOfUnRegdStdntAsync(int page, int pageSize, string keyword);
     Task<Pagination<StudentOutput>> GetPgnOfRegdStdntAsync(int page, int pageSize, string keyword);
+    Task<byte[]> ExportAsync();
     Task<byte[]> ExportUnRegdStdntAsync(ExportMetadata exportMetadata);
     Task<byte[]> ExportRegdStdntAsync(ExportMetadata exportMetadata);
     

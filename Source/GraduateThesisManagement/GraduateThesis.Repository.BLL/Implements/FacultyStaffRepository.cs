@@ -11,14 +11,8 @@ using GraduateThesis.Repository.DTO;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using MiniExcelLibs;
-using MiniExcelLibs.Attributes;
-using MiniExcelLibs.OpenXml;
-using NPOI.HSSF.UserModel;
-using NPOI.SS.UserModel;
-using NPOI.XSSF.UserModel;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -354,6 +348,7 @@ public class FacultyStaffRepository : SubRepository<FacultyStaff, FacultyStaffIn
                 Items = facultyStaffs.Select(s => new FacultyStaffExport
                 {
                     Index = count++,
+                    Id = s.Id,
                     Surname = s.Surname,
                     Name = s.Name,
                     Email = s.Email,
