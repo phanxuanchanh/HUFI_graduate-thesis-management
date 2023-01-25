@@ -149,6 +149,42 @@ public class StudentRepository : AsyncSubRepository<Student, StudentInput, Stude
         entity.CreatedAt = DateTime.Now;
     }
 
+    protected override async Task<DataResponse<StudentOutput>> ValidateOnCreateAsync(StudentInput input)
+    {
+        bool checkExists = false;
+        if(string.IsNullOrEmpty(input.Phone))
+            checkExists = await _context.Students.AnyAsync(s => s.Id == input.Id || s.Email == input.Email);
+        else
+            checkExists = await _context.Students.AnyAsync(s => s.Id == input.Id || s.Email == input.Email || s.Phone == input.Phone);
+
+        if (checkExists)
+            return new DataResponse<StudentOutput>
+            {
+                Status = DataResponseStatus.AlreadyExists,
+                Message = "Thông tin bị trùng, vui lòng kiểm tra lại mã, địa chỉ email, SĐT của sinh viên!"
+            };
+
+        return new DataResponse<StudentOutput> { Status = DataResponseStatus.Success };
+    }
+
+    protected override async Task<DataResponse<StudentOutput>> ValidateOnUpdateAsync(StudentInput input)
+    {
+        bool checkExists = false;
+        if (string.IsNullOrEmpty(input.Phone))
+            checkExists = await _context.Students.AnyAsync(s => s.Email == input.Email && s.Id != input.Id);
+        else
+            checkExists = await _context.Students.AnyAsync(s => (s.Email == input.Email || s.Phone == input.Phone) && s.Id != input.Id);
+
+        if (checkExists)
+            return new DataResponse<StudentOutput>
+            {
+                Status = DataResponseStatus.AlreadyExists,
+                Message = "Thông tin bị trùng, vui lòng kiểm tra lại mã, địa chỉ email, SĐT của sinh viên!"
+            };
+
+        return new DataResponse<StudentOutput> { Status = DataResponseStatus.Success };
+    }
+
     public override async Task<DataResponse> ImportAsync(Stream stream, ImportMetadata importMetadata)
     {
         return await _genericRepository.ImportAsync(stream, importMetadata, new ImportSelector<Student>

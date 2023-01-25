@@ -48,14 +48,7 @@ public class FacultyStaffRepository : AsyncSubRepository<FacultyStaff, FacultySt
             Surname = s.Surname,
             Name = s.Name,
             Email = s.Email,
-            Phone = s.Phone,
-            Faculty = new FacultyOutput
-            {
-                Id = s.Faculty.Id,
-                Name = s.Faculty.Name
-            },
-            CreatedAt = s.CreatedAt,
-            UpdatedAt = s.UpdatedAt
+            CreatedAt = s.CreatedAt
         };
 
         ListSelector = PaginationSelector;
@@ -132,7 +125,12 @@ public class FacultyStaffRepository : AsyncSubRepository<FacultyStaff, FacultySt
 
     protected override async Task<DataResponse<FacultyStaffOutput>> ValidateOnCreateAsync(FacultyStaffInput input)
     {
-        bool checkExists = await _context.FacultyStaffs.AnyAsync(f => f.Id == input.Id || f.Email == input.Email || f.Phone == input.Phone);
+        bool checkExists = false;
+        if (string.IsNullOrEmpty(input.Phone))
+            checkExists = await _context.FacultyStaffs.AnyAsync(f => f.Id == input.Id || f.Email == input.Email);
+        else
+            checkExists = await _context.FacultyStaffs.AnyAsync(f => f.Id == input.Id || f.Email == input.Email || f.Phone == input.Phone);
+
         if (checkExists)
             return new DataResponse<FacultyStaffOutput> { 
                 Status = DataResponseStatus.AlreadyExists,
