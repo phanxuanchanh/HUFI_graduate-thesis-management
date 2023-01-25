@@ -25,12 +25,12 @@ public abstract class ApiControllerBase<TSubRepository, TInput, TOutput, T_ID> :
     where TInput : class
     where TOutput : class
 {
-    private readonly ISubRepository<TInput, TOutput, T_ID> _subRepository;
+    private readonly IAsyncSubRepository<TInput, TOutput, T_ID> _asyncSubRepository;
     private readonly IFileManager _fileManager;
 
     public ApiControllerBase(TSubRepository subRepository, IFileManager fileManager)
     {
-        _subRepository = (subRepository as ISubRepository<TInput, TOutput, T_ID>);
+        _asyncSubRepository = (subRepository as IAsyncSubRepository<TInput, TOutput, T_ID>);
         _fileManager = fileManager;
     }
 
@@ -50,19 +50,19 @@ public abstract class ApiControllerBase<TSubRepository, TInput, TOutput, T_ID> :
     [NonAction]
     protected async Task<IActionResult> GetPaginationResult(Pagination<TOutput> pagination)
     {
-        return Ok(await _subRepository.GetPaginationAsync(pagination));
+        return Ok(await _asyncSubRepository.GetPaginationAsync(pagination));
     }
 
     [NonAction]
     protected async Task<IActionResult> GetListResult(int count)
     {
-        return Ok(await _subRepository.GetListAsync(count));
+        return Ok(await _asyncSubRepository.GetListAsync(count));
     }
 
     [NonAction]
     protected virtual async Task<IActionResult> GetDetailsResult(T_ID id)
     {
-        TOutput output = await _subRepository.GetAsync(id);
+        TOutput output = await _asyncSubRepository.GetAsync(id);
         if (output == null)
             return NotFound();
 
@@ -72,35 +72,35 @@ public abstract class ApiControllerBase<TSubRepository, TInput, TOutput, T_ID> :
     [NonAction]
     protected virtual async Task<IActionResult> CreateResult(TInput input)
     {
-        DataResponse<TOutput> dataResponse = await _subRepository.CreateAsync(input);
+        DataResponse<TOutput> dataResponse = await _asyncSubRepository.CreateAsync(input);
         return GetApiResult(dataResponse);
     }
 
     [NonAction]
     protected virtual async Task<IActionResult> UpdateResult(T_ID id, [FromBody] TInput input)
     {
-        DataResponse<TOutput> dataResponse = await _subRepository.UpdateAsync(id, input);
+        DataResponse<TOutput> dataResponse = await _asyncSubRepository.UpdateAsync(id, input);
         return GetApiResult(dataResponse);
     }
 
     [NonAction]
     protected virtual async Task<IActionResult> BatchDeleteResult(T_ID id)
     {
-        DataResponse dataResponse = await _subRepository.BatchDeleteAsync(id);
+        DataResponse dataResponse = await _asyncSubRepository.BatchDeleteAsync(id);
         return GetApiResult(dataResponse);
     }
 
     [NonAction]
     protected virtual async Task<IActionResult> ForceDeleteResult(T_ID id)
     {
-        DataResponse dataResponse = await _subRepository.ForceDeleteAsync(id);
+        DataResponse dataResponse = await _asyncSubRepository.ForceDeleteAsync(id);
         return GetApiResult(dataResponse);
     }
 
     [NonAction]
     protected async Task<IActionResult> ExportResult(ExportMetadata exportMetadata)
     {
-        byte[] bytes = await _subRepository.ExportAsync(null, exportMetadata);
+        byte[] bytes = await _asyncSubRepository.ExportAsync(null, exportMetadata);
 
         string fileExtension = _fileManager.GetExtension(exportMetadata.TypeOptions);
         string fileName = $"{exportMetadata.FileName}_{DateTime.Now.ToString("ddMMyyyy_hhmmss")}.{fileExtension}";
@@ -114,7 +114,7 @@ public abstract class ApiControllerBase<TSubRepository, TInput, TOutput, T_ID> :
         MemoryStream memoryStream = null;
         try
         {
-            DataResponse dataResponse = await _subRepository.ImportAsync(memoryStream, new ImportMetadata());
+            DataResponse dataResponse = await _asyncSubRepository.ImportAsync(memoryStream, new ImportMetadata());
             return Ok(dataResponse);
         }
         finally

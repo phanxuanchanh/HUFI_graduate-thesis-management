@@ -11,6 +11,7 @@ using GraduateThesis.Repository.DTO;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using MiniExcelLibs;
+using NPOI.SS.Formula.Functions;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -19,7 +20,7 @@ using System.Threading.Tasks;
 
 namespace GraduateThesis.Repository.BLL.Implements;
 
-public class FacultyStaffRepository : SubRepository<FacultyStaff, FacultyStaffInput, FacultyStaffOutput, string>, IFacultyStaffRepository
+public class FacultyStaffRepository : AsyncSubRepository<FacultyStaff, FacultyStaffInput, FacultyStaffOutput, string>, IFacultyStaffRepository
 {
     private HufiGraduateThesisContext _context;
     private IHostingEnvironment _hostingEnvironment;
@@ -33,7 +34,6 @@ public class FacultyStaffRepository : SubRepository<FacultyStaff, FacultyStaffIn
         _hostingEnvironment = hostingEnvironment;
         _emailService = emailService;
         _fileManager = fileManager;
-        GenerateUidOptions = UidOptions.None;
     }
 
     protected override void ConfigureIncludes()
@@ -92,46 +92,49 @@ public class FacultyStaffRepository : SubRepository<FacultyStaff, FacultyStaffIn
         };
     }
 
+    protected override void SetOutputMapper(FacultyStaff entity, FacultyStaffOutput output)
+    {
+        output.Id = entity.Id;
+        output.Surname = entity.Surname;
+        output.Name = entity.Name;
+        output.Email = entity.Email;
+    }
+
+    protected override void SetMapperToUpdate(FacultyStaffInput input, FacultyStaff entity)
+    {
+        entity.Surname = input.Surname;
+        entity.Name = input.Name;
+        entity.Description = input.Description;
+        entity.Email = input.Email;
+        entity.Phone = input.Phone;
+        entity.Address = input.Address;
+        entity.Birthday = input.Birthday;
+        entity.FacultyId = input.FacultyId;
+        entity.UpdatedAt = DateTime.Now;
+    }
+
+    protected override void SetMapperToCreate(FacultyStaffInput input, FacultyStaff entity)
+    {
+        entity.Id = input.Id;
+        entity.Surname = input.Surname;
+        entity.Name = input.Name;
+        entity.Description = input.Description;
+        entity.Email = input.Email;
+        entity.Phone = input.Phone;
+        entity.Address = input.Address;
+        entity.Birthday = input.Birthday;
+        entity.FacultyId = input.FacultyId;
+        entity.Password = "default";
+        entity.Salt = "default";
+        entity.CreatedAt = DateTime.Now;
+    }
+
     public override async Task<DataResponse> ImportAsync(Stream stream, ImportMetadata importMetadata)
     {
         return await _genericRepository.ImportAsync(stream, importMetadata, new ImportSelector<FacultyStaff>
         {
             AdvancedImportSpreadsheet = AdvancedImportSelector
         });
-    }
-
-    public override async Task<DataResponse<FacultyStaffOutput>> CreateAsync(FacultyStaffInput input)
-    {
-        FacultyStaff facultyStaff = new FacultyStaff
-        {
-            Id = input.Id,
-            Surname = input.Surname,
-            Name = input.Name,
-            Description = input.Description,
-            Email = input.Email,
-            Phone = input.Phone,
-            Address = input.Address,
-            Birthday = input.Birthday,
-            FacultyId = input.FacultyId,
-            Password = "default",
-            Salt = "default",
-            CreatedAt = DateTime.Now
-        };
-
-        await _context.FacultyStaffs.AddAsync(facultyStaff);
-        await _context.SaveChangesAsync();
-
-        return new DataResponse<FacultyStaffOutput>
-        {
-            Status = DataResponseStatus.Success,
-            Data = new FacultyStaffOutput
-            {
-                Id = input.Id,
-                Surname = input.Surname,
-                Name = input.Name,
-                Email = input.Email
-            }
-        };
     }
 
     public async Task<ForgotPasswordModel> CreateNewPasswordAsync(NewPasswordModel newPasswordModel)

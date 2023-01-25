@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace GraduateThesis.Repository.BLL.Interfaces;
 
-public interface IAppRoleRepository : ISubRepository<AppRoleInput, AppRoleOutput, string>
+public interface IAppRoleRepository : IAsyncSubRepository<AppRoleInput, AppRoleOutput, string>
 {
     Task<DataResponse> GrantToUserAsync(AppUserRoleInput input);
     Task<DataResponse> RevokeFromUserAsync(AppUserRoleInput input);

@@ -1,6 +1,5 @@
 ﻿using GraduateThesis.ApplicationCore.Enums;
 using GraduateThesis.ApplicationCore.Models;
-using GraduateThesis.ApplicationCore.Uuid;
 using GraduateThesis.ExtensionMethods;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
@@ -58,39 +57,38 @@ public partial class GenericRepository<TEntity, TInput, TOutput>
 
     #region create new records methods
 
-    public async Task<DataResponse<TOutput>> CreateAsync(TInput input, UidOptions uidOptions)
+    public async Task<DataResponse> CreateAsync(TInput input, Action<TInput, TEntity> mapToEntity)
     {
-        TEntity entity = _converter.To<TInput, TEntity>(input);
-        Type entityType = entity.GetType();
+        TEntity entity = Activator.CreateInstance<TEntity>();
 
-        PropertyInfo idPropertyInfo = entityType.GetProperty("Id");
-        if (idPropertyInfo == null)
-            return new DataResponse<TOutput>
-            {
-                Status = DataResponseStatus.Failed,
-                Message = "Property named 'ID' not found"
-            };
+        mapToEntity(input, entity);
+        _dbSet.Add(entity);
 
-        if (idPropertyInfo.PropertyType == typeof(string) && uidOptions == UidOptions.ShortUid)
-            idPropertyInfo.SetValue(entity, UidHelper.GetShortUid());
+        int affected = await _context.SaveChangesAsync();
+        if (affected == 0)
+            return new DataResponse { Status = DataResponseStatus.Failed };
 
-        if (idPropertyInfo.PropertyType == typeof(string) && uidOptions == UidOptions.MicrosoftUid)
-            idPropertyInfo.SetValue(entity, UidHelper.GetMicrosoftUid());
+        return new DataResponse { Status = DataResponseStatus.Success };
+    }
 
-        PropertyInfo createdAtPropertyInfo = entityType.GetProperty("CreatedAt");
-        if (createdAtPropertyInfo != null)
-            createdAtPropertyInfo.SetValue(entity, DateTime.Now);
+    public async Task<DataResponse<TOutput>> CreateAsync(TInput input, Action<TInput, TEntity> mapToEntity, Action<TEntity, TOutput> mapToOutput)
+    {
+        TEntity entity = Activator.CreateInstance<TEntity>();
 
+        mapToEntity(input, entity);
         _dbSet.Add(entity);
 
         int affected = await _context.SaveChangesAsync();
         if (affected == 0)
             return new DataResponse<TOutput> { Status = DataResponseStatus.Failed };
 
+        TOutput output = Activator.CreateInstance<TOutput>();
+        mapToOutput(entity, output);
+
         return new DataResponse<TOutput>
         {
             Status = DataResponseStatus.Success,
-            Data = _converter.To<TEntity, TOutput>(entity)
+            Data = output
         };
     }
 
@@ -106,32 +104,40 @@ public partial class GenericRepository<TEntity, TInput, TOutput>
 
     #region update records methods
 
-    public async Task<DataResponse<TOutput>> UpdateAsync(object id, TInput input)
+    public async Task<DataResponse> UpdateAsync(object id, TInput input, Action<TInput, TEntity> mapToEntity)
+    {
+        TEntity entity_fromDb = await _dbSet.FindAsync(id);
+        if (entity_fromDb == null)
+            return new DataResponse { Status = DataResponseStatus.NotFound };
+
+        mapToEntity(input, entity_fromDb);
+
+        int affected = await _context.SaveChangesAsync();
+        if (affected == 0)
+            return new DataResponse { Status = DataResponseStatus.Failed };
+
+        return new DataResponse { Status = DataResponseStatus.Success };
+    }
+
+    public async Task<DataResponse<TOutput>> UpdateAsync(object id, TInput input, Action<TInput, TEntity> mapToEntity, Action<TEntity, TOutput> mapToOutput)
     {
         TEntity entity_fromDb = await _dbSet.FindAsync(id);
         if (entity_fromDb == null)
             return new DataResponse<TOutput> { Status = DataResponseStatus.NotFound };
 
-        Type entityType = entity_fromDb.GetType();
-        foreach (PropertyInfo inputProperty in input.GetType().GetProperties())
-        {
-            PropertyInfo entityPropertyInfo = entityType.GetProperty(inputProperty.Name);
-            if (entityPropertyInfo != null)
-                entityPropertyInfo.SetValue(entity_fromDb, inputProperty.GetValue(input));
-        }
-
-        PropertyInfo updatedAtPropertyInfo = entityType.GetProperty("UpdatedAt");
-        if (updatedAtPropertyInfo != null)
-            updatedAtPropertyInfo.SetValue(entity_fromDb, DateTime.Now);
+        mapToEntity(input, entity_fromDb);
 
         int affected = await _context.SaveChangesAsync();
         if (affected == 0)
             return new DataResponse<TOutput> { Status = DataResponseStatus.Failed };
 
+        TOutput output = Activator.CreateInstance<TOutput>();
+        mapToOutput(entity_fromDb, output);
+
         return new DataResponse<TOutput>
         {
             Status = DataResponseStatus.Success,
-            Data = _converter.To<TEntity, TOutput>(entity_fromDb)
+            Data = output
         };
     }
 

@@ -19,7 +19,7 @@ using System.Threading.Tasks;
 
 namespace GraduateThesis.Repository.BLL.Implements;
 
-public class StudentRepository : SubRepository<Student, StudentInput, StudentOutput, string>, IStudentRepository
+public class StudentRepository : AsyncSubRepository<Student, StudentInput, StudentOutput, string>, IStudentRepository
 {
     private HufiGraduateThesisContext _context;
     private IHostingEnvironment _hostingEnvironment;
@@ -112,46 +112,49 @@ public class StudentRepository : SubRepository<Student, StudentInput, StudentOut
         };
     }
 
+    protected override void SetOutputMapper(Student entity, StudentOutput output)
+    {
+        output.Id = entity.Id;
+        output.Surname = entity.Surname;
+        output.Name = entity.Name;
+        output.Email = entity.Email;
+    }
+
+    protected override void SetMapperToUpdate(StudentInput input, Student entity)
+    {
+        entity.Surname = input.Surname;
+        entity.Name = input.Name;
+        entity.Description = input.Description;
+        entity.Email = input.Email;
+        entity.Phone = input.Phone;
+        entity.Address = input.Address;
+        entity.Birthday = input.Birthday;
+        entity.StudentClassId = input.StudentClassId;
+        entity.UpdatedAt = DateTime.Now;
+    }
+
+    protected override void SetMapperToCreate(StudentInput input, Student entity)
+    {
+        entity.Id = input.Id;
+        entity.Surname = input.Surname;
+        entity.Name = input.Name;
+        entity.Description = input.Description;
+        entity.Email = input.Email;
+        entity.Phone = input.Phone;
+        entity.Address = input.Address;
+        entity.Birthday = input.Birthday;
+        entity.StudentClassId = input.StudentClassId;
+        entity.Password = "default";
+        entity.Salt = "default";
+        entity.CreatedAt = DateTime.Now;
+    }
+
     public override async Task<DataResponse> ImportAsync(Stream stream, ImportMetadata importMetadata)
     {
         return await _genericRepository.ImportAsync(stream, importMetadata, new ImportSelector<Student>
         {
             AdvancedImportSpreadsheet = AdvancedImportSelector
         });
-    }
-
-    public override async Task<DataResponse<StudentOutput>> CreateAsync(StudentInput input)
-    {
-        Student student = new Student
-        {
-            Id = input.Id,
-            Surname = input.Surname,
-            Name = input.Name,
-            Description = input.Description,
-            Email = input.Email,
-            Phone = input.Phone,
-            Address = input.Address,
-            Birthday = input.Birthday,
-            StudentClassId = input.StudentClassId,
-            Password = "default",
-            Salt = "default",
-            CreatedAt = DateTime.Now
-        };
-
-        await _context.Students.AddAsync(student);
-        await _context.SaveChangesAsync();
-
-        return new DataResponse<StudentOutput>
-        {
-            Status = DataResponseStatus.Success,
-            Data = new StudentOutput
-            {
-                Id = input.Id,
-                Surname = input.Surname,
-                Name = input.Name,
-                Email = input.Email,
-            }
-        };
     }
 
     public async Task<ForgotPasswordModel> CreateNewPasswordAsync(NewPasswordModel newPasswordModel)

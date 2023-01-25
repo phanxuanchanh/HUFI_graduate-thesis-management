@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace GraduateThesis.Repository.BLL.Interfaces;
 
-public interface IStudentRepository : ISubRepository<StudentInput, StudentOutput, string>, IAsyncAccountPattern
+public interface IStudentRepository : IAsyncSubRepository<StudentInput, StudentOutput, string>, IAsyncAccountPattern
 {
     Task<DataResponse> UpdateProfileAsync(StudentInput input, FileUploadModel avtUploadModel);
     Task<DataResponse> SetDefaultAvatarAsync(string studentId);

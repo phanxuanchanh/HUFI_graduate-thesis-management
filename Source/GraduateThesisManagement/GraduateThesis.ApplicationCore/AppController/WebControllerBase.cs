@@ -201,11 +201,11 @@ public abstract class WebControllerBase<TSubRepository, TInput, TOutput, T_ID> :
     where TInput : class
     where TOutput : class
 {
-    private readonly ISubRepository<TInput, TOutput, T_ID> _subRepository;
+    private readonly IAsyncSubRepository<TInput, TOutput, T_ID> _asyncSubRepository;
 
     public WebControllerBase(TSubRepository subRepository)
     {
-        _subRepository = (subRepository as ISubRepository<TInput, TOutput, T_ID>);
+        _asyncSubRepository = (subRepository as IAsyncSubRepository<TInput, TOutput, T_ID>);
     }
 
     [NonAction]
@@ -220,7 +220,7 @@ public abstract class WebControllerBase<TSubRepository, TInput, TOutput, T_ID> :
             SearchKeyword = keyword
         };
 
-        Pagination<TOutput> pagination = await _subRepository.GetPaginationAsync(paginationInput);
+        Pagination<TOutput> pagination = await _asyncSubRepository.GetPaginationAsync(paginationInput);
         StaticPagedList<TOutput> pagedList = new StaticPagedList<TOutput>(pagination.Items, page, pageSize, pagination.TotalItemCount);
         
         ViewData["PagedList"] = pagedList;
@@ -234,13 +234,13 @@ public abstract class WebControllerBase<TSubRepository, TInput, TOutput, T_ID> :
     [NonAction]
     protected async Task<IActionResult> GetTrashResult(int count)
     {
-        return View(await _subRepository.GetTrashAsync(count));
+        return View(await _asyncSubRepository.GetTrashAsync(count));
     }
 
     [NonAction]
     protected async Task<IActionResult> GetDetailsResult(T_ID id)
     {
-        TOutput output = await _subRepository.GetAsync(id);
+        TOutput output = await _asyncSubRepository.GetAsync(id);
         if (output == null)
             return RedirectToAction("Index");
 
@@ -260,7 +260,7 @@ public abstract class WebControllerBase<TSubRepository, TInput, TOutput, T_ID> :
         await LoadSelectListAsync();
         if (ModelState.IsValid)
         {
-            DataResponse<TOutput> dataResponse = await _subRepository.CreateAsync(input);
+            DataResponse<TOutput> dataResponse = await _asyncSubRepository.CreateAsync(input);
             AddViewData(dataResponse);
 
             return View(input);
@@ -273,7 +273,7 @@ public abstract class WebControllerBase<TSubRepository, TInput, TOutput, T_ID> :
     [NonAction]
     protected async Task<IActionResult> EditResult(T_ID id)
     {
-        TOutput output = await _subRepository.GetAsync(id);
+        TOutput output = await _asyncSubRepository.GetAsync(id);
         if (output == null)
             return RedirectToAction("Index");
 
@@ -288,7 +288,7 @@ public abstract class WebControllerBase<TSubRepository, TInput, TOutput, T_ID> :
         await LoadSelectListAsync();
         if (ModelState.IsValid)
         {
-            DataResponse<TOutput> dataResponse = await _subRepository.UpdateAsync(id, input);
+            DataResponse<TOutput> dataResponse = await _asyncSubRepository.UpdateAsync(id, input);
             AddViewData(dataResponse);
             return View(input);
         }
@@ -300,7 +300,7 @@ public abstract class WebControllerBase<TSubRepository, TInput, TOutput, T_ID> :
     [NonAction]
     protected async Task<IActionResult> BatchDeleteResult([Required] T_ID id)
     {
-        DataResponse dataResponse = await _subRepository.BatchDeleteAsync(id);
+        DataResponse dataResponse = await _asyncSubRepository.BatchDeleteAsync(id);
         AddTempData(dataResponse);
 
         return RedirectToAction("Index");
@@ -309,7 +309,7 @@ public abstract class WebControllerBase<TSubRepository, TInput, TOutput, T_ID> :
     [NonAction]
     protected async Task<IActionResult> ForceDeleteResult([Required] T_ID id)
     {
-        DataResponse dataResponse = await _subRepository.ForceDeleteAsync(id);
+        DataResponse dataResponse = await _asyncSubRepository.ForceDeleteAsync(id);
         AddTempData(dataResponse);
 
         return RedirectToAction("GetTrash");
@@ -318,7 +318,7 @@ public abstract class WebControllerBase<TSubRepository, TInput, TOutput, T_ID> :
     [NonAction]
     protected async Task<IActionResult> RestoreResult([Required] T_ID id)
     {
-        DataResponse dataResponse = await _subRepository.RestoreAsync(id);
+        DataResponse dataResponse = await _asyncSubRepository.RestoreAsync(id);
         AddTempData(dataResponse);
 
         return RedirectToAction("GetTrash");
@@ -336,7 +336,7 @@ public abstract class WebControllerBase<TSubRepository, TInput, TOutput, T_ID> :
     [NonAction]
     protected async Task<IActionResult> ExportResult(RecordFilter recordFilter, ExportMetadata exportMetadata)
     {
-        return File(await _subRepository.ExportAsync(recordFilter, exportMetadata), ContentTypeConsts.XLSX);
+        return File(await _asyncSubRepository.ExportAsync(recordFilter, exportMetadata), ContentTypeConsts.XLSX);
     }
 
     [NonAction]
@@ -362,7 +362,7 @@ public abstract class WebControllerBase<TSubRepository, TInput, TOutput, T_ID> :
         {
             memoryStream = new MemoryStream();
             await formFile.CopyToAsync(memoryStream);
-            DataResponse dataResponse = await _subRepository.ImportAsync(memoryStream, importMetadata);
+            DataResponse dataResponse = await _asyncSubRepository.ImportAsync(memoryStream, importMetadata);
             AddViewData(dataResponse);
 
             return View();

@@ -5,7 +5,7 @@ using GraduateThesis.Repository.DTO;
 
 namespace GraduateThesis.Repository.BLL.Implements;
 
-public class ThesisCommitteeRepository : SubRepository<ThesisCommittee, ThesisCommitteeInput, ThesisCommitteeOutput, string>, IThesisCommitteeRepository
+public class ThesisCommitteeRepository : AsyncSubRepository<ThesisCommittee, ThesisCommitteeInput, ThesisCommitteeOutput, string>, IThesisCommitteeRepository
 {
     private HufiGraduateThesisContext _context;
 
@@ -36,5 +36,20 @@ public class ThesisCommitteeRepository : SubRepository<ThesisCommittee, ThesisCo
             Name = s.Name,
             Description = s.Description,
         };
+    }
+
+    protected override void SetMapperToCreate(ThesisCommitteeInput input, ThesisCommittee entity)
+    {
+        
+    }
+
+    protected override void SetMapperToUpdate(ThesisCommitteeInput input, ThesisCommittee entity)
+    {
+        
+    }
+
+    protected override void SetOutputMapper(ThesisCommittee entity, ThesisCommitteeOutput output)
+    {
+        
     }
 }

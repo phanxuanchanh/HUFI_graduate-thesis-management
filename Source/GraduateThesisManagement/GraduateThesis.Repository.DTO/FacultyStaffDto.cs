@@ -38,7 +38,8 @@ public class FacultyStaffInput
     public string Address { get; set; }
 
     [Display(Name = "Email")]
-    [EmailAddress]
+    [EmailAddress(ErrorMessage = "{0} không hợp lệ")]
+    [Required(ErrorMessage = "{0} không được để trống")]
     public string Email { get; set; }
 
     [Display(Name = "Ngày sinh")]

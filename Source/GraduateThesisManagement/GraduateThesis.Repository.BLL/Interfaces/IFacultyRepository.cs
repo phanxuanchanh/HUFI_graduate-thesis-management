@@ -3,6 +3,6 @@ using GraduateThesis.Repository.DTO;
 
 namespace GraduateThesis.Repository.BLL.Interfaces;
 
-public interface IFacultyRepository : ISubRepository<FacultyInput, FacultyOutput, string>
+public interface IFacultyRepository : IAsyncSubRepository<FacultyInput, FacultyOutput, string>
 {
 }

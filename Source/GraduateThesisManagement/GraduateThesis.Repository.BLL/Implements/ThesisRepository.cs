@@ -19,7 +19,7 @@ using X.PagedList;
 
 namespace GraduateThesis.Repository.BLL.Implements;
 
-public class ThesisRepository : SubRepository<Thesis, ThesisInput, ThesisOutput, string>, IThesisRepository
+public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOutput, string>, IThesisRepository
 {
     private HufiGraduateThesisContext _context;
     private IEmailService _emailService;
@@ -29,7 +29,6 @@ public class ThesisRepository : SubRepository<Thesis, ThesisInput, ThesisOutput,
     {
         _context = context;
         _emailService = emailService;
-        GenerateUidOptions = UidOptions.ShortUid;
     }
 
     protected override void ConfigureIncludes()
@@ -107,6 +106,45 @@ public class ThesisRepository : SubRepository<Thesis, ThesisInput, ThesisOutput,
 
             return null;
         };
+    }
+
+    protected override void SetOutputMapper(Thesis entity, ThesisOutput output)
+    {
+        output.Id = entity.Id;
+        output.Name = entity.Name;
+    }
+
+    protected override void SetMapperToUpdate(ThesisInput input, Thesis entity)
+    {
+        entity.Name = input.Name;
+        entity.Description = input.Description;
+        entity.MaxStudentNumber = input.MaxStudentNumber;
+        entity.Credits = input.Credits;
+        entity.Year = input.Year;
+        entity.TopicId = input.TopicId;
+        entity.TrainingFormId = input.TrainingFormId;
+        entity.TrainingLevelId = input.TrainingLevelId;
+        entity.SpecializationId = input.SpecializationId;
+        entity.DateFrom = input.DateFrom;
+        entity.DateTo = input.DateTo;
+        entity.Semester = input.Semester;
+        entity.UpdatedAt = DateTime.Now;
+    }
+
+    protected override void SetMapperToCreate(ThesisInput input, Thesis entity)
+    {
+        entity.Id = UidHelper.GetShortUid();
+        entity.Name = input.Name;
+        entity.Description = input.Description;
+        entity.MaxStudentNumber = input.MaxStudentNumber;
+        entity.Credits = input.Credits;
+        entity.Year = input.Year;
+        entity.TopicId = input.TopicId;
+        entity.TrainingFormId = input.TrainingFormId;
+        entity.TrainingLevelId = input.TrainingLevelId;
+        entity.SpecializationId = input.SpecializationId;
+        entity.Semester = input.Semester;
+        entity.CreatedAt = DateTime.Now;
     }
 
     public override async Task<DataResponse> ImportAsync(Stream stream, ImportMetadata importMetadata)

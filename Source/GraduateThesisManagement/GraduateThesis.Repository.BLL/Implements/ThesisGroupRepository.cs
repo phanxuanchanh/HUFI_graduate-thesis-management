@@ -1,17 +1,19 @@
 ﻿using GraduateThesis.ApplicationCore.Enums;
 using GraduateThesis.ApplicationCore.Models;
 using GraduateThesis.ApplicationCore.Repository;
+using GraduateThesis.ApplicationCore.Uuid;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DAL;
 using GraduateThesis.Repository.DTO;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace GraduateThesis.Repository.BLL.Implements;
 
-public class ThesisGroupRepository : SubRepository<ThesisGroup, ThesisGroupInput, ThesisGroupOutput, string>, IThesisGroupRepository
+public class ThesisGroupRepository : AsyncSubRepository<ThesisGroup, ThesisGroupInput, ThesisGroupOutput, string>, IThesisGroupRepository
 {
     private HufiGraduateThesisContext _context;
 
@@ -19,7 +21,6 @@ public class ThesisGroupRepository : SubRepository<ThesisGroup, ThesisGroupInput
         : base(context, context.ThesisGroups)
     {
         _context = context;
-        GenerateUidOptions = UidOptions.ShortUid;
     }
 
     protected override void ConfigureIncludes()
@@ -69,6 +70,27 @@ public class ThesisGroupRepository : SubRepository<ThesisGroup, ThesisGroupInput
 
             }).FirstOrDefault()
         };
+    }
+
+    protected override void SetOutputMapper(ThesisGroup entity, ThesisGroupOutput output)
+    {
+        output.Id = entity.Id;
+        output.Name = entity.Name;
+    }
+
+    protected override void SetMapperToUpdate(ThesisGroupInput input, ThesisGroup entity)
+    {
+        entity.Name = input.Name;
+        entity.Description = input.Description;
+        entity.UpdatedAt = DateTime.Now;
+    }
+
+    protected override void SetMapperToCreate(ThesisGroupInput input, ThesisGroup entity)
+    {
+        entity.Id = UidHelper.GetShortUid();
+        entity.Name = input.Name;
+        entity.Description = input.Description;
+        entity.CreatedAt = DateTime.Now;
     }
 
     public override async Task<ThesisGroupOutput> GetAsync(string id)

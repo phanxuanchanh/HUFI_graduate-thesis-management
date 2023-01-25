@@ -1,18 +1,17 @@
 ﻿using GraduateThesis.ApplicationCore.Enums;
 using GraduateThesis.ApplicationCore.Models;
 using GraduateThesis.ApplicationCore.Repository;
+using GraduateThesis.ApplicationCore.Uuid;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DAL;
 using GraduateThesis.Repository.DTO;
 using Microsoft.EntityFrameworkCore;
-using NPOI.OpenXmlFormats.Dml;
 using System;
-using System.Security.Policy;
 using System.Threading.Tasks;
 
 namespace GraduateThesis.Repository.BLL.Implements;
 
-public class AppRoleRepository : SubRepository<AppRole, AppRoleInput, AppRoleOutput, string>, IAppRoleRepository
+public class AppRoleRepository : AsyncSubRepository<AppRole, AppRoleInput, AppRoleOutput, string>, IAppRoleRepository
 {
     private HufiGraduateThesisContext _context;
 
@@ -20,7 +19,6 @@ public class AppRoleRepository : SubRepository<AppRole, AppRoleInput, AppRoleOut
         :base(context, context.AppRoles)
     {
         _context = context;
-        GenerateUidOptions = UidOptions.MicrosoftUid;
     }
 
     protected override void ConfigureIncludes()
@@ -50,6 +48,27 @@ public class AppRoleRepository : SubRepository<AppRole, AppRoleInput, AppRoleOut
             UpdatedAt = s.UpdatedAt,
             DeletedAt = s.DeletedAt
         };
+    }
+
+    protected override void SetOutputMapper(AppRole entity, AppRoleOutput output)
+    {
+        output.Id = entity.Id;
+        output.Name = entity.Name;
+    }
+
+    protected override void SetMapperToUpdate(AppRoleInput input, AppRole entity)
+    {
+        entity.Name = input.Name;
+        entity.Description = input.Description;
+        entity.UpdatedAt = DateTime.Now;
+    }
+
+    protected override void SetMapperToCreate(AppRoleInput input, AppRole entity)
+    {
+        entity.Id = UidHelper.GetMicrosoftUid();
+        entity.Name = input.Name;
+        entity.Description = input.Description;
+        entity.CreatedAt = DateTime.Now;
     }
 
     public async Task<DataResponse> GrantToUserAsync(AppUserRoleInput input)
