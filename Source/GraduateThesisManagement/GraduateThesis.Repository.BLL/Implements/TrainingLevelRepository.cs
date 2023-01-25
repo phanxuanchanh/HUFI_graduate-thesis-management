@@ -1,12 +1,13 @@
-﻿using GraduateThesis.ApplicationCore.Enums;
-using GraduateThesis.ApplicationCore.Repository;
+﻿using GraduateThesis.ApplicationCore.Repository;
+using GraduateThesis.ApplicationCore.Uuid;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DAL;
 using GraduateThesis.Repository.DTO;
+using System;
 
 namespace GraduateThesis.Repository.BLL.Implements;
 
-public class TrainingLevelRepository : SubRepository<TrainingLevel, TrainingLevelInput, TrainingLevelOutput, string>, ITrainingLevelRepository
+public class TrainingLevelRepository : AsyncSubRepository<TrainingLevel, TrainingLevelInput, TrainingLevelOutput, string>, ITrainingLevelRepository
 {
     private HufiGraduateThesisContext _context;
 
@@ -14,7 +15,6 @@ public class TrainingLevelRepository : SubRepository<TrainingLevel, TrainingLeve
         : base(context, context.TrainingLevels)
     {
         _context = context;
-        GenerateUidOptions = UidOptions.ShortUid;
     }
 
     protected override void ConfigureIncludes()
@@ -42,5 +42,24 @@ public class TrainingLevelRepository : SubRepository<TrainingLevel, TrainingLeve
             UpdatedAt = s.UpdatedAt,
             DeletedAt = s.DeletedAt
         };
+    }
+
+    protected override void SetOutputMapper(TrainingLevel entity, TrainingLevelOutput output)
+    {
+        output.Id = entity.Id;
+        output.Name = entity.Name;
+    }
+
+    protected override void SetMapperToCreate(TrainingLevelInput input, TrainingLevel entity)
+    {
+        entity.Id = UidHelper.GetShortUid();
+        entity.Name = input.Name;
+        entity.CreatedAt = DateTime.Now;
+    }
+
+    protected override void SetMapperToUpdate(TrainingLevelInput input, TrainingLevel entity)
+    {
+        entity.Name = input.Name;
+        entity.UpdatedAt = DateTime.Now;
     }
 }

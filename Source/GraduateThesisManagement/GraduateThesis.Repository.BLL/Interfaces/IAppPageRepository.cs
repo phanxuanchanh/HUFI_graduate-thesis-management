@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace GraduateThesis.Repository.BLL.Interfaces;
 
-public interface IAppPageRepository : ISubRepository<AppPageInput, AppPageOutput, string>
+public interface IAppPageRepository : IAsyncSubRepository<AppPageInput, AppPageOutput, string>
 {
     Task<Pagination<AppPageOutput>> GetPgnHasRoleIdAsync(string roleId, int page, int pageSize, string keyword);
 }

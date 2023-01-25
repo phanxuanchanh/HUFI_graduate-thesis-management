@@ -10,6 +10,8 @@ using GraduateThesis.Repository.DAL;
 using GraduateThesis.Repository.DTO;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
+using MiniExcelLibs;
+using NPOI.SS.Formula.Functions;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -18,7 +20,7 @@ using System.Threading.Tasks;
 
 namespace GraduateThesis.Repository.BLL.Implements;
 
-public class FacultyStaffRepository : SubRepository<FacultyStaff, FacultyStaffInput, FacultyStaffOutput, string>, IFacultyStaffRepository
+public class FacultyStaffRepository : AsyncSubRepository<FacultyStaff, FacultyStaffInput, FacultyStaffOutput, string>, IFacultyStaffRepository
 {
     private HufiGraduateThesisContext _context;
     private IHostingEnvironment _hostingEnvironment;
@@ -44,7 +46,8 @@ public class FacultyStaffRepository : SubRepository<FacultyStaff, FacultyStaffIn
         PaginationSelector = s => new FacultyStaffOutput
         {
             Id = s.Id,
-            FullName = s.FullName,
+            Surname = s.Surname,
+            Name = s.Name,
             Email = s.Email,
             Phone = s.Phone,
             Faculty = new FacultyOutput
@@ -60,7 +63,8 @@ public class FacultyStaffRepository : SubRepository<FacultyStaff, FacultyStaffIn
         SingleSelector = s => new FacultyStaffOutput
         {
             Id = s.Id,
-            FullName = s.FullName,
+            Surname = s.Surname,
+            Name = s.Name,
             Email = s.Email,
             Phone = s.Phone,
             Address = s.Address,
@@ -77,11 +81,52 @@ public class FacultyStaffRepository : SubRepository<FacultyStaff, FacultyStaffIn
 
         AdvancedImportSelector = s => new FacultyStaff
         {
-            Id = s[0] as string,
-            FullName = s[0] as string,
-            Email = s[0] as string,
+            Id = s[1] as string,
+            Surname = s[2] as string,
+            Name = s[3] as string,
+            Email = s[4] as string,
+            Birthday = DateTime.ParseExact(s[5] as string, "dd/MM/yyyy", null),
+            Password = "default",
+            Salt = "default",
             CreatedAt = DateTime.Now
         };
+    }
+
+    protected override void SetOutputMapper(FacultyStaff entity, FacultyStaffOutput output)
+    {
+        output.Id = entity.Id;
+        output.Surname = entity.Surname;
+        output.Name = entity.Name;
+        output.Email = entity.Email;
+    }
+
+    protected override void SetMapperToUpdate(FacultyStaffInput input, FacultyStaff entity)
+    {
+        entity.Surname = input.Surname;
+        entity.Name = input.Name;
+        entity.Description = input.Description;
+        entity.Email = input.Email;
+        entity.Phone = input.Phone;
+        entity.Address = input.Address;
+        entity.Birthday = input.Birthday;
+        entity.FacultyId = input.FacultyId;
+        entity.UpdatedAt = DateTime.Now;
+    }
+
+    protected override void SetMapperToCreate(FacultyStaffInput input, FacultyStaff entity)
+    {
+        entity.Id = input.Id;
+        entity.Surname = input.Surname;
+        entity.Name = input.Name;
+        entity.Description = input.Description;
+        entity.Email = input.Email;
+        entity.Phone = input.Phone;
+        entity.Address = input.Address;
+        entity.Birthday = input.Birthday;
+        entity.FacultyId = input.FacultyId;
+        entity.Password = "default";
+        entity.Salt = "default";
+        entity.CreatedAt = DateTime.Now;
     }
 
     public override async Task<DataResponse> ImportAsync(Stream stream, ImportMetadata importMetadata)
@@ -90,38 +135,6 @@ public class FacultyStaffRepository : SubRepository<FacultyStaff, FacultyStaffIn
         {
             AdvancedImportSpreadsheet = AdvancedImportSelector
         });
-    }
-
-    public override async Task<DataResponse<FacultyStaffOutput>> CreateAsync(FacultyStaffInput input)
-    {
-        FacultyStaff facultyStaff = new FacultyStaff
-        {
-            Id = input.Id,
-            FullName = input.FullName,
-            Description = input.Description,
-            Email = input.Email,
-            Phone = input.Phone,
-            Address = input.Address,
-            Birthday = input.Birthday,
-            FacultyId = input.FacultyId,
-            Password = "default",
-            Salt = "default",
-            CreatedAt = DateTime.Now
-        };
-
-        await _context.FacultyStaffs.AddAsync(facultyStaff);
-        await _context.SaveChangesAsync();
-
-        return new DataResponse<FacultyStaffOutput>
-        {
-            Status = DataResponseStatus.Success,
-            Data = new FacultyStaffOutput
-            {
-                Id = input.Id,
-                FullName = input.FullName,
-                Email = input.Email
-            }
-        };
     }
 
     public async Task<ForgotPasswordModel> CreateNewPasswordAsync(NewPasswordModel newPasswordModel)
@@ -137,7 +150,7 @@ public class FacultyStaffRepository : SubRepository<FacultyStaff, FacultyStaffIn
                 Message = "Không tìm thấy tài khoản này!"
             };
 
-        facultyStaff.Salt = HashFunctions.GetMD5($"{facultyStaff.Id}|{facultyStaff.FullName}|{DateTime.Now}");
+        facultyStaff.Salt = HashFunctions.GetMD5($"{facultyStaff.Id}|{facultyStaff.Surname}|{facultyStaff.Name}|{DateTime.Now}");
         facultyStaff.Password = BCrypt.Net.BCrypt.HashPassword($"{newPasswordModel.Password}>>>{facultyStaff.Salt}");
 
         await _context.SaveChangesAsync();
@@ -171,7 +184,7 @@ public class FacultyStaffRepository : SubRepository<FacultyStaff, FacultyStaffIn
 
         _emailService.Send(
             facultyStaff.Email,
-            "Khôi phục mật khẩu",
+            $"Khôi phục mật khẩu [{DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")}]",
             mailContent
         );
 
@@ -242,17 +255,18 @@ public class FacultyStaffRepository : SubRepository<FacultyStaff, FacultyStaffIn
         int n = (page - 1) * pageSize;
         int totalItemCount = await _context.AppUserRoles
             .Where(f => f.RoleId == roleId && f.User.IsDeleted == false)
-            .Where(f => f.User.Id.Contains(keyword) || f.User.FullName.Contains(keyword) || f.User.Email.Contains(keyword))
+            .Where(f => f.User.Id.Contains(keyword) || f.User.Surname.Contains(keyword) || f.User.Name.Contains(keyword) || f.User.Email.Contains(keyword))
             .CountAsync();
 
         List<FacultyStaffOutput> onePageOfData = await _context.AppUserRoles.Include(i => i.User)
             .Where(f => f.RoleId == roleId && f.User.IsDeleted == false)
-            .Where(f => f.User.Id.Contains(keyword) || f.User.FullName.Contains(keyword) || f.User.Email.Contains(keyword))
+            .Where(f => f.User.Id.Contains(keyword) || f.User.Surname.Contains(keyword) || f.User.Name.Contains(keyword) || f.User.Email.Contains(keyword))
             .Skip(n).Take(pageSize)
             .Select(s => new FacultyStaffOutput
             {
                 Id = s.User.Id,
-                FullName = s.User.FullName,
+                Surname = s.User.Surname,
+                Name = s.User.Name,
                 Email = s.User.Email
             }).ToListAsync();
 
@@ -322,5 +336,39 @@ public class FacultyStaffRepository : SubRepository<FacultyStaff, FacultyStaffIn
             Status = DataResponseStatus.Success,
             Message = "Đã đặt ảnh đại diện mặc định thành công!"
         };
+    }
+
+    public async Task<byte[]> ExportAsync()
+    {
+        MemoryStream memoryStream = null;
+        try
+        {
+            string path = Path.Combine(_hostingEnvironment.WebRootPath, "reports", "faculty-staff_export.xlsx");
+            memoryStream = new MemoryStream();
+            int count = 1;
+
+            List<FacultyStaff> facultyStaffs = await _context.FacultyStaffs
+            .Where(f => f.IsDeleted == false).OrderBy(f => f.Name).ToListAsync();
+
+            await MiniExcel.SaveAsByTemplateAsync(memoryStream, path, new
+            {
+                Items = facultyStaffs.Select(s => new FacultyStaffExport
+                {
+                    Index = count++,
+                    Id = s.Id,
+                    Surname = s.Surname,
+                    Name = s.Name,
+                    Email = s.Email,
+                    Birthday = s.Birthday
+                }).ToList()
+            });
+
+            return memoryStream.ToArray();
+        }
+        finally
+        {
+            if (memoryStream != null)
+                memoryStream.Dispose();
+        }
     }
 }

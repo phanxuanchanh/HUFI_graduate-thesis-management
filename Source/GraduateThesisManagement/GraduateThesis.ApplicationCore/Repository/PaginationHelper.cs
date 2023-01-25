@@ -32,7 +32,7 @@ internal class PaginationHelper<TEntity, TOutput>
     public IOrderedQueryable<TEntity> GetOrderedQueryable(IQueryable<TEntity> queryable, string orderBy, OrderOptions orderOptions)
     {
         if (string.IsNullOrEmpty(orderBy))
-            return queryable.OrderBy(_expressionBuilder.GetOrderByExpString<TEntity>("p", "Id"));
+            return queryable.OrderBy(_expressionBuilder.GetOrderByExpString<TEntity>("p", "CreatedAt"));
 
         if (orderOptions == OrderOptions.ASC)
             return queryable.OrderBy(_expressionBuilder.GetOrderByExpString<TEntity>("p", orderBy));

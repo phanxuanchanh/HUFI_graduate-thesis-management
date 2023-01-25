@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace GraduateThesis.Repository.BLL.Interfaces;
 
-public interface IThesisRepository : ISubRepository<ThesisInput, ThesisOutput, string>
+public interface IThesisRepository : IAsyncSubRepository<ThesisInput, ThesisOutput, string>
 {
     Task<DataResponse> RegisterThesisAsync(ThesisRegistrationInput thesisRegistrationInput);
     Task<DataResponse> SubmitThesisAsync(string thesisId, string thesisGroupId);

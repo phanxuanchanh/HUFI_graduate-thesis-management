@@ -296,6 +296,8 @@ public partial class HufiGraduateThesisContext : DbContext
         {
             entity.HasKey(e => e.Id).HasName("PK_FacultyStaff_ID");
 
+            entity.HasIndex(e => e.Email, "UQ__FacultyS__A9D10534A2288D2B").IsUnique();
+
             entity.Property(e => e.Id)
                 .HasMaxLength(50)
                 .IsUnicode(false)
@@ -318,10 +320,8 @@ public partial class HufiGraduateThesisContext : DbContext
                 .HasMaxLength(50)
                 .IsUnicode(false)
                 .HasDefaultValueSql("('BHyFWSywrk')");
-            entity.Property(e => e.FullName)
-                .IsRequired()
-                .HasMaxLength(100);
             entity.Property(e => e.Gender).HasMaxLength(10);
+            entity.Property(e => e.Name).HasMaxLength(100);
             entity.Property(e => e.Notes).HasMaxLength(200);
             entity.Property(e => e.Password)
                 .IsRequired()
@@ -333,6 +333,7 @@ public partial class HufiGraduateThesisContext : DbContext
             entity.Property(e => e.Salt)
                 .IsRequired()
                 .HasMaxLength(100);
+            entity.Property(e => e.Surname).HasMaxLength(200);
             entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
             entity.Property(e => e.VerificationCode)
                 .HasMaxLength(100)
@@ -436,8 +437,6 @@ public partial class HufiGraduateThesisContext : DbContext
         {
             entity.HasKey(e => e.Id).HasName("PK_Students_ID");
 
-            entity.HasIndex(e => e.Phone, "UQ__Students__5C7E359E8423B8F5").IsUnique();
-
             entity.HasIndex(e => e.Email, "UQ__Students__A9D105343DDCBD48").IsUnique();
 
             entity.Property(e => e.Id)
@@ -476,6 +475,9 @@ public partial class HufiGraduateThesisContext : DbContext
                 .IsRequired()
                 .HasMaxLength(50)
                 .IsUnicode(false);
+            entity.Property(e => e.Surname)
+                .IsRequired()
+                .HasMaxLength(200);
             entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
             entity.Property(e => e.VerificationCode)
                 .HasMaxLength(100)

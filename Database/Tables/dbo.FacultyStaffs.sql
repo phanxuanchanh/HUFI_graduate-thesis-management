@@ -1,7 +1,6 @@
 ﻿CREATE TABLE [dbo].[FacultyStaffs] (
   [ID] [varchar](50) NOT NULL,
   [FacultyId] [varchar](50) NOT NULL DEFAULT ('BHyFWSywrk'),
-  [FullName] [nvarchar](100) NOT NULL,
   [Description] [ntext] NULL,
   [Gender] [nvarchar](10) NULL,
   [Phone] [varchar](20) NULL,
@@ -20,7 +19,10 @@
   [IsDeleted] [bit] NOT NULL,
   [VerificationCode] [varchar](100) NULL,
   [CodeExpTime] [datetime] NULL,
-  CONSTRAINT [PK_FacultyStaff_ID] PRIMARY KEY CLUSTERED ([ID])
+  [Surname] [nvarchar](200) NULL,
+  [Name] [nvarchar](100) NULL,
+  CONSTRAINT [PK_FacultyStaff_ID] PRIMARY KEY CLUSTERED ([ID]),
+  UNIQUE ([Email])
 )
 ON [PRIMARY]
 TEXTIMAGE_ON [PRIMARY]

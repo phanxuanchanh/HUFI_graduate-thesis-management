@@ -41,6 +41,8 @@ public partial class Student
 
     public string Gender { get; set; }
 
+    public string Surname { get; set; }
+
     public virtual StudentClass StudentClass { get; set; }
 
     public virtual ICollection<ThesisGroupDetail> ThesisGroupDetails { get; } = new List<ThesisGroupDetail>();

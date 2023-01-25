@@ -13,9 +13,6 @@
                     <table class="table table-striped dataTable-table" id="table1">
                         <thead>
                             <tr>
-                                <th data-sortable="" style="width: 10%;" class="text-center">
-                                    <a href="#" class="dataTable-sorter"><input type="checkbox" id="checkAll" /></a>
-                                </th>
                                 <th data-sortable="" style="width: 10%;">
                                     <a href="#" class="dataTable-sorter">STT</a>
                                 </th>
@@ -40,7 +37,6 @@
                             @foreach (FacultyStaffOutput facultyStaff in (IEnumerable<FacultyStaffOutput>)ViewData["PagedList"]!)
                             {
                                 <tr>
-                                    <td class="text-center"><input type="checkbox" id="checkbox_@count" /></td>
                                     <td>@count</td>
                                     <td>@facultyStaff.Id</td>
                                     <td>@facultyStaff.FullName</td>

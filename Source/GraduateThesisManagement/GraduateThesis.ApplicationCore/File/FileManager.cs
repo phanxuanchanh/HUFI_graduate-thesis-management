@@ -69,6 +69,11 @@ public class FileManager : IFileManager
         _path = path;
     }
 
+    public FileStream Read(string path)
+    {
+        return new FileStream(path, FileMode.Open);
+    }
+
     public void Save(FileUploadModel uploadModel)
     {
         FileStream fileStream = null;

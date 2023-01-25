@@ -1,12 +1,13 @@
-﻿using GraduateThesis.ApplicationCore.Enums;
-using GraduateThesis.ApplicationCore.Repository;
+﻿using GraduateThesis.ApplicationCore.Repository;
+using GraduateThesis.ApplicationCore.Uuid;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DAL;
 using GraduateThesis.Repository.DTO;
+using System;
 
 namespace GraduateThesis.Repository.BLL.Implements;
 
-public class TopicRepository : SubRepository<Topic, TopicInput, TopicOutput, string>, ITopicRepository
+public class TopicRepository : AsyncSubRepository<Topic, TopicInput, TopicOutput, string>, ITopicRepository
 {
     private HufiGraduateThesisContext _context;
 
@@ -14,7 +15,6 @@ public class TopicRepository : SubRepository<Topic, TopicInput, TopicOutput, str
         : base(context, context.Topics)
     {
         _context = context;
-        GenerateUidOptions = UidOptions.ShortUid;
     }
 
     protected override void ConfigureIncludes()
@@ -44,5 +44,26 @@ public class TopicRepository : SubRepository<Topic, TopicInput, TopicOutput, str
             UpdatedAt = s.UpdatedAt,
             DeletedAt = s.DeletedAt
         };
+    }
+
+    protected override void SetMapperToCreate(TopicInput input, Topic entity)
+    {
+        entity.Id = UidHelper.GetShortUid();
+        entity.Name = input.Name;
+        entity.Description = input.Description;
+        entity.CreatedAt = DateTime.Now;
+    }
+
+    protected override void SetMapperToUpdate(TopicInput input, Topic entity)
+    {
+        entity.Name = input.Name;
+        entity.Description = input.Description;
+        entity.UpdatedAt = DateTime.Now;
+    }
+
+    protected override void SetOutputMapper(Topic entity, TopicOutput output)
+    {
+        output.Id = entity.Id;
+        output.Name = entity.Name;
     }
 }

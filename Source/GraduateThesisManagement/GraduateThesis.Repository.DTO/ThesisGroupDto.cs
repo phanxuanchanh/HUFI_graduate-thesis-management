@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace GraduateThesis.Repository.DTO;
@@ -21,6 +20,10 @@ public class ThesisGroupInput
 
     [Display(Name = "Mô tả")]
     public string Notes { get; set; }
+
+    public bool IsCompleted { get; set; }
+
+    public bool IsFinished { get; set; }
 }
 
 public class ThesisGroupOutput : ThesisGroupInput
@@ -30,5 +33,4 @@ public class ThesisGroupOutput : ThesisGroupInput
     public DateTime? DeletedAt { get; set; }
 
     public ThesisOutput Thesis { get; set; }
-    public List<StudentOutput> Students { get; set; }
 }

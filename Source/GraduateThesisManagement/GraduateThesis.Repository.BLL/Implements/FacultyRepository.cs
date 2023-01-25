@@ -1,23 +1,20 @@
-﻿using GraduateThesis.ApplicationCore.Enums;
-using GraduateThesis.ApplicationCore.Repository;
+﻿using GraduateThesis.ApplicationCore.Repository;
 using GraduateThesis.ApplicationCore.Uuid;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DAL;
 using GraduateThesis.Repository.DTO;
 using System;
-using System.Linq;
 
 namespace GraduateThesis.Repository.BLL.Implements;
 
-public class FacultyRepository : SubRepository<Faculty, FacultyInput, FacultyOutput, string>, IFacultyRepository
+public class FacultyRepository : AsyncSubRepository<Faculty, FacultyInput, FacultyOutput, string>, IFacultyRepository
 {
     private HufiGraduateThesisContext _context;
 
     public FacultyRepository(HufiGraduateThesisContext context)
         : base(context, context.Faculties)
     {
-        _context = context;
-        GenerateUidOptions = UidOptions.ShortUid;
+        _context = context;;
     }
 
     protected override void ConfigureIncludes()
@@ -55,5 +52,26 @@ public class FacultyRepository : SubRepository<Faculty, FacultyInput, FacultyOut
             Description = r[2] as string,
             CreatedAt = DateTime.Now
         };
+    }
+
+    protected override void SetMapperToCreate(FacultyInput input, Faculty entity)
+    {
+        entity.Id = UidHelper.GetShortUid();
+        entity.Name = input.Name;
+        entity.Description = input.Description;
+        entity.CreatedAt = DateTime.Now;
+    }
+
+    protected override void SetMapperToUpdate(FacultyInput input, Faculty entity)
+    {
+        entity.Name = input.Name;
+        entity.Description = input.Description;
+        entity.UpdatedAt = DateTime.Now;
+    }
+
+    protected override void SetOutputMapper(Faculty entity, FacultyOutput output)
+    {
+        output.Id = entity.Id;
+        output.Name = entity.Name;
     }
 }

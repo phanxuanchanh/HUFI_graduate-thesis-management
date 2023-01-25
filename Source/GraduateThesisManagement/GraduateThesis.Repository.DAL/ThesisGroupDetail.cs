@@ -11,7 +11,11 @@ public partial class ThesisGroupDetail
 
     public string Notes { get; set; }
 
+    public bool IsLeader { get; set; }
+
     public bool IsCompleted { get; set; }
+
+    public bool IsFinished { get; set; }
 
     public bool IsApproved { get; set; }
 

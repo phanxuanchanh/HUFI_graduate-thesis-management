@@ -5,13 +5,16 @@ using System.Threading.Tasks;
 
 namespace GraduateThesis.Repository.BLL.Interfaces;
 
-public interface IStudentRepository : ISubRepository<StudentInput, StudentOutput, string>, IAsyncAccountPattern
+public interface IStudentRepository : IAsyncSubRepository<StudentInput, StudentOutput, string>, IAsyncAccountPattern
 {
     Task<DataResponse> UpdateProfileAsync(StudentInput input, FileUploadModel avtUploadModel);
     Task<DataResponse> SetDefaultAvatarAsync(string studentId);
-    Task<StudentThesisOutput> GetStudentThesisAsync(string studentId);
     Task<object> SearchForThesisRegAsync(string keyword);
     Task<object> GetForThesisRegAsync(string studentId);
-    //Task<Pagination<StudentOutput>> GetPgnOf();
-    //Task<Pagination<StudentOutput>> GetPgnOf2();
+    Task<Pagination<StudentOutput>> GetPgnOfUnRegdStdntAsync(int page, int pageSize, string keyword);
+    Task<Pagination<StudentOutput>> GetPgnOfRegdStdntAsync(int page, int pageSize, string keyword);
+    Task<byte[]> ExportAsync();
+    Task<byte[]> ExportUnRegdStdntAsync(ExportMetadata exportMetadata);
+    Task<byte[]> ExportRegdStdntAsync(ExportMetadata exportMetadata);
+    
 }

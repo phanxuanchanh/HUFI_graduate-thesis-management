@@ -9,8 +9,6 @@ public partial class FacultyStaff
 
     public string FacultyId { get; set; }
 
-    public string FullName { get; set; }
-
     public string Description { get; set; }
 
     public string Gender { get; set; }
@@ -46,6 +44,10 @@ public partial class FacultyStaff
     public string VerificationCode { get; set; }
 
     public DateTime? CodeExpTime { get; set; }
+
+    public string Surname { get; set; }
+
+    public string Name { get; set; }
 
     public virtual ICollection<AppUserRole> AppUserRoles { get; } = new List<AppUserRole>();
 

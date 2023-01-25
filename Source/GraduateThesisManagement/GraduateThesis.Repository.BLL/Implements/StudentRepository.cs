@@ -10,6 +10,7 @@ using GraduateThesis.Repository.DAL;
 using GraduateThesis.Repository.DTO;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
+using MiniExcelLibs;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -18,7 +19,7 @@ using System.Threading.Tasks;
 
 namespace GraduateThesis.Repository.BLL.Implements;
 
-public class StudentRepository : SubRepository<Student, StudentInput, StudentOutput, string>, IStudentRepository
+public class StudentRepository : AsyncSubRepository<Student, StudentInput, StudentOutput, string>, IStudentRepository
 {
     private HufiGraduateThesisContext _context;
     private IHostingEnvironment _hostingEnvironment;
@@ -44,6 +45,7 @@ public class StudentRepository : SubRepository<Student, StudentInput, StudentOut
         PaginationSelector = s => new StudentOutput
         {
             Id = s.Id,
+            Surname = s.Surname,
             Name = s.Name,
             Address = s.Address,
             StudentClass = new StudentClassOutput
@@ -59,6 +61,7 @@ public class StudentRepository : SubRepository<Student, StudentInput, StudentOut
         SingleSelector = s => new StudentOutput
         {
             Id = s.Id,
+            Surname = s.Surname,
             Name = s.Name,
             Phone = s.Phone,
             Email = s.Email,
@@ -83,11 +86,10 @@ public class StudentRepository : SubRepository<Student, StudentInput, StudentOut
             Student student = new Student();
 
             student.Id = s[1] as string;
-            student.Name = $"{s[2] as string} {s[3] as string}";
-            student.Email = s[4] as string;
-            student.Birthday = DateTime.ParseExact(s[5] as string, "dd/MM/yyyy", null);
+            student.Surname = s[2] as string;
+            student.Name = s[3] as string;
 
-            string studentClassId = s[6] as string;
+            string studentClassId = s[4] as string;
             if(!_context.StudentClasses.Any(s => s.Id == studentClassId))
             {
                 _context.StudentClasses.Add(new StudentClass
@@ -100,13 +102,51 @@ public class StudentRepository : SubRepository<Student, StudentInput, StudentOut
                 _context.SaveChanges();
             }
 
-            student.StudentClassId = s[6] as string;
+            student.StudentClassId = s[4] as string;
+            student.Email = s[5] as string;
+            student.Birthday = DateTime.ParseExact(s[6] as string, "dd/MM/yyyy", null);
             student.Password = "default";
             student.Salt = "default";
-            student.Phone = student.Id;
 
             return student;
         };
+    }
+
+    protected override void SetOutputMapper(Student entity, StudentOutput output)
+    {
+        output.Id = entity.Id;
+        output.Surname = entity.Surname;
+        output.Name = entity.Name;
+        output.Email = entity.Email;
+    }
+
+    protected override void SetMapperToUpdate(StudentInput input, Student entity)
+    {
+        entity.Surname = input.Surname;
+        entity.Name = input.Name;
+        entity.Description = input.Description;
+        entity.Email = input.Email;
+        entity.Phone = input.Phone;
+        entity.Address = input.Address;
+        entity.Birthday = input.Birthday;
+        entity.StudentClassId = input.StudentClassId;
+        entity.UpdatedAt = DateTime.Now;
+    }
+
+    protected override void SetMapperToCreate(StudentInput input, Student entity)
+    {
+        entity.Id = input.Id;
+        entity.Surname = input.Surname;
+        entity.Name = input.Name;
+        entity.Description = input.Description;
+        entity.Email = input.Email;
+        entity.Phone = input.Phone;
+        entity.Address = input.Address;
+        entity.Birthday = input.Birthday;
+        entity.StudentClassId = input.StudentClassId;
+        entity.Password = "default";
+        entity.Salt = "default";
+        entity.CreatedAt = DateTime.Now;
     }
 
     public override async Task<DataResponse> ImportAsync(Stream stream, ImportMetadata importMetadata)
@@ -115,38 +155,6 @@ public class StudentRepository : SubRepository<Student, StudentInput, StudentOut
         {
             AdvancedImportSpreadsheet = AdvancedImportSelector
         });
-    }
-
-    public override async Task<DataResponse<StudentOutput>> CreateAsync(StudentInput input)
-    {
-        Student student = new Student
-        {
-            Id = input.Id,
-            Name = input.Name,
-            Description = input.Description,
-            Email = input.Email,
-            Phone = input.Phone,
-            Address = input.Address,
-            Birthday = input.Birthday,
-            StudentClassId = input.StudentClassId,
-            Password = "default",
-            Salt = "default",
-            CreatedAt = DateTime.Now
-        };
-
-        await _context.Students.AddAsync(student);
-        await _context.SaveChangesAsync();
-
-        return new DataResponse<StudentOutput>
-        {
-            Status = DataResponseStatus.Success,
-            Data = new StudentOutput
-            {
-                Id = input.Id,
-                Name = input.Name,
-                Email = input.Email,
-            }
-        };
     }
 
     public async Task<ForgotPasswordModel> CreateNewPasswordAsync(NewPasswordModel newPasswordModel)
@@ -197,7 +205,7 @@ public class StudentRepository : SubRepository<Student, StudentInput, StudentOut
 
         _emailService.Send(
             student.Email,
-            "Khôi phục mật khẩu",
+            $"Khôi phục mật khẩu [{DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")}]",
             mailContent
         );
 
@@ -206,31 +214,6 @@ public class StudentRepository : SubRepository<Student, StudentInput, StudentOut
             Status = AccountStatus.Success,
             Message = "Thực hiện bước 1 của quá trình lấy lại mật khẩu thành công!",
             Email = forgotPasswordModel.Email
-        };
-    }
-
-    public async Task<StudentThesisOutput> GetStudentThesisAsync(string studentId)
-    {
-        ThesisGroup thesisGroup = await _context.ThesisGroupDetails
-            .Include(i => i.StudentThesisGroup)
-            .Where(s => s.StudentId == studentId).Select(s => new ThesisGroup
-            {
-
-            }).SingleOrDefaultAsync();
-
-        List<StudentOutput> students = await _context.ThesisGroupDetails
-            .Where(s => s.StudentId == studentId).Include(i => i.Student)
-            .Select(s => new StudentOutput
-            {
-                Id = s.Student.Id,
-                Name = s.Student.Name
-            }).ToListAsync();
-
-        return new StudentThesisOutput
-        {
-            //Thesis = thesisOutput,
-            //StudentThesisGroup = studentThesisGroup,
-            Students = students
         };
     }
 
@@ -316,6 +299,7 @@ public class StudentRepository : SubRepository<Student, StudentInput, StudentOut
             .Take(50).Select(s => new
             {
                 Id = s.Id,
+                Surname = s.Surname,
                 Name = s.Name,
                 StudentClass = new
                 {
@@ -331,6 +315,7 @@ public class StudentRepository : SubRepository<Student, StudentInput, StudentOut
             .Select(s => new
             {
                 Id = s.Id,
+                Surname = s.Surname,
                 Name = s.Name,
                 StudentClass = new
                 {
@@ -397,5 +382,62 @@ public class StudentRepository : SubRepository<Student, StudentInput, StudentOut
             Status = DataResponseStatus.Success,
             Message = "Đã đặt ảnh đại diện mặc định thành công!"
         };
+    }
+
+    public Task<byte[]> ExportUnRegdStdntAsync(ExportMetadata exportMetadata)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<byte[]> ExportRegdStdntAsync(ExportMetadata exportMetadata)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<Pagination<StudentOutput>> GetPgnOfUnRegdStdntAsync(int page, int pageSize, string keyword)
+    {
+
+        throw new NotImplementedException();
+    }
+
+    public Task<Pagination<StudentOutput>> GetPgnOfRegdStdntAsync(int page, int pageSize, string keyword)
+    {
+
+        throw new NotImplementedException();
+    }
+
+    public async Task<byte[]> ExportAsync()
+    {
+        MemoryStream memoryStream = null;
+        try
+        {
+            string path = Path.Combine(_hostingEnvironment.WebRootPath, "reports", "student_export.xlsx");
+            memoryStream = new MemoryStream();
+            int count = 1;
+
+            List<Student> students = await _context.Students.Include(i => i.StudentClass)
+            .Where(f => f.IsDeleted == false).OrderBy(f => f.Name).ToListAsync();
+
+            await MiniExcel.SaveAsByTemplateAsync(memoryStream, path, new
+            {
+                Items = students.Select(s => new StudentExport
+                {
+                    Index = count++,
+                    Id = s.Id,
+                    Surname = s.Surname,
+                    Name = s.Name,
+                    ClassName = s.StudentClass.Name,
+                    Email = s.Email,
+                    Birthday = s.Birthday
+                }).ToList()
+            });
+
+            return memoryStream.ToArray();
+        }
+        finally
+        {
+            if (memoryStream != null)
+                memoryStream.Dispose();
+        }
     }
 }

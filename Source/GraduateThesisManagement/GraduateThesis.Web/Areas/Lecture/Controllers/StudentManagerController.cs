@@ -1,4 +1,5 @@
 ﻿using GraduateThesis.ApplicationCore.AppController;
+using GraduateThesis.ApplicationCore.File;
 using GraduateThesis.ApplicationCore.Models;
 using GraduateThesis.ApplicationCore.WebAttributes;
 using GraduateThesis.Common.WebAttributes;
@@ -6,7 +7,9 @@ using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DTO;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Net.Http.Headers;
 using System.ComponentModel.DataAnnotations;
+using System.Net.Mime;
 
 namespace GraduateThesis.Web.Areas.Lecture.Controllers;
 
@@ -16,11 +19,13 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers;
 [AccountInfo(typeof(FacultyStaffOutput))]
 public class StudentManagerController : WebControllerBase<IStudentRepository, StudentInput, StudentOutput, string>
 {
+    private readonly IStudentRepository _studentRepository;
     private readonly IStudentClassRepository _studentClassRepository;
 
     public StudentManagerController(IRepository repository)
         :base(repository.StudentRepository)
     {
+        _studentRepository = repository.StudentRepository;
         _studentClassRepository = repository.StudentClassRepository;
     }
 
@@ -104,7 +109,15 @@ public class StudentManagerController : WebControllerBase<IStudentRepository, St
     [HttpPost]
     public override async Task<IActionResult> Export(ExportMetadata exportMetadata)
     {
-        return await ExportResult(null, exportMetadata);
+        byte[] bytes = await _studentRepository.ExportAsync();
+        ContentDisposition contentDisposition = new ContentDisposition
+        {
+            FileName = $"student_{DateTime.Now.ToString("ddMMyyyy_HHmmss")}.xlsx"
+        };
+
+        Response.Headers.Add(HeaderNames.ContentDisposition, contentDisposition.ToString());
+
+        return File(bytes, ContentTypeConsts.XLSX);
     }
 
     [Route("import")]
@@ -115,7 +128,7 @@ public class StudentManagerController : WebControllerBase<IStudentRepository, St
         if (string.IsNullOrEmpty(importMetadata.SheetName))
             importMetadata.SheetName = "Default";
 
-        importMetadata.StartFromRow = 1;
+        importMetadata.StartFromRow = 2;
         return await ImportResult(formFile, importMetadata);
     }
 

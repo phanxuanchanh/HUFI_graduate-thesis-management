@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MiniExcelLibs.Attributes;
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace GraduateThesis.Repository.DTO;
@@ -13,9 +14,13 @@ public class FacultyStaffInput
     [Required(ErrorMessage = "{0} không được để trống")]
     public string FacultyId { get; set; }
 
+    [Display(Name = "Họ giảng viên")]
+    [Required(ErrorMessage = "{0} không được để trống")]
+    public string Surname { get; set; }
+
     [Display(Name = "Tên giảng viên")]
     [Required(ErrorMessage = "{0} không được để trống")]
-    public string FullName { get; set; }
+    public string Name { get; set; }
 
     [Display(Name = "Mô tả")]
     public string Description { get; set; }
@@ -33,7 +38,8 @@ public class FacultyStaffInput
     public string Address { get; set; }
 
     [Display(Name = "Email")]
-    [EmailAddress]
+    [EmailAddress(ErrorMessage = "{0} không hợp lệ")]
+    [Required(ErrorMessage = "{0} không được để trống")]
     public string Email { get; set; }
 
     [Display(Name = "Ngày sinh")]
@@ -55,10 +61,25 @@ public class FacultyStaffInput
 
 public class FacultyStaffOutput : FacultyStaffInput
 {
+    [Display(Name = "Tên giảng viên")]
+    public string FullName { get { return $"{Surname.Trim(' ')} {Name.Trim(' ')}"; } }
+
     public DateTime? CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
     public DateTime? DeletedAt { get; set; }
 
     public FacultyOutput Faculty { get; set; }
+}
+
+public class FacultyStaffExport
+{
+    public int Index { get; set; }
+    public string Id { get; set; }
+    public string Surname { get; set; }
+    public string Name { get; set; }
+    public string Email { get; set; }
+
+    [ExcelFormat("dd/MM/yyyy")]
+    public DateTime? Birthday { get; set; }
 }
 

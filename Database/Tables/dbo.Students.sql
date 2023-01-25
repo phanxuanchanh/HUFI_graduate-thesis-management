@@ -17,8 +17,8 @@ CREATE TABLE [dbo].[Students] (
   [VerificationCode] [varchar](100) NULL,
   [CodeExpTime] [datetime] NULL,
   [Gender] [nvarchar](10) NULL DEFAULT (N'Nam'),
+  [Surname] [nvarchar](200) NOT NULL,
   CONSTRAINT [PK_Students_ID] PRIMARY KEY CLUSTERED ([ID]),
-  UNIQUE ([Phone]),
   UNIQUE ([Email])
 )
 ON [PRIMARY]

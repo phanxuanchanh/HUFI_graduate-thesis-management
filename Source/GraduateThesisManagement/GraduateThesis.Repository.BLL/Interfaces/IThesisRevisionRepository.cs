@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace GraduateThesis.Repository.BLL.Interfaces;
 
-public interface IThesisRevisionRepository : ISubRepository<ThesisRevisionInput, ThesisRevisionOutput, string>
+public interface IThesisRevisionRepository : IAsyncSubRepository<ThesisRevisionInput, ThesisRevisionOutput, string>
 {
     Task<List<ThesisRevisionOutput>> GetRevsByThesisIdAsync(string thesisId);
     Task<DataResponse> ReviewRevisionAsync(ThesisRevReviewInput thesisRevReview);

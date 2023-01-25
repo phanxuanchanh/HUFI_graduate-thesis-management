@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace GraduateThesis.Repository.BLL.Interfaces;
 
-public interface IThesisGroupRepository : ISubRepository<ThesisGroupInput, ThesisGroupOutput, string>
+public interface IThesisGroupRepository : IAsyncSubRepository<ThesisGroupInput, ThesisGroupOutput, string>
 {
+    Task<List<ThesisGroupDtOutput>> GetGrpsByStdntIdAsync(string studentId);
     Task<List<ThesisGroupOutput>> GetListAsync(string studentId);
     Task<ThesisGroupOutput> GetAsync(string studentId, string thesisId);
     Task<DataResponse> JoinToGroupAsync(string studentId, string thesisGroupId);

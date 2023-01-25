@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MiniExcelLibs.Attributes;
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace GraduateThesis.Repository.DTO;
@@ -9,10 +10,13 @@ public class StudentInput
     [Required(ErrorMessage = "{0} không được để trống")]
     public string Id { get; set; }
 
+    [Display(Name = "Họ sinh viên")]
+    [Required(ErrorMessage = "{0} không được để trống")]
+    public string Surname { get; set; }
+
     [Display(Name = "Tên sinh viên")]
     [Required(ErrorMessage = "{0} không được để trống")]
     public string Name { get; set; }
-
 
     [Display(Name = "Số điện thoại")]
     [StringLength(maximumLength: 11, MinimumLength = 10, ErrorMessage = "Độ dài điện thoại từ 10-11 kí tự")]
@@ -48,10 +52,26 @@ public class StudentInput
 
 public class StudentOutput : StudentInput
 {
+    [Display(Name = "Tên giảng viên")]
+    public string FullName { get { return $"{Surname.Trim(' ')} {Name.Trim(' ')}"; } }
+
     public DateTime? CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
     public DateTime? DeletedAt { get; set; }
 
     public StudentClassOutput StudentClass { get; set; }
     public ThesisGroupOutput ThesisGroup { get; set; }
+}
+
+public class StudentExport
+{
+    public int Index { get; set; }
+    public string Id { get; set; }
+    public string Surname { get; set; }
+    public string Name { get; set; }
+    public string ClassName { get; set; }
+    public string Email { get; set; }
+
+    [ExcelFormat("dd/MM/yyyy")]
+    public DateTime? Birthday { get; set; }
 }

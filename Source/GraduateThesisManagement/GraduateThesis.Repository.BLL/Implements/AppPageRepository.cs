@@ -1,6 +1,7 @@
 ﻿using GraduateThesis.ApplicationCore.Enums;
 using GraduateThesis.ApplicationCore.Models;
 using GraduateThesis.ApplicationCore.Repository;
+using GraduateThesis.ApplicationCore.Uuid;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DAL;
 using GraduateThesis.Repository.DTO;
@@ -12,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace GraduateThesis.Repository.BLL.Implements;
 
-public class AppPageRepository : SubRepository<AppPage, AppPageInput, AppPageOutput, string>, IAppPageRepository
+public class AppPageRepository : AsyncSubRepository<AppPage, AppPageInput, AppPageOutput, string>, IAppPageRepository
 {
     private HufiGraduateThesisContext _context;
 
@@ -20,7 +21,6 @@ public class AppPageRepository : SubRepository<AppPage, AppPageInput, AppPageOut
         : base(context, context.AppPages)
     {
         _context = context;
-        GenerateUidOptions = UidOptions.ShortUid;
     }
 
     protected override void ConfigureIncludes()
@@ -51,6 +51,33 @@ public class AppPageRepository : SubRepository<AppPage, AppPageInput, AppPageOut
             CreatedAt = s.CreatedAt,
             UpdatedAt = s.UpdatedAt
         };
+    }
+
+    protected override void SetOutputMapper(AppPage entity, AppPageOutput output)
+    {
+        output.Id = entity.Id;
+        output.PageName = entity.PageName;
+    }
+
+    protected override void SetMapperToUpdate(AppPageInput input, AppPage entity)
+    {
+        entity.PageName = input.PageName;
+        entity.ControllerName = input.ControllerName;
+        entity.ActionName = input.ActionName;
+        entity.Area = input.Area;
+        entity.Path = input.Path;
+        entity.UpdatedAt = DateTime.Now;
+    }
+
+    protected override void SetMapperToCreate(AppPageInput input, AppPage entity)
+    {
+        entity.Id = UidHelper.GetShortUid();
+        entity.PageName = input.PageName;
+        entity.ControllerName = input.ControllerName;
+        entity.ActionName = input.ActionName;
+        entity.Area = input.Area;
+        entity.Path = input.Path;
+        entity.CreatedAt = DateTime.Now;
     }
 
     public override async Task<Pagination<AppPageOutput>> GetPaginationAsync(Pagination<AppPageOutput> pagination)

@@ -3,7 +3,7 @@ using GraduateThesis.Repository.DTO;
 
 namespace GraduateThesis.Repository.BLL.Interfaces;
 
-public interface IStudentClassRepository : ISubRepository<StudentClassInput, StudentClassOutput, string>
+public interface IStudentClassRepository : IAsyncSubRepository<StudentClassInput, StudentClassOutput, string>
 {
 
 }
