@@ -3,13 +3,17 @@ using GraduateThesis.ApplicationCore.File;
 using GraduateThesis.ApplicationCore.Models;
 using GraduateThesis.ApplicationCore.WebAttributes;
 using GraduateThesis.Common.WebAttributes;
+using GraduateThesis.Repository.BLL.Implements;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DTO;
+using GraduateThesis.WebExtensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Net.Http.Headers;
 using System.ComponentModel.DataAnnotations;
 using System.Net.Mime;
+using static Microsoft.Extensions.Logging.EventSource.LoggingEventSource;
+using X.PagedList;
 
 namespace GraduateThesis.Web.Areas.Lecture.Controllers;
 
@@ -153,5 +157,79 @@ public class StudentManagerController : WebControllerBase<IStudentRepository, St
     public override async Task<IActionResult> Restore([Required] string id)
     {
         return await RestoreResult(id);
+    }
+
+    [Route("registered-students")]
+    [HttpGet]
+    [PageName(Name = "Danh sách sinh viên đã đăng ký đề tài")]
+    public async Task<IActionResult> GetRegdStudents(int page = 1, int pageSize = 20, string keyword = "")
+    {
+        Pagination<StudentOutput> pagination = await _studentRepository.GetPgnOfRegdStdntAsync(page, pageSize, keyword);
+        StaticPagedList<StudentOutput> pagedList = pagination.ToStaticPagedList();
+
+        ViewData["PagedList"] = pagedList;
+        ViewData["Keyword"] = keyword;
+
+        return View();
+    }
+
+    [Route("unregistered-students")]
+    [HttpGet]
+    [PageName(Name = "Danh sách sinh viên chưa đăng ký đề tài")]
+    public async Task<IActionResult> GetUnRegdStudents(int page = 1, int pageSize = 20, string keyword = "")
+    {
+        Pagination<StudentOutput> pagination = await _studentRepository.GetPgnOfUnRegdStdntAsync(page, pageSize, keyword);
+        StaticPagedList<StudentOutput> pagedList = pagination.ToStaticPagedList();
+
+        ViewData["PagedList"] = pagedList;
+        ViewData["Keyword"] = keyword;
+
+        return View();
+    }
+
+    [Route("export-registered-students")]
+    [HttpGet]
+    [PageName(Name = "Xuất sinh viên đã đăng ký khóa luận")]
+    public async Task<IActionResult> ExportRegdStudents()
+    {
+        return await ExportResult();
+    }
+
+    [Route("export-registered-students")]
+    [HttpPost]
+    public async Task<IActionResult> ExportRegdStudents(ExportMetadata exportMetadata)
+    {
+        byte[] bytes = await _studentRepository.ExportRegdStdntsAsync();
+        ContentDisposition contentDisposition = new ContentDisposition
+        {
+            FileName = $"registered-student_{DateTime.Now.ToString("ddMMyyyy_HHmmss")}.xlsx"
+        };
+
+        Response.Headers.Add(HeaderNames.ContentDisposition, contentDisposition.ToString());
+
+        return File(bytes, ContentTypeConsts.XLSX);
+    }
+
+    [Route("export-unregistered-students")]
+    [HttpGet]
+    [PageName(Name = "Xuất sinh viên đã đăng ký khóa luận")]
+    public async Task<IActionResult> ExportUnRegdStudents()
+    {
+        return await ExportResult();
+    }
+
+    [Route("export-unregistered-students")]
+    [HttpPost]
+    public async Task<IActionResult> ExportUnRegdStudents(ExportMetadata exportMetadata)
+    {
+        byte[] bytes = await _studentRepository.ExportUnRegdStdntsAsync();
+        ContentDisposition contentDisposition = new ContentDisposition
+        {
+            FileName = $"unregistered-student_{DateTime.Now.ToString("ddMMyyyy_HHmmss")}.xlsx"
+        };
+
+        Response.Headers.Add(HeaderNames.ContentDisposition, contentDisposition.ToString());
+
+        return File(bytes, ContentTypeConsts.XLSX);
     }
 }

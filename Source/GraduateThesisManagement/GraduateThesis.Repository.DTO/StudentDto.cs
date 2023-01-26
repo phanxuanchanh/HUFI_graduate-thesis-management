@@ -52,7 +52,7 @@ public class StudentInput
 
 public class StudentOutput : StudentInput
 {
-    [Display(Name = "Tên giảng viên")]
+    [Display(Name = "Tên sinh viên")]
     public string FullName { get { return $"{Surname.Trim(' ')} {Name.Trim(' ')}"; } }
 
     public DateTime? CreatedAt { get; set; }
@@ -74,4 +74,20 @@ public class StudentExport
 
     [ExcelFormat("dd/MM/yyyy")]
     public DateTime? Birthday { get; set; }
+}
+
+
+public class RegdStudentExport
+{
+    public int Index { get; set; }
+    public string Id { get; set; }
+    public string Surname { get; set; }
+    public string Name { get; set; }
+    public string ClassName { get; set; }
+    public string Email { get; set; }
+
+    [ExcelFormat("dd/MM/yyyy")]
+    public DateTime? Birthday { get; set; }
+
+    public string ThesisName { get; set; }
 }

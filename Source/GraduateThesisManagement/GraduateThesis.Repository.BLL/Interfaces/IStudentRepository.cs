@@ -14,7 +14,7 @@ public interface IStudentRepository : IAsyncSubRepository<StudentInput, StudentO
     Task<Pagination<StudentOutput>> GetPgnOfUnRegdStdntAsync(int page, int pageSize, string keyword);
     Task<Pagination<StudentOutput>> GetPgnOfRegdStdntAsync(int page, int pageSize, string keyword);
     Task<byte[]> ExportAsync();
-    Task<byte[]> ExportUnRegdStdntAsync(ExportMetadata exportMetadata);
-    Task<byte[]> ExportRegdStdntAsync(ExportMetadata exportMetadata);
+    Task<byte[]> ExportUnRegdStdntsAsync();
+    Task<byte[]> ExportRegdStdntsAsync();
     
 }
