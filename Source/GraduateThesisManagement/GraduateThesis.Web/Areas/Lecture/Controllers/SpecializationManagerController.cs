@@ -21,6 +21,14 @@ public class SpecializationManagerController : WebControllerBase<ISpecialization
 
     }
 
+    protected override Dictionary<string, string> SetOrderByProperties()
+    {
+        return new Dictionary<string, string>
+        {
+            { "Id", "Mã" }, { "Name", "Tên" }, { "CreatedAt", "Ngày tạo" }
+        };
+    }
+
     [Route("batch-delete/{id}")]
     [HttpPost]
     public override async Task<IActionResult> BatchDelete([Required] string id)

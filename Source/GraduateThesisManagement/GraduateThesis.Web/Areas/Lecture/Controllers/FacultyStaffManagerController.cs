@@ -6,11 +6,15 @@ using GraduateThesis.ApplicationCore.WebAttributes;
 using GraduateThesis.Common.WebAttributes;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DTO;
+using GraduateThesis.WebExtensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Net.Http.Headers;
 using System.ComponentModel.DataAnnotations;
 using System.Net.Mime;
+using X.PagedList;
+
+#nullable disable
 
 namespace GraduateThesis.Web.Areas.Lecture.Controllers;
 
@@ -24,7 +28,7 @@ public class FacultyStaffManagerController : WebControllerBase<IFacultyStaffRepo
     private readonly IFacultyStaffRepository _facultyStaffRepository;
 
     public FacultyStaffManagerController(IRepository repository)
-        :base(repository.FacultyStaffRepository)
+        : base(repository.FacultyStaffRepository)
     {
         _facultyRepository = repository.FacultyRepository;
         _facultyStaffRepository = repository.FacultyStaffRepository;
@@ -36,12 +40,36 @@ public class FacultyStaffManagerController : WebControllerBase<IFacultyStaffRepo
         ViewData["FacultySelectList"] = new SelectList(faculties, "Id", "Name");
     }
 
+    [NonAction]
+    public override async Task<IActionResult> Index(int page = 1, int pageSize = 10, string orderBy = null, string orderOptions = "ASC", string keyword = null)
+    {
+        throw new NotImplementedException();
+    }
+
     [Route("list")]
     [HttpGet]
     [PageName(Name = "Danh sách giảng viên")]
-    public override async Task<IActionResult> Index(int page = 1, int pageSize = 10, string orderBy = null!, string orderOptions = "ASC", string keyword = null!)
+    public async Task<IActionResult> Index(int page = 1, int pageSize = 10, string orderBy = null, string orderOptions = "ASC", string searchBy = null, string keyword = null)
     {
-        return await IndexResult(page, pageSize, orderBy, orderOptions, keyword);
+        OrderOptions orderOpts = (orderOptions == "ASC") ? OrderOptions.ASC : OrderOptions.DESC;
+        Pagination<FacultyStaffOutput> pagination = await _facultyStaffRepository.GetPaginationAsync(page, pageSize, orderBy, orderOpts, searchBy, keyword);
+        StaticPagedList<FacultyStaffOutput> pagedList = pagination.ToStaticPagedList();
+
+        ViewData["OrderByProperties"] = new Dictionary<string, string>{
+            { "Id", "Mã" }, { "Surname", "Họ" }, { "Name", "Tên" }, { "Email", "Email" }, { "CreatedAt", "Ngày tạo" }
+        };
+
+        ViewData["SearchByProperties"] = new Dictionary<string, string> {
+            { "All", "Tất cả" }, { "Id", "Mã" }, { "Surname", "Họ" }, { "Name", "Tên" }, { "Email", "Email" }
+        };
+
+        ViewData["PagedList"] = pagedList;
+        ViewData["OrderBy"] = orderBy;
+        ViewData["OrderOptions"] = orderOptions;
+        ViewData["SearchBy"] = searchBy;
+        ViewData["Keyword"] = keyword;
+
+        return View();
     }
 
     [Route("details/{id}")]

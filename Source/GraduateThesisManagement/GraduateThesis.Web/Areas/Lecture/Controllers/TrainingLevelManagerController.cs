@@ -15,10 +15,18 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers;
 [AccountInfo(typeof(FacultyStaffOutput))]
 public class TrainingLevelManagerController : WebControllerBase<ITrainingLevelRepository, TrainingLevelInput, TrainingLevelOutput, string>
 {
-    public TrainingLevelManagerController(IRepository repository) 
+    public TrainingLevelManagerController(IRepository repository)
         : base(repository.TrainingLevelRepository)
     {
 
+    }
+
+    protected override Dictionary<string, string> SetOrderByProperties()
+    {
+        return new Dictionary<string, string>
+        {
+            { "Id", "Mã" }, { "Name", "Tên" }, { "CreatedAt", "Ngày tạo" }
+        };
     }
 
     [Route("batch-delete/{id}")]

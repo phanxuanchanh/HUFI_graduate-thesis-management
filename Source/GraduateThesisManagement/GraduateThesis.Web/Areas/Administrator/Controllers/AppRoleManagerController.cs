@@ -30,6 +30,14 @@ public class AppRoleManagerController : WebControllerBase<IAppRoleRepository, Ap
         _facultyStaffRepository = repository.FacultyStaffRepository;
     }
 
+    protected override Dictionary<string, string> SetOrderByProperties()
+    {
+        return new Dictionary<string, string>
+        {
+            { "Id", "Mã" }, { "Name", "Tên" }, { "CreatedAt", "Ngày tạo" }
+        };
+    }
+
     [Route("list")]
     [HttpGet]
     [PageName(Name = "Danh sách quyền")]

@@ -64,7 +64,8 @@ public class FacultyStaffRepository : AsyncSubRepository<FacultyStaff, FacultySt
             Birthday = s.Birthday,
             Gender = s.Gender,
             Description = s.Description,
-            Faculty = new FacultyOutput { 
+            Faculty = new FacultyOutput
+            {
                 Id = s.Faculty.Id,
                 Name = s.Faculty.Name
             },
@@ -132,7 +133,8 @@ public class FacultyStaffRepository : AsyncSubRepository<FacultyStaff, FacultySt
             checkExists = await _context.FacultyStaffs.AnyAsync(f => f.Id == input.Id || f.Email == input.Email || f.Phone == input.Phone);
 
         if (checkExists)
-            return new DataResponse<FacultyStaffOutput> { 
+            return new DataResponse<FacultyStaffOutput>
+            {
                 Status = DataResponseStatus.AlreadyExists,
                 Message = "Thông tin bị trùng, vui lòng kiểm tra lại mã, địa chỉ email của giảng viên!"
             };
@@ -143,7 +145,7 @@ public class FacultyStaffRepository : AsyncSubRepository<FacultyStaff, FacultySt
     protected override async Task<DataResponse<FacultyStaffOutput>> ValidateOnUpdateAsync(FacultyStaffInput input)
     {
         bool checkExists = false;
-        if(string.IsNullOrEmpty(input.Phone))
+        if (string.IsNullOrEmpty(input.Phone))
             checkExists = await _context.FacultyStaffs
                 .AnyAsync(f => f.Email == input.Email && f.Id != input.Id);
         else
@@ -151,12 +153,74 @@ public class FacultyStaffRepository : AsyncSubRepository<FacultyStaff, FacultySt
                 .AnyAsync(f => (f.Email == input.Email || f.Phone == input.Phone) && f.Id != input.Id);
 
         if (checkExists)
-            return new DataResponse<FacultyStaffOutput> { 
+            return new DataResponse<FacultyStaffOutput>
+            {
                 Status = DataResponseStatus.AlreadyExists,
                 Message = "Thông tin bị trùng, vui lòng kiểm tra lại mã, địa chỉ email, SĐT của giảng viên!"
             };
 
         return new DataResponse<FacultyStaffOutput> { Status = DataResponseStatus.Success };
+    }
+
+    public async Task<Pagination<FacultyStaffOutput>> GetPaginationAsync(int page, int pageSize, string orderBy, OrderOptions orderOptions, string searchBy, string keyword)
+    {
+        IQueryable<FacultyStaff> queryable = _context.FacultyStaffs.Where(f => f.IsDeleted == false);
+
+        if(!string.IsNullOrEmpty(keyword) && string.IsNullOrEmpty(searchBy))
+        {
+            queryable = queryable.Where(f => f.Id.Contains(keyword) || f.Surname.Contains(keyword) || f.Name.Contains(keyword) || f.Email.Contains(keyword));
+        }
+
+        if (!string.IsNullOrEmpty(keyword) && !string.IsNullOrEmpty(searchBy))
+        {
+            switch (searchBy)
+            {
+                case "All": queryable = queryable.Where(f => f.Id.Contains(keyword) || f.Surname.Contains(keyword) || f.Name.Contains(keyword) || f.Email.Contains(keyword)); break;
+                case "Id": queryable = queryable.Where(f => f.Id.Contains(keyword)); break;
+                case "Surname": queryable = queryable.Where(f => f.Surname.Contains(keyword)); break;
+                case "Name": queryable = queryable.Where(f => f.Name.Contains(keyword)); break; 
+                case "Email": queryable = queryable.Where(f => f.Email.Contains(keyword)); break;
+            }
+        }
+
+        if (string.IsNullOrEmpty(orderBy)){
+            queryable = queryable.OrderByDescending(f => f.CreatedAt);
+        }else if(orderOptions == OrderOptions.ASC)
+        {
+            switch (orderBy)
+            {
+                case "Id": queryable = queryable.OrderBy(f => f.Id); break;
+                case "Surname": queryable = queryable.OrderBy(f => f.Surname); break;
+                case "Name": queryable = queryable.OrderBy(f => f.Name); break;
+                case "Email": queryable = queryable.OrderBy(f => f.Email); break;
+                case "CreatedAt": queryable = queryable.OrderBy(f => f.CreatedAt); break;
+            }
+        }
+        else
+        {
+            switch (orderBy)
+            {
+                case "Id": queryable = queryable.OrderByDescending(f => f.Id); break;
+                case "Surname": queryable = queryable.OrderByDescending(f => f.Surname); break;
+                case "Name": queryable = queryable.OrderByDescending(f => f.Name); break;
+                case "Email": queryable = queryable.OrderByDescending(f => f.Email); break;
+                case "CreatedAt": queryable = queryable.OrderByDescending(f => f.CreatedAt); break;
+            }
+        }
+
+        int n = (page - 1) * pageSize;
+        int totalItemCount = await queryable.CountAsync();
+
+        List<FacultyStaffOutput> onePageOfData = await queryable.Skip(n).Take(pageSize)
+            .Select(PaginationSelector).ToListAsync();
+
+        return new Pagination<FacultyStaffOutput>
+        {
+            Page = page,
+            PageSize = pageSize,
+            TotalItemCount = totalItemCount,
+            Items = onePageOfData
+        };
     }
 
     public override async Task<DataResponse> ImportAsync(Stream stream, ImportMetadata importMetadata)
@@ -199,7 +263,8 @@ public class FacultyStaffRepository : AsyncSubRepository<FacultyStaff, FacultySt
            .SingleOrDefaultAsync();
 
         if (facultyStaff == null)
-            return new AccountVerificationModel {
+            return new AccountVerificationModel
+            {
                 Status = AccountStatus.NotFound,
                 Message = "Không tìm thấy tài khoản này!"
             };
@@ -230,7 +295,8 @@ public class FacultyStaffRepository : AsyncSubRepository<FacultyStaff, FacultySt
     {
         FacultyStaff facultyStaff = await _context.FacultyStaffs.FindAsync(signInModel.Code);
         if (facultyStaff == null)
-            return new SignInResultModel {
+            return new SignInResultModel
+            {
                 Status = AccountStatus.NotFound,
                 Message = "Không tìm thấy tài khoản này!"
             };
@@ -238,12 +304,14 @@ public class FacultyStaffRepository : AsyncSubRepository<FacultyStaff, FacultySt
         string passwordAndSalt = $"{signInModel.Password}>>>{facultyStaff.Salt}";
 
         if (!BCrypt.Net.BCrypt.Verify(passwordAndSalt, facultyStaff.Password))
-            return new SignInResultModel { 
+            return new SignInResultModel
+            {
                 Status = AccountStatus.WrongPassword,
                 Message = "Mật khẩu không trùng khớp!"
             };
 
-        return new SignInResultModel {
+        return new SignInResultModel
+        {
             Status = AccountStatus.Success,
             Message = "Đã đăng nhập vào hệ thống thành công!"
         };
@@ -256,25 +324,29 @@ public class FacultyStaffRepository : AsyncSubRepository<FacultyStaff, FacultySt
             .SingleOrDefaultAsync();
 
         if (facultyStaff == null)
-            return new NewPasswordModel { 
+            return new NewPasswordModel
+            {
                 Status = AccountStatus.NotFound,
                 Message = "Không tìm thấy tài khoản này!"
             };
-        
+
         if (accountVerificationModel.VerificationCode != facultyStaff.VerificationCode)
-            return new NewPasswordModel { 
+            return new NewPasswordModel
+            {
                 Status = AccountStatus.Failed,
                 Message = "Mã xác thực không trùng khớp!"
             };
 
         DateTime currentDatetime = DateTime.Now;
         if (facultyStaff.CodeExpTime < currentDatetime)
-            return new NewPasswordModel {
+            return new NewPasswordModel
+            {
                 Status = AccountStatus.Failed,
                 Message = "Mã xác nhận đã hết hạn!"
             };
 
-        return new NewPasswordModel { 
+        return new NewPasswordModel
+        {
             Status = AccountStatus.Success,
             Message = "Thực hiện bước 2 của quá trình lấy lại mật khẩu thành công!",
         };

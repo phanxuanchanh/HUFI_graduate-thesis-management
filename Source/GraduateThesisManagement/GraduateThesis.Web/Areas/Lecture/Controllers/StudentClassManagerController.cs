@@ -24,6 +24,14 @@ public class StudentClassManagerController : WebControllerBase<IStudentClassRepo
         _facultyRepository = repository.FacultyRepository;
     }
 
+    protected override Dictionary<string, string> SetOrderByProperties()
+    {
+        return new Dictionary<string, string>
+        {
+            { "Id", "Mã" }, { "Name", "Tên" }, { "CreatedAt", "Ngày tạo" }
+        };
+    }
+
     protected override async Task LoadSelectListAsync()
     {
         List<FacultyOutput> faculties = await _facultyRepository.GetListAsync(10);
