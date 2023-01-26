@@ -41,7 +41,7 @@ public class FacultyStaffManagerController : WebControllerBase<IFacultyStaffRepo
     }
 
     [NonAction]
-    public override async Task<IActionResult> Index(int page = 1, int pageSize = 10, string orderBy = null, string orderOptions = "ASC", string keyword = null)
+    public override Task<IActionResult> Index(int page = 1, int pageSize = 10, string orderBy = null, string orderOptions = "ASC", string keyword = null)
     {
         throw new NotImplementedException();
     }
