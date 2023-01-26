@@ -49,6 +49,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Update="Areas\Administrator\Views\Shared\Components\AdminLayout_PagedSearch\Default.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="Areas\Administrator\Views\Shared\Components\AdminLayout_Paged\Default.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
     <Content Update="Areas\Lecture\Views\FacultyStaffManager\Import.cshtml">
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>

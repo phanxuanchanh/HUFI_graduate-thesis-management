@@ -22,6 +22,14 @@ public class TopicManagerController : WebControllerBase<ITopicRepository, TopicI
         _topicRepository = repository.TopicRepository;
     }
 
+    protected override Dictionary<string, string> SetOrderByProperties()
+    {
+        return new Dictionary<string, string>
+        {
+            { "Id", "Mã" }, { "Name", "Tên" }, { "CreatedAt", "Ngày tạo" }
+        };
+    }
+
     [Route("list")]
     [HttpGet]
     [PageName(Name = "Danh sách các chủ đề khóa luận")]

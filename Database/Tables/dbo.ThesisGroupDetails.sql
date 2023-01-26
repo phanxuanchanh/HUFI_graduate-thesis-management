@@ -6,6 +6,7 @@
   [IsCompleted] [bit] NOT NULL,
   [IsFinished] [bit] NOT NULL,
   [IsApproved] [bit] NOT NULL,
+  [InProgress] [bit] NOT NULL,
   [CreatedAt] [datetime] NULL,
   [UpdatedAt] [datetime] NULL,
   [DeletedAt] [datetime] NULL,

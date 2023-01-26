@@ -129,12 +129,19 @@
                                 </li>
                             }
 
-                            <li class="submenu-item ">
-                                <a asp-action="Index" asp-controller="StudentManager">Chưa đăng ký đề tài</a>
-                            </li>
-                            <li class="submenu-item ">
-                                <a asp-action="Index" asp-controller="StudentManager">Đã đăng ký đề tài</a>
-                            </li>
+                            @if (appPages.Any(p => p.ControllerName == "StudentManager" && p.ActionName == "GetUnRegdStudents"))
+                            {
+                                <li class="submenu-item ">
+                                    <a asp-action="GetUnRegdStudents" asp-controller="StudentManager">Chưa đăng ký đề tài</a>
+                                </li>
+                            }
+
+                            @if (appPages.Any(p => p.ControllerName == "StudentManager" && p.ActionName == "GetRegdStudents"))
+                            {
+                                <li class="submenu-item ">
+                                    <a asp-action="GetRegdStudents" asp-controller="StudentManager">Đã đăng ký đề tài</a>
+                                </li>
+                            }
 
                             @if (appPages.Any(p => p.ControllerName == "StudentManager" && p.ActionName == "Import"))
                             {

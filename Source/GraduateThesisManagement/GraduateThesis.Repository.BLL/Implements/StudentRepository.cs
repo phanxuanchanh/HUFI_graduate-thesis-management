@@ -8,6 +8,7 @@ using GraduateThesis.ExtensionMethods;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DAL;
 using GraduateThesis.Repository.DTO;
+using MathNet.Numerics.Distributions;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using MiniExcelLibs;
@@ -90,7 +91,7 @@ public class StudentRepository : AsyncSubRepository<Student, StudentInput, Stude
             student.Name = s[3] as string;
 
             string studentClassId = s[4] as string;
-            if(!_context.StudentClasses.Any(s => s.Id == studentClassId))
+            if (!_context.StudentClasses.Any(s => s.Id == studentClassId))
             {
                 _context.StudentClasses.Add(new StudentClass
                 {
@@ -152,7 +153,7 @@ public class StudentRepository : AsyncSubRepository<Student, StudentInput, Stude
     protected override async Task<DataResponse<StudentOutput>> ValidateOnCreateAsync(StudentInput input)
     {
         bool checkExists = false;
-        if(string.IsNullOrEmpty(input.Phone))
+        if (string.IsNullOrEmpty(input.Phone))
             checkExists = await _context.Students.AnyAsync(s => s.Id == input.Id || s.Email == input.Email);
         else
             checkExists = await _context.Students.AnyAsync(s => s.Id == input.Id || s.Email == input.Email || s.Phone == input.Phone);
@@ -420,26 +421,99 @@ public class StudentRepository : AsyncSubRepository<Student, StudentInput, Stude
         };
     }
 
-    public Task<byte[]> ExportUnRegdStdntAsync(ExportMetadata exportMetadata)
+    public async Task<Pagination<StudentOutput>> GetPgnOfUnRegdStdntAsync(int page, int pageSize, string keyword)
     {
-        throw new NotImplementedException();
+        List<string> studentIds = await _context.ThesisGroupDetails.Include(i => i.Student)
+                .Where(gd => gd.IsDeleted == false && gd.Student.IsDeleted == false)
+                .Where(gd => (gd.IsApproved == true && gd.InProgress == true) || gd.IsCompleted == true)
+                .Select(s => s.StudentId).ToListAsync();
+
+        int n = (page - 1) * pageSize;
+        int totalItemCount = await _context.Students.Include(i => i.StudentClass)
+            .Where(s => s.IsDeleted == false)
+            .Where(s => s.Id.Contains(keyword) || s.Surname.Contains(keyword) || s.Name.Contains(keyword) || s.Description.Contains(keyword) || s.Email.Contains(keyword))
+            .WhereBulkContains(studentIds, s => s.Id)
+            .CountAsync();
+
+        List<StudentOutput> onePageOfData = await _context.Students.Include(i => i.StudentClass)
+            .Where(s => s.IsDeleted == false)
+            .Where(s => s.Id.Contains(keyword) || s.Surname.Contains(keyword) || s.Name.Contains(keyword) || s.Description.Contains(keyword) || s.Email.Contains(keyword))
+            .WhereBulkNotContains(studentIds, s => s.Id)
+            .Skip(n).Take(pageSize)
+            .Select(s => new StudentOutput
+            {
+                Id = s.Id,
+                Surname = s.Surname,
+                Name = s.Name,
+                Address = s.Address,
+                StudentClass = new StudentClassOutput
+                {
+                    Id = s.StudentClass.Id,
+                    Name = s.StudentClass.Name
+                },
+                CreatedAt = s.StudentClass.CreatedAt,
+                UpdatedAt = s.StudentClass.UpdatedAt
+            }).ToListAsync();
+
+        return new Pagination<StudentOutput>
+        {
+            Page = page,
+            PageSize = pageSize,
+            TotalItemCount = totalItemCount,
+            Items = onePageOfData
+        };
     }
 
-    public Task<byte[]> ExportRegdStdntAsync(ExportMetadata exportMetadata)
+    public async Task<Pagination<StudentOutput>> GetPgnOfRegdStdntAsync(int page, int pageSize, string keyword)
     {
-        throw new NotImplementedException();
-    }
+        int n = (page - 1) * pageSize;
+        int totalItemCount = await _context.ThesisGroupDetails
+            .Include(i => i.Student).Include(i => i.Student.StudentClass)
+            .Where(gd => gd.IsDeleted == false && gd.Student.IsDeleted == false)
+            .Where(gd => (gd.IsApproved == true && gd.InProgress == true) || gd.IsCompleted == true)
+            .Where(gd => gd.Student.Id.Contains(keyword) || gd.Student.Surname.Contains(keyword) || gd.Student.Name.Contains(keyword) || gd.Student.Description.Contains(keyword) || gd.Student.Email.Contains(keyword))
+            .Join(
+                _context.Theses.Where(t => t.IsDeleted == false),
+                groudDetail => groudDetail.StudentThesisGroupId,
+                thesis => thesis.ThesisGroupId,
+                (groupDetail, thesis) => new RegdStudentExport
+                {
+                    Id = groupDetail.Student.Id,
+                    ThesisName = thesis.Name
+                }
+            ).CountAsync();
 
-    public Task<Pagination<StudentOutput>> GetPgnOfUnRegdStdntAsync(int page, int pageSize, string keyword)
-    {
+        List<StudentOutput> onePageOfData = await _context.ThesisGroupDetails
+            .Include(i => i.Student).Include(i => i.Student.StudentClass)
+            .Where(gd => gd.IsDeleted == false && gd.Student.IsDeleted == false)
+            .Where(gd => (gd.IsApproved == true && gd.InProgress == true) || gd.IsCompleted == true)
+            .Where(gd => gd.Student.Id.Contains(keyword) || gd.Student.Surname.Contains(keyword) || gd.Student.Name.Contains(keyword) || gd.Student.Description.Contains(keyword) || gd.Student.Email.Contains(keyword))
+            .Join(
+                _context.Theses.Where(t => t.IsDeleted == false),
+                groudDetail => groudDetail.StudentThesisGroupId,
+                thesis => thesis.ThesisGroupId,
+                (groupDetail, thesis) => new StudentOutput
+                {
+                    Id = groupDetail.Student.Id,
+                    Surname = groupDetail.Student.Surname,
+                    Name = groupDetail.Student.Name,
+                    StudentClass = new StudentClassOutput
+                    {
+                        Id = groupDetail.Student.StudentClass.Id,
+                        Name = groupDetail.Student.StudentClass.Name
+                    },
+                    Email = groupDetail.Student.Email,
+                    Birthday = groupDetail.Student.Birthday,
+                }
+            ).Skip(n).Take(pageSize).ToListAsync();
 
-        throw new NotImplementedException();
-    }
-
-    public Task<Pagination<StudentOutput>> GetPgnOfRegdStdntAsync(int page, int pageSize, string keyword)
-    {
-
-        throw new NotImplementedException();
+        return new Pagination<StudentOutput>
+        {
+            Page = page,
+            PageSize = pageSize,
+            TotalItemCount = totalItemCount,
+            Items = onePageOfData
+        };
     }
 
     public async Task<byte[]> ExportAsync()
@@ -465,6 +539,95 @@ public class StudentRepository : AsyncSubRepository<Student, StudentInput, Stude
                     ClassName = s.StudentClass.Name,
                     Email = s.Email,
                     Birthday = s.Birthday
+                }).ToList()
+            });
+
+            return memoryStream.ToArray();
+        }
+        finally
+        {
+            if (memoryStream != null)
+                memoryStream.Dispose();
+        }
+    }
+
+    public async Task<byte[]> ExportUnRegdStdntsAsync()
+    {
+        MemoryStream memoryStream = null;
+        try
+        {
+            string path = Path.Combine(_hostingEnvironment.WebRootPath, "reports", "unregistered-student_export.xlsx");
+            memoryStream = new MemoryStream();
+            int count = 1;
+
+            List<string> studentIds = await _context.ThesisGroupDetails.Include(i => i.Student)
+                .Where(gd => gd.IsDeleted == false && gd.Student.IsDeleted == false)
+                .Where(gd => (gd.IsApproved == true && gd.InProgress == true) || gd.IsCompleted == true)
+                .Select(s => s.StudentId).ToListAsync();
+
+            List<Student> students = await _context.Students.Include(i => i.StudentClass)
+            .Where(f => f.IsDeleted == false)
+            .WhereBulkNotContains(studentIds, s => s.Id)
+            .OrderBy(f => f.Name).ToListAsync();
+
+            await MiniExcel.SaveAsByTemplateAsync(memoryStream, path, new
+            {
+                Items = students.Select(s => new StudentExport
+                {
+                    Index = count++,
+                    Id = s.Id,
+                    Surname = s.Surname,
+                    Name = s.Name,
+                    ClassName = s.StudentClass.Name,
+                    Email = s.Email,
+                    Birthday = s.Birthday
+                }).ToList()
+            });
+
+            return memoryStream.ToArray();
+        }
+        finally
+        {
+            if (memoryStream != null)
+                memoryStream.Dispose();
+        }
+    }
+
+    public async Task<byte[]> ExportRegdStdntsAsync()
+    {
+        MemoryStream memoryStream = null;
+        try
+        {
+            string path = Path.Combine(_hostingEnvironment.WebRootPath, "reports", "registered-student_export.xlsx");
+            memoryStream = new MemoryStream();
+            int count = 1;
+
+            List<RegdStudentExport> regdStudents = await _context.ThesisGroupDetails
+                .Include(i => i.Student).Include(i => i.Student.StudentClass)
+                .Where(gd => gd.IsDeleted == false && gd.Student.IsDeleted == false)
+                .Where(gd => (gd.IsApproved == true && gd.InProgress == true) || gd.IsCompleted == true)
+                .Join(
+                    _context.Theses.Where(t => t.IsDeleted == false),
+                    groudDetail => groudDetail.StudentThesisGroupId,
+                    thesis => thesis.ThesisGroupId,
+                    (groupDetail, thesis) => new RegdStudentExport
+                    {
+                        Id = groupDetail.Student.Id,
+                        Surname = groupDetail.Student.Surname,
+                        Name = groupDetail.Student.Name,
+                        ClassName = groupDetail.Student.StudentClass.Name,
+                        Email = groupDetail.Student.Email,
+                        Birthday = groupDetail.Student.Birthday,
+                        ThesisName = thesis.Name
+                    }
+                ).ToListAsync();
+
+            await MiniExcel.SaveAsByTemplateAsync(memoryStream, path, new
+            {
+                Items = regdStudents.Select(s =>
+                {
+                    s.Index = count++;
+                    return s;
                 }).ToList()
             });
 

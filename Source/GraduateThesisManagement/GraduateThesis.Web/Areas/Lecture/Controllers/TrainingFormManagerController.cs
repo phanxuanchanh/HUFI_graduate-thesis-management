@@ -20,6 +20,14 @@ public class TrainingFormManagerController : WebControllerBase<ITrainingFormRepo
     {
     }
 
+    protected override Dictionary<string, string> SetOrderByProperties()
+    {
+        return new Dictionary<string, string>
+        {
+            { "Id", "Mã" }, { "Name", "Tên" }, { "CreatedAt", "Ngày tạo" }
+        };
+    }
+
     [Route("list")]
     [HttpPost]
     public override async Task<IActionResult> BatchDelete([Required] string id)

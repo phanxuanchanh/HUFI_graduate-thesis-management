@@ -20,6 +20,15 @@ public class AppPageManagerController : WebControllerBase<IAppPageRepository, Ap
         _appPageRepository = repository.AppPageRepository;
     }
 
+    protected override Dictionary<string, string> SetOrderByProperties()
+    {
+        return new Dictionary<string, string>
+        {
+            { "Id", "Mã" }, { "PageName", "Tên" }, { "ControllerName", "Tên bộ điều khiển" }, 
+            { "ActionName", "Tên hành động" }, { "Area", "Khu vực" }, { "CreatedAt", "Ngày tạo" }
+        };
+    }
+
     [Route("batch-delete/{id}")]
     [HttpPost]
     public override async Task<IActionResult> BatchDelete([Required] string id)

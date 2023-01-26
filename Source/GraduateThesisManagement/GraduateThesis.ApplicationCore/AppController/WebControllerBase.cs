@@ -230,7 +230,15 @@ public abstract class WebControllerBase<TSubRepository, TInput, TOutput, T_ID> :
 
         Pagination<TOutput> pagination = await _asyncSubRepository.GetPaginationAsync(paginationInput);
         StaticPagedList<TOutput> pagedList = new StaticPagedList<TOutput>(pagination.Items, page, pageSize, pagination.TotalItemCount);
-        
+
+        Dictionary<string, string> orderByProperties = SetOrderByProperties();
+        if(orderByProperties != null)
+            ViewData["OrderByProperties"] = orderByProperties;
+
+        Dictionary<string, string> searchByProperties = SetSearchByProperties();
+        if (searchByProperties != null)
+            ViewData["SearchByProperties"] = searchByProperties;
+
         ViewData["PagedList"] = pagedList;
         ViewData["OrderBy"] = orderBy;
         ViewData["OrderOptions"] = orderOptions;
@@ -385,6 +393,16 @@ public abstract class WebControllerBase<TSubRepository, TInput, TOutput, T_ID> :
     protected virtual Task LoadSelectListAsync()
     {
         return Task.CompletedTask;
+    }
+
+    protected virtual Dictionary<string, string> SetOrderByProperties()
+    {
+        return null;
+    }
+
+    protected virtual Dictionary<string, string> SetSearchByProperties()
+    {
+        return null;
     }
 
     //public abstract Task<IActionResult> Index(Pagination<TOutput> pagination);
