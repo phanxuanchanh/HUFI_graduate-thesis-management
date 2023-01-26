@@ -432,7 +432,7 @@ public class StudentRepository : AsyncSubRepository<Student, StudentInput, Stude
         int totalItemCount = await _context.Students.Include(i => i.StudentClass)
             .Where(s => s.IsDeleted == false)
             .Where(s => s.Id.Contains(keyword) || s.Surname.Contains(keyword) || s.Name.Contains(keyword) || s.Description.Contains(keyword) || s.Email.Contains(keyword))
-            .WhereBulkContains(studentIds, s => s.Id)
+            .WhereBulkNotContains(studentIds, s => s.Id)
             .CountAsync();
 
         List<StudentOutput> onePageOfData = await _context.Students.Include(i => i.StudentClass)

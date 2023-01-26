@@ -33,6 +33,22 @@ public class StudentManagerController : WebControllerBase<IStudentRepository, St
         _studentClassRepository = repository.StudentClassRepository;
     }
 
+    protected override Dictionary<string, string> SetOrderByProperties()
+    {
+        return new Dictionary<string, string>
+        {
+            { "Id", "Mã" }, { "Surname", "Họ" }, { "Name", "Tên" }, { "Email", "Email" }, { "CreatedAt", "Ngày tạo" }
+        };
+    }
+
+    protected override Dictionary<string, string> SetSearchByProperties()
+    {
+        return new Dictionary<string, string>
+        {
+            { "Id", "Mã" }, { "Surname", "Họ" }, { "Name", "Tên" }, { "Email", "Email" }
+        };
+    }
+
     protected override async Task LoadSelectListAsync()
     {
         List<StudentClassOutput> students = await _studentClassRepository.GetListAsync(50);
@@ -167,6 +183,8 @@ public class StudentManagerController : WebControllerBase<IStudentRepository, St
         Pagination<StudentOutput> pagination = await _studentRepository.GetPgnOfRegdStdntAsync(page, pageSize, keyword);
         StaticPagedList<StudentOutput> pagedList = pagination.ToStaticPagedList();
 
+        ViewData["OrderByProperties"] = SetOrderByProperties();
+        ViewData["SearchByProperties"] = SetOrderByProperties();
         ViewData["PagedList"] = pagedList;
         ViewData["Keyword"] = keyword;
 
@@ -181,6 +199,8 @@ public class StudentManagerController : WebControllerBase<IStudentRepository, St
         Pagination<StudentOutput> pagination = await _studentRepository.GetPgnOfUnRegdStdntAsync(page, pageSize, keyword);
         StaticPagedList<StudentOutput> pagedList = pagination.ToStaticPagedList();
 
+        ViewData["OrderByProperties"] = SetOrderByProperties();
+        ViewData["SearchByProperties"] = SetOrderByProperties();
         ViewData["PagedList"] = pagedList;
         ViewData["Keyword"] = keyword;
 
