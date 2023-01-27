@@ -23,4 +23,7 @@ public interface IThesisRepository : IAsyncSubRepository<ThesisInput, ThesisOutp
     Task<Pagination<ThesisOutput>> GetPgnOfPublishedThesis(string lecturerId, int page, int pageSize, string keyword);
     Task<Pagination<ThesisOutput>> GetPgnOfRejectedThesis(string lecturerId, int page, int pageSize, string keyword);
     Task<Pagination<ThesisOutput>> GetPgnOfApprovedThesis(string lecturerId, int page, int pageSize, string keyword);
+    Task<DataResponse> AssignSupervisor(string thesisId, string lectureId);
+    Task<DataResponse> AssignSupervisor(string thesisId);
+    Task<DataResponse> AssignSupervisors();
 }
