@@ -196,7 +196,7 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
             string groupId = UidHelper.GetShortUid();
             DateTime currentDatetime = DateTime.Now;
 
-            ThesisGroup studentThesisGroup = new ThesisGroup
+            ThesisGroup thesisGroup = new ThesisGroup
             {
                 Id = groupId,
                 Name = thesisRegistrationInput.GroupName,
@@ -205,7 +205,7 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
                 CreatedAt = currentDatetime
             };
 
-            await _context.ThesisGroups.AddAsync(studentThesisGroup);
+            await _context.ThesisGroups.AddAsync(thesisGroup);
             await _context.SaveChangesAsync();
 
             thesis.ThesisGroupId = groupId;
@@ -235,16 +235,17 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
 
             await dbContextTransaction.CommitAsync();
 
-            List<Student> students = await _context.Students.Where(s => studentIdList.Any(si => si == s.Id))
+            List<StudentOutput> students = await _context.Students.Where(s => studentIdList.Any(si => si == s.Id))
+                .Select(s => new StudentOutput { Id = s.Id, Surname = s.Surname, Name = s.Name, Email = s.Email})
                 .ToListAsync();
 
-            Student registeredStudent = students
+            StudentOutput registeredStudent = students
                 .Find(s => s.Id == thesisRegistrationInput.RegisteredStudentId);
 
             StringBuilder studentListSb = new StringBuilder();
-            foreach (Student student in students)
+            foreach (StudentOutput student in students)
             {
-                studentListSb.Append($"<p style=\"color: #000; text-align: left;\">{student.Id} - {student.Name}</p>");
+                studentListSb.Append($"<p style=\"color: #000; text-align: left;\">{student.Id} - {student.FullName}</p>");
             }
 
             string mailContForRegdStudent = Resources.EmailResource.thesis_registered;
@@ -253,7 +254,7 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
 
             string mailContForMembers = Resources.EmailResource.thesis_registered_for_member;
             mailContForMembers = mailContForMembers.Replace("@thesisName", thesis.Name)
-                .Replace("@registeredStudent", $"{registeredStudent.Id} - {registeredStudent.Name}");
+                .Replace("@registeredStudent", $"{registeredStudent.Id} - {registeredStudent.FullName}");
 
             await _emailService.SendAsync(
                 registeredStudent.Email,

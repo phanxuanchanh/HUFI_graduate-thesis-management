@@ -8,7 +8,6 @@ using GraduateThesis.ExtensionMethods;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DAL;
 using GraduateThesis.Repository.DTO;
-using MathNet.Numerics.Distributions;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using MiniExcelLibs;
@@ -48,7 +47,7 @@ public class StudentRepository : AsyncSubRepository<Student, StudentInput, Stude
             Id = s.Id,
             Surname = s.Surname,
             Name = s.Name,
-            Address = s.Address,
+            Email = s.Email,
             StudentClass = new StudentClassOutput
             {
                 Id = s.StudentClass.Id,
@@ -108,6 +107,7 @@ public class StudentRepository : AsyncSubRepository<Student, StudentInput, Stude
             student.Birthday = DateTime.ParseExact(s[6] as string, "dd/MM/yyyy", null);
             student.Password = "default";
             student.Salt = "default";
+            student.CreatedAt = DateTime.Now;
 
             return student;
         };
@@ -184,6 +184,72 @@ public class StudentRepository : AsyncSubRepository<Student, StudentInput, Stude
             };
 
         return new DataResponse<StudentOutput> { Status = DataResponseStatus.Success };
+    }
+
+    public async Task<Pagination<StudentOutput>> GetPaginationAsync(int page, int pageSize, string orderBy, OrderOptions orderOptions, string searchBy, string keyword)
+    {
+        IQueryable<Student> queryable = _context.Students.Where(f => f.IsDeleted == false);
+
+        if (!string.IsNullOrEmpty(keyword) && string.IsNullOrEmpty(searchBy))
+        {
+            queryable = queryable.Where(f => f.Id.Contains(keyword) || f.Surname.Contains(keyword) || f.Name.Contains(keyword) || f.Email.Contains(keyword));
+        }
+
+        if (!string.IsNullOrEmpty(keyword) && !string.IsNullOrEmpty(searchBy))
+        {
+            switch (searchBy)
+            {
+                case "All": queryable = queryable.Where(f => f.Id.Contains(keyword) || f.Surname.Contains(keyword) || f.Name.Contains(keyword) || f.Email.Contains(keyword)); break;
+                case "Id": queryable = queryable.Where(f => f.Id.Contains(keyword)); break;
+                case "Surname": queryable = queryable.Where(f => f.Surname.Contains(keyword)); break;
+                case "Name": queryable = queryable.Where(f => f.Name.Contains(keyword)); break;
+                case "ClassName": queryable = queryable.Where(f => f.StudentClass.Name.Contains(keyword)); break;
+                case "Email": queryable = queryable.Where(f => f.Email.Contains(keyword)); break;
+            }
+        }
+
+        if (string.IsNullOrEmpty(orderBy))
+        {
+            queryable = queryable.OrderByDescending(f => f.CreatedAt);
+        }
+        else if (orderOptions == OrderOptions.ASC)
+        {
+            switch (orderBy)
+            {
+                case "Id": queryable = queryable.OrderBy(f => f.Id); break;
+                case "Surname": queryable = queryable.OrderBy(f => f.Surname); break;
+                case "Name": queryable = queryable.OrderBy(f => f.Name); break;
+                case "ClassName": queryable = queryable.OrderBy(f => f.StudentClass.Name); break;
+                case "Email": queryable = queryable.OrderBy(f => f.Email); break;
+                case "CreatedAt": queryable = queryable.OrderBy(f => f.CreatedAt); break;
+            }
+        }
+        else
+        {
+            switch (orderBy)
+            {
+                case "Id": queryable = queryable.OrderByDescending(f => f.Id); break;
+                case "Surname": queryable = queryable.OrderByDescending(f => f.Surname); break;
+                case "Name": queryable = queryable.OrderByDescending(f => f.Name); break;
+                case "ClassName": queryable = queryable.OrderByDescending(f => f.StudentClass.Name); break;
+                case "Email": queryable = queryable.OrderByDescending(f => f.Email); break;
+                case "CreatedAt": queryable = queryable.OrderByDescending(f => f.CreatedAt); break;
+            }
+        }
+
+        int n = (page - 1) * pageSize;
+        int totalItemCount = await queryable.CountAsync();
+
+        List<StudentOutput> onePageOfData = await queryable.Skip(n).Take(pageSize)
+            .Select(PaginationSelector).ToListAsync();
+
+        return new Pagination<StudentOutput>
+        {
+            Page = page,
+            PageSize = pageSize,
+            TotalItemCount = totalItemCount,
+            Items = onePageOfData
+        };
     }
 
     public override async Task<DataResponse> ImportAsync(Stream stream, ImportMetadata importMetadata)
@@ -421,31 +487,73 @@ public class StudentRepository : AsyncSubRepository<Student, StudentInput, Stude
         };
     }
 
-    public async Task<Pagination<StudentOutput>> GetPgnOfUnRegdStdntAsync(int page, int pageSize, string keyword)
+    public async Task<Pagination<StudentOutput>> GetPgnOfUnRegdStdntAsync(int page, int pageSize, string orderBy, OrderOptions orderOptions, string searchBy, string keyword)
     {
+        IQueryable<Student> queryable = _context.Students.Include(i => i.StudentClass).Where(s => s.IsDeleted == false);
+
+        if (!string.IsNullOrEmpty(keyword) && string.IsNullOrEmpty(searchBy))
+        {
+            queryable = queryable.Where(s => s.Id.Contains(keyword) || s.Surname.Contains(keyword) || s.Name.Contains(keyword) || s.Email.Contains(keyword));
+        }
+
+        if (!string.IsNullOrEmpty(keyword) && !string.IsNullOrEmpty(searchBy))
+        {
+            switch (searchBy)
+            {
+                case "All": queryable = queryable.Where(s => s.Id.Contains(keyword) || s.Surname.Contains(keyword) || s.Name.Contains(keyword) || s.Email.Contains(keyword)); break;
+                case "Id": queryable = queryable.Where(s => s.Id.Contains(keyword)); break;
+                case "Surname": queryable = queryable.Where(s => s.Surname.Contains(keyword)); break;
+                case "Name": queryable = queryable.Where(s => s.Name.Contains(keyword)); break;
+                case "ClassName": queryable = queryable.Where(s => s.StudentClass.Name.Contains(keyword)); break;
+                case "Email": queryable = queryable.Where(s => s.Email.Contains(keyword)); break;
+            }
+        }
+
         List<string> studentIds = await _context.ThesisGroupDetails.Include(i => i.Student)
                 .Where(gd => gd.IsDeleted == false && gd.Student.IsDeleted == false)
                 .Where(gd => (gd.IsApproved == true && gd.InProgress == true) || gd.IsCompleted == true)
                 .Select(s => s.StudentId).ToListAsync();
 
-        int n = (page - 1) * pageSize;
-        int totalItemCount = await _context.Students.Include(i => i.StudentClass)
-            .Where(s => s.IsDeleted == false)
-            .Where(s => s.Id.Contains(keyword) || s.Surname.Contains(keyword) || s.Name.Contains(keyword) || s.Description.Contains(keyword) || s.Email.Contains(keyword))
-            .WhereBulkNotContains(studentIds, s => s.Id)
-            .CountAsync();
+        queryable.WhereBulkNotContains(studentIds, s => s.Id);
 
-        List<StudentOutput> onePageOfData = await _context.Students.Include(i => i.StudentClass)
-            .Where(s => s.IsDeleted == false)
-            .Where(s => s.Id.Contains(keyword) || s.Surname.Contains(keyword) || s.Name.Contains(keyword) || s.Description.Contains(keyword) || s.Email.Contains(keyword))
-            .WhereBulkNotContains(studentIds, s => s.Id)
-            .Skip(n).Take(pageSize)
+        if (string.IsNullOrEmpty(orderBy))
+        {
+            queryable = queryable.OrderByDescending(f => f.CreatedAt);
+        }
+        else if (orderOptions == OrderOptions.ASC)
+        {
+            switch (orderBy)
+            {
+                case "Id": queryable = queryable.OrderBy(s => s.Id); break;
+                case "Surname": queryable = queryable.OrderBy(s => s.Surname); break;
+                case "Name": queryable = queryable.OrderBy(s => s.Name); break;
+                case "ClassName": queryable = queryable.OrderBy(s => s.StudentClass.Name); break;
+                case "Email": queryable = queryable.OrderBy(s => s.Email); break;
+                case "CreatedAt": queryable = queryable.OrderBy(s => s.CreatedAt); break;
+            }
+        }
+        else
+        {
+            switch (orderBy)
+            {
+                case "Id": queryable = queryable.OrderByDescending(s => s.Id); break;
+                case "Surname": queryable = queryable.OrderByDescending(s => s.Surname); break;
+                case "Name": queryable = queryable.OrderByDescending(s => s.Name); break;
+                case "ClassName": queryable = queryable.OrderByDescending(s => s.StudentClass.Name); break;
+                case "Email": queryable = queryable.OrderByDescending(s => s.Email); break;
+                case "CreatedAt": queryable = queryable.OrderByDescending(s => s.CreatedAt); break;
+            }
+        }
+
+        int n = (page - 1) * pageSize;
+        int totalItemCount = await queryable.CountAsync();
+        List<StudentOutput> onePageOfData = await queryable.Skip(n).Take(pageSize)
             .Select(s => new StudentOutput
             {
                 Id = s.Id,
                 Surname = s.Surname,
                 Name = s.Name,
-                Address = s.Address,
+                Email = s.Email,
                 StudentClass = new StudentClassOutput
                 {
                     Id = s.StudentClass.Id,
@@ -464,14 +572,62 @@ public class StudentRepository : AsyncSubRepository<Student, StudentInput, Stude
         };
     }
 
-    public async Task<Pagination<StudentOutput>> GetPgnOfRegdStdntAsync(int page, int pageSize, string keyword)
+    public async Task<Pagination<StudentOutput>> GetPgnOfRegdStdntAsync(int page, int pageSize, string orderBy, OrderOptions orderOptions, string searchBy, string keyword)
     {
+        IQueryable<ThesisGroupDetail> queryable = _context.ThesisGroupDetails
+            .Include(i => i.StudentThesisGroup).Include(i => i.Student).Include(i => i.Student.StudentClass)
+            .Where(gd => gd.IsDeleted == false && gd.Student.IsDeleted == false && gd.StudentThesisGroup.IsDeleted == false)
+            .Where(gd => (gd.IsApproved == true && gd.InProgress == true) || gd.IsCompleted == true);
+
+        if (!string.IsNullOrEmpty(keyword) && string.IsNullOrEmpty(searchBy))
+        {
+            queryable = queryable.Where(gd => gd.Student.Id.Contains(keyword) || gd.Student.Surname.Contains(keyword) || gd.Student.Name.Contains(keyword) || gd.Student.Email.Contains(keyword) || gd.Student.StudentClass.Name.Contains(keyword));
+        }
+
+        if (!string.IsNullOrEmpty(keyword) && !string.IsNullOrEmpty(searchBy))
+        {
+            switch (searchBy)
+            {
+                case "All": queryable = queryable.Where(gd => gd.Student.Id.Contains(keyword) || gd.Student.Surname.Contains(keyword) || gd.Student.Name.Contains(keyword) || gd.Student.Email.Contains(keyword) || gd.Student.StudentClass.Name.Contains(keyword)); break;
+                case "Id": queryable = queryable.Where(gd => gd.Student.Id.Contains(keyword)); break;
+                case "Surname": queryable = queryable.Where(gd => gd.Student.Surname.Contains(keyword)); break;
+                case "Name": queryable = queryable.Where(gd => gd.Student.Name.Contains(keyword)); break;
+                case "ClassName": queryable = queryable.Where(gd => gd.Student.StudentClass.Name.Contains(keyword)); break;
+                case "Email": queryable = queryable.Where(gd => gd.Student.Email.Contains(keyword)); break;
+            }
+        }
+
+        if (string.IsNullOrEmpty(orderBy))
+        {
+            queryable = queryable.OrderByDescending(f => f.CreatedAt);
+        }
+        else if (orderOptions == OrderOptions.ASC)
+        {
+            switch (orderBy)
+            {
+                case "Id": queryable = queryable.OrderBy(gd => gd.Student.Id); break;
+                case "Surname": queryable = queryable.OrderBy(gd => gd.Student.Surname); break;
+                case "Name": queryable = queryable.OrderBy(gd => gd.Student.Name); break;
+                case "ClassName": queryable = queryable.OrderBy(gd => gd.Student.StudentClass.Name); break;
+                case "Email": queryable = queryable.OrderBy(gd => gd.Student.Email); break;
+                case "CreatedAt": queryable = queryable.OrderBy(gd => gd.Student.CreatedAt); break;
+            }
+        }
+        else
+        {
+            switch (orderBy)
+            {
+                case "Id": queryable = queryable.OrderByDescending(gd => gd.Student.Id); break;
+                case "Surname": queryable = queryable.OrderByDescending(gd => gd.Student.Surname); break;
+                case "Name": queryable = queryable.OrderByDescending(gd => gd.Student.Name); break;
+                case "ClassName": queryable = queryable.OrderByDescending(gd => gd.Student.StudentClass.Name); break;
+                case "Email": queryable = queryable.OrderByDescending(gd => gd.Student.Email); break;
+                case "CreatedAt": queryable = queryable.OrderByDescending(gd => gd.Student.CreatedAt); break;
+            }
+        }
+
         int n = (page - 1) * pageSize;
-        int totalItemCount = await _context.ThesisGroupDetails
-            .Include(i => i.Student).Include(i => i.Student.StudentClass)
-            .Where(gd => gd.IsDeleted == false && gd.Student.IsDeleted == false)
-            .Where(gd => (gd.IsApproved == true && gd.InProgress == true) || gd.IsCompleted == true)
-            .Where(gd => gd.Student.Id.Contains(keyword) || gd.Student.Surname.Contains(keyword) || gd.Student.Name.Contains(keyword) || gd.Student.Description.Contains(keyword) || gd.Student.Email.Contains(keyword))
+        int totalItemCount = await queryable
             .Join(
                 _context.Theses.Where(t => t.IsDeleted == false),
                 groudDetail => groudDetail.StudentThesisGroupId,
@@ -483,11 +639,7 @@ public class StudentRepository : AsyncSubRepository<Student, StudentInput, Stude
                 }
             ).CountAsync();
 
-        List<StudentOutput> onePageOfData = await _context.ThesisGroupDetails
-            .Include(i => i.Student).Include(i => i.Student.StudentClass)
-            .Where(gd => gd.IsDeleted == false && gd.Student.IsDeleted == false)
-            .Where(gd => (gd.IsApproved == true && gd.InProgress == true) || gd.IsCompleted == true)
-            .Where(gd => gd.Student.Id.Contains(keyword) || gd.Student.Surname.Contains(keyword) || gd.Student.Name.Contains(keyword) || gd.Student.Description.Contains(keyword) || gd.Student.Email.Contains(keyword))
+        List<StudentOutput> onePageOfData = await queryable
             .Join(
                 _context.Theses.Where(t => t.IsDeleted == false),
                 groudDetail => groudDetail.StudentThesisGroupId,

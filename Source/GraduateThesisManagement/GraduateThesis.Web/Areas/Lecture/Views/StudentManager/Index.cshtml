@@ -13,22 +13,22 @@
                     <table class="table table-striped dataTable-table" id="table1">
                         <thead>
                             <tr>
-                                <th data-sortable="" style="width: 10%;" class="text-center">
-                                    <a href="#" class="dataTable-sorter"><input type="checkbox" id="checkAll" /></a>
-                                </th>
-                                <th data-sortable="" style="width: 10%;">
+                                <th data-sortable="" style="width: 8%;">
                                     <a href="#" class="dataTable-sorter">STT</a>
                                 </th>
-                                <th data-sortable="" style="width: 20%;">
+                                <th data-sortable="" style="width: 15%;">
                                     <a href="#" class="dataTable-sorter">@Html.DisplayNameFor(model => model.Id)</a>
                                 </th>
                                 <th data-sortable="" style="width: 20%;">
                                     <a href="#" class="dataTable-sorter">@Html.DisplayNameFor(model => model.FullName)</a>
                                 </th>
-                                <th data-sortable="" style="width: 20%;">
+                                <th data-sortable="" style="width: 15%;">
                                     <a href="#" class="dataTable-sorter">@Html.DisplayNameFor(model => model.StudentClass.Name)</a>
                                 </th>
-                                <th data-sortable="" style="width: 30%;">
+                                <th data-sortable="" style="width: 22%;">
+                                    <a href="#" class="dataTable-sorter">@Html.DisplayNameFor(model => model.Email)</a>
+                                </th>
+                                <th data-sortable="" style="width: 20%;">
                                     <a href="#" class="dataTable-sorter">Công cụ</a>
                                 </th>
                             </tr>
@@ -40,11 +40,11 @@
                             @foreach (StudentOutput student in (IEnumerable<StudentOutput>)ViewData["PagedList"]!)
                             {
                                 <tr>
-                                    <td class="text-center"><input type="checkbox" id="checkbox_@count" /></td>
                                     <td>@count</td>
                                     <td>@student.Id</td>
                                     <td>@student.FullName</td>
                                     <td>@student.StudentClass.Name</td>
+                                    <td>@student.Email</td>
                                     <td>
                                         <a class="btn btn-success btn-sm" asp-action="Details" asp-route-id="@student.Id">
                                             <i class="fas fa-folder"></i> Chi tiết

@@ -49,7 +49,7 @@ public class FacultyStaffManagerController : WebControllerBase<IFacultyStaffRepo
     [Route("list")]
     [HttpGet]
     [PageName(Name = "Danh sách giảng viên")]
-    public async Task<IActionResult> Index(int page = 1, int pageSize = 10, string orderBy = null, string orderOptions = "ASC", string searchBy = null, string keyword = null)
+    public async Task<IActionResult> Index(int page = 1, int pageSize = 10, string orderBy = "CreatedAt", string orderOptions = "DESC", string searchBy = "All", string keyword = null)
     {
         OrderOptions orderOpts = (orderOptions == "ASC") ? OrderOptions.ASC : OrderOptions.DESC;
         Pagination<FacultyStaffOutput> pagination = await _facultyStaffRepository.GetPaginationAsync(page, pageSize, orderBy, orderOpts, searchBy, keyword);
