@@ -11,6 +11,8 @@ using X.PagedList;
 using GraduateThesis.WebExtensions;
 using GraduateThesis.ApplicationCore.Enums;
 using GraduateThesis.ApplicationCore.Authorization;
+using GraduateThesis.Repository.BLL.Implements;
+using static Microsoft.Extensions.Logging.EventSource.LoggingEventSource;
 
 namespace GraduateThesis.Web.Areas.Lecture.Controllers;
 
@@ -27,6 +29,8 @@ public class ThesisManagerController : WebControllerBase<IThesisRepository, Thes
     private readonly IThesisRepository _thesisRepository;
     private readonly IThesisRevisionRepository _thesisRevisionRepository;
     private readonly ISpecializationRepository _specializationRepository;
+    private readonly IFacultyStaffRepository _facultyStaffRepository;
+
 
     public ThesisManagerController(IRepository repository, IAuthorizationManager authorizationManager)
         : base(repository.ThesisRepository)
@@ -38,6 +42,7 @@ public class ThesisManagerController : WebControllerBase<IThesisRepository, Thes
         _topicRepository = repository.TopicRepository;
         _specializationRepository = repository.SpecializationRepository;
         _accountManager = authorizationManager.AccountManager;
+        _facultyStaffRepository = repository.FacultyStaffRepository;
     }
 
     protected override async Task LoadSelectListAsync()
@@ -293,5 +298,44 @@ public class ThesisManagerController : WebControllerBase<IThesisRepository, Thes
         AddTempData(dataResponse);
 
         return RedirectToAction("GetRevisions", new { thesisId = thesisRevision.Thesis.Id });
+    }
+
+    [Route("assignSupervisor/{thesisId}")]
+    [HttpGet]
+    [PageName(Name = "Phân công giảng viên đề tài khóa luận")]
+    public async Task<IActionResult> LoadAssignSupervisorView(string thesisId, string roleId, int page = 1, int pageSize = 5, string keyword = "")
+    {
+        ThesisOutput thesis = await _thesisRepository.GetAsync(thesisId);
+        Pagination<FacultyStaffOutput> pagination = await _facultyStaffRepository
+            .GetPaginationAsync(page, pageSize, null, OrderOptions.ASC, keyword);
+
+        StaticPagedList<FacultyStaffOutput> pagedList = pagination.ToStaticPagedList();
+
+        ViewData["PagedList"] = pagedList;
+        ViewData["Keyword"] = keyword;
+        ViewData["Role"] = thesisId;
+
+        return View(thesis);
+    }
+
+    [Route("assign/{thesisId}")]
+    [HttpPost]
+    [PageName(Name = "Phân công giảng viên hướng dẫn")]
+    public async Task<IActionResult> DefautAssignSupervisor(string thesisId)
+    {
+        DataResponse dataResponse = await _thesisRepository.AssignSupervisor(thesisId);
+        AddTempData(dataResponse);
+        return RedirectToAction("LoadAssignSupervisorView", new { thesisId = thesisId });
+
+    }
+    [Route("assign/{thesisId}/{lectureId}")]
+    [HttpPost]
+    [PageName(Name = "Phân công giảng viên hướng dẫn")]
+    public async Task<IActionResult> AssignSupervisor(string thesisId, string lectureId)
+    {
+        DataResponse dataResponse = await _thesisRepository.AssignSupervisor(thesisId, lectureId);
+        AddTempData(dataResponse);
+        return RedirectToAction("LoadAssignSupervisorView", new { thesisId = thesisId});
+
     }
 }

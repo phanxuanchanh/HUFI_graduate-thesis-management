@@ -1,4 +1,5 @@
-﻿using GraduateThesis.ApplicationCore.Email;
+﻿using Azure;
+using GraduateThesis.ApplicationCore.Email;
 using GraduateThesis.ApplicationCore.Enums;
 using GraduateThesis.ApplicationCore.Models;
 using GraduateThesis.ApplicationCore.Repository;
@@ -6,8 +7,10 @@ using GraduateThesis.ApplicationCore.Uuid;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DAL;
 using GraduateThesis.Repository.DTO;
+using MathNet.Numerics.LinearAlgebra.Factorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
+using NPOI.OpenXmlFormats.Dml.Spreadsheet;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -16,6 +19,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using X.PagedList;
+using static Microsoft.AspNetCore.Hosting.Internal.HostingApplication;
 
 namespace GraduateThesis.Repository.BLL.Implements;
 
@@ -613,5 +617,70 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
             TotalItemCount = totalItemCount,
             Items = onePageOfData
         };
+    }
+
+    public async Task<DataResponse> AssignSupervisor(string thesisId, string lectureId)
+    {
+        bool checkExists = await _context.Theses
+          .AnyAsync(t => t.Id == thesisId && t.IsDeleted == false);
+        if (!checkExists)
+            return new DataResponse { Status = DataResponseStatus.NotFound, Message = "Không có đề tài này!" };
+
+        ThesisSupervisor thesisSupervisor = new ThesisSupervisor
+        {
+            ThesisId = thesisId,
+            LectureId = lectureId
+        };
+        await _context.ThesisSupervisors.AddAsync(thesisSupervisor);
+        await _context.SaveChangesAsync();
+
+        return new DataResponse { Status = DataResponseStatus.Success, Message = "Phân công giảng viên cho đề tài thành công!" };
+    }
+
+    public async Task<DataResponse> AssignSupervisors()
+    {
+        List<string> thesisId = await _context.ThesisSupervisors.Include(i => i.Thesis)
+            .Where(t => t.IsDeleted == false && t.Thesis.IsDeleted == false)
+             .Where(gd => gd.IsCompleted == true).Select(gd => gd.ThesisId)
+               .ToListAsync();
+
+        List<Thesis> theses = await _context.Theses
+           .Where(t => t.IsDeleted == false).
+            WhereBulkNotContains(thesisId, s => s.Id)
+             .ToListAsync();
+        foreach (var thesis in theses)
+        {
+            ThesisSupervisor thesisSupervisor = new ThesisSupervisor
+            {
+                LectureId = thesis.LectureId,
+                ThesisId = thesis.ThesisSupervisor.ThesisId
+            };
+            await _context.ThesisSupervisors.AddAsync(thesisSupervisor);
+        }
+        await _context.SaveChangesAsync();
+        return new DataResponse { Status = DataResponseStatus.Success, Message = "Phân công giảng viên cho đề tài thành công!" };
+
+    }
+
+    public async Task<DataResponse> AssignSupervisor(string thesisId)
+    {
+        Thesis thesis = await _context.Theses.Where(t =>t.Id==thesisId && t.IsDeleted == false ).SingleOrDefaultAsync();
+        if (thesis == null)
+            return new DataResponse { Status = DataResponseStatus.NotFound, Message = "Không có đề tài này!" };
+        bool checkExists = await _context.ThesisSupervisors
+        .AnyAsync(t => t.ThesisId == thesisId && t.LectureId == thesis.LectureId);
+        if (checkExists)
+            return new DataResponse { Status = DataResponseStatus.AlreadyExists, Message = "Đề tài này đã được phân công!" };
+
+        ThesisSupervisor thesisSupervisor = new ThesisSupervisor
+        {
+            ThesisId = thesisId,
+            LectureId = thesis.LectureId
+        };
+        await _context.ThesisSupervisors.AddAsync(thesisSupervisor);
+        await _context.SaveChangesAsync();
+
+        return new DataResponse { Status = DataResponseStatus.Success, Message = "Phân công giảng viên cho đề tài thành công!" };
+
     }
 }
