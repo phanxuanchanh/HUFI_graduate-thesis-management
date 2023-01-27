@@ -56,40 +56,16 @@
         </div>
     </div>
 </section>
-<section id="basic-horizontal-layouts">
-    <div class="row match-height">
-        <div class="col-md-12 col-12">
-            <div class="card">
-                <div class="card-header">
-                    <h4 class="card-title">Gán giảng viên ra đề thành giảng viên hướng dẫn cho đề tài</h4>
-                </div>
-                <div class="card-content">
-                    <div class="card-body">
-                        <form class="form form-horizontal" asp-route-thesisId="@Model.Id" asp-action="DefautAssignSupervisor">
-                            <div class="form-body">
-                                <div class="row">
-                                  
-                                    <div class="col-sm-12 d-flex justify-content-center">
-                                        <button type="submit" class="btn btn-success me-1 mb-1">Phân công</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
+
 <section class="section">
     <div class="card">
         <div class="card-header">
-            <h4 class="card-title">Gán giảng viên hướng dẫn cho đề tài</h4>
+            <h4 class="card-title">Gán giảng viên phản biện cho đề tài</h4>
         </div>
         <div class="card-body">
-           
+
             <div class="dataTable-wrapper dataTable-loading no-footer sortable searchable fixed-columns">
-                @await Component.InvokeAsync("FacultyStaffLayout_PagedSearch", new { action = "LoadAssignSupervisorView", enableOrder = false })
+                @await Component.InvokeAsync("FacultyStaffLayout_PagedSearch", new { action = "LoadCounterArgumentView", enableOrder = false })
                 <div class="dataTable-container">
                     <table class="table table-striped dataTable-table" id="table1">
                         <thead>
@@ -125,17 +101,17 @@
                                     <td>
                                         @{
                                             Dictionary<string, string> routeData = new Dictionary<string, string>
-                                            {
-                                                {
-                                                     "thesisId",Model.Id
-                                                },
-                                                {
-                                                     "lectureId",facultyStaff.Id
-                                                }
-                                            };
+                                    {
+                                    {
+                                    "thesisId",Model.Id
+                                    },
+                                    {
+                                    "lectureId",facultyStaff.Id
+                                    }
+                                    };
                                         }
                                         <button type="submit" form="grant_@count" class="btn btn-success btn-sm"><i class="fas fa-trash"></i> Phân công</button>
-                                        <form asp-action="AssignSupervisor" asp-all-route-data="routeData" id="grant_@count" method="post">
+                                        <form asp-action="AssignCounterArgument" asp-all-route-data="routeData" id="grant_@count" method="post">
                                             <input type="hidden" name="thesisId" value="@Model.Id" />
                                             <input type="hidden" name="lectureId" value="@facultyStaff.Id" />
                                         </form>
@@ -146,8 +122,8 @@
                         </tbody>
                     </table>
                 </div>
-                @await Component.InvokeAsync("FacultyStaffLayout_Paged", new { action = "LoadAssignSupervisorView", enableOrder = false })
-          </div>
+                @await Component.InvokeAsync("FacultyStaffLayout_Paged", new { action = "LoadCounterArgumentView", enableOrder = false })
+            </div>
         </div>
     </div>
 
