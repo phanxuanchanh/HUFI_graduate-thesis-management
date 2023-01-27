@@ -197,7 +197,7 @@ public class StudentManagerController : WebControllerBase<IStudentRepository, St
     [Route("registered-students")]
     [HttpGet]
     [PageName(Name = "Danh sách sinh viên đã đăng ký đề tài")]
-    public async Task<IActionResult> GetRegdStudents(int page = 1, int pageSize = 20, string orderBy = "CreatedAt", string orderOptions = "ASC", string searchBy = "All", string keyword = "")
+    public async Task<IActionResult> GetRegdStudents(int page = 1, int pageSize = 20, string orderBy = "CreatedAt", string orderOptions = "DESC", string searchBy = "All", string keyword = "")
     {
         OrderOptions orderOpts = (orderOptions == "ASC") ? OrderOptions.ASC : OrderOptions.DESC;
         Pagination<StudentOutput> pagination = await _studentRepository.GetPgnOfRegdStdntAsync(page, pageSize, orderBy, orderOpts, searchBy, keyword);
@@ -205,6 +205,8 @@ public class StudentManagerController : WebControllerBase<IStudentRepository, St
 
         ViewData["OrderByProperties"] = SetOrderByProperties();
         ViewData["SearchByProperties"] = SetOrderByProperties();
+        ViewData["OrderBy"] = orderBy;
+        ViewData["OrderOptions"] = orderOptions;
         ViewData["PagedList"] = pagedList;
         ViewData["Keyword"] = keyword;
 
@@ -214,7 +216,7 @@ public class StudentManagerController : WebControllerBase<IStudentRepository, St
     [Route("unregistered-students")]
     [HttpGet]
     [PageName(Name = "Danh sách sinh viên chưa đăng ký đề tài")]
-    public async Task<IActionResult> GetUnRegdStudents(int page = 1, int pageSize = 20, string orderBy = "CreatedAt", string orderOptions = "ASC", string searchBy = "All", string keyword = "")
+    public async Task<IActionResult> GetUnRegdStudents(int page = 1, int pageSize = 20, string orderBy = "CreatedAt", string orderOptions = "DESC", string searchBy = "All", string keyword = "")
     {
         OrderOptions orderOpts = (orderOptions == "ASC") ? OrderOptions.ASC : OrderOptions.DESC;
         Pagination<StudentOutput> pagination = await _studentRepository.GetPgnOfUnRegdStdntAsync(page, pageSize, orderBy, orderOpts, searchBy, keyword);
@@ -222,6 +224,8 @@ public class StudentManagerController : WebControllerBase<IStudentRepository, St
 
         ViewData["OrderByProperties"] = SetOrderByProperties();
         ViewData["SearchByProperties"] = SetOrderByProperties();
+        ViewData["OrderBy"] = orderBy;
+        ViewData["OrderOptions"] = orderOptions;
         ViewData["PagedList"] = pagedList;
         ViewData["Keyword"] = keyword;
 

@@ -41,7 +41,7 @@ public class AppRoleManagerController : WebControllerBase<IAppRoleRepository, Ap
     [Route("list")]
     [HttpGet]
     [PageName(Name = "Danh sách quyền")]
-    public override async Task<IActionResult> Index(int page = 1, int pageSize = 10, string orderBy = "", string orderOptions = "ASC", string keyword = "")
+    public override async Task<IActionResult> Index(int page = 1, int pageSize = 10, string orderBy = "CreatedAt", string orderOptions = "DESC", string keyword = "")
     {
         return await IndexResult(page, pageSize, orderBy, orderOptions, keyword);
     }

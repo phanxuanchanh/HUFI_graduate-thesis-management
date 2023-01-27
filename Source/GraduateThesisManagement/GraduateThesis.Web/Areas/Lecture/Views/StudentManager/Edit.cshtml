@@ -7,7 +7,7 @@
         <div class="col-md-12 col-12">
             <div class="card">
                 <div class="card-header">
-                    <h4 class="card-title">@ViewData["PageName"]</h4>
+                    <h4 class="card-title">@ViewData["PageName"]: "@Model.Id - @((Model as StudentOutput)!.FullName)"</h4>
                 </div>
                 <div class="card-content">
                     <div class="card-body">
@@ -42,7 +42,38 @@
                                         <span asp-validation-for="Email" class="text-danger"></span>
                                     </div>
                                     <div class="col-md-4">
-                                        <label asp-for="StudentClassId">Khoa</label>
+                                        <label asp-for="Phone"></label>
+                                    </div>
+                                    <div class="col-md-8 form-group">
+                                        <input asp-for="Phone" class="form-control" placeholder="Nhập số điện thoại" />
+                                        <span asp-validation-for="Phone" class="text-danger"></span>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label asp-for="Gender"></label>
+                                    </div>
+                                    <div class="col-md-8 form-group">
+                                        <select asp-for="Gender" class="form-control">
+                                            <option value="Nam">Nam</option>
+                                            <option value="Nữ">Nữ</option>
+                                        </select>
+                                        <span asp-validation-for="Gender" class="text-danger"></span>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label asp-for="Birthday"></label>
+                                    </div>
+                                    <div class="col-md-8 form-group">
+                                        <input asp-for="Birthday" class="form-control" />
+                                        <span asp-validation-for="Birthday" class="text-danger"></span>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label asp-for="Address"></label>
+                                    </div>
+                                    <div class="col-md-8 form-group">
+                                        <input asp-for="Address" class="form-control" placeholder="Nhập địa chỉ" />
+                                        <span asp-validation-for="Address" class="text-danger"></span>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label asp-for="StudentClassId"></label>
                                     </div>
                                     <div class="col-md-8 form-group">
                                         <select asp-for="StudentClassId" asp-items="@((SelectList)ViewData["StudentClassSelectList"]!)" class="form-control">

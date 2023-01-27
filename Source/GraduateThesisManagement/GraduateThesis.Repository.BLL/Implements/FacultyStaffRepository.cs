@@ -64,6 +64,7 @@ public class FacultyStaffRepository : AsyncSubRepository<FacultyStaff, FacultySt
             Birthday = s.Birthday,
             Gender = s.Gender,
             Description = s.Description,
+            FacultyId = s.FacultyId,
             Faculty = new FacultyOutput
             {
                 Id = s.Faculty.Id,

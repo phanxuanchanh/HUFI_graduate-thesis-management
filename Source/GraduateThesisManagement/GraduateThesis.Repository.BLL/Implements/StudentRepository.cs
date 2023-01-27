@@ -70,11 +70,11 @@ public class StudentRepository : AsyncSubRepository<Student, StudentInput, Stude
             Birthday = s.Birthday,
             Gender = s.Gender,
             Description = s.Description,
+            StudentClassId = s.StudentClassId,
             StudentClass = new StudentClassOutput
             {
                 Id = s.StudentClass.Id,
                 Name = s.StudentClass.Name,
-                Description = s.StudentClass.Description,
             },
             CreatedAt = s.StudentClass.CreatedAt,
             UpdatedAt = s.StudentClass.UpdatedAt,
