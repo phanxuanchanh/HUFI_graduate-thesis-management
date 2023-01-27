@@ -12,6 +12,8 @@ using GraduateThesis.WebExtensions;
 using GraduateThesis.ApplicationCore.Enums;
 using GraduateThesis.ApplicationCore.Authorization;
 
+#nullable disable
+
 namespace GraduateThesis.Web.Areas.Lecture.Controllers;
 
 [Area("Lecture")]
@@ -27,6 +29,7 @@ public class ThesisManagerController : WebControllerBase<IThesisRepository, Thes
     private readonly IThesisRepository _thesisRepository;
     private readonly IThesisRevisionRepository _thesisRevisionRepository;
     private readonly ISpecializationRepository _specializationRepository;
+    private readonly IFacultyStaffRepository _facultyStaffRepository;
 
     public ThesisManagerController(IRepository repository, IAuthorizationManager authorizationManager)
         : base(repository.ThesisRepository)
@@ -37,7 +40,24 @@ public class ThesisManagerController : WebControllerBase<IThesisRepository, Thes
         _trainingLevelRepository = repository.TrainingLevelRepository;
         _topicRepository = repository.TopicRepository;
         _specializationRepository = repository.SpecializationRepository;
+        _facultyStaffRepository = repository.FacultyStaffRepository;
         _accountManager = authorizationManager.AccountManager;
+    }
+
+    protected override Dictionary<string, string> SetOrderByProperties()
+    {
+        return new Dictionary<string, string>
+        {
+            { "Id", "Mã" }, { "Name", "Tên" }, { "CreatedAt", "Ngày tạo" }
+        };
+    }
+
+    protected override Dictionary<string, string> SetSearchByProperties()
+    {
+        return new Dictionary<string, string>
+        {
+            { "Id", "Mã" }, { "Name", "Tên" }
+        };
     }
 
     protected override async Task LoadSelectListAsync()
@@ -55,12 +75,30 @@ public class ThesisManagerController : WebControllerBase<IThesisRepository, Thes
         ViewData["SpecializationsSelectList"] = new SelectList(specializations, "Id", "Name");
     }
 
+    [NonAction]
+    public override Task<IActionResult> Index(int page = 1, int pageSize = 10, string orderBy = null, string orderOptions = "ASC", string keyword = null)
+    {
+        throw new NotImplementedException();
+    }
+
     [Route("list")]
     [HttpGet]
     [PageName(Name = "Danh sách các đề tài khóa luận")]
-    public override async Task<IActionResult> Index(int page = 1, int pageSize = 10, string orderBy = "", string orderOptions = "ASC", string keyword = "")
+    public async Task<IActionResult> Index(int page = 1, int pageSize = 10, string orderBy = "CreatedAt", string orderOptions = "DESC", string searchBy = "All", string keyword = "")
     {
-        return await IndexResult(page, pageSize, orderBy, orderOptions, keyword);
+        OrderOptions orderOpts = (orderOptions == "ASC") ? OrderOptions.ASC : OrderOptions.DESC;
+        Pagination<ThesisOutput> pagination = await _thesisRepository.GetPaginationAsync(page, pageSize, orderBy, orderOpts, searchBy, keyword);
+        StaticPagedList<ThesisOutput> pagedList = pagination.ToStaticPagedList();
+
+        ViewData["OrderByProperties"] = SetOrderByProperties();
+        ViewData["SearchByProperties"] = SetSearchByProperties();
+        ViewData["PagedList"] = pagedList;
+        ViewData["OrderBy"] = orderBy;
+        ViewData["OrderOptions"] = orderOptions;
+        ViewData["SearchBy"] = searchBy;
+        ViewData["Keyword"] = keyword;
+
+        return View();
     }
 
     [Route("details/{id}")]
@@ -100,6 +138,7 @@ public class ThesisManagerController : WebControllerBase<IThesisRepository, Thes
     [PageName(Name = "Chỉnh sửa đề tài khóa luận")]
     public override async Task<IActionResult> Edit([Required] string id, ThesisInput thesisInput)
     {
+        ViewData["Lecturer"] = await _facultyStaffRepository.GetAsync(thesisInput.LectureId);
         return await EditResult(id, thesisInput);
     }
 
@@ -236,18 +275,30 @@ public class ThesisManagerController : WebControllerBase<IThesisRepository, Thes
     [Route("my-thesis")]
     [HttpGet]
     [PageName(Name = "Danh sách đề tài của tôi")]
-    public async Task<IActionResult> GetThesisOfLecturer(int page = 1, int pageSize = 10, string keyword = "")
+    public async Task<IActionResult> GetThesesOfLecturer(int page = 1, int pageSize = 10, string orderBy = "CreatedAt", string orderOptions = "DESC", string searchBy = "All", string keyword = "")
     {
         _accountManager.SetHttpContext(HttpContext);
         string userId = _accountManager.GetUserId();
 
+        OrderOptions orderOpts = (orderOptions == "ASC") ? OrderOptions.ASC : OrderOptions.DESC;
         Pagination<ThesisOutput> pagination = await _thesisRepository.GetPgnOfApprovedThesis(userId, page, pageSize, keyword);
         StaticPagedList<ThesisOutput> pagedList = pagination.ToStaticPagedList();
 
+        ViewData["OrderByProperties"] = SetOrderByProperties();
+        ViewData["SearchByProperties"] = SetSearchByProperties();
         ViewData["PagedList"] = pagedList;
+        ViewData["OrderBy"] = orderBy;
+        ViewData["OrderOptions"] = orderOptions;
+        ViewData["SearchBy"] = searchBy;
         ViewData["Keyword"] = keyword;
 
         return View();
+    }
+
+    [NonAction]
+    public Task<IActionResult> GetRejectedListOfLecturer(int page = 1, int pageSize = 10, string orderBy = "CreatedAt", string orderOptions = "DESC", string searchBy = "All", string keyword = "")
+    {
+        throw new NotImplementedException();
     }
 
     [Route("revisions/{thesisId}")]

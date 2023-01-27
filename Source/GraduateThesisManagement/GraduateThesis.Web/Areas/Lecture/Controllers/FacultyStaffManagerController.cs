@@ -34,6 +34,21 @@ public class FacultyStaffManagerController : WebControllerBase<IFacultyStaffRepo
         _facultyStaffRepository = repository.FacultyStaffRepository;
     }
 
+    protected override Dictionary<string, string> SetOrderByProperties()
+    {
+        return new Dictionary<string, string>
+        {
+            { "Id", "Mã" }, { "Surname", "Họ" }, { "Name", "Tên" }, { "Email", "Email" }, { "CreatedAt", "Ngày tạo" }
+        };
+    }
+
+    protected override Dictionary<string, string> SetSearchByProperties()
+    {
+        return new Dictionary<string, string> {
+            { "All", "Tất cả" }, { "Id", "Mã" }, { "Surname", "Họ" }, { "Name", "Tên" }, { "Email", "Email" }
+        };
+    }
+
     protected override async Task LoadSelectListAsync()
     {
         List<FacultyOutput> faculties = await _facultyRepository.GetListAsync(50);
@@ -55,14 +70,8 @@ public class FacultyStaffManagerController : WebControllerBase<IFacultyStaffRepo
         Pagination<FacultyStaffOutput> pagination = await _facultyStaffRepository.GetPaginationAsync(page, pageSize, orderBy, orderOpts, searchBy, keyword);
         StaticPagedList<FacultyStaffOutput> pagedList = pagination.ToStaticPagedList();
 
-        ViewData["OrderByProperties"] = new Dictionary<string, string>{
-            { "Id", "Mã" }, { "Surname", "Họ" }, { "Name", "Tên" }, { "Email", "Email" }, { "CreatedAt", "Ngày tạo" }
-        };
-
-        ViewData["SearchByProperties"] = new Dictionary<string, string> {
-            { "All", "Tất cả" }, { "Id", "Mã" }, { "Surname", "Họ" }, { "Name", "Tên" }, { "Email", "Email" }
-        };
-
+        ViewData["OrderByProperties"] = SetOrderByProperties();
+        ViewData["SearchByProperties"] = SetSearchByProperties();
         ViewData["PagedList"] = pagedList;
         ViewData["OrderBy"] = orderBy;
         ViewData["OrderOptions"] = orderOptions;

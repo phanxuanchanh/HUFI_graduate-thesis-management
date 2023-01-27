@@ -49,7 +49,13 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
             Id = s.Id,
             Name = s.Name,
             MaxStudentNumber = s.MaxStudentNumber,
-            ThesisGroupId = s.ThesisGroupId
+            ThesisGroupId = s.ThesisGroupId,
+            Lecturer = new FacultyStaffOutput
+            {
+                Id = s.Lecture.Id,
+                Surname = s.Lecture.Surname,
+                Name = s.Lecture.Name
+            }
         };
 
         ListSelector = PaginationSelector;
@@ -59,6 +65,7 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
             Name = s.Name,
             Description = s.Description,
             MaxStudentNumber = s.MaxStudentNumber,
+            Credits = s.Credits,
             SourceCode = s.SourceCode,
             Notes = s.Notes,
             TopicId = s.TopicId,
@@ -68,12 +75,14 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
                 Name = s.Topic.Name,
                 Description = s.Topic.Description
             },
+            LectureId = s.LectureId,
             Lecturer = new FacultyStaffOutput
             {
                 Id = s.Lecture.Id,
                 Surname = s.Lecture.Surname,
                 Name = s.Lecture.Name
             },
+            ThesisGroupId = s.ThesisGroupId,
             ThesisGroup = (s.ThesisGroup == null) ? null : new ThesisGroupOutput
             {
                 Id = s.ThesisGroup.Id,
@@ -81,16 +90,19 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
                 Description = s.ThesisGroup!.Description,
                 StudentQuantity = s.ThesisGroup!.StudentQuantity
             },
+            TrainingFormId = s.TrainingFormId,
             TrainingForm = (s.TrainingForm == null) ? null : new TrainingFormOutput
             {
                 Id = s.TrainingForm.Id,
                 Name = s.TrainingForm!.Name,
             },
+            TrainingLevelId = s.TrainingLevelId,
             TrainingLevel = new TrainingLevelOutput
             {
                 Id = s.TrainingLevel.Id,
                 Name = s.TrainingLevel!.Name,
             },
+            SpecializationId = s.SpecializationId,
             Specialization = (s.Specialization == null) ? null : new SpecializationOutput
             {
                 Id = s.Specialization.Id,
@@ -145,6 +157,81 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
         entity.SpecializationId = input.SpecializationId;
         entity.Semester = input.Semester;
         entity.CreatedAt = DateTime.Now;
+    }
+
+    public async Task<Pagination<ThesisOutput>> GetPaginationAsync(int page, int pageSize, string orderBy, OrderOptions orderOptions, string searchBy, string keyword)
+    {
+        IQueryable<Thesis> queryable = _context.Theses.Include(i => i.Lecture)
+            .Where(t => t.IsDeleted == false);
+
+        if (!string.IsNullOrEmpty(keyword) && string.IsNullOrEmpty(searchBy))
+        {
+            queryable = queryable.Where(t => t.Id.Contains(keyword) || t.Name.Contains(keyword) || t.Year.Contains(keyword));
+        }
+
+        if (!string.IsNullOrEmpty(keyword) && !string.IsNullOrEmpty(searchBy))
+        {
+            switch (searchBy)
+            {
+                case "All": queryable = queryable.Where(t => t.Id.Contains(keyword) || t.Name.Contains(keyword) || t.Year.Contains(keyword)); break;
+                case "Id": queryable = queryable.Where(t => t.Id.Contains(keyword)); break;
+                case "Name": queryable = queryable.Where(t => t.Name.Contains(keyword)); break;
+                case "Year": queryable = queryable.Where(t => t.Year.Contains(keyword)); break;
+                case "LectureName": queryable = queryable.Where(t => t.Lecture.Name.Contains(keyword)); break;
+                case "Semester":
+                    {
+                        int semester = 0;
+                        if (int.TryParse(keyword, out semester))
+                        {
+                            queryable = queryable.Where(t => t.Semester == 1);
+                        }
+                        break;
+                    }
+            }
+        }
+
+        if (string.IsNullOrEmpty(orderBy))
+        {
+            queryable = queryable.OrderByDescending(f => f.CreatedAt);
+        }
+        else if (orderOptions == OrderOptions.ASC)
+        {
+            switch (orderBy)
+            {
+                case "Id": queryable = queryable.OrderBy(t => t.Id); break;
+                case "Name": queryable = queryable.OrderBy(t => t.Name); break;
+                case "Year": queryable = queryable.OrderBy(t => t.Year); break;
+                case "Semester": queryable = queryable.OrderBy(t => t.Semester); break;
+                case "LectureName": queryable = queryable.OrderBy(t => t.Lecture.Name); break;
+                case "CreatedAt": queryable = queryable.OrderBy(t => t.CreatedAt); break;
+            }
+        }
+        else
+        {
+            switch (orderBy)
+            {
+                case "Id": queryable = queryable.OrderByDescending(t => t.Id); break;
+                case "Name": queryable = queryable.OrderByDescending(t => t.Name); break;
+                case "Year": queryable = queryable.OrderByDescending(t => t.Year); break;
+                case "Semester": queryable = queryable.OrderByDescending(t => t.Semester); break;
+                case "LectureName": queryable = queryable.OrderByDescending(t => t.Lecture.Name); break;
+                case "CreatedAt": queryable = queryable.OrderByDescending(t => t.CreatedAt); break;
+            }
+        }
+
+        int n = (page - 1) * pageSize;
+        int totalItemCount = await queryable.CountAsync();
+
+        List<ThesisOutput> onePageOfData = await queryable.Skip(n).Take(pageSize)
+            .Select(PaginationSelector).ToListAsync();
+
+        return new Pagination<ThesisOutput>
+        {
+            Page = page,
+            PageSize = pageSize,
+            TotalItemCount = totalItemCount,
+            Items = onePageOfData
+        };
     }
 
     public override async Task<DataResponse> ImportAsync(Stream stream, ImportMetadata importMetadata)
@@ -236,7 +323,7 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
             await dbContextTransaction.CommitAsync();
 
             List<StudentOutput> students = await _context.Students.Where(s => studentIdList.Any(si => si == s.Id))
-                .Select(s => new StudentOutput { Id = s.Id, Surname = s.Surname, Name = s.Name, Email = s.Email})
+                .Select(s => new StudentOutput { Id = s.Id, Surname = s.Surname, Name = s.Name, Email = s.Email })
                 .ToListAsync();
 
             StudentOutput registeredStudent = students
@@ -614,5 +701,10 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
             TotalItemCount = totalItemCount,
             Items = onePageOfData
         };
+    }
+
+    public Task<Pagination<ThesisOutput>> GetPgnOf(string lecturerId, int page, int pageSize, string orderBy, OrderOptions orderOptions, string searchBy, string keyword)
+    {
+        throw new NotImplementedException();
     }
 }
