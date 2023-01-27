@@ -104,3 +104,17 @@ public class ThesisOutput : ThesisInput
 
     public SpecializationOutput Specialization { get; set; }
 }
+
+public class ThesisExport
+{
+    public int Index { get; set; }
+    public string Id { get; set; }
+    public string Name { get; set; }
+    public string Description { get; set; }
+    public int MaxStudentNumber { get; set; }
+    public int Credits { get; set; }
+    public string Year { get; set; }
+    public int Semester { get; set; }
+    public string SpecializationName { get; set; }
+    public string TopicName { get; set; }
+}

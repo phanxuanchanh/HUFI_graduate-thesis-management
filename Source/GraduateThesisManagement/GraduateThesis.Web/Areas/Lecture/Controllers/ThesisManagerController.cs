@@ -11,6 +11,9 @@ using X.PagedList;
 using GraduateThesis.WebExtensions;
 using GraduateThesis.ApplicationCore.Enums;
 using GraduateThesis.ApplicationCore.Authorization;
+using GraduateThesis.ApplicationCore.File;
+using Microsoft.Net.Http.Headers;
+using System.Net.Mime;
 
 #nullable disable
 
@@ -156,16 +159,96 @@ public class ThesisManagerController : WebControllerBase<IThesisRepository, Thes
         return await ForceDeleteResult(id);
     }
 
+    [Route("export")]
+    [HttpGet]
+    [PageName(Name = "Xuất dữ liệu ra khỏi hệ thống")]
     public override async Task<IActionResult> Export()
     {
-        return await ExportResult(null!, null!);
+        return await ExportResult();
     }
 
     [Route("export")]
     [HttpPost]
-    public override Task<IActionResult> Export(ExportMetadata exportMetadata)
+    public override async Task<IActionResult> Export(ExportMetadata exportMetadata)
     {
-        throw new NotImplementedException();
+        byte[] bytes = await _thesisRepository.ExportAsync();
+        ContentDisposition contentDisposition = new ContentDisposition
+        {
+            FileName = $"thesis_{DateTime.Now.ToString("ddMMyyyy_HHmmss")}.xlsx"
+        };
+
+        Response.Headers.Add(HeaderNames.ContentDisposition, contentDisposition.ToString());
+
+        return File(bytes, ContentTypeConsts.XLSX);
+    }
+
+    [Route("export-rejected-theses")]
+    [HttpGet]
+    [PageName(Name = "Xuất danh sách đề tài đã bị từ chối duyệt")]
+    public async Task<IActionResult> ExportRejectedTheses()
+    {
+        return await ExportResult();
+    }
+
+    [Route("export-rejected-theses")]
+    [HttpPost]
+    public async Task<IActionResult> ExportRejectedTheses(ExportMetadata exportMetadata)
+    {
+        byte[] bytes = await _thesisRepository.ExportRejectedTheses();
+        ContentDisposition contentDisposition = new ContentDisposition
+        {
+            FileName = $"thesis_{DateTime.Now.ToString("ddMMyyyy_HHmmss")}.xlsx"
+        };
+
+        Response.Headers.Add(HeaderNames.ContentDisposition, contentDisposition.ToString());
+
+        return File(bytes, ContentTypeConsts.XLSX);
+    }
+
+    [Route("export-approved-theses")]
+    [HttpGet]
+    [PageName(Name = "Xuất danh sách đề tài đã được duyệt")]
+    public async Task<IActionResult> ExportApprovedTheses()
+    {
+        return await ExportResult();
+    }
+
+    [Route("export-approved-theses")]
+    [HttpPost]
+    public async Task<IActionResult> ExportApprovedTheses(ExportMetadata exportMetadata)
+    {
+        byte[] bytes = await _thesisRepository.ExportApprovedTheses();
+        ContentDisposition contentDisposition = new ContentDisposition
+        {
+            FileName = $"thesis_{DateTime.Now.ToString("ddMMyyyy_HHmmss")}.xlsx"
+        };
+
+        Response.Headers.Add(HeaderNames.ContentDisposition, contentDisposition.ToString());
+
+        return File(bytes, ContentTypeConsts.XLSX);
+    }
+
+    [Route("export-published-theses")]
+    [HttpGet]
+    [PageName(Name = "Xuất danh sách đề tài đã được công bố")]
+    public async Task<IActionResult> ExportPublishedTheses()
+    {
+        return await ExportResult();
+    }
+
+    [Route("export-published-theses")]
+    [HttpPost]
+    public async Task<IActionResult> ExportPublishedTheses(ExportMetadata exportMetadata)
+    {
+        byte[] bytes = await _thesisRepository.ExportPublishedTheses();
+        ContentDisposition contentDisposition = new ContentDisposition
+        {
+            FileName = $"thesis_{DateTime.Now.ToString("ddMMyyyy_HHmmss")}.xlsx"
+        };
+
+        Response.Headers.Add(HeaderNames.ContentDisposition, contentDisposition.ToString());
+
+        return File(bytes, ContentTypeConsts.XLSX);
     }
 
     [Route("import")]

@@ -42,4 +42,9 @@ public static class StringExtensions
 
         return input.Substring(0, input.Length - (input.Length - 1 - index));
     }
+
+    public static string RemoveHtmlTag(this string input)
+    {
+        return Regex.Replace(input, "<.*?>", String.Empty);
+    }
 }
