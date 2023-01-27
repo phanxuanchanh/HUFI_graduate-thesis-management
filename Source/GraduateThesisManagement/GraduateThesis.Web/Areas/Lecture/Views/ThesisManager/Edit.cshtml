@@ -1,9 +1,11 @@
-﻿@model GraduateThesis.Repository.DTO.ThesisInput
-<h1 class="mt-4">@ViewData["PageName"]</h1>
-<ol class="breadcrumb mb-4">
-    <li class="breadcrumb-item active"></li>
-</ol>
-
+﻿@model ThesisInput
+@{
+    FacultyStaffOutput facultyStaff = (Model as ThesisOutput)?.Lecturer!;
+    if (facultyStaff == null)
+    {
+        facultyStaff = (ViewData["Lecturer"] as FacultyStaffOutput)!;
+    }
+}
 
 @await Component.InvokeAsync("FacultyStaffLayout_StatusArea")
 
@@ -16,93 +18,70 @@
                 </div>
                 <div class="card-content">
                     <div class="card-body">
-                        <form asp-action="Edit" asp-route-id="@Model.Id" class="form form-horizontal" method="post">
+                        <form asp-action="Edit" class="form form-horizontal" method="post">
+                            <input type="hidden" asp-for="LectureId" />
                             <div class="form-body">
-                                <div class="row">
-                                    <div class="col-md-4">
-                                        <label asp-for="Id"></label>
-                                    </div>
-                                    <div class="col-md-8 form-group">
-                                        <input asp-for="Id" class="form-control" disabled />
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label asp-for="Name"></label>
-                                    </div>
-                                    <div class="col-md-8 form-group">
-                                        <input asp-for="Name" class="form-control" placeholder="Nhập tên đề tài" />
-                                        <span asp-validation-for="Name" class="text-danger"></span>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label asp-for="Description"></label>
-                                    </div>
-                                    <div class="col-md-8 form-group">
-                                        <textarea asp-for="Description" class="form-control" placeholder="Mô tả"></textarea>
-                                        <span asp-validation-for="Description" class="text-danger"></span>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label asp-for="MaxStudentNumber"></label>
-                                    </div>
-                                    <div class="col-md-8 form-group">
-                                        <input asp-for="MaxStudentNumber" class="form-control" />
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label asp-for="Year"></label>
-                                    </div>
-                                    <div class="col-md-8 form-group">
-                                        <input asp-for="Year" class="form-control" />
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label asp-for="Notes"></label>
-                                    </div>
-                                    <div class="col-md-8 form-group">
-                                        <input asp-for="Notes" class="form-control" />
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label asp-for="TopicId"></label>
-                                    </div>
-                                    <div class="col-md-8 form-group">
-                                        <select asp-items="@((SelectList)ViewData["TopicList"]!)" class="dataTable-input" style="margin-right: 5px"></select>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label asp-for="TrainingFormId"></label>
-                                    </div>
-                                    <div class="col-md-8 form-group">
-                                        <select asp-items="@((SelectList)ViewData["TrainingFormList"]!)" class="dataTable-input" style="margin-right: 5px"></select>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label asp-for="TrainingLevelId"></label>
-                                    </div>
-                                    <div class="col-md-8 form-group">
-                                        <select asp-items="@((SelectList)ViewData["TrainingLevelList"]!)" class="dataTable-input" style="margin-right: 5px"></select>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label asp-for="LectureId"></label>
-                                    </div>
-                                    <div class="col-md-8 form-group">
-                                        <select asp-items="@((SelectList)ViewData["FacultyStaffList"]!)" class="dataTable-input" style="margin-right: 5px"></select>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label asp-for="ThesisGroupId"></label>
-                                    </div>
-                                    <div class="col-md-8 form-group">
-                                        <select asp-items="@((SelectList)ViewData["StudentThesisGroupList"]!)" class="dataTable-input" style="margin-right: 5px"></select>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label asp-for="SpecializationId"></label>
-                                    </div>
-                                    <div class="col-md-8 form-group">
-                                        <select asp-items="@((SelectList)ViewData["SpecializationsClass"]!)" class="dataTable-input" style="margin-right: 5px"></select>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label asp-for="Semester"></label>
-                                    </div>
-                                    <div class="col-md-8 form-group">
-                                        <input asp-for="Semester" class="form-control" />
-                                    </div>
-                                    <div class="col-sm-12 d-flex justify-content-end">
-                                        <a asp-action="Index" class="btn btn-light-secondary me-1 mb-1">Quay về danh sách</a>
-                                        <button type="submit" class="btn btn-primary me-1 mb-1">Chỉnh sửa</button>
-                                    </div>
+                                <div class="form-group">
+                                    <label asp-for="Id" class="form-label"></label>
+                                    <input asp-for="Id" class="form-control" disabled />
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="Name"></label>
+                                    <input asp-for="Name" class="form-control" placeholder="Nhập tên đề tài" />
+                                    <span asp-validation-for="Name" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="MaxStudentNumber"></label>
+                                    <input asp-for="MaxStudentNumber" class="form-control" placeholder="Nhập số sinh viên tối đa" />
+                                    <span asp-validation-for="MaxStudentNumber" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="Credits"></label>
+                                    <input asp-for="Credits" class="form-control" placeholder="Nhập số sinh viên tối đa" />
+                                    <span asp-validation-for="Credits" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="Description"></label>
+                                    <textarea asp-for="Description" class="form-control" id="thesisDescription" placeholder="Mô tả"></textarea>
+                                    <span asp-validation-for="Description" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="TopicId"></label>
+                                    <select asp-for="TopicId" class="form-control" asp-items="@((SelectList)ViewData["TopicSelectList"]!)"></select>
+                                    <span asp-validation-for="TopicId" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="TrainingLevelId"></label>
+                                    <select asp-for="TrainingLevelId" class="form-control" asp-items="@((SelectList)ViewData["TrainingLevelSelectList"]!)"></select>
+                                    <span asp-validation-for="TrainingLevelId" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="TrainingFormId"></label>
+                                    <select asp-for="TrainingFormId" class="form-control" asp-items="@((SelectList)ViewData["TrainingFormSelectList"]!)"></select>
+                                    <span asp-validation-for="TrainingFormId" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="SpecializationId"></label>
+                                    <select asp-for="SpecializationId" class="form-control" asp-items="@((SelectList)ViewData["SpecializationsSelectList"]!)"></select>
+                                    <span asp-validation-for="SpecializationId" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label>Giảng viên ra đề tài</label>
+                                    <input class="form-control" value="@facultyStaff.Id - @facultyStaff.FullName" placeholder="Nhập tên giảng viên ra đề tài" disabled />
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="Semester"></label>
+                                    <input asp-for="Semester" class="form-control" value="1" placeholder="Nhập học kỳ" />
+                                    <span asp-validation-for="Semester" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="Year"></label>
+                                    <input asp-for="Year" class="form-control" value="@DateTime.Now.Year" placeholder="Nhập năm học" />
+                                    <span asp-validation-for="Year" class="text-danger"></span>
+                                </div>
+                                <div class="d-flex justify-content-end">
+                                    <a asp-action="Index" class="btn btn-light-secondary me-1 mb-1">Quay về danh sách</a>
+                                    <button type="submit" class="btn btn-primary me-1 mb-1">Chỉnh sửa</button>
                                 </div>
                             </div>
                         </form>
@@ -113,131 +92,25 @@
     </div>
 </section>
 
-@section Scripts {
+@section Styles {
+    <style>
+        .ck-editor__editable {
+            min-height: 450px;
+        }
+    </style>
+}
+
+    @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+
+    <script src="~/mazer-main/vendors/ckeditor/ckeditor.js"></script>
+    <script>
+        ClassicEditor
+            .create(document.querySelector('#thesisDescription'))
+            .catch(error => {
+                console.error(error);
+            });
+    </script>
 }
-
-
-@*<div class="card mb-4">
-
-    <div class="card-header">
-        <svg class="svg-inline--fa fa-table me-1" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="table" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg=""><path fill="currentColor" d="M448 32C483.3 32 512 60.65 512 96V416C512 451.3 483.3 480 448 480H64C28.65 480 0 451.3 0 416V96C0 60.65 28.65 32 64 32H448zM224 256V160H64V256H224zM64 320V416H224V320H64zM288 416H448V320H288V416zM448 256V160H288V256H448z"></path></svg><!-- <i class="fas fa-table me-1"></i> Font Awesome fontawesome.com -->
-        @ViewData["PageName"]
-    </div>
-    <div class="card-body">
-        <form asp-action="Edit" asp-controller="ThesisManager" method="post">
-            <div class="form-group row my-3">
-                @Html.LabelFor(model => model.Id, htmlAttributes: new { @class = "col-sm-2 col-form-label" })
-                <div class="col-smy-30">
-                    @Html.EditorFor(model => model.Id, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.ValidationMessageFor(model => model.Id, "", new { @class = "text-danger" })
-                </div>
-            </div>
-            <div class="form-group row my-3">
-                @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "col-sm-2 col-form-label" })
-                <div class="col-smy-30">
-                    @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
-                </div>
-            </div>
-            <div class="form-group row my-3">
-                @Html.LabelFor(model => model.Description, htmlAttributes: new { @class = "col-sm-2 col-form-label" })
-                <div class="col-smy-30">
-                    @Html.EditorFor(model => model.Description, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
-                </div>
-            </div>
-            <div class="form-group row my-3">
-                @Html.LabelFor(model => model.MaxStudentNumber, htmlAttributes: new { @class = "col-sm-2 col-form-label" })
-                <div class="col-smy-30">
-                    @Html.EditorFor(model => model.MaxStudentNumber, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.ValidationMessageFor(model => model.MaxStudentNumber, "", new { @class = "text-danger" })
-                </div>
-            </div>
-
-            <div class="form-group row my-3">
-                @Html.LabelFor(model => model.Year, htmlAttributes: new { @class = "col-sm-2 col-form-label" })
-                <div class="col-smy-30">
-                    @Html.EditorFor(model => model.Year, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.ValidationMessageFor(model => model.Year, "", new { @class = "text-danger" })
-                </div>
-            </div>
-
-            <div class="form-group row my-3">
-                @Html.LabelFor(model => model.Notes, htmlAttributes: new { @class = "col-sm-2 col-form-label" })
-                <div class="col-smy-30">
-                    @Html.EditorFor(model => model.Notes, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.ValidationMessageFor(model => model.Notes, "", new { @class = "text-danger" })
-                </div>
-            </div>
-
-            <div class="form-group row my-3">
-                @Html.LabelFor(model => model.TopicId, htmlAttributes: new { @class = "col-sm-2 col-form-label" })
-                <div class="col-smy-30">
-                    @Html.DropDownListFor(model => model.TopicId, (SelectList)ViewData["TopicList"], htmlAttributes: new { @class = "form-control" })
-                    @Html.ValidationMessageFor(model => model.TopicId, "", new { @class = "text-danger" })
-                </div>
-            </div>
-
-            <div class="form-group row my-3">
-                @Html.LabelFor(model => model.TrainingFormId, htmlAttributes: new { @class = "col-sm-2 col-form-label" })
-                <div class="col-smy-30">
-                    @Html.DropDownListFor(model => model.TrainingFormId, (SelectList)ViewData["TrainingFormList"], htmlAttributes: new { @class = "form-control" })
-                    @Html.ValidationMessageFor(model => model.TrainingFormId, "", new { @class = "text-danger" })
-                </div>
-            </div>
-
-            <div class="form-group row my-3">
-                @Html.LabelFor(model => model.TrainingLevelId, htmlAttributes: new { @class = "col-sm-2 col-form-label" })
-                <div class="col-smy-30">
-                    @Html.DropDownListFor(model => model.TrainingLevelId, (SelectList)ViewData["TrainingLevelList"], htmlAttributes: new { @class = "form-control" })
-                    @Html.ValidationMessageFor(model => model.TrainingLevelId, "", new { @class = "text-danger" })
-                </div>
-            </div>
-
-            <div class="form-group row my-3">
-                @Html.LabelFor(model => model.LectureId, htmlAttributes: new { @class = "col-sm-2 col-form-label" })
-                <div class="col-smy-30">
-                    @Html.DropDownListFor(model => model.LectureId, (SelectList)ViewData["FacultyStaffList"], htmlAttributes: new { @class = "form-control" })
-                    @Html.ValidationMessageFor(model => model.LectureId, "", new { @class = "text-danger" })
-                </div>
-            </div>
-
-            <div class="form-group row my-3">
-                @Html.LabelFor(model => model.ThesisGroupId, htmlAttributes: new { @class = "col-sm-2 col-form-label" })
-                <div class="col-smy-30">
-                    @Html.DropDownListFor(model => model.ThesisGroupId, (SelectList)ViewData["StudentThesisGrouList"], htmlAttributes: new { @class = "form-control" })
-                    @Html.ValidationMessageFor(model => model.ThesisGroupId, "", new { @class = "text-danger" })
-                </div>
-            </div>
-
-            <div class="form-group row my-3">
-                @Html.LabelFor(model => model.SpecializationId, htmlAttributes: new { @class = "col-sm-2 col-form-label" })
-                <div class="col-smy-30">
-                    @Html.DropDownListFor(model => model.SpecializationId, (SelectList)ViewData["SpecializationsClass"], htmlAttributes: new { @class = "form-control" })
-                    @Html.ValidationMessageFor(model => model.SpecializationId, "", new { @class = "text-danger" })
-                </div>
-            </div>
-
-            <div class="form-group row my-3">
-                @Html.LabelFor(model => model.Semester, htmlAttributes: new { @class = "col-sm-2 col-form-label" })
-                <div class="col-smy-30">
-                    @Html.EditorFor(model => model.Semester, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.ValidationMessageFor(model => model.Semester, "", new { @class = "text-danger" })
-                </div>
-            </div>
-            <div class="form-group row my-3">
-                <div class="col-smy-30">
-                    <button type="submit" class="btn btn-primary">Lưu</button>
-                </div>
-            </div>
-        </form>
-    </div>
-
-</div>
-
-@section Scripts{
-
-}*@

@@ -7,7 +7,7 @@
         <div class="col-md-12 col-12">
             <div class="card">
                 <div class="card-header">
-                    <h4 class="card-title">@ViewData["PageName"]</h4>
+                    <h4 class="card-title">@ViewData["PageName"]: "@Model.Id - @((Model as FacultyStaffOutput)!.FullName)"</h4>
                 </div>
                 <div class="card-content">
                     <div class="card-body">
@@ -73,7 +73,7 @@
                                         <span asp-validation-for="Address" class="text-danger"></span>
                                     </div>
                                     <div class="col-md-4">
-                                        <label asp-for="FacultyId">Khoa</label>
+                                        <label asp-for="FacultyId"></label>
                                     </div>
                                     <div class="col-md-8 form-group">
                                         <select asp-for="FacultyId" asp-items="@((SelectList)ViewData["FacultySelectList"]!)" class="form-control">

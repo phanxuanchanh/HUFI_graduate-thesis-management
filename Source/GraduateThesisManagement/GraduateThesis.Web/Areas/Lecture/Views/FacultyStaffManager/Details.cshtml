@@ -13,7 +13,7 @@
                 <div class="card-body text-center">
                     <input type="file" name="formFile" id="formFile" accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff|image/*" style="display: none" onchange="previewAvatar()" />
                     <img class="img-account-profile rounded-circle mb-2" id="avatar" src="~/avatar/@Model.Avatar" alt="" onclick="openFileDialog();">
-                    <div class="small font-italic text-muted mb-4">Ảnh JPG hoặc PNG có dung lượng tối đa 5MB</div>
+                    <div class="small font-italic text-muted mb-4">@Model.FullName</div>
                 </div>
             </div>
         </div>

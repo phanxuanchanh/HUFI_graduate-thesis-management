@@ -214,23 +214,34 @@
                                 </li>
                             }
 
-                            <li class="submenu-item ">
-                                <a asp-action="Index" asp-controller="ThesisManager">Đề tài của tôi</a>
-                            </li>
+                            @if (appPages.Any(p => p.ControllerName == "ThesisManager" && p.ActionName == "GetThesesOfLecturer"))
+                            {
+                                <li class="submenu-item ">
+                                    <a asp-action="GetThesesOfLecturer" asp-controller="ThesisManager">Đề tài của tôi</a>
+                                </li>
+                            }
 
                             @if (appPages.Any(p => p.ControllerName == "ThesisManager" && p.ActionName == "GetApprovedList"))
                             {
                                 <li class="submenu-item ">
-                                    <a asp-action="GetApprovedList" asp-controller="ThesisManager">Đề tài đã được duyệt</a>
+                                    <a asp-action="GetApprovedList" asp-controller="ThesisManager">Đã được duyệt</a>
                                 </li>
                             }
 
                             @if (appPages.Any(p => p.ControllerName == "ThesisManager" && p.ActionName == "GetRejectedList"))
                             {
                                 <li class="submenu-item ">
-                                    <a asp-action="GetRejectedList" asp-controller="ThesisManager">Đề tài bị từ chối duyệt</a>
+                                    <a asp-action="GetRejectedList" asp-controller="ThesisManager">Bị từ chối duyệt</a>
                                 </li>
                             }
+
+                            <li class="submenu-item ">
+                                <a asp-action="GetRejectedList" asp-controller="ThesisManager">Đã phân công</a>
+                            </li>
+
+                            <li class="submenu-item ">
+                                <a asp-action="GetRejectedList" asp-controller="ThesisManager">Đã công bố</a>
+                            </li>
 
                             @if (appPages.Any(p => p.ControllerName == "ThesisManager" && p.ActionName == "Import"))
                             {

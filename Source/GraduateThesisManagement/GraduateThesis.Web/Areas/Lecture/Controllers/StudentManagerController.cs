@@ -3,7 +3,6 @@ using GraduateThesis.ApplicationCore.File;
 using GraduateThesis.ApplicationCore.Models;
 using GraduateThesis.ApplicationCore.WebAttributes;
 using GraduateThesis.Common.WebAttributes;
-using GraduateThesis.Repository.BLL.Implements;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DTO;
 using GraduateThesis.WebExtensions;
@@ -12,8 +11,10 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Net.Http.Headers;
 using System.ComponentModel.DataAnnotations;
 using System.Net.Mime;
-using static Microsoft.Extensions.Logging.EventSource.LoggingEventSource;
 using X.PagedList;
+using GraduateThesis.ApplicationCore.Enums;
+
+#nullable disable
 
 namespace GraduateThesis.Web.Areas.Lecture.Controllers;
 
@@ -37,7 +38,7 @@ public class StudentManagerController : WebControllerBase<IStudentRepository, St
     {
         return new Dictionary<string, string>
         {
-            { "Id", "Mã" }, { "Surname", "Họ" }, { "Name", "Tên" }, { "Email", "Email" }, { "CreatedAt", "Ngày tạo" }
+            { "Id", "Mã" }, { "Surname", "Họ" }, { "Name", "Tên" }, { "ClassName", "Tên lớp" }, { "Email", "Email" }, { "CreatedAt", "Ngày tạo" }
         };
     }
 
@@ -45,7 +46,7 @@ public class StudentManagerController : WebControllerBase<IStudentRepository, St
     {
         return new Dictionary<string, string>
         {
-            { "Id", "Mã" }, { "Surname", "Họ" }, { "Name", "Tên" }, { "Email", "Email" }
+            { "All", "Tất cả" }, { "Id", "Mã" }, { "Surname", "Họ" }, { "Name", "Tên" }, { "ClassName", "Tên lớp" }, { "Email", "Email" }
         };
     }
 
@@ -55,12 +56,30 @@ public class StudentManagerController : WebControllerBase<IStudentRepository, St
         ViewData["StudentClassSelectList"] = new SelectList(students, "Id", "Name");
     }
 
+    [NonAction]
+    public override Task<IActionResult> Index(int page = 1, int pageSize = 10, string orderBy = null, string orderOptions = "ASC", string keyword = null)
+    {
+        throw new NotImplementedException();
+    }
+
     [Route("list")]
     [HttpGet]
     [PageName(Name = "Danh sách sinh viên của khoa")]
-    public override async Task<IActionResult> Index(int page = 1, int pageSize = 20, string orderBy = "", string orderOptions = "ASC", string keyword = "")
+    public async Task<IActionResult> Index(int page = 1, int pageSize = 20, string orderBy = "CreatedAt", string orderOptions = "DESC", string searchBy = "All", string keyword = "")
     {
-        return await IndexResult(page, pageSize, orderBy, orderOptions, keyword);
+        OrderOptions orderOpts = (orderOptions == "ASC") ? OrderOptions.ASC : OrderOptions.DESC;
+        Pagination<StudentOutput> pagination = await _studentRepository.GetPaginationAsync(page, pageSize, orderBy, orderOpts, searchBy, keyword);
+        StaticPagedList<StudentOutput> pagedList = pagination.ToStaticPagedList();
+
+        ViewData["OrderByProperties"] = SetOrderByProperties();
+        ViewData["SearchByProperties"] = SetSearchByProperties();
+        ViewData["PagedList"] = pagedList;
+        ViewData["OrderBy"] = orderBy;
+        ViewData["OrderOptions"] = orderOptions;
+        ViewData["SearchBy"] = searchBy;
+        ViewData["Keyword"] = keyword;
+
+        return View();
     }
 
     [Route("details/{id}")]
@@ -178,13 +197,16 @@ public class StudentManagerController : WebControllerBase<IStudentRepository, St
     [Route("registered-students")]
     [HttpGet]
     [PageName(Name = "Danh sách sinh viên đã đăng ký đề tài")]
-    public async Task<IActionResult> GetRegdStudents(int page = 1, int pageSize = 20, string keyword = "")
+    public async Task<IActionResult> GetRegdStudents(int page = 1, int pageSize = 20, string orderBy = "CreatedAt", string orderOptions = "DESC", string searchBy = "All", string keyword = "")
     {
-        Pagination<StudentOutput> pagination = await _studentRepository.GetPgnOfRegdStdntAsync(page, pageSize, keyword);
+        OrderOptions orderOpts = (orderOptions == "ASC") ? OrderOptions.ASC : OrderOptions.DESC;
+        Pagination<StudentOutput> pagination = await _studentRepository.GetPgnOfRegdStdntAsync(page, pageSize, orderBy, orderOpts, searchBy, keyword);
         StaticPagedList<StudentOutput> pagedList = pagination.ToStaticPagedList();
 
         ViewData["OrderByProperties"] = SetOrderByProperties();
         ViewData["SearchByProperties"] = SetOrderByProperties();
+        ViewData["OrderBy"] = orderBy;
+        ViewData["OrderOptions"] = orderOptions;
         ViewData["PagedList"] = pagedList;
         ViewData["Keyword"] = keyword;
 
@@ -194,13 +216,16 @@ public class StudentManagerController : WebControllerBase<IStudentRepository, St
     [Route("unregistered-students")]
     [HttpGet]
     [PageName(Name = "Danh sách sinh viên chưa đăng ký đề tài")]
-    public async Task<IActionResult> GetUnRegdStudents(int page = 1, int pageSize = 20, string keyword = "")
+    public async Task<IActionResult> GetUnRegdStudents(int page = 1, int pageSize = 20, string orderBy = "CreatedAt", string orderOptions = "DESC", string searchBy = "All", string keyword = "")
     {
-        Pagination<StudentOutput> pagination = await _studentRepository.GetPgnOfUnRegdStdntAsync(page, pageSize, keyword);
+        OrderOptions orderOpts = (orderOptions == "ASC") ? OrderOptions.ASC : OrderOptions.DESC;
+        Pagination<StudentOutput> pagination = await _studentRepository.GetPgnOfUnRegdStdntAsync(page, pageSize, orderBy, orderOpts, searchBy, keyword);
         StaticPagedList<StudentOutput> pagedList = pagination.ToStaticPagedList();
 
         ViewData["OrderByProperties"] = SetOrderByProperties();
         ViewData["SearchByProperties"] = SetOrderByProperties();
+        ViewData["OrderBy"] = orderBy;
+        ViewData["OrderOptions"] = orderOptions;
         ViewData["PagedList"] = pagedList;
         ViewData["Keyword"] = keyword;
 
