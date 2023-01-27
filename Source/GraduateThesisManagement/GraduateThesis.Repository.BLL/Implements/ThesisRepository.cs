@@ -3,11 +3,14 @@ using GraduateThesis.ApplicationCore.Enums;
 using GraduateThesis.ApplicationCore.Models;
 using GraduateThesis.ApplicationCore.Repository;
 using GraduateThesis.ApplicationCore.Uuid;
+using GraduateThesis.ExtensionMethods;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DAL;
 using GraduateThesis.Repository.DTO;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
+using MiniExcelLibs;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -23,12 +26,14 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
 {
     private HufiGraduateThesisContext _context;
     private IEmailService _emailService;
+    private IHostingEnvironment _hostingEnvironment;
 
-    internal ThesisRepository(HufiGraduateThesisContext context, IEmailService emailService)
+    internal ThesisRepository(HufiGraduateThesisContext context, IHostingEnvironment hostingEnvironment, IEmailService emailService)
         : base(context, context.Theses)
     {
         _context = context;
         _emailService = emailService;
+        _hostingEnvironment = hostingEnvironment;
     }
 
     protected override void ConfigureIncludes()
@@ -707,6 +712,7 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
     {
         bool checkExists = await _context.Theses
           .AnyAsync(t => t.Id == thesisId && t.IsDeleted == false);
+
         if (!checkExists)
             return new DataResponse { Status = DataResponseStatus.NotFound, Message = "Không có đề tài này!" };
 
@@ -715,6 +721,7 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
             ThesisId = thesisId,
             LectureId = lectureId
         };
+
         await _context.ThesisSupervisors.AddAsync(thesisSupervisor);
         await _context.SaveChangesAsync();
 
@@ -725,13 +732,14 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
     {
         List<string> thesisId = await _context.ThesisSupervisors.Include(i => i.Thesis)
             .Where(t => t.IsDeleted == false && t.Thesis.IsDeleted == false)
-             .Where(gd => gd.IsCompleted == true).Select(gd => gd.ThesisId)
+            .Where(gd => gd.IsCompleted == true).Select(gd => gd.ThesisId)
                .ToListAsync();
 
         List<Thesis> theses = await _context.Theses
            .Where(t => t.IsDeleted == false).
             WhereBulkNotContains(thesisId, s => s.Id)
              .ToListAsync();
+
         foreach (var thesis in theses)
         {
             ThesisSupervisor thesisSupervisor = new ThesisSupervisor
@@ -741,18 +749,22 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
             };
             await _context.ThesisSupervisors.AddAsync(thesisSupervisor);
         }
+
         await _context.SaveChangesAsync();
+
         return new DataResponse { Status = DataResponseStatus.Success, Message = "Phân công giảng viên cho đề tài thành công!" };
 
     }
 
     public async Task<DataResponse> AssignSupervisor(string thesisId)
     {
-        Thesis thesis = await _context.Theses.Where(t =>t.Id==thesisId && t.IsDeleted == false ).SingleOrDefaultAsync();
+        Thesis thesis = await _context.Theses.Where(t => t.Id == thesisId && t.IsDeleted == false).SingleOrDefaultAsync();
         if (thesis == null)
             return new DataResponse { Status = DataResponseStatus.NotFound, Message = "Không có đề tài này!" };
+
         bool checkExists = await _context.ThesisSupervisors
         .AnyAsync(t => t.ThesisId == thesisId && t.LectureId == thesis.LectureId);
+
         if (checkExists)
             return new DataResponse { Status = DataResponseStatus.AlreadyExists, Message = "Đề tài này đã được phân công!" };
 
@@ -761,6 +773,7 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
             ThesisId = thesisId,
             LectureId = thesis.LectureId
         };
+
         await _context.ThesisSupervisors.AddAsync(thesisSupervisor);
         await _context.SaveChangesAsync();
 
@@ -769,6 +782,182 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
     }
 
     public Task<Pagination<ThesisOutput>> GetPgnOf(string lecturerId, int page, int pageSize, string orderBy, OrderOptions orderOptions, string searchBy, string keyword)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task<byte[]> ExportAsync()
+    {
+        MemoryStream memoryStream = null;
+        try
+        {
+            string path = Path.Combine(_hostingEnvironment.WebRootPath, "reports", "thesis_export.xlsx");
+            memoryStream = new MemoryStream();
+            int count = 1;
+
+            List<Thesis> theses = await _context.Theses.Include(i => i.Topic).Include(i => i.Specialization)
+            .Where(t => t.IsDeleted == false && t.Topic.IsDeleted == false && t.Specialization.IsDeleted == false)
+            .OrderBy(f => f.Name).ToListAsync();
+
+            await MiniExcel.SaveAsByTemplateAsync(memoryStream, path, new
+            {
+                Items = theses.Select(s => new ThesisExport
+                {
+                    Index = count++,
+                    Id = s.Id,
+                    Name = s.Name,
+                    Description = HttpUtility.HtmlDecode(s.Description).RemoveHtmlTag(),
+                    Credits = s.Credits,
+                    MaxStudentNumber = s.MaxStudentNumber,
+                    Year = s.Year,
+                    Semester = s.Semester,
+                    TopicName = s.Topic.Name,
+                    SpecializationName = s.Specialization.Name
+                }).ToList()
+            });
+
+            return memoryStream.ToArray();
+        }
+        finally
+        {
+            if (memoryStream != null)
+                memoryStream.Dispose();
+        }
+    }
+
+    public async Task<byte[]> ExportPublishedTheses()
+    {
+        MemoryStream memoryStream = null;
+        try
+        {
+            string path = Path.Combine(_hostingEnvironment.WebRootPath, "reports", "thesis_export.xlsx");
+            memoryStream = new MemoryStream();
+            int count = 1;
+
+            List<Thesis> theses = await _context.Theses.Include(i => i.Topic).Include(i => i.Specialization)
+            .Where(t => t.IsPublished == true && t.IsDeleted == false && t.Topic.IsDeleted == false && t.Specialization.IsDeleted == false)
+            .OrderBy(f => f.Name).ToListAsync();
+
+            await MiniExcel.SaveAsByTemplateAsync(memoryStream, path, new
+            {
+                Items = theses.Select(s => new ThesisExport
+                {
+                    Index = count++,
+                    Id = s.Id,
+                    Name = s.Name,
+                    Description = HttpUtility.HtmlDecode(s.Description).RemoveHtmlTag(),
+                    Credits = s.Credits,
+                    MaxStudentNumber = s.MaxStudentNumber,
+                    Year = s.Year,
+                    Semester = s.Semester,
+                    TopicName = s.Topic.Name,
+                    SpecializationName = s.Specialization.Name
+                }).ToList()
+            });
+
+            return memoryStream.ToArray();
+        }
+        finally
+        {
+            if (memoryStream != null)
+                memoryStream.Dispose();
+        }
+    }
+
+    public async Task<byte[]> ExportRejectedTheses()
+    {
+        MemoryStream memoryStream = null;
+        try
+        {
+            string path = Path.Combine(_hostingEnvironment.WebRootPath, "reports", "thesis_export.xlsx");
+            memoryStream = new MemoryStream();
+            int count = 1;
+
+            List<Thesis> theses = await _context.Theses.Include(i => i.Topic).Include(i => i.Specialization)
+            .Where(t => t.IsRejected == true && t.IsDeleted == false && t.Topic.IsDeleted == false && t.Specialization.IsDeleted == false)
+            .OrderBy(f => f.Name).ToListAsync();
+
+            await MiniExcel.SaveAsByTemplateAsync(memoryStream, path, new
+            {
+                Items = theses.Select(s => new ThesisExport
+                {
+                    Index = count++,
+                    Id = s.Id,
+                    Name = s.Name,
+                    Description = HttpUtility.HtmlDecode(s.Description).RemoveHtmlTag(),
+                    Credits = s.Credits,
+                    MaxStudentNumber = s.MaxStudentNumber,
+                    Year = s.Year,
+                    Semester = s.Semester,
+                    TopicName = s.Topic.Name,
+                    SpecializationName = s.Specialization.Name
+                }).ToList()
+            });
+
+            return memoryStream.ToArray();
+        }
+        finally
+        {
+            if (memoryStream != null)
+                memoryStream.Dispose();
+        }
+    }
+
+    public async Task<byte[]> ExportApprovedTheses()
+    {
+        MemoryStream memoryStream = null;
+        try
+        {
+            string path = Path.Combine(_hostingEnvironment.WebRootPath, "reports", "thesis_export.xlsx");
+            memoryStream = new MemoryStream();
+            int count = 1;
+
+            List<Thesis> theses = await _context.Theses.Include(i => i.Topic).Include(i => i.Specialization)
+            .Where(t => t.IsApproved == true && t.IsDeleted == false && t.Topic.IsDeleted == false && t.Specialization.IsDeleted == false)
+            .OrderBy(f => f.Name).ToListAsync();
+
+            await MiniExcel.SaveAsByTemplateAsync(memoryStream, path, new
+            {
+                Items = theses.Select(s => new ThesisExport
+                {
+                    Index = count++,
+                    Id = s.Id,
+                    Name = s.Name,
+                    Description = HttpUtility.HtmlDecode(s.Description).RemoveHtmlTag(),
+                    Credits = s.Credits,
+                    MaxStudentNumber = s.MaxStudentNumber,
+                    Year = s.Year,
+                    Semester = s.Semester,
+                    TopicName = s.Topic.Name,
+                    SpecializationName = s.Specialization.Name
+                }).ToList()
+            });
+
+            return memoryStream.ToArray();
+        }
+        finally
+        {
+            if (memoryStream != null)
+                memoryStream.Dispose();
+        }
+    }
+
+    public Task<byte[]> ExportAsync(string lecturerId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<byte[]> ExportPublishedTheses(string lecturerId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<byte[]> ExportRejectedTheses(string lecturerId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<byte[]> ExportApprovedTheses(string lecturerId)
     {
         throw new NotImplementedException();
     }
