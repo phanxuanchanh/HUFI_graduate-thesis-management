@@ -34,4 +34,7 @@ public interface IThesisRepository : IAsyncSubRepository<ThesisInput, ThesisOutp
     Task<DataResponse> AssignSupervisor(string thesisId, string lectureId);
     Task<DataResponse> AssignSupervisor(string thesisId);
     Task<DataResponse> AssignSupervisors();
+    Task<DataResponse> AssignCounterArgument(string thesisId, string lectureId);
+    Task<DataResponse> AssignCounterArgument(string thesisId);
+
 }

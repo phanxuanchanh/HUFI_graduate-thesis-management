@@ -467,4 +467,33 @@ public class ThesisManagerController : WebControllerBase<IThesisRepository, Thes
         return RedirectToAction("LoadAssignSupervisorView", new { thesisId = thesisId});
 
     }
+
+    [Route("assignCounterArgument/{thesisId}")]
+    [HttpGet]
+    [PageName(Name = "Phân công giảng viên phản biện đề tài khóa luận")]
+    public async Task<IActionResult> LoadCounterArgumentView(string thesisId, string roleId, int page = 1, int pageSize = 5, string keyword = "")
+    {
+        ThesisOutput thesis = await _thesisRepository.GetAsync(thesisId);
+        Pagination<FacultyStaffOutput> pagination = await _facultyStaffRepository
+            .GetPaginationAsync(page, pageSize, null, OrderOptions.ASC, keyword);
+
+        StaticPagedList<FacultyStaffOutput> pagedList = pagination.ToStaticPagedList();
+
+        ViewData["PagedList"] = pagedList;
+        ViewData["Keyword"] = keyword;
+        ViewData["Role"] = thesisId;
+
+        return View(thesis);
+    }
+    [Route("assignCounter/{thesisId}/{lectureId}")]
+    [HttpPost]
+    [PageName(Name = "Phân công giảng viên phản biện")]
+    public async Task<IActionResult> AssignCounterArgument(string thesisId, string lectureId)
+    {
+        DataResponse dataResponse = await _thesisRepository.AssignCounterArgument(thesisId, lectureId);
+        AddTempData(dataResponse);
+        return RedirectToAction("LoadCounterArgumentView", new { thesisId = thesisId });
+
+    }
+
 }
