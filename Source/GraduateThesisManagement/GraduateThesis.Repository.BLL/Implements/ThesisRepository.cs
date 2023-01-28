@@ -192,11 +192,8 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
         return queryable;
     }
 
-    public async Task<Pagination<ThesisOutput>> GetPaginationAsync(int page, int pageSize, string orderBy, OrderOptions orderOptions, string searchBy, string keyword)
+    private IQueryable<Thesis> SetSearchExpression(IQueryable<Thesis> queryable, string searchBy, string keyword)
     {
-        IQueryable<Thesis> queryable = _context.Theses.Include(i => i.Lecture)
-            .Where(t => t.IsDeleted == false && t.Lecture.IsDeleted == false);
-
         if (!string.IsNullOrEmpty(keyword) && string.IsNullOrEmpty(searchBy))
         {
             queryable = queryable.Where(t => t.Id.Contains(keyword) || t.Name.Contains(keyword) || t.Year.Contains(keyword));
@@ -215,6 +212,11 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
             }
         }
 
+        return queryable;
+    }
+
+    private IQueryable<Thesis> SetOrderExpression(IQueryable<Thesis> queryable, string orderBy, OrderOptions orderOptions)
+    {
         if (string.IsNullOrEmpty(orderBy))
         {
             queryable = queryable.OrderByDescending(f => f.CreatedAt);
@@ -243,6 +245,17 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
                 case "CreatedAt": queryable = queryable.OrderByDescending(t => t.CreatedAt); break;
             }
         }
+
+        return queryable;
+    }
+
+    public async Task<Pagination<ThesisOutput>> GetPaginationAsync(int page, int pageSize, string orderBy, OrderOptions orderOptions, string searchBy, string keyword)
+    {
+        IQueryable<Thesis> queryable = _context.Theses.Include(i => i.Lecture)
+            .Where(t => t.IsDeleted == false && t.Lecture.IsDeleted == false);
+
+        queryable = SetSearchExpression(queryable, searchBy, keyword);
+        queryable = SetOrderExpression(queryable, orderBy, orderOptions);
 
         int n = (page - 1) * pageSize;
         int totalItemCount = await queryable.CountAsync();
@@ -508,52 +521,8 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
         IQueryable<Thesis> queryable = _context.Theses.Include(i => i.Lecture)
                     .Where(t => t.IsNew == true && t.IsDeleted == false && t.Lecture.IsDeleted == false);
 
-        if (!string.IsNullOrEmpty(keyword) && string.IsNullOrEmpty(searchBy))
-        {
-            queryable = queryable.Where(t => t.Id.Contains(keyword) || t.Name.Contains(keyword) || t.Year.Contains(keyword));
-        }
-
-        if (!string.IsNullOrEmpty(keyword) && !string.IsNullOrEmpty(searchBy))
-        {
-            switch (searchBy)
-            {
-                case "All": queryable = queryable.Where(t => t.Id.Contains(keyword) || t.Name.Contains(keyword) || t.Year.Contains(keyword)); break;
-                case "Id": queryable = queryable.Where(t => t.Id.Contains(keyword)); break;
-                case "Name": queryable = queryable.Where(t => t.Name.Contains(keyword)); break;
-                case "Year": queryable = queryable.Where(t => t.Year.Contains(keyword)); break;
-                case "LectureName": queryable = SearchByFullName(queryable, keyword); break;
-                case "Semester": queryable = SearchBySemester(queryable, keyword); break;
-            }
-        }
-
-        if (string.IsNullOrEmpty(orderBy))
-        {
-            queryable = queryable.OrderByDescending(f => f.CreatedAt);
-        }
-        else if (orderOptions == OrderOptions.ASC)
-        {
-            switch (orderBy)
-            {
-                case "Id": queryable = queryable.OrderBy(t => t.Id); break;
-                case "Name": queryable = queryable.OrderBy(t => t.Name); break;
-                case "Year": queryable = queryable.OrderBy(t => t.Year); break;
-                case "Semester": queryable = queryable.OrderBy(t => t.Semester); break;
-                case "LectureName": queryable = queryable.OrderBy(t => t.Lecture.Name); break;
-                case "CreatedAt": queryable = queryable.OrderBy(t => t.CreatedAt); break;
-            }
-        }
-        else
-        {
-            switch (orderBy)
-            {
-                case "Id": queryable = queryable.OrderByDescending(t => t.Id); break;
-                case "Name": queryable = queryable.OrderByDescending(t => t.Name); break;
-                case "Year": queryable = queryable.OrderByDescending(t => t.Year); break;
-                case "Semester": queryable = queryable.OrderByDescending(t => t.Semester); break;
-                case "LectureName": queryable = queryable.OrderByDescending(t => t.Lecture.Name); break;
-                case "CreatedAt": queryable = queryable.OrderByDescending(t => t.CreatedAt); break;
-            }
-        }
+        queryable = SetSearchExpression(queryable, searchBy, keyword);
+        queryable = SetOrderExpression(queryable, orderBy, orderOptions);
 
         int n = (page - 1) * pageSize;
         int totalItemCount = await queryable.CountAsync();
@@ -570,29 +539,32 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
         };
     }
 
-    public async Task<Pagination<ThesisOutput>> GetPgnOfRejdThesesAsync(int page, int pageSize, string keyword)
+    public async Task<Pagination<ThesisOutput>> GetPgnOfRejdThesesAsync(int page, int pageSize, string orderBy, OrderOptions orderOptions, string searchBy, string keyword)
     {
-        int n = (page - 1) * pageSize;
-        int totalItemCount = await _context.Theses
-            .Where(t => t.IsRejected == true && t.IsDeleted == false)
-            .Where(t => t.Id.Contains(keyword) || t.Name.Contains(keyword) || t.Description.Contains(keyword))
-            .CountAsync();
+        IQueryable<Thesis> queryable = _context.Theses.Include(i => i.Lecture)
+                    .Where(t => t.IsRejected == true && t.IsDeleted == false && t.Lecture.IsDeleted == false);
 
-        List<ThesisOutput> onePageOfData = await _context.Theses.Include(i => i.Lecture)
-            .Where(t => t.IsRejected == true && t.IsDeleted == false)
-            .Where(t => t.Id.Contains(keyword) || t.Name.Contains(keyword) || t.Description.Contains(keyword))
-            .Skip(n).Take(pageSize)
+        queryable = SetSearchExpression(queryable, searchBy, keyword);
+        queryable = SetOrderExpression(queryable, orderBy, orderOptions);
+
+        int n = (page - 1) * pageSize;
+        int totalItemCount = await queryable.CountAsync();
+
+        List<ThesisOutput> onePageOfData = await queryable.Skip(n).Take(pageSize)
             .Select(s => new ThesisOutput
             {
                 Id = s.Id,
                 Name = s.Name,
-                Notes = s.Notes,
+                MaxStudentNumber = s.MaxStudentNumber,
+                Year = s.Year,
+                Semester = s.Semester,
                 Lecturer = new FacultyStaffOutput
                 {
                     Id = s.Lecture.Id,
                     Surname = s.Lecture.Surname,
                     Name = s.Lecture.Name
-                }
+                },
+                Notes = s.Notes
             }).ToListAsync();
 
         return new Pagination<ThesisOutput>
@@ -604,30 +576,19 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
         };
     }
 
-    public async Task<Pagination<ThesisOutput>> GetPgnOfAppdThesesAsync(int page, int pageSize, string keyword)
+    public async Task<Pagination<ThesisOutput>> GetPgnOfAppdThesesAsync(int page, int pageSize, string orderBy, OrderOptions orderOptions, string searchBy, string keyword)
     {
-        int n = (page - 1) * pageSize;
-        int totalItemCount = await _context.Theses
-            .Where(t => t.IsApproved == true && t.Finished == false && t.IsDeleted == false)
-            .Where(t => t.Id.Contains(keyword) || t.Name.Contains(keyword) || t.Description.Contains(keyword))
-            .CountAsync();
+        IQueryable<Thesis> queryable = _context.Theses.Include(i => i.Lecture)
+            .Where(t => t.IsApproved == true && t.Finished == false && t.IsDeleted == false && t.Lecture.IsDeleted == false);
 
-        List<ThesisOutput> onePageOfData = await _context.Theses.Include(i => i.Lecture)
-            .Where(t => t.IsApproved == true && t.Finished == false && t.IsDeleted == false)
-            .Where(t => t.Id.Contains(keyword) || t.Name.Contains(keyword) || t.Description.Contains(keyword))
-            .Skip(n).Take(pageSize)
-            .Select(s => new ThesisOutput
-            {
-                Id = s.Id,
-                Name = s.Name,
-                Notes = s.Notes,
-                Lecturer = new FacultyStaffOutput
-                {
-                    Id = s.Lecture.Id,
-                    Surname = s.Lecture.Surname,
-                    Name = s.Lecture.Name
-                }
-            }).ToListAsync();
+        queryable = SetSearchExpression(queryable, searchBy, keyword);
+        queryable = SetOrderExpression(queryable, orderBy, orderOptions);
+
+        int n = (page - 1) * pageSize;
+        int totalItemCount = await queryable.CountAsync();
+
+        List<ThesisOutput> onePageOfData = await queryable.Skip(n).Take(pageSize)
+            .Select(PaginationSelector).ToListAsync();
 
         return new Pagination<ThesisOutput>
         {
@@ -655,18 +616,18 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
         return new DataResponse<string> { Status = DataResponseStatus.Success, Data = "Unavailable" };
     }
 
-    public async Task<Pagination<ThesisOutput>> GetPgnOfPubldThesesAsync(int page, int pageSize, string keyword)
+    public async Task<Pagination<ThesisOutput>> GetPgnOfPubldThesesAsync(int page, int pageSize, string orderBy, OrderOptions orderOptions, string searchBy, string keyword)
     {
-        int n = (page - 1) * pageSize;
-        int totalItemCount = await _context.Theses
-            .Where(t => t.IsPublished == true && t.IsDeleted == false)
-            .Where(t => t.Id.Contains(keyword) || t.Name.Contains(keyword) || t.Description.Contains(keyword))
-            .CountAsync();
+        IQueryable<Thesis> queryable = _context.Theses.Include(i => i.Lecture)
+            .Where(t => t.IsPublished == true && t.Finished == false && t.IsDeleted == false && t.Lecture.IsDeleted == false);
 
-        List<ThesisOutput> onePageOfData = await _context.Theses.Include(i => i.Lecture)
-            .Where(t => t.IsPublished == true && t.IsDeleted == false)
-            .Where(t => t.Id.Contains(keyword) || t.Name.Contains(keyword) || t.Description.Contains(keyword))
-            .Skip(n).Take(pageSize)
+        queryable = SetSearchExpression(queryable, searchBy, keyword);
+        queryable = SetOrderExpression(queryable, orderBy, orderOptions);
+
+        int n = (page - 1) * pageSize;
+        int totalItemCount = await queryable.CountAsync();
+
+        List<ThesisOutput> onePageOfData = await queryable.Skip(n).Take(pageSize)
             .Select(s => new ThesisOutput
             {
                 Id = s.Id,
@@ -763,8 +724,8 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
     public async Task<Pagination<ThesisOutput>> GetPgnOfAppdThesesAsync(string lecturerId, int page, int pageSize, string keyword)
     {
         int n = (page - 1) * pageSize;
-        int totalItemCount = await _context.Theses
-            .Where(t => t.LectureId == lecturerId && t.IsApproved == true && t.IsDeleted == false)
+        int totalItemCount = await _context.Theses.Include(i => i.Lecture)
+            .Where(t => t.LectureId == lecturerId && t.IsApproved == true && t.IsDeleted == false && t.Lecture.IsDeleted == false)
             .Where(t => t.Id.Contains(keyword) || t.Name.Contains(keyword) || t.Description.Contains(keyword))
             .CountAsync();
 
@@ -777,7 +738,6 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
                 Id = s.Id,
                 Name = s.Name,
                 MaxStudentNumber = s.MaxStudentNumber,
-                ThesisGroupId = s.ThesisGroupId,
                 Lecturer = new FacultyStaffOutput
                 {
                     Id = s.Lecture.Id,
@@ -1045,16 +1005,18 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
         MemoryStream memoryStream = null;
         try
         {
-            string path = Path.Combine(_hostingEnvironment.WebRootPath, "reports", "thesis_export.xlsx");
+            string path = Path.Combine(_hostingEnvironment.WebRootPath, "reports", "rejected-thesis_export.xlsx");
             memoryStream = new MemoryStream();
             int count = 1;
 
-            List<Thesis> theses = await _context.Theses.Include(i => i.Topic).Include(i => i.Specialization)
-            .Where(t => t.IsRejected == true && t.IsDeleted == false && t.Topic.IsDeleted == false && t.Specialization.IsDeleted == false)
-            .OrderBy(f => f.Name).ToListAsync();
+            List<Thesis> theses = await _context.Theses
+                .Include(i => i.Topic).Include(i => i.Specialization).Include(i => i.Lecture)
+                .Where(t => t.IsRejected == true && t.IsDeleted == false && t.Topic.IsDeleted == false && t.Specialization.IsDeleted == false && t.Lecture.IsDeleted == false)
+                .OrderBy(f => f.Name).ToListAsync();
 
             await MiniExcel.SaveAsByTemplateAsync(memoryStream, path, new
             {
+                Name = "DANH SÁCH ĐỀ TÀI ĐÃ BỊ TỪ CHỐI DUYỆT - KHOA CNTT",
                 Items = theses.Select(s => new ThesisExport
                 {
                     Index = count++,
@@ -1066,7 +1028,9 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
                     Year = s.Year,
                     Semester = s.Semester,
                     TopicName = s.Topic.Name,
-                    SpecializationName = s.Specialization.Name
+                    SpecializationName = s.Specialization.Name,
+                    LectureName = $"{s.Lecture.Surname.Trim(' ')} {s.Lecture.Name.Trim(' ')}",
+                    Notes = s.Notes
                 }).ToList()
             });
 

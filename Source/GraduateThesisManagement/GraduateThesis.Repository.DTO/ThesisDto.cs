@@ -131,4 +131,5 @@ public class ThesisExport
     public string SpecializationName { get; set; }
     public string TopicName { get; set; }
     public string LectureName { get; set; }
+    public string Notes { get; set; }
 }

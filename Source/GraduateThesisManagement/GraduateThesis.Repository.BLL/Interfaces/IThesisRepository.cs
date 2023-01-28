@@ -16,9 +16,9 @@ public interface IThesisRepository : IAsyncSubRepository<ThesisInput, ThesisOutp
     Task<DataResponse> CheckMaxStudentNumberAsync(string thesisId, int currentStudentNumber);
     Task<DataResponse<string>> CheckThesisAvailAsync(string thesisId);
     Task<DataResponse> AllowedRegistration(string studentId, string thesisId);
-    Task<Pagination<ThesisOutput>> GetPgnOfPubldThesesAsync(int page, int pageSize, string keyword);
-    Task<Pagination<ThesisOutput>> GetPgnOfRejdThesesAsync(int page, int pageSize, string keyword);
-    Task<Pagination<ThesisOutput>> GetPgnOfAppdThesesAsync(int page, int pageSize, string keyword);
+    Task<Pagination<ThesisOutput>> GetPgnOfPubldThesesAsync(int page, int pageSize, string orderBy, OrderOptions orderOptions, string searchBy, string keyword);
+    Task<Pagination<ThesisOutput>> GetPgnOfRejdThesesAsync(int page, int pageSize, string orderBy, OrderOptions orderOptions, string searchBy, string keyword);
+    Task<Pagination<ThesisOutput>> GetPgnOfAppdThesesAsync(int page, int pageSize, string orderBy, OrderOptions orderOptions, string searchBy, string keyword);
     Task<Pagination<ThesisOutput>> GetPgnOfPndgApvlThesesAsync(int page, int pageSize, string orderBy, OrderOptions orderOptions, string searchBy, string keyword);
     Task<Pagination<ThesisOutput>> GetPgnOf(string lecturerId, int page, int pageSize, string orderBy, OrderOptions orderOptions, string searchBy, string keyword);
     Task<Pagination<ThesisOutput>> GetPgnOfPubldThesesAsync(string lecturerId, int page, int pageSize, string keyword);
