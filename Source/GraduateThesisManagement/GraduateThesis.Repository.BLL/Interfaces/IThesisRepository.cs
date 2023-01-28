@@ -36,5 +36,9 @@ public interface IThesisRepository : IAsyncSubRepository<ThesisInput, ThesisOutp
     Task<DataResponse> AssignSupervisors();
     Task<DataResponse> AssignCounterArgument(string thesisId, string lectureId);
     Task<DataResponse> AssignCounterArgument(string thesisId);
+    Task<DataResponse> PublishThesis(string thesisId);
+    Task<DataResponse> PublishTheses(string[] thesisIds);
+    Task<DataResponse> StopPublishing(string thesisId);
+    Task<DataResponse> StopPublishings(string[] thesisIds);
 
 }
