@@ -5,7 +5,7 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-body">
-                    <a asp-action="ExportApprovedTheses" class="btn btn-info" type="button">Xuất</a>
+                    <a asp-action="ExportPendingTheses" class="btn btn-info" type="button">Xuất</a>
                     <a asp-action="Print" class="btn btn-secondary" type="button">In</a>
                 </div>
             </div>
@@ -27,7 +27,7 @@
         </div>
         <div class="card-body">
             <div class="dataTable-wrapper dataTable-loading no-footer sortable searchable fixed-columns">
-                @await Component.InvokeAsync("FacultyStaffLayout_PagedSearch", new { action = "GetRejectedList", enableSearchBy = true })
+                @await Component.InvokeAsync("FacultyStaffLayout_PagedSearch", new { action = "GetPendingList", enableSearchBy = true })
                 <div class="dataTable-container">
                     <table class="table table-striped dataTable-table" id="table1">
                         <thead>
@@ -69,11 +69,14 @@
                                     <td>@thesis.Year</td>
                                     <td>@thesis.Semester</td>
                                     <td>
+                                        <a class="btn btn-success btn-sm" asp-action="Details" asp-route-id="@thesis.Id">
+                                            <i class="fas fa-folder"></i> Chi tiết
+                                        </a>
                                         <a class="btn btn-primary btn-sm" asp-action="Edit" asp-route-id="@thesis.Id">
                                             <i class="fas fa-folder"></i> Sửa
                                         </a>
-                                        <a class="btn btn-success btn-sm" asp-action="Edit" asp-route-id="@thesis.Id">
-                                            <i class="fas fa-folder"></i> Công bố
+                                        <a class="btn btn-primary btn-sm" asp-action="ApproveThesis" asp-route-thesisId="@thesis.Id">
+                                            <i class="fas fa-folder"></i> Duyệt
                                         </a>
                                     </td>
                                 </tr>
@@ -82,7 +85,7 @@
                         </tbody>
                     </table>
                 </div>
-                @await Component.InvokeAsync("FacultyStaffLayout_Paged", new { action = "GetRejectedList", enableSearchBy = true })
+                @await Component.InvokeAsync("FacultyStaffLayout_Paged", new { action = "GetPendingList", enableSearchBy = true })
             </div>
         </div>
     </div>

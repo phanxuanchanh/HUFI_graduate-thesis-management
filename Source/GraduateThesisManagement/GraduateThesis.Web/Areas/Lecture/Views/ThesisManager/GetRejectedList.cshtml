@@ -18,30 +18,42 @@
 <section class="section">
     <div class="card">
         <div class="card-header">
+            Xem theo:
+            <a asp-action="GetFinishedList" class="btn btn-sm btn-primary mb-1 me-1">Đã kết thúc</a>
+            <a asp-action="GetPublishedList" class="btn btn-sm btn-primary mb-1 me-1">Đã công bố</a>
+            <a asp-action="GetApprovedList" class="btn btn-sm btn-success mb-1 me-1">Đã được duyệt</a>
+            <a asp-action="GetRejectedList" class="btn btn-sm btn-danger mb-1 me-1">Bị từ chối duyệt</a>
+            <a asp-action="GetPendingList" class="btn btn-sm btn-info mb-1 me-1">Đang chờ duyệt</a>
         </div>
         <div class="card-body">
             <div class="dataTable-wrapper dataTable-loading no-footer sortable searchable fixed-columns">
-                @await Component.InvokeAsync("FacultyStaffLayout_PagedSearch", new { action = "GetRejectedList", enableOrder = false })
+                @await Component.InvokeAsync("FacultyStaffLayout_PagedSearch", new { action = "GetRejectedList", enableSearchBy = true })
                 <div class="dataTable-container">
                     <table class="table table-striped dataTable-table" id="table1">
                         <thead>
                             <tr>
-                                <th data-sortable="" style="width: 5%;">
+                                <th data-sortable="" style="width: 10%;">
                                     <a href="#" class="dataTable-sorter">STT</a>
                                 </th>
-                                <th data-sortable="" style="width: 10%;">
+                                <th data-sortable="" style="width: 15%;">
                                     <a href="#" class="dataTable-sorter">@Html.DisplayNameFor(model => model.Id)</a>
                                 </th>
-                                <th data-sortable="" style="width: 20%;">
+                                <th data-sortable="" style="width: 15%;">
                                     <a href="#" class="dataTable-sorter">@Html.DisplayNameFor(model => model.Name)</a>
-                                </th>
-                                <th data-sortable="" style="width: 30%;">
-                                    <a href="#" class="dataTable-sorter">@Html.DisplayNameFor(model => model.Notes)</a>
                                 </th>
                                 <th data-sortable="" style="width: 15%;">
                                     <a href="#" class="dataTable-sorter">@Html.DisplayNameFor(model => model.Lecturer.FullName)</a>
                                 </th>
-                                <th data-sortable="" style="width: 20%;">
+                                <th data-sortable="" style="width: 12%;">
+                                    <a href="#" class="dataTable-sorter">@Html.DisplayNameFor(model => model.Year)</a>
+                                </th>
+                                <th data-sortable="" style="width: 8%">
+                                    <a href="#" class="dataTable-sorter">@Html.DisplayNameFor(model => model.Semester)</a>
+                                </th>
+                                <th data-sortable="" style="width: 10%">
+                                    <a href="#" class="dataTable-sorter">@Html.DisplayNameFor(model => model.Notes)</a>
+                                </th>
+                                <th data-sortable="" style="width: 15%;">
                                     <a href="#" class="dataTable-sorter">Công cụ</a>
                                 </th>
                             </tr>
@@ -56,14 +68,16 @@
                                     <td>@count</td>
                                     <td>@thesis.Id</td>
                                     <td>@thesis.Name</td>
-                                    <td>@thesis.Notes</td>
                                     <td>@thesis.Lecturer.FullName</td>
+                                    <td>@thesis.Year</td>
+                                    <td>@thesis.Semester</td>
+                                    <td>@thesis.Notes</td>
                                     <td>
                                         <a class="btn btn-primary btn-sm" asp-action="Edit" asp-route-id="@thesis.Id">
                                             <i class="fas fa-folder"></i> Sửa
                                         </a>
                                         <a class="btn btn-success btn-sm" asp-action="ApproveThesis" asp-route-thesisId="@thesis.Id">
-                                            <i class="fas fa-folder"></i> Xét duyệt lại
+                                            <i class="fas fa-folder"></i> Xét duyệt
                                         </a>
                                     </td>
                                 </tr>
@@ -72,7 +86,7 @@
                         </tbody>
                     </table>
                 </div>
-                @await Component.InvokeAsync("FacultyStaffLayout_Paged", new { action = "GetRejectedList", enableOrder = false })
+                @await Component.InvokeAsync("FacultyStaffLayout_Paged", new { action = "GetRejectedList", enableSearchBy = true })
             </div>
         </div>
     </div>

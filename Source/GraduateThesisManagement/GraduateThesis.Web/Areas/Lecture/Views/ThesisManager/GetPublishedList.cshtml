@@ -1,17 +1,6 @@
 ﻿@model IEnumerable<ThesisOutput>
 
-<section id="basic-dropdown">
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-body">
-                    <a asp-action="ExportApprovedTheses" class="btn btn-info" type="button">Xuất</a>
-                    <a asp-action="Print" class="btn btn-secondary" type="button">In</a>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
+@await Component.InvokeAsync("FacultyStaffLayout_Toolbar")
 
 @await Component.InvokeAsync("FacultyStaffLayout_StatusArea")
 
@@ -19,7 +8,7 @@
     <div class="card">
         <div class="card-header">
             Xem theo:
-            <a asp-action="GetFinishedList" class="btn btn-sm btn-primary mb-1 me-1">Đã kết thúc</a>
+            <a asp-action="GetFinishedList" class="btn btn-sm btn-primary mb-1 me-1">Đã hoàn thành</a>
             <a asp-action="GetPublishedList" class="btn btn-sm btn-primary mb-1 me-1">Đã công bố</a>
             <a asp-action="GetApprovedList" class="btn btn-sm btn-success mb-1 me-1">Đã được duyệt</a>
             <a asp-action="GetRejectedList" class="btn btn-sm btn-danger mb-1 me-1">Bị từ chối duyệt</a>
@@ -27,7 +16,7 @@
         </div>
         <div class="card-body">
             <div class="dataTable-wrapper dataTable-loading no-footer sortable searchable fixed-columns">
-                @await Component.InvokeAsync("FacultyStaffLayout_PagedSearch", new { action = "GetRejectedList", enableSearchBy = true })
+                @await Component.InvokeAsync("FacultyStaffLayout_PagedSearch", new { action = "GetPublishedList", enableSearchBy = true })
                 <div class="dataTable-container">
                     <table class="table table-striped dataTable-table" id="table1">
                         <thead>
@@ -69,12 +58,9 @@
                                     <td>@thesis.Year</td>
                                     <td>@thesis.Semester</td>
                                     <td>
-                                        <a class="btn btn-primary btn-sm" asp-action="Edit" asp-route-id="@thesis.Id">
-                                            <i class="fas fa-folder"></i> Sửa
-                                        </a>
-                                        <a class="btn btn-success btn-sm" asp-action="Edit" asp-route-id="@thesis.Id">
-                                            <i class="fas fa-folder"></i> Công bố
-                                        </a>
+                                        <button type="submit" form="close_@count" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i> Ngừng công bố</button>
+                                        <form asp-action="BatchDelete" asp-route-id="@thesis.Id" id="close_@count" method="post">
+                                        </form>
                                     </td>
                                 </tr>
                                 count++;
@@ -82,7 +68,7 @@
                         </tbody>
                     </table>
                 </div>
-                @await Component.InvokeAsync("FacultyStaffLayout_Paged", new { action = "GetRejectedList", enableSearchBy = true })
+                @await Component.InvokeAsync("FacultyStaffLayout_Paged", new { action = "GetPublishedList", enableSearchBy = true })
             </div>
         </div>
     </div>
