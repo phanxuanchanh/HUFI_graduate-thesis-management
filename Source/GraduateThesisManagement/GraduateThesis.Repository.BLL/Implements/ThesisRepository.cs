@@ -453,6 +453,7 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
         thesis.Notes = approvalInput.Notes;
         thesis.IsRejected = false;
         thesis.IsApproved = true;
+        thesis.IsNew = false;
 
         await _context.SaveChangesAsync();
 
@@ -486,6 +487,7 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
         thesis.Notes = approvalInput.Notes;
         thesis.IsRejected = true;
         thesis.IsApproved = false;
+        thesis.IsNew = false;
 
         await _context.SaveChangesAsync();
 
@@ -806,7 +808,7 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
     public async Task<DataResponse> AssignSupervisorAsync(string thesisId)
     {
         Thesis thesis = await _context.Theses.Where(t => t.Id == thesisId && t.IsDeleted == false).SingleOrDefaultAsync();
-      
+
         if (thesis == null)
             return new DataResponse { Status = DataResponseStatus.NotFound, Message = "Không có đề tài này!" };
 
@@ -858,13 +860,13 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
         Thesis thesis = await _context.Theses.Where(t => t.Id == thesisId && t.IsDeleted == false).SingleOrDefaultAsync();
         if (thesis == null)
             return new DataResponse { Status = DataResponseStatus.NotFound, Message = "Không có đề tài này!" };
-       
+
         bool checkCounter = await _context.CounterArgumentResults
         .AnyAsync(t => t.ThesisId == thesisId && t.LectureId == thesis.LectureId);
-       
+
         if (checkCounter)
             return new DataResponse { Status = DataResponseStatus.AlreadyExists, Message = "Đề tài này đã được phân công!" };
-      
+
         CounterArgumentResult counterArgument = new CounterArgumentResult
         {
             ThesisId = thesisId,
@@ -1236,5 +1238,102 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
             if (memoryStream != null)
                 memoryStream.Dispose();
         }
+    }
+
+    public async Task<DataResponse> PublishThesis(string thesisId)
+    {
+        Thesis thesis = await _context.Theses.Where(t => t.IsDeleted == false && t.IsApproved == true)
+                       .SingleOrDefaultAsync();
+        if (thesis == null)
+            return new DataResponse
+            {
+                Status = DataResponseStatus.NotFound,
+                Message = "Không tìm thấy đề tài có mã này!"
+            };
+
+
+        thesis.IsPublished = true;
+        thesis.IsRejected = false;
+        thesis.IsApproved = false;
+        thesis.IsNew = false;
+
+
+        await _context.SaveChangesAsync();
+        return new DataResponse
+        {
+            Status = DataResponseStatus.Success,
+            Message = "Đã công bố đề tài thành công!"
+        };
+    }
+
+    public async Task<DataResponse> PublishTheses(string[] thesisIds)
+    {
+        List<Thesis> theses = await _context.Theses.Where(t => t.IsDeleted == false && t.IsApproved == true)
+                       .WhereBulkContains(thesisIds, s => s.Id).ToListAsync();
+
+        foreach (Thesis thesis in theses)
+        {
+            thesis.IsPublished = true;
+            thesis.IsRejected = false;
+            thesis.IsApproved = false;
+            thesis.IsNew = false;
+        }
+
+        await _context.SaveChangesAsync();
+
+        return new DataResponse
+        {
+            Status = DataResponseStatus.Success,
+            Message = "Đã công bố đề tài thành công!"
+        };
+    }
+
+    public async Task<DataResponse> StopPublishing(string thesisId)
+    {
+        Thesis thesis = await _context.Theses.Where(t => t.IsDeleted == false && t.IsPublished == true)
+                        .SingleOrDefaultAsync();
+        if (thesis == null)
+            return new DataResponse
+            {
+                Status = DataResponseStatus.NotFound,
+                Message = "Không tìm thấy đề tài có mã này!"
+            };
+
+
+        thesis.IsPublished = false;
+        thesis.InProgess = true;
+        thesis.IsRejected = false;
+        thesis.IsApproved = false;
+        thesis.IsNew = false;
+
+        await _context.SaveChangesAsync();
+        return new DataResponse
+        {
+            Status = DataResponseStatus.Success,
+            Message = "Đã công bố đề tài thành công!"
+        };
+    }
+
+    public async Task<DataResponse> StopPublishings(string[] thesisIds)
+    {
+        List<Thesis> theses = await _context.Theses.Where(t => t.IsDeleted == false && t.IsPublished == true)
+                        .WhereBulkContains(thesisIds, s => s.Id).ToListAsync();
+
+        foreach (Thesis thesis in theses)
+        {
+            thesis.IsPublished = false;
+            thesis.InProgess = true;
+            thesis.IsRejected = false;
+            thesis.IsApproved = false;
+            thesis.IsNew = false;
+        }
+
+        await _context.SaveChangesAsync();
+
+        return new DataResponse
+        {
+            Status = DataResponseStatus.Success,
+            Message = "Đã công bố đề tài thành công!"
+        };
     }
 }
