@@ -1,9 +1,9 @@
 ﻿CREATE TABLE [dbo].[Councils] (
   [ID] [varchar](50) NOT NULL,
-  [Name] [nvarchar](50) NOT NULL,
+  [Name] [nvarchar](100) NOT NULL,
   [Description] [ntext] NULL,
   [Semester] [int] NULL,
-  [Year] [nvarchar](50) NOT NULL,
+  [Year] [nvarchar](20) NOT NULL,
   [CreatedAt] [datetime] NULL,
   [UpdatedAt] [datetime] NULL,
   [DeletedAt] [datetime] NULL,

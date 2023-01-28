@@ -35,15 +35,12 @@ public class StudentThesisController : WebControllerBase
     [Route("list")]
     [HttpGet]
     [PageName(Name = "Danh sách đề tài khóa luận")]
-    public async Task<IActionResult> Index(int page = 1, int pageSize = 10, string orderBy = "", string orderOptions = "ASC", string keyword = "")
+    public async Task<IActionResult> Index(int page = 1, int pageSize = 10, string orderBy = "", string orderOptions = "ASC", string searchBy = "All", string keyword = "")
     {
-        Pagination<ThesisOutput> pagination;
-        if (orderOptions == "ASC")
-            pagination = await _thesisRepository.GetPgnOfPublishedThesis(page, pageSize, keyword);
-        else
-            pagination = await _thesisRepository.GetPgnOfPublishedThesis(page, pageSize, keyword);
-
+        OrderOptions orderOpts = (orderOptions == "ASC") ? OrderOptions.ASC : OrderOptions.DESC;
+        Pagination<ThesisOutput> pagination = await _thesisRepository.GetPgnOfPubldThesesAsync(page, pageSize, orderBy, orderOpts, searchBy, keyword);
         StaticPagedList<ThesisOutput> pagedList = pagination.ToStaticPagedList();
+
         ViewData["PagedList"] = pagedList;
         ViewData["OrderBy"] = orderBy;
         ViewData["OrderOptions"] = orderOptions;
@@ -68,13 +65,13 @@ public class StudentThesisController : WebControllerBase
     [HttpGet]
     public async Task<IActionResult> CheckAvailable([Required] string id)
     {
-        return Json(await _thesisRepository.CheckThesisAvailable(id));
+        return Json(await _thesisRepository.CheckThesisAvailAsync(id));
     }
 
     [Route("search-students")]
     [HttpGet]
     public async Task<IActionResult> SearchStudents(string keyword)
-    {   
+    {
         return Json(await _studentRepository.SearchForThesisRegAsync(keyword));
     }
 
@@ -111,7 +108,7 @@ public class StudentThesisController : WebControllerBase
         {
             DataResponse dataResponse = await _thesisRepository.RegisterThesisAsync(thesisRegistrationInput);
             AddTempData(dataResponse);
-            if(dataResponse.Status == DataResponseStatus.Success)
+            if (dataResponse.Status == DataResponseStatus.Success)
                 return RedirectToAction("YourThesis");
 
             AddViewData(dataResponse);
@@ -171,10 +168,10 @@ public class StudentThesisController : WebControllerBase
     [Route("submit-thesis")]
     [HttpPost]
     [PageName(Name = "Nộp đề tài")]
-    public async Task<IActionResult> SubmitThesisAsync([Required]string thesisId, string thesisGroupId)
+    public async Task<IActionResult> SubmitThesisAsync([Required] string thesisId, string thesisGroupId)
     {
-        DataResponse dataResponse = await _thesisRepository.SubmitThesisAsync(thesisId,thesisGroupId);
+        DataResponse dataResponse = await _thesisRepository.SubmitThesisAsync(thesisId, thesisGroupId);
         AddTempData(dataResponse);
-            return RedirectToAction("YourThesis");
+        return RedirectToAction("YourThesis");
     }
 }
