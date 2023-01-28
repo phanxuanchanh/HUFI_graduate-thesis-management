@@ -58,6 +58,8 @@ public class Repository : IRepository
 
     public IReportRepository ReportRepository => new ReportRepository(_context);
 
+    public ICouncilRepository CouncilRepository => new CouncilRepository(_context);
+
     protected virtual void Dispose(bool disposing)
     {
         if (!disposedValue)

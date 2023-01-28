@@ -167,12 +167,12 @@
                     </li>
                 }
 
-                @if (appPages.Any(p => p.ControllerName == "CouncilManager"))
+                @if (appPages.Any(p => p.ControllerName == "CouncilManager" || p.ControllerName == "ThesisCommitteeManager"))
                 {
                     <li class="sidebar-item  has-sub">
                         <a href="#" class='sidebar-link'>
                             <i class="bi bi-stack"></i>
-                            <span>Hội đồng chấm luận văn</span>
+                            <span>Hội đồng & tiểu ban</span>
                         </a>
                         <ul class="submenu ">
                             @if (appPages.Any(p => p.ControllerName == "CouncilManager" && p.ActionName == "Index"))
