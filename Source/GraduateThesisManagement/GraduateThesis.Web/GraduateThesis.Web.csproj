@@ -20,7 +20,6 @@
     <Folder Include="Areas\Administrator\Models\" />
     <Folder Include="Areas\Lecture\Data\" />
     <Folder Include="Areas\Lecture\Models\" />
-    <Folder Include="Areas\Lecture\Views\CouncilManager\" />
     <Folder Include="Areas\Student\Data\" />
     <Folder Include="Areas\Student\Models\" />
     <Folder Include="wwwroot\avatar\faculty-staff\" />
