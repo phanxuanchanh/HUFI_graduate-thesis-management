@@ -455,6 +455,7 @@ public class FacultyStaffRepository : AsyncSubRepository<FacultyStaff, FacultySt
 
             await MiniExcel.SaveAsByTemplateAsync(memoryStream, path, new
             {
+                Name = "DANH SÁCH GIẢNG VIÊN CỦA KHOA CNTT",
                 Items = facultyStaffs.Select(s => new FacultyStaffExport
                 {
                     Index = count++,
