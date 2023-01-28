@@ -1,13 +1,33 @@
 ﻿@model IEnumerable<ThesisOutput>
 
+<section id="basic-dropdown">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <a asp-action="ExportPendingTheses" class="btn btn-info" type="button">Xuất</a>
+                    <a asp-action="Print" class="btn btn-secondary" type="button">In</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
 @await Component.InvokeAsync("FacultyStaffLayout_StatusArea")
 
 <section class="section">
     <div class="card">
         <div class="card-header">
+            Xem theo:
+            <a asp-action="GetCompletedList" class="btn btn-sm btn-primary mb-1 me-1">Đã hoàn thành</a>
+            <a asp-action="GetPublishedList" class="btn btn-sm btn-primary mb-1 me-1">Đã công bố</a>
+            <a asp-action="GetApprovedList" class="btn btn-sm btn-success mb-1 me-1">Đã được duyệt</a>
+            <a asp-action="GetRejectedList" class="btn btn-sm btn-danger mb-1 me-1">Bị từ chối duyệt</a>
+            <a asp-action="GetNewList" class="btn btn-sm btn-info mb-1 me-1">Đang chờ duyệt</a>
         </div>
         <div class="card-body">
             <div class="dataTable-wrapper dataTable-loading no-footer sortable searchable fixed-columns">
+                @await Component.InvokeAsync("FacultyStaffLayout_PagedSearch", new { enableSearchBy = true })
                 <div class="dataTable-container">
                     <table class="table table-striped dataTable-table" id="table1">
                         <thead>
@@ -36,7 +56,7 @@
                             @{
                                 int count = 1;
                             }
-                            @foreach (ThesisOutput thesis in Model)
+                            @foreach (ThesisOutput thesis in (IEnumerable<ThesisOutput>)ViewData["PagedList"]!)
                             {
                                 <tr>
                                     <td>@count</td>
@@ -45,12 +65,15 @@
                                     <td>@thesis.Lecturer.FullName</td>
                                     <td>@thesis.Year</td>
                                     <td>
-                                        <button type="submit" form="restore_@count" class="btn btn-primary btn-sm"><i class="fas fa-restore"></i> Khôi phục</button>
-                                        <button type="submit" form="delete_@count" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i> Xóa vĩnh viễn</button>
-                                        <form asp-action="Restore" asp-route-id="@thesis.Id" id="restore_@count" method="post">
-                                        </form>
-                                        <form asp-action="ForceDelete" asp-route-id="@thesis.Id" id="delete_@count" method="post">
-                                        </form>
+                                        <a class="btn btn-success btn-sm" asp-action="Details" asp-route-id="@thesis.Id">
+                                            <i class="fas fa-folder"></i> Chi tiết
+                                        </a>
+                                        <a class="btn btn-primary btn-sm" asp-action="Edit" asp-route-id="@thesis.Id">
+                                            <i class="fas fa-folder"></i> Sửa
+                                        </a>
+                                        <a class="btn btn-primary btn-sm" asp-action="ApproveThesis" asp-route-thesisId="@thesis.Id">
+                                            <i class="fas fa-folder"></i> Duyệt
+                                        </a>
                                     </td>
                                 </tr>
                                 count++;
@@ -58,6 +81,7 @@
                         </tbody>
                     </table>
                 </div>
+                @await Component.InvokeAsync("FacultyStaffLayout_Paged", new { enableSearchBy = true })
             </div>
         </div>
     </div>

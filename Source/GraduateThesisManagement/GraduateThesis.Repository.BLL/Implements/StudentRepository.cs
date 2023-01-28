@@ -632,10 +632,9 @@ public class StudentRepository : AsyncSubRepository<Student, StudentInput, Stude
                 _context.Theses.Where(t => t.IsDeleted == false),
                 groudDetail => groudDetail.StudentThesisGroupId,
                 thesis => thesis.ThesisGroupId,
-                (groupDetail, thesis) => new RegdStudentExport
+                (groupDetail, thesis) => new StudentOutput
                 {
-                    Id = groupDetail.Student.Id,
-                    ThesisName = thesis.Name
+                    Id = groupDetail.Student.Id
                 }
             ).CountAsync();
 
@@ -682,6 +681,7 @@ public class StudentRepository : AsyncSubRepository<Student, StudentInput, Stude
 
             await MiniExcel.SaveAsByTemplateAsync(memoryStream, path, new
             {
+                Name = "DANH SÁCH SINH VIÊN CỦA KHOA CNTT",
                 Items = students.Select(s => new StudentExport
                 {
                     Index = count++,
@@ -724,6 +724,7 @@ public class StudentRepository : AsyncSubRepository<Student, StudentInput, Stude
 
             await MiniExcel.SaveAsByTemplateAsync(memoryStream, path, new
             {
+                Name = "DANH SÁCH SINH VIÊN CHƯA ĐĂNG KÝ KHÓA LUẬN - KHOA CNTT",
                 Items = students.Select(s => new StudentExport
                 {
                     Index = count++,
@@ -776,6 +777,7 @@ public class StudentRepository : AsyncSubRepository<Student, StudentInput, Stude
 
             await MiniExcel.SaveAsByTemplateAsync(memoryStream, path, new
             {
+                Name = "DANH SÁCH SINH VIÊN ĐÃ ĐĂNG KÝ KHÓA LUẬN - KHOA CNTT",
                 Items = regdStudents.Select(s =>
                 {
                     s.Index = count++;

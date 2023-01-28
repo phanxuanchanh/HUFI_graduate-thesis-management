@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace GraduateThesis.Repository.DTO;
@@ -105,6 +106,18 @@ public class ThesisOutput : ThesisInput
     public SpecializationOutput Specialization { get; set; }
 }
 
+public class PublishedThesisOutput
+{
+    public string Id { get; set; }
+    public string Name { get; set; }
+    public string Description { get; set; }
+    public int MaxStudentNumber { get; set; }
+    public FacultyStaffOutput Lecturer { get; set; }
+    public FacultyStaffOutput CriticalLecturer { get; set; }
+    public FacultyStaffOutput ThesisSupervisor { get; set; }
+    public List<StudentOutput> Students { get; set; }
+}
+
 public class ThesisExport
 {
     public int Index { get; set; }
@@ -117,4 +130,5 @@ public class ThesisExport
     public int Semester { get; set; }
     public string SpecializationName { get; set; }
     public string TopicName { get; set; }
+    public string LectureName { get; set; }
 }
