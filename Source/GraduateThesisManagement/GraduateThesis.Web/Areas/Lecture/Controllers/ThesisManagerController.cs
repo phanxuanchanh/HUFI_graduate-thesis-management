@@ -360,7 +360,7 @@ public class ThesisManagerController : WebControllerBase<IThesisRepository, Thes
     [Route("publish-thesis/{thesisId}")]
     [HttpPost]
     [PageName(Name = "Công bố đề tài")]
-    public async Task<IActionResult> PublishThesis(string thesisId)
+    public async Task<IActionResult> PublishThesis([Required] string thesisId)
     {
         if (!ModelState.IsValid)
         {
@@ -369,6 +369,24 @@ public class ThesisManagerController : WebControllerBase<IThesisRepository, Thes
         }
 
         DataResponse dataResponse = await _thesisRepository.PublishThesisAsync(thesisId);
+        AddTempData(dataResponse);
+
+        return RedirectToAction("GetApprovedList");
+    }
+
+    [Route("publish-theses")]
+    [HttpPost]
+    [PageName(Name = "Công bố đề tài")]
+    public async Task<IActionResult> PublishTheses([Required] string thesisIds)
+    {
+        if (!ModelState.IsValid)
+        {
+            AddTempData(DataResponseStatus.InvalidData);
+            return RedirectToAction("GetApprovedList");
+        }
+
+        DataResponse dataResponse = await _thesisRepository
+            .PublishThesesAsync(thesisIds.Split(new char[] { ';' }));
         AddTempData(dataResponse);
 
         return RedirectToAction("GetApprovedList");
@@ -454,7 +472,7 @@ public class ThesisManagerController : WebControllerBase<IThesisRepository, Thes
         return View();
     }
 
-    [Route("my-thesis")]
+    [Route("my-theses")]
     [HttpGet]
     [PageName(Name = "Danh sách đề tài của tôi")]
     public async Task<IActionResult> GetThesesOfLecturer(int page = 1, int pageSize = 10, string orderBy = "CreatedAt", string orderOptions = "DESC", string searchBy = "All", string keyword = "")
@@ -463,7 +481,7 @@ public class ThesisManagerController : WebControllerBase<IThesisRepository, Thes
         string userId = _accountManager.GetUserId();
 
         OrderOptions orderOpts = (orderOptions == "ASC") ? OrderOptions.ASC : OrderOptions.DESC;
-        Pagination<ThesisOutput> pagination = await _thesisRepository.GetPgnOfAppdThesesAsync(userId, page, pageSize, keyword);
+        Pagination<ThesisOutput> pagination = await _thesisRepository.GetPaginationAsync(userId, page, pageSize, orderBy, orderOpts, searchBy, keyword);
         StaticPagedList<ThesisOutput> pagedList = pagination.ToStaticPagedList();
 
         ViewData["OrderByProperties"] = SetOrderByProperties();
@@ -477,10 +495,73 @@ public class ThesisManagerController : WebControllerBase<IThesisRepository, Thes
         return View();
     }
 
-    [NonAction]
-    public Task<IActionResult> GetRejectedListOfLecturer(int page = 1, int pageSize = 10, string orderBy = "CreatedAt", string orderOptions = "DESC", string searchBy = "All", string keyword = "")
+    [Route("my-pending-theses")]
+    [HttpGet]
+    [PageName(Name = "Danh sách đề tài đang chờ duyệt của tôi")]
+    public async Task<IActionResult> GetPndgThesesOfLecturer(int page = 1, int pageSize = 10, string orderBy = "CreatedAt", string orderOptions = "DESC", string searchBy = "All", string keyword = "")
     {
-        throw new NotImplementedException();
+        _accountManager.SetHttpContext(HttpContext);
+        string userId = _accountManager.GetUserId();
+
+        OrderOptions orderOpts = (orderOptions == "ASC") ? OrderOptions.ASC : OrderOptions.DESC;
+        Pagination<ThesisOutput> pagination = await _thesisRepository.GetPgnOfPndgApvlThesesAsync(userId, page, pageSize, orderBy, orderOpts, searchBy, keyword);
+        StaticPagedList<ThesisOutput> pagedList = pagination.ToStaticPagedList();
+
+        ViewData["OrderByProperties"] = SetOrderByProperties();
+        ViewData["SearchByProperties"] = SetSearchByProperties();
+        ViewData["PagedList"] = pagedList;
+        ViewData["OrderBy"] = orderBy;
+        ViewData["OrderOptions"] = orderOptions;
+        ViewData["SearchBy"] = searchBy;
+        ViewData["Keyword"] = keyword;
+
+        return View();
+    }
+
+    [Route("my-rejected-theses")]
+    [HttpGet]
+    [PageName(Name = "Danh sách đề tài bị từ chối xét duyệt của tôi")]
+    public async Task<IActionResult> GetRejdThesesOfLecturer(int page = 1, int pageSize = 10, string orderBy = "CreatedAt", string orderOptions = "DESC", string searchBy = "All", string keyword = "")
+    {
+        _accountManager.SetHttpContext(HttpContext);
+        string userId = _accountManager.GetUserId();
+
+        OrderOptions orderOpts = (orderOptions == "ASC") ? OrderOptions.ASC : OrderOptions.DESC;
+        Pagination<ThesisOutput> pagination = await _thesisRepository.GetPgnOfRejdThesesAsync(userId, page, pageSize, orderBy, orderOpts, searchBy, keyword);
+        StaticPagedList<ThesisOutput> pagedList = pagination.ToStaticPagedList();
+
+        ViewData["OrderByProperties"] = SetOrderByProperties();
+        ViewData["SearchByProperties"] = SetSearchByProperties();
+        ViewData["PagedList"] = pagedList;
+        ViewData["OrderBy"] = orderBy;
+        ViewData["OrderOptions"] = orderOptions;
+        ViewData["SearchBy"] = searchBy;
+        ViewData["Keyword"] = keyword;
+
+        return View();
+    }
+
+    [Route("my-approved-theses")]
+    [HttpGet]
+    [PageName(Name = "Danh sách đề tài bị từ chối xét duyệt của tôi")]
+    public async Task<IActionResult> GetAppdThesesOfLecturer(int page = 1, int pageSize = 10, string orderBy = "CreatedAt", string orderOptions = "DESC", string searchBy = "All", string keyword = "")
+    {
+        _accountManager.SetHttpContext(HttpContext);
+        string userId = _accountManager.GetUserId();
+
+        OrderOptions orderOpts = (orderOptions == "ASC") ? OrderOptions.ASC : OrderOptions.DESC;
+        Pagination<ThesisOutput> pagination = await _thesisRepository.GetPgnOfAppdThesesAsync(userId, page, pageSize, orderBy, orderOpts, searchBy, keyword);
+        StaticPagedList<ThesisOutput> pagedList = pagination.ToStaticPagedList();
+
+        ViewData["OrderByProperties"] = SetOrderByProperties();
+        ViewData["SearchByProperties"] = SetSearchByProperties();
+        ViewData["PagedList"] = pagedList;
+        ViewData["OrderBy"] = orderBy;
+        ViewData["OrderOptions"] = orderOptions;
+        ViewData["SearchBy"] = searchBy;
+        ViewData["Keyword"] = keyword;
+
+        return View();
     }
 
     [Route("revisions/{thesisId}")]
@@ -592,7 +673,6 @@ public class ThesisManagerController : WebControllerBase<IThesisRepository, Thes
         DataResponse dataResponse = await _thesisRepository.AssignCounterArgumentAsync(thesisId, lectureId);
         AddTempData(dataResponse);
         return RedirectToAction("LoadCounterArgumentView", new { thesisId = thesisId });
-
     }
 
 }

@@ -36,18 +36,7 @@ public class ThesisGroupRepository : AsyncSubRepository<ThesisGroup, ThesisGroup
             Name = s.Name,
             Description = s.Description,
             StudentQuantity = s.StudentQuantity,
-            Notes = s.Notes,
-            Thesis = s.Theses.Select(ts => new ThesisOutput
-            {
-                Id = ts.Id,
-                Name = ts.Name,
-                Description = ts.Description,
-                SourceCode = ts.SourceCode,
-                Notes = ts.Notes,
-                TopicId = ts.Notes,
-                MaxStudentNumber = ts.MaxStudentNumber,
-
-            }).FirstOrDefault()
+            Notes = s.Notes
         };
 
         ListSelector = PaginationSelector;
@@ -93,14 +82,84 @@ public class ThesisGroupRepository : AsyncSubRepository<ThesisGroup, ThesisGroup
         entity.CreatedAt = DateTime.Now;
     }
 
+    public async Task<Pagination<ThesisGroupOutput>> GetPaginationAsync(int page, int pageSize, string orderBy, OrderOptions orderOptions, string searchBy, string keyword)
+    {
+        IQueryable<Thesis> queryable = _context.Theses.Include(i => i.Lecture).Include(i => i.ThesisGroup)
+            .Where(t => t.ThesisGroupId != null && t.IsDeleted == false && t.Lecture.IsDeleted == false);
+
+        if (!string.IsNullOrEmpty(keyword) && string.IsNullOrEmpty(searchBy))
+        {
+            queryable = queryable.Where(t => t.ThesisGroup.Id.Contains(keyword) || t.ThesisGroup.Name.Contains(keyword));
+        }
+
+        if (!string.IsNullOrEmpty(keyword) && !string.IsNullOrEmpty(searchBy))
+        {
+            switch (searchBy)
+            {
+                case "All": queryable = queryable.Where(t => t.ThesisGroup.Id.Contains(keyword) || t.ThesisGroup.Name.Contains(keyword)); break;
+                case "Id": queryable = queryable.Where(t => t.ThesisGroup.Id.Contains(keyword)); break;
+                case "Name": queryable = queryable.Where(t => t.ThesisGroup.Name.Contains(keyword)); break;
+            }
+        }
+
+        if (string.IsNullOrEmpty(orderBy))
+        {
+            queryable = queryable.OrderByDescending(t => t.ThesisGroup.CreatedAt);
+        }
+        else if (orderOptions == OrderOptions.ASC)
+        {
+            switch (orderBy)
+            {
+                case "Id": queryable = queryable.OrderBy(t => t.ThesisGroup.Id); break;
+                case "Name": queryable = queryable.OrderBy(t => t.ThesisGroup.Name); break;
+                case "CreatedAt": queryable = queryable.OrderBy(t => t.ThesisGroup.CreatedAt); break;
+            }
+        }
+        else
+        {
+            switch (orderBy)
+            {
+                case "Id": queryable = queryable.OrderByDescending(t => t.ThesisGroup.Id); break;
+                case "Name": queryable = queryable.OrderByDescending(t => t.ThesisGroup.Name); break;
+                case "CreatedAt": queryable = queryable.OrderByDescending(t => t.ThesisGroup.CreatedAt); break;
+            }
+        }
+
+        int n = (page - 1) * pageSize;
+        int totalItemCount = await queryable.CountAsync();
+
+        List<ThesisGroupOutput> onePageOfData = await queryable.Skip(n).Take(pageSize)
+            .Select(s => new ThesisGroupOutput
+            {
+                Id = s.ThesisGroup.Id,
+                Name = s.ThesisGroup.Name,
+                Thesis = new ThesisOutput {
+                    Id = s.Id, Name = s.Name,
+                    Lecturer = new FacultyStaffOutput { Id = s.Lecture.Id, Surname = s.Lecture.Surname, Name = s.Lecture.Name }
+                },
+                Students = _context.ThesisGroupDetails.Include(i => i.Student)
+                    .Where(gd => gd.StudentThesisGroupId == s.ThesisGroup.Id && gd.IsDeleted == false)
+                    .Select(gd => new StudentOutput { Id = gd.Student.Id, Surname = gd.Student.Surname, Name = gd.Student.Name })
+                    .ToList()
+            }).ToListAsync();
+
+        return new Pagination<ThesisGroupOutput>
+        {
+            Page = page,
+            PageSize = pageSize,
+            TotalItemCount = totalItemCount,
+            Items = onePageOfData
+        };
+    }
+
     public override async Task<ThesisGroupOutput> GetAsync(string id)
     {
         ThesisGroupOutput thesisGroup = await base.GetAsync(id);
 
-        //thesisGroup.Students = await _context.ThesisGroupDetails.Include(i => i.Student)
-        //    .Where(s => s.StudentThesisGroupId == id && s.IsDeleted == false)
-        //    .Select(s => new StudentOutput { Id = s.Student.Id, Name = s.Student.Name })
-        //    .ToListAsync();
+        thesisGroup.Students = await _context.ThesisGroupDetails.Include(i => i.Student)
+            .Where(s => s.StudentThesisGroupId == id && s.IsDeleted == false)
+            .Select(s => new StudentOutput { Id = s.Student.Id, Name = s.Student.Name })
+            .ToListAsync();
 
         return thesisGroup;
     }

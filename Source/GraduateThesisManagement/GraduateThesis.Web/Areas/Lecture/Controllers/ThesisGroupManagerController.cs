@@ -1,11 +1,19 @@
 ﻿using GraduateThesis.ApplicationCore.AppController;
+using GraduateThesis.ApplicationCore.Enums;
+using GraduateThesis.ApplicationCore.File;
 using GraduateThesis.ApplicationCore.Models;
 using GraduateThesis.ApplicationCore.WebAttributes;
 using GraduateThesis.Common.WebAttributes;
+using GraduateThesis.Repository.BLL.Implements;
 using GraduateThesis.Repository.BLL.Interfaces;
+using GraduateThesis.Repository.DAL;
 using GraduateThesis.Repository.DTO;
+using GraduateThesis.WebExtensions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Net.Http.Headers;
 using System.ComponentModel.DataAnnotations;
+using System.Net.Mime;
+using X.PagedList;
 
 namespace GraduateThesis.Web.Areas.Lecture.Controllers;
 
@@ -21,6 +29,22 @@ public class ThesisGroupManagerController : WebControllerBase<IThesisGroupReposi
         :base(repository.ThesisGroupRepository)
     {
         _thesisGroupRepository = repository.ThesisGroupRepository; 
+    }
+
+    protected override Dictionary<string, string> SetOrderByProperties()
+    {
+        return new Dictionary<string, string>
+        {
+            { "Id", "Mã" }, { "Name", "Tên" }, { "CreatedAt", "Ngày tạo" }
+        };
+    }
+
+    protected override Dictionary<string, string> SetSearchByProperties()
+    {
+        return new Dictionary<string, string>
+        {
+            { "Id", "Mã" }, { "Name", "Tên" }
+        };
     }
 
     [Route("batch-delete/{id}")]
@@ -67,16 +91,24 @@ public class ThesisGroupManagerController : WebControllerBase<IThesisGroupReposi
     }
 
     [Route("export")]
-    public override Task<IActionResult> Export()
+    public override async Task<IActionResult> Export()
     {
-        throw new NotImplementedException();
+        return await ExportResult();
     }
 
     [Route("export")]
     [HttpPost]
-    public override Task<IActionResult> Export(ExportMetadata exportMetadata)
+    public override async Task<IActionResult> Export(ExportMetadata exportMetadata)
     {
-        throw new NotImplementedException();
+        byte[] bytes = new byte[10];
+        ContentDisposition contentDisposition = new ContentDisposition
+        {
+            FileName = $"student_{DateTime.Now.ToString("ddMMyyyy_HHmmss")}.xlsx"
+        };
+
+        Response.Headers.Add(HeaderNames.ContentDisposition, contentDisposition.ToString());
+
+        return File(bytes, ContentTypeConsts.XLSX);
     }
 
     [Route("force-delete/{id}")]
@@ -106,12 +138,30 @@ public class ThesisGroupManagerController : WebControllerBase<IThesisGroupReposi
         throw new NotImplementedException();
     }
 
+    [NonAction]
+    public override Task<IActionResult> Index(int page = 1, int pageSize = 10, string orderBy = "", string orderOptions = "ASC", string keyword = "")
+    {
+        throw new NotImplementedException();
+    }
+
     [Route("list")]
     [HttpGet]
     [PageName(Name = "Danh sách nhóm sinh viên làm khóa luận")]
-    public override async Task<IActionResult> Index(int page = 1, int pageSize = 10, string orderBy = "", string orderOptions = "ASC", string keyword = "")
+    public async Task<IActionResult> Index(int page = 1, int pageSize = 10, string orderBy = "CreatedAt", string orderOptions = "DESC", string searchBy = "All", string keyword = "")
     {
-        return await IndexResult(page, pageSize, orderBy, orderOptions, keyword);
+        OrderOptions orderOpts = (orderOptions == "ASC") ? OrderOptions.ASC : OrderOptions.DESC;
+        Pagination<ThesisGroupOutput> pagination = await _thesisGroupRepository.GetPaginationAsync(page, pageSize, orderBy, orderOpts, searchBy, keyword);
+        StaticPagedList<ThesisGroupOutput> pagedList = pagination.ToStaticPagedList();
+
+        ViewData["OrderByProperties"] = SetOrderByProperties();
+        ViewData["SearchByProperties"] = SetSearchByProperties();
+        ViewData["PagedList"] = pagedList;
+        ViewData["OrderBy"] = orderBy;
+        ViewData["OrderOptions"] = orderOptions;
+        ViewData["SearchBy"] = searchBy;
+        ViewData["Keyword"] = keyword;
+
+        return View();
     }
 
     [Route("restore/{id}")]

@@ -5,7 +5,8 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-body">
-                    <a asp-action="ExportRejectedTheses" class="btn btn-info" type="button">Xuất</a>
+                    <a asp-action="Create" class="btn btn-success" type="button">Thêm mới</a>
+                    <a asp-action="ExportRegdStudents" class="btn btn-info" type="button">Xuất</a>
                     <a asp-action="Print" class="btn btn-secondary" type="button">In</a>
                 </div>
             </div>
@@ -19,16 +20,16 @@
     <div class="card">
         <div class="card-header">
             Xem theo:
-            <a asp-action="GetPendingList" class="btn btn-sm btn-info mb-1 me-1">Đang chờ duyệt</a>
-            <a asp-action="GetRejectedList" class="btn btn-sm btn-danger mb-1 me-1">Bị từ chối duyệt</a>
-            <a asp-action="GetApprovedList" class="btn btn-sm btn-success mb-1 me-1">Đã được duyệt</a>
-            <a asp-action="GetPublishedList" class="btn btn-sm btn-primary mb-1 me-1">Đã công bố</a>
-            <a asp-action="GetPublishedList" class="btn btn-sm btn-primary mb-1 me-1">Đang thực hiện</a>
+            <a asp-action="GetPndgThesesOfLecturer" class="btn btn-sm btn-info mb-1 me-1">Đang chờ duyệt</a>
+            <a asp-action="GetRejdThesesOfLecturer" class="btn btn-sm btn-danger mb-1 me-1">Bị từ chối duyệt</a>
+            <a asp-action="GetAppdThesesOfLecturer" class="btn btn-sm btn-success mb-1 me-1">Đã được duyệt</a>
+            <a asp-action="GetPublishedList" class="btn btn-sm btn-primary mb-1 me-1">Được phân công hướng dẫn</a>
+            <a asp-action="GetPublishedList" class="btn btn-sm btn-primary mb-1 me-1">Đang phân công phản biện</a>
             <a asp-action="GetFinishedList" class="btn btn-sm btn-secondary mb-1 me-1">Đã kết thúc</a>
         </div>
         <div class="card-body">
             <div class="dataTable-wrapper dataTable-loading no-footer sortable searchable fixed-columns">
-                @await Component.InvokeAsync("FacultyStaffLayout_PagedSearch", new { action = "GetRejectedList", enableSearchBy = true })
+                @await Component.InvokeAsync("FacultyStaffLayout_PagedSearch", new { enableSearchBy = true })
                 <div class="dataTable-container">
                     <table class="table table-striped dataTable-table" id="table1">
                         <thead>
@@ -39,11 +40,8 @@
                                 <th data-sortable="" style="width: 15%;">
                                     <a href="#" class="dataTable-sorter">@Html.DisplayNameFor(model => model.Id)</a>
                                 </th>
-                                <th data-sortable="" style="width: 15%;">
+                                <th data-sortable="" style="width: 35%;">
                                     <a href="#" class="dataTable-sorter">@Html.DisplayNameFor(model => model.Name)</a>
-                                </th>
-                                <th data-sortable="" style="width: 15%;">
-                                    <a href="#" class="dataTable-sorter">@Html.DisplayNameFor(model => model.Lecturer.FullName)</a>
                                 </th>
                                 <th data-sortable="" style="width: 12%;">
                                     <a href="#" class="dataTable-sorter">@Html.DisplayNameFor(model => model.Year)</a>
@@ -51,10 +49,7 @@
                                 <th data-sortable="" style="width: 8%">
                                     <a href="#" class="dataTable-sorter">@Html.DisplayNameFor(model => model.Semester)</a>
                                 </th>
-                                <th data-sortable="" style="width: 10%">
-                                    <a href="#" class="dataTable-sorter">@Html.DisplayNameFor(model => model.Notes)</a>
-                                </th>
-                                <th data-sortable="" style="width: 15%;">
+                                <th data-sortable="" style="width: 20%;">
                                     <a href="#" class="dataTable-sorter">Công cụ</a>
                                 </th>
                             </tr>
@@ -69,14 +64,18 @@
                                     <td>@count</td>
                                     <td>@thesis.Id</td>
                                     <td>@thesis.Name</td>
-                                    <td>@thesis.Lecturer.FullName</td>
                                     <td>@thesis.Year</td>
                                     <td>@thesis.Semester</td>
-                                    <td>@thesis.Notes</td>
                                     <td>
-                                        <a class="btn btn-success btn-sm" asp-action="ApproveThesis" asp-route-thesisId="@thesis.Id">
-                                            <i class="fas fa-folder"></i> Xét duyệt
+                                        <a class="btn btn-success btn-sm" asp-action="Details" asp-route-id="@thesis.Id">
+                                            <i class="fas fa-folder"></i> Chi tiết
                                         </a>
+                                        <a class="btn btn-primary btn-sm" asp-action="Edit" asp-route-id="@thesis.Id">
+                                            <i class="fas fa-folder"></i> Sửa
+                                        </a>
+                                        <button type="submit" form="delete_@count" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i> Xóa</button>
+                                        <form asp-action="BatchDelete" asp-route-id="@thesis.Id" id="delete_@count" method="post">
+                                        </form>
                                     </td>
                                 </tr>
                                 count++;
@@ -84,7 +83,7 @@
                         </tbody>
                     </table>
                 </div>
-                @await Component.InvokeAsync("FacultyStaffLayout_Paged", new { action = "GetRejectedList", enableSearchBy = true })
+                @await Component.InvokeAsync("FacultyStaffLayout_Paged", new { enableSearchBy = true })
             </div>
         </div>
     </div>

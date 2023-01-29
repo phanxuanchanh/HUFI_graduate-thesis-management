@@ -559,6 +559,29 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
         };
     }
 
+    public async Task<Pagination<ThesisOutput>> GetPgnOfPndgApvlThesesAsync(string lecturerId, int page, int pageSize, string orderBy, OrderOptions orderOptions, string searchBy, string keyword)
+    {
+        IQueryable<Thesis> queryable = _context.Theses.Include(i => i.Lecture)
+            .Where(t => t.LectureId == lecturerId && t.StatusId == ThesisStatusConsts.Pending && t.IsDeleted == false && t.Lecture.IsDeleted == false);
+
+        queryable = SetSearchExpression(queryable, searchBy, keyword);
+        queryable = SetOrderExpression(queryable, orderBy, orderOptions);
+
+        int n = (page - 1) * pageSize;
+        int totalItemCount = await queryable.CountAsync();
+
+        List<ThesisOutput> onePageOfData = await queryable.Skip(n).Take(pageSize)
+            .Select(PaginationSelector).ToListAsync();
+
+        return new Pagination<ThesisOutput>
+        {
+            Page = page,
+            PageSize = pageSize,
+            TotalItemCount = totalItemCount,
+            Items = onePageOfData
+        };
+    }
+
     public async Task<Pagination<ThesisOutput>> GetPgnOfRejdThesesAsync(int page, int pageSize, string orderBy, OrderOptions orderOptions, string searchBy, string keyword)
     {
         IQueryable<Thesis> queryable = _context.Theses.Include(i => i.Lecture)
@@ -706,30 +729,32 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
         };
     }
 
-    public async Task<Pagination<ThesisOutput>> GetPgnOfRejdThesesAsync(string lecturerId, int page, int pageSize, string keyword)
+    public async Task<Pagination<ThesisOutput>> GetPgnOfRejdThesesAsync(string lecturerId, int page, int pageSize, string orderBy, OrderOptions orderOptions, string searchBy, string keyword)
     {
-        int n = (page - 1) * pageSize;
-        int totalItemCount = await _context.Theses
-            .Where(t => t.LectureId == lecturerId && t.StatusId == ThesisStatusConsts.Rejected && t.IsDeleted == false)
-            .Where(t => t.Id.Contains(keyword) || t.Name.Contains(keyword) || t.Description.Contains(keyword))
-            .CountAsync();
+        IQueryable<Thesis> queryable = _context.Theses.Include(i => i.Lecture)
+            .Where(t => t.LectureId == lecturerId && t.StatusId == ThesisStatusConsts.Rejected && t.IsDeleted == false && t.Lecture.IsDeleted == false);
 
-        List<ThesisOutput> onePageOfData = await _context.Theses.Include(i => i.Lecture)
-            .Where(t => t.LectureId == lecturerId && t.StatusId == ThesisStatusConsts.Rejected && t.IsDeleted == false)
-            .Where(t => t.Id.Contains(keyword) || t.Name.Contains(keyword) || t.Description.Contains(keyword))
-            .Skip(n).Take(pageSize)
+        queryable = SetSearchExpression(queryable, searchBy, keyword);
+        queryable = SetOrderExpression(queryable, orderBy, orderOptions);
+
+        int n = (page - 1) * pageSize;
+        int totalItemCount = await queryable.CountAsync();
+
+        List<ThesisOutput> onePageOfData = await queryable.Skip(n).Take(pageSize)
             .Select(s => new ThesisOutput
             {
                 Id = s.Id,
                 Name = s.Name,
                 MaxStudentNumber = s.MaxStudentNumber,
-                ThesisGroupId = s.ThesisGroupId,
+                Year = s.Year,
+                Semester = s.Semester,
                 Lecturer = new FacultyStaffOutput
                 {
                     Id = s.Lecture.Id,
                     Surname = s.Lecture.Surname,
                     Name = s.Lecture.Name
-                }
+                },
+                Notes = s.Notes
             }).ToListAsync();
 
         return new Pagination<ThesisOutput>
@@ -741,30 +766,19 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
         };
     }
 
-    public async Task<Pagination<ThesisOutput>> GetPgnOfAppdThesesAsync(string lecturerId, int page, int pageSize, string keyword)
+    public async Task<Pagination<ThesisOutput>> GetPgnOfAppdThesesAsync(string lecturerId, int page, int pageSize, string orderBy, OrderOptions orderOptions, string searchBy, string keyword)
     {
-        int n = (page - 1) * pageSize;
-        int totalItemCount = await _context.Theses.Include(i => i.Lecture)
-            .Where(t => t.LectureId == lecturerId && t.StatusId == ThesisStatusConsts.Approved && t.IsDeleted == false && t.Lecture.IsDeleted == false)
-            .Where(t => t.Id.Contains(keyword) || t.Name.Contains(keyword) || t.Description.Contains(keyword))
-            .CountAsync();
+        IQueryable<Thesis> queryable = _context.Theses.Include(i => i.Lecture)
+            .Where(t => t.LectureId == lecturerId && t.StatusId == ThesisStatusConsts.Approved && t.IsDeleted == false && t.Lecture.IsDeleted == false);
 
-        List<ThesisOutput> onePageOfData = await _context.Theses.Include(i => i.Lecture)
-            .Where(t => t.LectureId == lecturerId && t.StatusId == ThesisStatusConsts.Approved && t.IsDeleted == false)
-            .Where(t => t.Id.Contains(keyword) || t.Name.Contains(keyword) || t.Description.Contains(keyword))
-            .Skip(n).Take(pageSize)
-            .Select(s => new ThesisOutput
-            {
-                Id = s.Id,
-                Name = s.Name,
-                MaxStudentNumber = s.MaxStudentNumber,
-                Lecturer = new FacultyStaffOutput
-                {
-                    Id = s.Lecture.Id,
-                    Surname = s.Lecture.Surname,
-                    Name = s.Lecture.Name
-                }
-            }).ToListAsync();
+        queryable = SetSearchExpression(queryable, searchBy, keyword);
+        queryable = SetOrderExpression(queryable, orderBy, orderOptions);
+
+        int n = (page - 1) * pageSize;
+        int totalItemCount = await queryable.CountAsync();
+
+        List<ThesisOutput> onePageOfData = await queryable.Skip(n).Take(pageSize)
+            .Select(PaginationSelector).ToListAsync();
 
         return new Pagination<ThesisOutput>
         {
@@ -849,9 +863,27 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
 
     }
 
-    public Task<Pagination<ThesisOutput>> GetPgnOf(string lecturerId, int page, int pageSize, string orderBy, OrderOptions orderOptions, string searchBy, string keyword)
+    public async Task<Pagination<ThesisOutput>> GetPaginationAsync(string lecturerId, int page, int pageSize, string orderBy, OrderOptions orderOptions, string searchBy, string keyword)
     {
-        throw new NotImplementedException();
+        IQueryable<Thesis> queryable = _context.Theses.Include(i => i.Lecture)
+            .Where(t => t.LectureId == lecturerId && t.IsDeleted == false && t.Lecture.IsDeleted == false);
+
+        queryable = SetSearchExpression(queryable, searchBy, keyword);
+        queryable = SetOrderExpression(queryable, orderBy, orderOptions);
+
+        int n = (page - 1) * pageSize;
+        int totalItemCount = await queryable.CountAsync();
+
+        List<ThesisOutput> onePageOfData = await queryable.Skip(n).Take(pageSize)
+            .Select(PaginationSelector).ToListAsync();
+
+        return new Pagination<ThesisOutput>
+        {
+            Page = page,
+            PageSize = pageSize,
+            TotalItemCount = totalItemCount,
+            Items = onePageOfData
+        };
     }
 
     public async Task<DataResponse> AssignCounterArgumentAsync(string thesisId, string lectureId)

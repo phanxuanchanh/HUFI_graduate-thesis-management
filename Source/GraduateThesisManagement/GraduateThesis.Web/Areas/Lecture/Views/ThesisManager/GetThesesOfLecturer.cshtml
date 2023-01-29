@@ -5,6 +5,7 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-body">
+                    <a asp-action="Create" class="btn btn-success" type="button">Thêm mới</a>
                     <a asp-action="ExportRegdStudents" class="btn btn-info" type="button">Xuất</a>
                     <a asp-action="Print" class="btn btn-secondary" type="button">In</a>
                 </div>
@@ -18,10 +19,13 @@
 <section class="section">
     <div class="card">
         <div class="card-header">
-            <a asp-action="GetMyRejectedList" class="btn btn-sm btn-primary">Đã công bố</a>
-            <a asp-action="GetMyRejectedList" class="btn btn-sm btn-success">Đã được duyệt</a>
-            <a asp-action="GetMyRejectedList" class="btn btn-sm btn-danger">Bị từ chối duyệt</a>
-            <a asp-action="GetMyRejectedList" class="btn btn-sm btn-info">Đang chờ duyệt</a>
+            Xem theo:
+            <a asp-action="GetPndgThesesOfLecturer" class="btn btn-sm btn-info mb-1 me-1">Đang chờ duyệt</a>
+            <a asp-action="GetRejdThesesOfLecturer" class="btn btn-sm btn-danger mb-1 me-1">Bị từ chối duyệt</a>
+            <a asp-action="GetAppdThesesOfLecturer" class="btn btn-sm btn-success mb-1 me-1">Đã được duyệt</a>
+            <a asp-action="GetPublishedList" class="btn btn-sm btn-primary mb-1 me-1">Được phân công hướng dẫn</a>
+            <a asp-action="GetPublishedList" class="btn btn-sm btn-primary mb-1 me-1">Đang phân công phản biện</a>
+            <a asp-action="GetFinishedList" class="btn btn-sm btn-secondary mb-1 me-1">Đã kết thúc</a>
         </div>
         <div class="card-body">
             <div class="dataTable-wrapper dataTable-loading no-footer sortable searchable fixed-columns">
@@ -39,8 +43,11 @@
                                 <th data-sortable="" style="width: 35%;">
                                     <a href="#" class="dataTable-sorter">@Html.DisplayNameFor(model => model.Name)</a>
                                 </th>
-                                <th data-sortable="" style="width: 20%;">
-                                    <a href="#" class="dataTable-sorter">@Html.DisplayNameFor(model => model.Lecturer.FullName)</a>
+                                <th data-sortable="" style="width: 12%;">
+                                    <a href="#" class="dataTable-sorter">@Html.DisplayNameFor(model => model.Year)</a>
+                                </th>
+                                <th data-sortable="" style="width: 8%">
+                                    <a href="#" class="dataTable-sorter">@Html.DisplayNameFor(model => model.Semester)</a>
                                 </th>
                                 <th data-sortable="" style="width: 20%;">
                                     <a href="#" class="dataTable-sorter">Công cụ</a>
@@ -56,8 +63,35 @@
                                 <tr>
                                     <td>@count</td>
                                     <td>@thesis.Id</td>
-                                    <td>@thesis.Name</td>
-                                    <td>@thesis.Lecturer.FullName</td>
+                                    <td>
+                                        <p>@thesis.Name</p>
+                                        @if (thesis.ThesisStatus.Id == ThesisStatusConsts.Pending)
+                                        {
+                                            <span class="badge bg-info">@thesis.ThesisStatus.Name</span>
+                                        }
+                                        else if (thesis.ThesisStatus.Id == ThesisStatusConsts.Rejected)
+                                        {
+                                            <span class="badge bg-danger">@thesis.ThesisStatus.Name</span>
+                                        }
+                                        else if (thesis.ThesisStatus.Id == ThesisStatusConsts.Approved)
+                                        {
+                                            <span class="badge bg-success">@thesis.ThesisStatus.Name</span>
+                                        }
+                                        else if (thesis.ThesisStatus.Id == ThesisStatusConsts.Published)
+                                        {
+                                            <span class="badge bg-primary">@thesis.ThesisStatus.Name</span>
+                                        }
+                                        else if (thesis.ThesisStatus.Id == ThesisStatusConsts.InProgress)
+                                        {
+                                            <span class="badge bg-primary">@thesis.ThesisStatus.Name</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">@thesis.ThesisStatus.Name</span>
+                                        }
+                                    </td>
+                                    <td>@thesis.Year</td>
+                                    <td>@thesis.Semester</td>
                                     <td>
                                         <a class="btn btn-success btn-sm" asp-action="Details" asp-route-id="@thesis.Id">
                                             <i class="fas fa-folder"></i> Chi tiết
@@ -65,6 +99,9 @@
                                         <a class="btn btn-primary btn-sm" asp-action="Edit" asp-route-id="@thesis.Id">
                                             <i class="fas fa-folder"></i> Sửa
                                         </a>
+                                        <button type="submit" form="delete_@count" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i> Xóa</button>
+                                        <form asp-action="BatchDelete" asp-route-id="@thesis.Id" id="delete_@count" method="post">
+                                        </form>
                                     </td>
                                 </tr>
                                 count++;
