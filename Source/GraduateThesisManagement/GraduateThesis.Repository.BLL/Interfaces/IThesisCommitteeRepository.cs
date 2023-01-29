@@ -5,4 +5,5 @@ namespace GraduateThesis.Repository.BLL.Interfaces;
 
 public interface IThesisCommitteeRepository : IAsyncSubRepository<ThesisCommitteeInput, ThesisCommitteeOutput, string>
 {
+
 }

@@ -57,6 +57,8 @@ public partial class HufiGraduateThesisContext : DbContext
 
     public virtual DbSet<ThesisRevision> ThesisRevisions { get; set; }
 
+    public virtual DbSet<ThesisStatus> ThesisStatuses { get; set; }
+
     public virtual DbSet<ThesisSupervisor> ThesisSupervisors { get; set; }
 
     public virtual DbSet<Topic> Topics { get; set; }
@@ -235,11 +237,11 @@ public partial class HufiGraduateThesisContext : DbContext
             entity.Property(e => e.Description).HasColumnType("ntext");
             entity.Property(e => e.Name)
                 .IsRequired()
-                .HasMaxLength(50);
+                .HasMaxLength(100);
             entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
             entity.Property(e => e.Year)
                 .IsRequired()
-                .HasMaxLength(50);
+                .HasMaxLength(20);
         });
 
         modelBuilder.Entity<CounterArgumentResult>(entity =>
@@ -564,6 +566,7 @@ public partial class HufiGraduateThesisContext : DbContext
                 .IsRequired()
                 .HasMaxLength(50)
                 .IsUnicode(false);
+            entity.Property(e => e.StatusId).HasDefaultValueSql("((1))");
             entity.Property(e => e.ThesisGroupId)
                 .HasMaxLength(50)
                 .IsUnicode(false);
@@ -592,6 +595,11 @@ public partial class HufiGraduateThesisContext : DbContext
             entity.HasOne(d => d.Specialization).WithMany(p => p.Theses)
                 .HasForeignKey(d => d.SpecializationId)
                 .HasConstraintName("FK_Theses_Specializations_ID");
+
+            entity.HasOne(d => d.Status).WithMany(p => p.Theses)
+                .HasForeignKey(d => d.StatusId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Theses_ThesisStatus_Id");
 
             entity.HasOne(d => d.ThesisGroup).WithMany(p => p.Theses)
                 .HasForeignKey(d => d.ThesisGroupId)
@@ -735,6 +743,18 @@ public partial class HufiGraduateThesisContext : DbContext
             entity.HasOne(d => d.Thesis).WithMany(p => p.ThesisRevisions)
                 .HasForeignKey(d => d.ThesisId)
                 .HasConstraintName("FK_ThesisRevisions_Theses_ID");
+        });
+
+        modelBuilder.Entity<ThesisStatus>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK_ThesisStatus_Id");
+
+            entity.ToTable("ThesisStatus");
+
+            entity.Property(e => e.Description).HasColumnType("ntext");
+            entity.Property(e => e.Name)
+                .IsRequired()
+                .HasMaxLength(100);
         });
 
         modelBuilder.Entity<ThesisSupervisor>(entity =>

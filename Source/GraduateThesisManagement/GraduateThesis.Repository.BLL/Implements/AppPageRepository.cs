@@ -1,5 +1,4 @@
-﻿using GraduateThesis.ApplicationCore.Enums;
-using GraduateThesis.ApplicationCore.Models;
+﻿using GraduateThesis.ApplicationCore.Models;
 using GraduateThesis.ApplicationCore.Repository;
 using GraduateThesis.ApplicationCore.Uuid;
 using GraduateThesis.Repository.BLL.Interfaces;
@@ -84,7 +83,9 @@ public class AppPageRepository : AsyncSubRepository<AppPage, AppPageInput, AppPa
     {
         int n = (page - 1) * pageSize;
         int totalItemCount = await _context.AppRoleMappings
-            .Where(rm => rm.RoleId == roleId && rm.Page.IsDeleted == false).CountAsync();
+            .Where(rm => rm.RoleId == roleId && rm.Page.IsDeleted == false)
+            .Where(rm => rm.Page.Id.Contains(keyword) || rm.Page.PageName.Contains(keyword) || rm.Page.ControllerName.Contains(keyword) || rm.Page.ActionName.Contains(keyword))
+            .CountAsync();
 
         List<AppPageOutput> onePageOfData = await _context.AppRoleMappings.Include(i => i.Page)
             .Where(rm => rm.RoleId == roleId && rm.Page.IsDeleted == false)

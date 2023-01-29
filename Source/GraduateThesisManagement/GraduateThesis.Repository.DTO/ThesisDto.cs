@@ -53,14 +53,6 @@ public class ThesisInput
     [Required(ErrorMessage = "{0} không được để trống")]
     public string TrainingLevelId { get; set; }
 
-    public bool IsApproved { get; set; }
-
-    public bool IsNew { get; set; }
-
-    public bool InProgess { get; set; }
-
-    public bool Finished { get; set; }
-
     [Display(Name = "Chuyên ngành")]
     [Required(ErrorMessage = "{0} không được để trống")]
     public string SpecializationId { get; set; }
@@ -81,6 +73,8 @@ public class ThesisInput
     public int Semester { get; set; }
 
     public string ThesisGroupId { get; set; }
+
+    public int StatusId { get; set; }
 }
 
 public class ThesisOutput : ThesisInput
@@ -104,6 +98,8 @@ public class ThesisOutput : ThesisInput
     public FacultyStaffOutput CriticalLecturer { get; set; }
 
     public SpecializationOutput Specialization { get; set; }
+
+    public ThesisStatusOutput ThesisStatus { get; set; }
 }
 
 public class PublishedThesisOutput

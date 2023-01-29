@@ -14,6 +14,7 @@ using GraduateThesis.ApplicationCore.Authorization;
 using GraduateThesis.ApplicationCore.File;
 using Microsoft.Net.Http.Headers;
 using System.Net.Mime;
+using GraduateThesis.Repository.BLL.Consts;
 
 #nullable disable
 
@@ -314,8 +315,8 @@ public class ThesisManagerController : WebControllerBase<IThesisRepository, Thes
         if (thesis == null)
             return NotFound();
 
-        if (thesis.IsApproved)
-            return RedirectToAction("GetRejectedList");
+        if (thesis.StatusId >= ThesisStatusConsts.Approved)
+            return RedirectToAction("GetPendingList");
 
         ViewData["Thesis"] = thesis;
 
@@ -354,6 +355,23 @@ public class ThesisManagerController : WebControllerBase<IThesisRepository, Thes
         AddTempData(dataResponse);
 
         return RedirectToAction("GetPendingList");
+    }
+
+    [Route("publish-thesis/{thesisId}")]
+    [HttpPost]
+    [PageName(Name = "Công bố đề tài")]
+    public async Task<IActionResult> PublishThesis(string thesisId)
+    {
+        if (!ModelState.IsValid)
+        {
+            AddTempData(DataResponseStatus.InvalidData);
+            return RedirectToAction("GetApprovedList");
+        }
+
+        DataResponse dataResponse = await _thesisRepository.PublishThesisAsync(thesisId);
+        AddTempData(dataResponse);
+
+        return RedirectToAction("GetApprovedList");
     }
 
     [Route("pending-list")]

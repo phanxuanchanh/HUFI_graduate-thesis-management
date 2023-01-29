@@ -33,14 +33,6 @@ public partial class Thesis
 
     public string TrainingLevelId { get; set; }
 
-    public bool IsApproved { get; set; }
-
-    public bool IsNew { get; set; }
-
-    public bool InProgess { get; set; }
-
-    public bool Finished { get; set; }
-
     public string SpecializationId { get; set; }
 
     public DateTime? DateFrom { get; set; }
@@ -61,9 +53,7 @@ public partial class Thesis
 
     public string ThesisGroupId { get; set; }
 
-    public bool IsRejected { get; set; }
-
-    public bool IsPublished { get; set; }
+    public int StatusId { get; set; }
 
     public virtual ICollection<CommitteeMemberResult> CommitteeMemberResults { get; } = new List<CommitteeMemberResult>();
 
@@ -74,6 +64,8 @@ public partial class Thesis
     public virtual FacultyStaff Lecture { get; set; }
 
     public virtual Specialization Specialization { get; set; }
+
+    public virtual ThesisStatus Status { get; set; }
 
     public virtual ThesisCommitteeResult ThesisCommitteeResult { get; set; }
 
