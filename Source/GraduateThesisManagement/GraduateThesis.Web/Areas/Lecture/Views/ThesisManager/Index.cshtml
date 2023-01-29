@@ -1,6 +1,6 @@
 ﻿@model IEnumerable<ThesisOutput>
 
-@await Component.InvokeAsync("FacultyStaffLayout_Toolbar")
+@await Component.InvokeAsync("FacultyStaffLayout_Toolbar" , new { showCreateButton = false })
 
 @await Component.InvokeAsync("FacultyStaffLayout_StatusArea")
 
@@ -12,7 +12,7 @@
             <a asp-action="GetRejectedList" class="btn btn-sm btn-danger mb-1 me-1">Bị từ chối duyệt</a>
             <a asp-action="GetApprovedList" class="btn btn-sm btn-success mb-1 me-1">Đã được duyệt</a>
             <a asp-action="GetPublishedList" class="btn btn-sm btn-primary mb-1 me-1">Đã công bố</a>
-            <a asp-action="GetPublishedList" class="btn btn-sm btn-primary mb-1 me-1">Đang thực hiện</a>
+            <a asp-action="GetInProgressList" class="btn btn-sm btn-primary mb-1 me-1">Đang thực hiện</a>
             <a asp-action="GetFinishedList" class="btn btn-sm btn-secondary mb-1 me-1">Đã kết thúc</a>
         </div>
         <div class="card-body">
@@ -87,9 +87,6 @@
                                     <td>
                                         <a class="btn btn-success btn-sm" asp-action="Details" asp-route-id="@thesis.Id">
                                             <i class="fas fa-folder"></i> Chi tiết
-                                        </a>
-                                        <a class="btn btn-primary btn-sm" asp-action="Edit" asp-route-id="@thesis.Id">
-                                            <i class="fas fa-folder"></i> Sửa
                                         </a>
                                         <button type="submit" form="delete_@count" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i> Xóa</button>
                                         <form asp-action="BatchDelete" asp-route-id="@thesis.Id" id="delete_@count" method="post">
