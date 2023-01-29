@@ -34,7 +34,8 @@ builder.Services.AddSingleton<SmtpConfiguration>(new SmtpConfiguration
     Password = smtpSection.GetValue<string>("Password"),
     EnableSsl = smtpSection.GetValue<bool>("EnableSsl"),
     Address = smtpSection.GetValue<string>("Address"),
-    DisplayName = smtpSection.GetValue<string>("DisplayName")
+    DisplayName = smtpSection.GetValue<string>("DisplayName"),
+    Enable = smtpSection.GetValue<bool>("Enable")
 });
 
 builder.Services.AddScoped(typeof(IEmailService), typeof(SmtpService));
@@ -72,10 +73,7 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
 app.UseRouting();
-
-app.UseAuthorization();
 app.UseSession();
 
 app.MapControllerRoute(

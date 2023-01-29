@@ -12,4 +12,6 @@ public class SmtpConfiguration
 
     public string Address { get; set; }
     public string DisplayName { get; set; }
+
+    public bool Enable { get; set; }
 }

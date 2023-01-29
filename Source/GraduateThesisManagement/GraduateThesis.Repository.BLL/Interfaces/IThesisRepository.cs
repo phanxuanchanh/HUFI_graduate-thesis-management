@@ -20,6 +20,7 @@ public interface IThesisRepository : IAsyncSubRepository<ThesisInput, ThesisOutp
     Task<Pagination<ThesisOutput>> GetPgnOfRejdThesesAsync(int page, int pageSize, string orderBy, OrderOptions orderOptions, string searchBy, string keyword);
     Task<Pagination<ThesisOutput>> GetPgnOfAppdThesesAsync(int page, int pageSize, string orderBy, OrderOptions orderOptions, string searchBy, string keyword);
     Task<Pagination<ThesisOutput>> GetPgnOfPndgApvlThesesAsync(int page, int pageSize, string orderBy, OrderOptions orderOptions, string searchBy, string keyword);
+    Task<Pagination<ThesisOutput>> GetPgnOfThesesInprAsync(int page, int pageSize, string orderBy, OrderOptions orderOptions, string searchBy, string keyword);
     Task<Pagination<ThesisOutput>> GetPaginationAsync(string lecturerId, int page, int pageSize, string orderBy, OrderOptions orderOptions, string searchBy, string keyword);
     Task<Pagination<ThesisOutput>> GetPgnOfPndgApvlThesesAsync(string lecturerId, int page, int pageSize, string orderBy, OrderOptions orderOptions, string searchBy, string keyword);
     Task<Pagination<ThesisOutput>> GetPgnOfPubldThesesAsync(string lecturerId, int page, int pageSize, string keyword);
@@ -41,6 +42,6 @@ public interface IThesisRepository : IAsyncSubRepository<ThesisInput, ThesisOutp
     Task<DataResponse> AssignCounterArgumentAsync(string thesisId);
     Task<DataResponse> PublishThesisAsync(string thesisId);
     Task<DataResponse> PublishThesesAsync(string[] thesisIds);
-    Task<DataResponse> StopPublishingAsync(string thesisId);
-    Task<DataResponse> StopPublishingsAsync(string[] thesisIds);
+    Task<DataResponse> StopPubgThesisAsync(string thesisId);
+    Task<DataResponse> StopPubgThesesAsync(string[] thesisIds);
 }

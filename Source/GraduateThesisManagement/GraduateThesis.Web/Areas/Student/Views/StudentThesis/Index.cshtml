@@ -5,12 +5,10 @@
 <section class="section">
     <div class="card">
         <div class="card-header">
-            <button class="btn btn-sm btn-danger">Đã đăng ký</button>
-            <button class="btn btn-sm btn-success">Chưa đăng ký</button>
         </div>
         <div class="card-body">
             <div class="dataTable-wrapper dataTable-loading no-footer sortable searchable fixed-columns">
-                @await Component.InvokeAsync("StudentLayout_PagedSearch")
+                @await Component.InvokeAsync("StudentLayout_PagedSearch", new { enableSearchBy = true })
                 <div class="dataTable-container">
                     <table class="table table-striped dataTable-table" id="table1">
                         <thead>
@@ -71,7 +69,7 @@
                         </tbody>
                     </table>
                 </div>
-                @await Component.InvokeAsync("StudentLayout_Paged")
+                @await Component.InvokeAsync("StudentLayout_Paged", new { enableSearchBy = true })
             </div>
         </div>
     </div>

@@ -24,6 +24,9 @@ public class SmtpService : IEmailService
 
     public void Send(string recipient, string subject, string content)
     {
+        if (!_smtpConfiguration.Enable)
+            return;
+
         MailAddress from = new MailAddress(_smtpConfiguration.Address, _smtpConfiguration.DisplayName);
         MailAddress to = new MailAddress(recipient);
 
@@ -38,6 +41,9 @@ public class SmtpService : IEmailService
 
     public void Send(string[] recipients, string subject, string content)
     {
+        if (!_smtpConfiguration.Enable)
+            return;
+
         MailMessage mailMessage = new MailMessage();
         mailMessage.From = new MailAddress(_smtpConfiguration.Address, _smtpConfiguration.DisplayName);
 
@@ -56,6 +62,9 @@ public class SmtpService : IEmailService
 
     public async Task SendAsync(string recipient, string subject, string content)
     {
+        if (!_smtpConfiguration.Enable)
+            return;
+
         MailAddress from = new MailAddress(_smtpConfiguration.Address, _smtpConfiguration.DisplayName);
         MailAddress to = new MailAddress(recipient);
 
@@ -70,6 +79,9 @@ public class SmtpService : IEmailService
 
     public async Task SendAsync(string[] recipients, string subject, string content)
     {
+        if (!_smtpConfiguration.Enable)
+            return;
+
         MailMessage mailMessage = new MailMessage();
         mailMessage.From = new MailAddress(_smtpConfiguration.Address, _smtpConfiguration.DisplayName);
 

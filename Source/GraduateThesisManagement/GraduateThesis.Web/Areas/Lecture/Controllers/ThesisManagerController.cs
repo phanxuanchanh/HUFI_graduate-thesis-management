@@ -392,6 +392,41 @@ public class ThesisManagerController : WebControllerBase<IThesisRepository, Thes
         return RedirectToAction("GetApprovedList");
     }
 
+    [Route("stop-publishing-thesis/{thesisId}")]
+    [HttpPost]
+    [PageName(Name = "Ngừng công bố đề tài")]
+    public async Task<IActionResult> StopPublishingThesis([Required] string thesisId)
+    {
+        if (!ModelState.IsValid)
+        {
+            AddTempData(DataResponseStatus.InvalidData);
+            return RedirectToAction("GetPublishedList");
+        }
+
+        DataResponse dataResponse = await _thesisRepository.StopPubgThesisAsync(thesisId);
+        AddTempData(dataResponse);
+
+        return RedirectToAction("GetPublishedList");
+    }
+
+    [Route("stop-publishing-theses")]
+    [HttpPost]
+    [PageName(Name = "Công bố đề tài")]
+    public async Task<IActionResult> StopPublishingTheses([Required] string thesisIds)
+    {
+        if (!ModelState.IsValid)
+        {
+            AddTempData(DataResponseStatus.InvalidData);
+            return RedirectToAction("GetPublishedList");
+        }
+
+        DataResponse dataResponse = await _thesisRepository
+            .StopPubgThesesAsync(thesisIds.Split(new char[] { ';' }));
+        AddTempData(dataResponse);
+
+        return RedirectToAction("GetPublishedList");
+    }
+
     [Route("pending-list")]
     [HttpGet]
     [PageName(Name = "Danh sách đề tài đang chờ xét duyệt")]
@@ -459,6 +494,26 @@ public class ThesisManagerController : WebControllerBase<IThesisRepository, Thes
     {
         OrderOptions orderOpts = (orderOptions == "ASC") ? OrderOptions.ASC : OrderOptions.DESC;
         Pagination<ThesisOutput> pagination = await _thesisRepository.GetPgnOfPubldThesesAsync(page, pageSize, orderBy, orderOpts, searchBy, keyword);
+        StaticPagedList<ThesisOutput> pagedList = pagination.ToStaticPagedList();
+
+        ViewData["OrderByProperties"] = SetOrderByProperties();
+        ViewData["SearchByProperties"] = SetSearchByProperties();
+        ViewData["PagedList"] = pagedList;
+        ViewData["OrderBy"] = orderBy;
+        ViewData["OrderOptions"] = orderOptions;
+        ViewData["SearchBy"] = searchBy;
+        ViewData["Keyword"] = keyword;
+
+        return View();
+    }
+
+    [Route("inprogress-list")]
+    [HttpGet]
+    [PageName(Name = "Danh sách đề tài đã công bố")]
+    public async Task<IActionResult> GetInProgressList(int page = 1, int pageSize = 10, string orderBy = "CreatedAt", string orderOptions = "DESC", string searchBy = "All", string keyword = "")
+    {
+        OrderOptions orderOpts = (orderOptions == "ASC") ? OrderOptions.ASC : OrderOptions.DESC;
+        Pagination<ThesisOutput> pagination = await _thesisRepository.GetPgnOfThesesInprAsync(page, pageSize, orderBy, orderOpts, searchBy, keyword);
         StaticPagedList<ThesisOutput> pagedList = pagination.ToStaticPagedList();
 
         ViewData["OrderByProperties"] = SetOrderByProperties();

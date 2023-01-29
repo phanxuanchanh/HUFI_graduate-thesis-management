@@ -178,8 +178,8 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
         int lastIndexOf = fullName.Trim(' ').LastIndexOf(" ");
         if (lastIndexOf > 0)
         {
-            string name = fullName.Substring(lastIndexOf);
-            string surname = fullName.Replace(name, "");
+            string name = fullName.Substring(lastIndexOf).Trim(' ');
+            string surname = fullName.Replace(name, "").Trim(' ');
             queryable = queryable.Where(t => t.Lecture.Surname.Contains(surname) && t.Lecture.Name.Contains(name));
         }
         else
@@ -1343,7 +1343,7 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
         };
     }
 
-    public async Task<DataResponse> StopPublishingAsync(string thesisId)
+    public async Task<DataResponse> StopPubgThesisAsync(string thesisId)
     {
         Thesis thesis = await _context.Theses
             .Where(t => t.Id == thesisId && t.IsDeleted == false).SingleOrDefaultAsync();
@@ -1368,11 +1368,11 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
         return new DataResponse
         {
             Status = DataResponseStatus.Success,
-            Message = "Đã công bố đề tài thành công!"
+            Message = "Đã ngừng công bố đề tài thành công!"
         };
     }
 
-    public async Task<DataResponse> StopPublishingsAsync(string[] thesisIds)
+    public async Task<DataResponse> StopPubgThesesAsync(string[] thesisIds)
     {
         List<Thesis> theses = await _context.Theses
             .Where(t => t.StatusId == ThesisStatusConsts.Published && t.IsDeleted == false)
@@ -1384,7 +1384,42 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
         return new DataResponse
         {
             Status = DataResponseStatus.Success,
-            Message = "Đã công bố đề tài thành công!"
+            Message = "Đã ngừng công bố đề tài thành công!"
+        };
+    }
+
+    public async Task<Pagination<ThesisOutput>> GetPgnOfThesesInprAsync(int page, int pageSize, string orderBy, OrderOptions orderOptions, string searchBy, string keyword)
+    {
+        IQueryable<Thesis> queryable = _context.Theses.Include(i => i.Lecture)
+            .Where(t => t.StatusId == ThesisStatusConsts.InProgress && t.IsDeleted == false && t.Lecture.IsDeleted == false);
+
+        queryable = SetSearchExpression(queryable, searchBy, keyword);
+        queryable = SetOrderExpression(queryable, orderBy, orderOptions);
+
+        int n = (page - 1) * pageSize;
+        int totalItemCount = await queryable.CountAsync();
+
+        List<ThesisOutput> onePageOfData = await queryable.Skip(n).Take(pageSize)
+            .Select(s => new ThesisOutput
+            {
+                Id = s.Id,
+                Name = s.Name,
+                MaxStudentNumber = s.MaxStudentNumber,
+                ThesisGroupId = s.ThesisGroupId,
+                Lecturer = new FacultyStaffOutput
+                {
+                    Id = s.Lecture.Id,
+                    Surname = s.Lecture.Surname,
+                    Name = s.Lecture.Name
+                }
+            }).ToListAsync();
+
+        return new Pagination<ThesisOutput>
+        {
+            Page = page,
+            PageSize = pageSize,
+            TotalItemCount = totalItemCount,
+            Items = onePageOfData
         };
     }
 }
