@@ -8,11 +8,12 @@
     <div class="card">
         <div class="card-header">
             Xem theo:
-            <a asp-action="GetFinishedList" class="btn btn-sm btn-primary mb-1 me-1">Đã hoàn thành</a>
-            <a asp-action="GetPublishedList" class="btn btn-sm btn-primary mb-1 me-1">Đã công bố</a>
-            <a asp-action="GetApprovedList" class="btn btn-sm btn-success mb-1 me-1">Đã được duyệt</a>
-            <a asp-action="GetRejectedList" class="btn btn-sm btn-danger mb-1 me-1">Bị từ chối duyệt</a>
             <a asp-action="GetPendingList" class="btn btn-sm btn-info mb-1 me-1">Đang chờ duyệt</a>
+            <a asp-action="GetRejectedList" class="btn btn-sm btn-danger mb-1 me-1">Bị từ chối duyệt</a>
+            <a asp-action="GetApprovedList" class="btn btn-sm btn-success mb-1 me-1">Đã được duyệt</a>
+            <a asp-action="GetPublishedList" class="btn btn-sm btn-primary mb-1 me-1">Đã công bố</a>
+            <a asp-action="GetPublishedList" class="btn btn-sm btn-primary mb-1 me-1">Đang thực hiện</a>
+            <a asp-action="GetFinishedList" class="btn btn-sm btn-secondary mb-1 me-1">Đã kết thúc</a>
         </div>
         <div class="card-body">
             <div class="dataTable-wrapper dataTable-loading no-footer sortable searchable fixed-columns">

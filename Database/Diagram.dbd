@@ -152,7 +152,7 @@
             </Location>
             <Size>
               <Width>224 px</Width>
-              <Height>586 px</Height>
+              <Height>501 px</Height>
             </Size>
             <DbOid>
               <Path>[HUFI_graduate-thesis].dbo.Theses</Path>
@@ -190,7 +190,7 @@
               <Port>
                 <Location>
                   <X>0 px</X>
-                  <Y>324.231246552675 px</Y>
+                  <Y>277.20111693326 px</Y>
                 </Location>
                 <Anchors>Top Bottom</Anchors>
                 <Align>Left</Align>
@@ -203,7 +203,7 @@
             <BendPoints>
               <PointD>
                 <X>450 px</X>
-                <Y>674.231246552675 px</Y>
+                <Y>627.20111693326 px</Y>
               </PointD>
               <PointD>
                 <X>450 px</X>
@@ -227,7 +227,7 @@
               <Port xsi:type="LinkPort">
                 <Location>
                   <X>196.5 px</X>
-                  <Y>-43.268753447325 px</Y>
+                  <Y>-90.29888306674 px</Y>
                 </Location>
                 <Anchors>None</Anchors>
                 <Align>Left</Align>
@@ -269,7 +269,7 @@
               <Port>
                 <Location>
                   <X>0 px</X>
-                  <Y>71.2724541971641 px</Y>
+                  <Y>60.9342995781215 px</Y>
                 </Location>
                 <Anchors>Top Bottom</Anchors>
                 <Align>Left</Align>
@@ -282,7 +282,7 @@
             <BendPoints>
               <PointD>
                 <X>450 px</X>
-                <Y>421.272454197164 px</Y>
+                <Y>410.934299578122 px</Y>
               </PointD>
               <PointD>
                 <X>450 px</X>
@@ -306,7 +306,7 @@
               <Port xsi:type="LinkPort">
                 <Location>
                   <X>214 px</X>
-                  <Y>-57.6190558126015 px</Y>
+                  <Y>-67.9572104316441 px</Y>
                 </Location>
                 <Anchors>None</Anchors>
                 <Align>Left</Align>
@@ -348,7 +348,7 @@
               <Port>
                 <Location>
                   <X>0 px</X>
-                  <Y>25.9644469068404 px</Y>
+                  <Y>22.1982728674523 px</Y>
                 </Location>
                 <Anchors>Top Bottom</Anchors>
                 <Align>Left</Align>
@@ -361,7 +361,7 @@
             <BendPoints>
               <PointD>
                 <X>432.5 px</X>
-                <Y>375.96444690684 px</Y>
+                <Y>372.198272867452 px</Y>
               </PointD>
               <PointD>
                 <X>432.5 px</X>
@@ -389,7 +389,7 @@
               <Port xsi:type="LinkPort">
                 <Location>
                   <X>268.5 px</X>
-                  <Y>97.9644469068404 px</Y>
+                  <Y>94.1982728674523 px</Y>
                 </Location>
                 <Anchors>None</Anchors>
                 <Align>Left</Align>
@@ -841,11 +841,11 @@
               </Port>
               <Port>
                 <Location>
-                  <X>56 px</X>
-                  <Y>0 px</Y>
+                  <X>0 px</X>
+                  <Y>497.953565505804 px</Y>
                 </Location>
-                <Anchors>Left Right</Anchors>
-                <Align>Bottom</Align>
+                <Anchors>Top Bottom</Anchors>
+                <Align>Left</Align>
                 <CustomProperties>
                   <OID>49</OID>
                   <PortType>FloatAnchor</PortType>
@@ -854,8 +854,12 @@
             </PortAnchors>
             <BendPoints>
               <PointD>
-                <X>526 px</X>
-                <Y>949.333333333333 px</Y>
+                <X>123 px</X>
+                <Y>949.333312988281 px</Y>
+              </PointD>
+              <PointD>
+                <X>123 px</X>
+                <Y>847.953552246094 px</Y>
               </PointD>
             </BendPoints>
             <IsManuallyRouted>false</IsManuallyRouted>
@@ -874,8 +878,8 @@
             <PortAnchors>
               <Port xsi:type="LinkPort">
                 <Location>
-                  <X>-211.5 px</X>
-                  <Y>2.03450521212289E-05 px</Y>
+                  <X>-193.5 px</X>
+                  <Y>101.37978108724 px</Y>
                 </Location>
                 <Anchors>None</Anchors>
                 <Align>Right</Align>
@@ -1217,7 +1221,7 @@
               <Port>
                 <Location>
                   <X>0 px</X>
-                  <Y>505.453281853282 px</Y>
+                  <Y>432.13667953668 px</Y>
                 </Location>
                 <Anchors>Top Bottom</Anchors>
                 <Align>Right</Align>
@@ -1234,7 +1238,7 @@
               </PointD>
               <PointD>
                 <X>707.21875 px</X>
-                <Y>855.453281853282 px</Y>
+                <Y>782.13667953668 px</Y>
               </PointD>
             </BendPoints>
             <IsManuallyRouted>true</IsManuallyRouted>
@@ -1319,7 +1323,7 @@
               <Port>
                 <Location>
                   <X>0 px</X>
-                  <Y>63.8038610038611 px</Y>
+                  <Y>54.5490347490348 px</Y>
                 </Location>
                 <Anchors>Top Bottom</Anchors>
                 <Align>Right</Align>
@@ -1340,7 +1344,7 @@
               </PointD>
               <PointD>
                 <X>714 px</X>
-                <Y>413.803861003861 px</Y>
+                <Y>404.549034749035 px</Y>
               </PointD>
             </BendPoints>
             <IsManuallyRouted>true</IsManuallyRouted>
@@ -1448,7 +1452,7 @@
               <Port>
                 <Location>
                   <X>0 px</X>
-                  <Y>553.043048987187 px</Y>
+                  <Y>472.823494099967 px</Y>
                 </Location>
                 <Anchors>Top Bottom</Anchors>
                 <Align>Right</Align>
@@ -1465,7 +1469,7 @@
               </PointD>
               <PointD>
                 <X>840 px</X>
-                <Y>903.043048987187 px</Y>
+                <Y>822.823494099967 px</Y>
               </PointD>
             </BendPoints>
             <IsManuallyRouted>true</IsManuallyRouted>
@@ -1651,7 +1655,7 @@
               <Port xsi:type="LinkPort">
                 <Location>
                   <X>-626 px</X>
-                  <Y>-394 px</Y>
+                  <Y>-479 px</Y>
                 </Location>
                 <Anchors>None</Anchors>
                 <Align>Bottom</Align>
@@ -2000,8 +2004,8 @@
             <PortAnchors>
               <Port xsi:type="LinkPort">
                 <Location>
-                  <X>292.400024414063 px</X>
-                  <Y>20 px</Y>
+                  <X>584.799987792969 px</X>
+                  <Y>344.5 px</Y>
                 </Location>
                 <Anchors>None</Anchors>
                 <Align>Top</Align>
@@ -2093,7 +2097,7 @@
               <Port xsi:type="LinkPort">
                 <Location>
                   <X>0 px</X>
-                  <Y>92 px</Y>
+                  <Y>134.5 px</Y>
                 </Location>
                 <Anchors>None</Anchors>
                 <Align>Top</Align>
@@ -2621,7 +2625,7 @@
               <Port>
                 <Location>
                   <X>0 px</X>
-                  <Y>224.792572463769 px</Y>
+                  <Y>192.186141304349 px</Y>
                 </Location>
                 <Anchors>Top Bottom</Anchors>
                 <Align>Right</Align>
@@ -2646,7 +2650,7 @@
             <BendPoints>
               <PointD>
                 <X>714 px</X>
-                <Y>574.792572463769 px</Y>
+                <Y>542.186141304349 px</Y>
               </PointD>
               <PointD>
                 <X>714 px</X>
@@ -2670,7 +2674,7 @@
               <Port xsi:type="LinkPort">
                 <Location>
                   <X>-303 px</X>
-                  <Y>-12.457427536231 px</Y>
+                  <Y>-45.063858695651 px</Y>
                 </Location>
                 <Anchors>None</Anchors>
                 <Align>Right</Align>
@@ -2761,13 +2765,123 @@
               <Y>2 px</Y>
             </CommentOffset>
           </Model>
+          <Model xsi:type="TableModel">
+            <CustomProperties>
+              <OID>165</OID>
+              <Parent>0</Parent>
+            </CustomProperties>
+            <Location>
+              <X>-460 px</X>
+              <Y>530 px</Y>
+            </Location>
+            <Size>
+              <Width>172 px</Width>
+              <Height>127 px</Height>
+            </Size>
+            <DbOid>
+              <Path>[HUFI_graduate-thesis].dbo.ThesisStatus</Path>
+              <TypeName>Table</TypeName>
+            </DbOid>
+            <Compartments>
+              <ConstraintsCollapsed>True</ConstraintsCollapsed>
+              <IndexesCollapsed>True</IndexesCollapsed>
+              <TriggersCollapsed>True</TriggersCollapsed>
+            </Compartments>
+          </Model>
+          <Model xsi:type="RelationLinkModel">
+            <CustomProperties>
+              <OID>166</OID>
+              <Comment>167</Comment>
+              <OutModel>5</OutModel>
+              <InModel>165</InModel>
+              <OutPort>168</OutPort>
+              <InPort>169</InPort>
+              <Parent>0</Parent>
+            </CustomProperties>
+            <PortAnchors>
+              <Port>
+                <Location>
+                  <X>0 px</X>
+                  <Y>230.559701492537 px</Y>
+                </Location>
+                <Anchors>Top Bottom</Anchors>
+                <Align>Left</Align>
+                <CustomProperties>
+                  <OID>168</OID>
+                  <PortType>FloatAnchor</PortType>
+                </CustomProperties>
+              </Port>
+              <Port>
+                <Location>
+                  <X>0 px</X>
+                  <Y>63.5 px</Y>
+                </Location>
+                <Anchors>Top Bottom</Anchors>
+                <Align>Right</Align>
+                <CustomProperties>
+                  <OID>169</OID>
+                  <PortType>FloatAnchor</PortType>
+                </CustomProperties>
+              </Port>
+            </PortAnchors>
+            <BendPoints>
+              <PointD>
+                <X>450 px</X>
+                <Y>580.559701492537 px</Y>
+              </PointD>
+              <PointD>
+                <X>450 px</X>
+                <Y>613.5 px</Y>
+              </PointD>
+              <PointD>
+                <X>-268 px</X>
+                <Y>613.5 px</Y>
+              </PointD>
+              <PointD>
+                <X>-268 px</X>
+                <Y>593.5 px</Y>
+              </PointD>
+            </BendPoints>
+            <IsManuallyRouted>false</IsManuallyRouted>
+            <DbOid>
+              <Path>[HUFI_graduate-thesis].dbo.Theses.FK_Theses_ThesisStatus_Id</Path>
+              <TypeName>ForeignKey</TypeName>
+            </DbOid>
+          </Model>
+          <Model xsi:type="RelationCommentModel">
+            <CustomProperties>
+              <OID>167</OID>
+              <HolderModel>166</HolderModel>
+              <Port>170</Port>
+              <Parent>0</Parent>
+            </CustomProperties>
+            <PortAnchors>
+              <Port xsi:type="LinkPort">
+                <Location>
+                  <X>379 px</X>
+                  <Y>-32.940298507463 px</Y>
+                </Location>
+                <Anchors>None</Anchors>
+                <Align>Left</Align>
+                <CustomProperties>
+                  <OID>170</OID>
+                  <PortType>FixedAnchor</PortType>
+                </CustomProperties>
+                <LinkPortAnchor>OutPoint</LinkPortAnchor>
+              </Port>
+            </PortAnchors>
+            <CommentOffset>
+              <X>96.5972595214844 px</X>
+              <Y>-0.559701492536988 px</Y>
+            </CommentOffset>
+          </Model>
         </Children>
         <ViewPort>
           <ScaleMode>Free</ScaleMode>
-          <Scale>1.1</Scale>
+          <Scale>0.5</Scale>
           <Location>
-            <X>-66.9090909090909 px</X>
-            <Y>639.272726579146 px</Y>
+            <X>-745.6 px</X>
+            <Y>35.2000007629395 px</Y>
           </Location>
         </ViewPort>
       </Model>

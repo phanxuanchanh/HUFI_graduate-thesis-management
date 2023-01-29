@@ -4,6 +4,7 @@ using GraduateThesis.ApplicationCore.Models;
 using GraduateThesis.ApplicationCore.Repository;
 using GraduateThesis.ApplicationCore.Uuid;
 using GraduateThesis.ExtensionMethods;
+using GraduateThesis.Repository.BLL.Consts;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DAL;
 using GraduateThesis.Repository.DTO;
@@ -61,6 +62,11 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
                 Id = s.Lecture.Id,
                 Surname = s.Lecture.Surname,
                 Name = s.Lecture.Name
+            },
+            ThesisStatus = new ThesisStatusOutput
+            {
+                Id = s.Status.Id,
+                Name = s.Status.Name
             }
         };
 
@@ -162,7 +168,8 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
         entity.TrainingLevelId = input.TrainingLevelId;
         entity.SpecializationId = input.SpecializationId;
         entity.Semester = input.Semester;
-        entity.IsNew = true;
+        entity.LectureId = input.LectureId;
+        entity.StatusId = input.StatusId;
         entity.CreatedAt = DateTime.Now;
     }
 
@@ -302,7 +309,7 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
     public override Task<DataResponse<ThesisOutput>> CreateAsync(ThesisInput input)
     {
         input.Description = HttpUtility.HtmlEncode(input.Description);
-        input.IsNew = true;
+        input.StatusId = ThesisStatusConsts.Pending;
 
         return base.CreateAsync(input);
     }
@@ -428,7 +435,7 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
                 Message = "Đề tài này không thuộc nhóm của bạn!"
             };
 
-        thesis.Finished = true;
+        thesis.StatusId = ThesisStatusConsts.Finished;
         await _context.SaveChangesAsync();
 
         return new DataResponse
@@ -441,7 +448,8 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
     public async Task<DataResponse> ApproveThesisAsync(ThesisApprovalInput approvalInput)
     {
         Thesis thesis = await _context.Theses
-            .Where(t => t.Id == approvalInput.ThesisId && t.IsDeleted == false).SingleOrDefaultAsync();
+            .Where(t => t.Id == approvalInput.ThesisId && t.IsDeleted == false)
+            .SingleOrDefaultAsync();
 
         if (thesis == null)
             return new DataResponse
@@ -450,10 +458,15 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
                 Message = "Không tìm thấy đề tài có mã này!"
             };
 
+        if(thesis.StatusId >= ThesisStatusConsts.Approved)
+            return new DataResponse
+            {
+                Status = DataResponseStatus.Failed,
+                Message = "Không thể thực hiện lại việc xét duyệt đề tài đã được duyệt!"
+            };
+
         thesis.Notes = approvalInput.Notes;
-        thesis.IsRejected = false;
-        thesis.IsApproved = true;
-        thesis.IsNew = false;
+        thesis.StatusId = ThesisStatusConsts.Approved;
 
         await _context.SaveChangesAsync();
 
@@ -484,10 +497,15 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
                 Message = "Không tìm thấy đề tài có mã này!"
             };
 
+        if(thesis.StatusId >= ThesisStatusConsts.Approved)
+            return new DataResponse
+            {
+                Status = DataResponseStatus.Failed,
+                Message = "Không thể từ chối xét duyệt khi đề tài đã được duyệt!"
+            };
+
         thesis.Notes = approvalInput.Notes;
-        thesis.IsRejected = true;
-        thesis.IsApproved = false;
-        thesis.IsNew = false;
+        thesis.StatusId = ThesisStatusConsts.Rejected;
 
         await _context.SaveChangesAsync();
 
@@ -521,7 +539,7 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
     public async Task<Pagination<ThesisOutput>> GetPgnOfPndgApvlThesesAsync(int page, int pageSize, string orderBy, OrderOptions orderOptions, string searchBy, string keyword)
     {
         IQueryable<Thesis> queryable = _context.Theses.Include(i => i.Lecture)
-                    .Where(t => t.IsNew == true && t.IsDeleted == false && t.Lecture.IsDeleted == false);
+                    .Where(t => t.StatusId == ThesisStatusConsts.Pending && t.IsDeleted == false && t.Lecture.IsDeleted == false);
 
         queryable = SetSearchExpression(queryable, searchBy, keyword);
         queryable = SetOrderExpression(queryable, orderBy, orderOptions);
@@ -544,7 +562,7 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
     public async Task<Pagination<ThesisOutput>> GetPgnOfRejdThesesAsync(int page, int pageSize, string orderBy, OrderOptions orderOptions, string searchBy, string keyword)
     {
         IQueryable<Thesis> queryable = _context.Theses.Include(i => i.Lecture)
-                    .Where(t => t.IsRejected == true && t.IsDeleted == false && t.Lecture.IsDeleted == false);
+                    .Where(t => t.StatusId == ThesisStatusConsts.Rejected && t.IsDeleted == false && t.Lecture.IsDeleted == false);
 
         queryable = SetSearchExpression(queryable, searchBy, keyword);
         queryable = SetOrderExpression(queryable, orderBy, orderOptions);
@@ -581,7 +599,7 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
     public async Task<Pagination<ThesisOutput>> GetPgnOfAppdThesesAsync(int page, int pageSize, string orderBy, OrderOptions orderOptions, string searchBy, string keyword)
     {
         IQueryable<Thesis> queryable = _context.Theses.Include(i => i.Lecture)
-            .Where(t => t.IsApproved == true && t.Finished == false && t.IsDeleted == false && t.Lecture.IsDeleted == false);
+            .Where(t => t.StatusId == ThesisStatusConsts.Approved && t.IsDeleted == false && t.Lecture.IsDeleted == false);
 
         queryable = SetSearchExpression(queryable, searchBy, keyword);
         queryable = SetOrderExpression(queryable, orderBy, orderOptions);
@@ -621,7 +639,7 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
     public async Task<Pagination<ThesisOutput>> GetPgnOfPubldThesesAsync(int page, int pageSize, string orderBy, OrderOptions orderOptions, string searchBy, string keyword)
     {
         IQueryable<Thesis> queryable = _context.Theses.Include(i => i.Lecture)
-            .Where(t => t.IsPublished == true && t.Finished == false && t.IsDeleted == false && t.Lecture.IsDeleted == false);
+            .Where(t => t.StatusId == ThesisStatusConsts.Published && t.IsDeleted == false && t.Lecture.IsDeleted == false);
 
         queryable = SetSearchExpression(queryable, searchBy, keyword);
         queryable = SetOrderExpression(queryable, orderBy, orderOptions);
@@ -657,12 +675,12 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
     {
         int n = (page - 1) * pageSize;
         int totalItemCount = await _context.Theses
-            .Where(t => t.LectureId == lecturerId && t.IsPublished == true && t.IsDeleted == false)
+            .Where(t => t.LectureId == lecturerId && t.StatusId == ThesisStatusConsts.Published && t.IsDeleted == false)
             .Where(t => t.Id.Contains(keyword) || t.Name.Contains(keyword) || t.Description.Contains(keyword))
             .CountAsync();
 
         List<ThesisOutput> onePageOfData = await _context.Theses.Include(i => i.Lecture)
-            .Where(t => t.LectureId == lecturerId && t.IsPublished == true && t.IsDeleted == false)
+            .Where(t => t.LectureId == lecturerId && t.StatusId == 4 && t.IsDeleted == false)
             .Where(t => t.Id.Contains(keyword) || t.Name.Contains(keyword) || t.Description.Contains(keyword))
             .Skip(n).Take(pageSize)
             .Select(s => new ThesisOutput
@@ -692,12 +710,12 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
     {
         int n = (page - 1) * pageSize;
         int totalItemCount = await _context.Theses
-            .Where(t => t.LectureId == lecturerId && t.IsRejected == true && t.IsDeleted == false)
+            .Where(t => t.LectureId == lecturerId && t.StatusId == ThesisStatusConsts.Rejected && t.IsDeleted == false)
             .Where(t => t.Id.Contains(keyword) || t.Name.Contains(keyword) || t.Description.Contains(keyword))
             .CountAsync();
 
         List<ThesisOutput> onePageOfData = await _context.Theses.Include(i => i.Lecture)
-            .Where(t => t.LectureId == lecturerId && t.IsRejected == true && t.IsDeleted == false)
+            .Where(t => t.LectureId == lecturerId && t.StatusId == ThesisStatusConsts.Rejected && t.IsDeleted == false)
             .Where(t => t.Id.Contains(keyword) || t.Name.Contains(keyword) || t.Description.Contains(keyword))
             .Skip(n).Take(pageSize)
             .Select(s => new ThesisOutput
@@ -727,12 +745,12 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
     {
         int n = (page - 1) * pageSize;
         int totalItemCount = await _context.Theses.Include(i => i.Lecture)
-            .Where(t => t.LectureId == lecturerId && t.IsApproved == true && t.IsDeleted == false && t.Lecture.IsDeleted == false)
+            .Where(t => t.LectureId == lecturerId && t.StatusId == ThesisStatusConsts.Approved && t.IsDeleted == false && t.Lecture.IsDeleted == false)
             .Where(t => t.Id.Contains(keyword) || t.Name.Contains(keyword) || t.Description.Contains(keyword))
             .CountAsync();
 
         List<ThesisOutput> onePageOfData = await _context.Theses.Include(i => i.Lecture)
-            .Where(t => t.LectureId == lecturerId && t.IsApproved == true && t.IsDeleted == false)
+            .Where(t => t.LectureId == lecturerId && t.StatusId == ThesisStatusConsts.Approved && t.IsDeleted == false)
             .Where(t => t.Id.Contains(keyword) || t.Name.Contains(keyword) || t.Description.Contains(keyword))
             .Skip(n).Take(pageSize)
             .Select(s => new ThesisOutput
@@ -889,7 +907,7 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
 
             List<Thesis> theses = await _context.Theses
                 .Include(i => i.Topic).Include(i => i.Specialization).Include(i => i.Lecture)
-                .Where(t => t.IsDeleted == false && t.Topic.IsDeleted == false && t.Specialization.IsDeleted == false && t.Lecture.IsDeleted == false)
+                .Where(t => t.IsDeleted == false && t.Lecture.IsDeleted == false)
                 .OrderBy(f => f.Name).ToListAsync();
 
             await MiniExcel.SaveAsByTemplateAsync(memoryStream, path, new
@@ -931,7 +949,7 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
 
             List<Thesis> theses = await _context.Theses
                 .Include(i => i.Topic).Include(i => i.Specialization).Include(i => i.Lecture)
-                .Where(t => t.IsNew == true && t.IsDeleted == false && t.Topic.IsDeleted == false && t.Specialization.IsDeleted == false && t.Lecture.IsDeleted == false)
+                .Where(t => t.StatusId == ThesisStatusConsts.Pending && t.IsDeleted == false && t.Lecture.IsDeleted == false)
                 .OrderBy(f => f.Name).ToListAsync();
 
             await MiniExcel.SaveAsByTemplateAsync(memoryStream, path, new
@@ -971,9 +989,10 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
             memoryStream = new MemoryStream();
             int count = 1;
 
-            List<Thesis> theses = await _context.Theses.Include(i => i.Topic).Include(i => i.Specialization)
-            .Where(t => t.IsPublished == true && t.IsDeleted == false && t.Topic.IsDeleted == false && t.Specialization.IsDeleted == false)
-            .OrderBy(f => f.Name).ToListAsync();
+            List<Thesis> theses = await _context.Theses
+                .Include(i => i.Topic).Include(i => i.Specialization).Include(i => i.Lecture)
+                .Where(t => t.StatusId == ThesisStatusConsts.Published && t.IsDeleted == false)
+                .OrderBy(f => f.Name).ToListAsync();
 
             await MiniExcel.SaveAsByTemplateAsync(memoryStream, path, new
             {
@@ -1013,7 +1032,7 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
 
             List<Thesis> theses = await _context.Theses
                 .Include(i => i.Topic).Include(i => i.Specialization).Include(i => i.Lecture)
-                .Where(t => t.IsRejected == true && t.IsDeleted == false && t.Topic.IsDeleted == false && t.Specialization.IsDeleted == false && t.Lecture.IsDeleted == false)
+                .Where(t => t.StatusId == ThesisStatusConsts.Rejected && t.IsDeleted == false && t.Lecture.IsDeleted == false)
                 .OrderBy(f => f.Name).ToListAsync();
 
             await MiniExcel.SaveAsByTemplateAsync(memoryStream, path, new
@@ -1055,7 +1074,7 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
             int count = 1;
 
             List<Thesis> theses = await _context.Theses.Include(i => i.Topic).Include(i => i.Specialization)
-            .Where(t => t.IsApproved == true && t.IsDeleted == false && t.Topic.IsDeleted == false && t.Specialization.IsDeleted == false)
+            .Where(t => t.StatusId == ThesisStatusConsts.Approved && t.IsDeleted == false)
             .OrderBy(f => f.Name).ToListAsync();
 
             await MiniExcel.SaveAsByTemplateAsync(memoryStream, path, new
@@ -1094,7 +1113,7 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
             int count = 1;
 
             List<Thesis> theses = await _context.Theses.Include(i => i.Topic).Include(i => i.Specialization)
-            .Where(t => t.LectureId == lecturerId && t.IsDeleted == false && t.Topic.IsDeleted == false && t.Specialization.IsDeleted == false)
+            .Where(t => t.LectureId == lecturerId && t.IsDeleted == false)
             .OrderBy(f => f.Name).ToListAsync();
 
             await MiniExcel.SaveAsByTemplateAsync(memoryStream, path, new
@@ -1133,7 +1152,7 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
             int count = 1;
 
             List<Thesis> theses = await _context.Theses.Include(i => i.Topic).Include(i => i.Specialization)
-            .Where(t => t.LectureId == lecturerId && t.IsPublished == true && t.IsDeleted == false && t.Topic.IsDeleted == false && t.Specialization.IsDeleted == false)
+            .Where(t => t.LectureId == lecturerId && t.StatusId == ThesisStatusConsts.Published && t.IsDeleted == false)
             .OrderBy(f => f.Name).ToListAsync();
 
             await MiniExcel.SaveAsByTemplateAsync(memoryStream, path, new
@@ -1172,7 +1191,7 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
             int count = 1;
 
             List<Thesis> theses = await _context.Theses.Include(i => i.Topic).Include(i => i.Specialization)
-            .Where(t => t.LectureId == lecturerId && t.IsRejected == true && t.IsDeleted == false && t.Topic.IsDeleted == false && t.Specialization.IsDeleted == false)
+            .Where(t => t.LectureId == lecturerId && t.StatusId == ThesisStatusConsts.Rejected && t.IsDeleted == false)
             .OrderBy(f => f.Name).ToListAsync();
 
             await MiniExcel.SaveAsByTemplateAsync(memoryStream, path, new
@@ -1211,7 +1230,7 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
             int count = 1;
 
             List<Thesis> theses = await _context.Theses.Include(i => i.Topic).Include(i => i.Specialization)
-            .Where(t => t.LectureId == lecturerId && t.IsApproved == true && t.IsDeleted == false && t.Topic.IsDeleted == false && t.Specialization.IsDeleted == false)
+            .Where(t => t.LectureId == lecturerId && t.StatusId == ThesisStatusConsts.Approved && t.IsDeleted == false)
             .OrderBy(f => f.Name).ToListAsync();
 
             await MiniExcel.SaveAsByTemplateAsync(memoryStream, path, new
@@ -1240,10 +1259,11 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
         }
     }
 
-    public async Task<DataResponse> PublishThesis(string thesisId)
+    public async Task<DataResponse> PublishThesisAsync(string thesisId)
     {
-        Thesis thesis = await _context.Theses.Where(t => t.IsDeleted == false && t.IsApproved == true)
-                       .SingleOrDefaultAsync();
+        Thesis thesis = await _context.Theses.Where(t => t.Id == thesisId && t.IsDeleted == false)
+            .SingleOrDefaultAsync();
+
         if (thesis == null)
             return new DataResponse
             {
@@ -1251,34 +1271,21 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
                 Message = "Không tìm thấy đề tài có mã này!"
             };
 
+        if(thesis.StatusId < ThesisStatusConsts.Approved)
+            return new DataResponse
+            {
+                Status = DataResponseStatus.Failed,
+                Message = "Không thể công bố đề tài vì đề tài chưa được duyệt!"
+            };
 
-        thesis.IsPublished = true;
-        thesis.IsRejected = false;
-        thesis.IsApproved = false;
-        thesis.IsNew = false;
+        if(thesis.StatusId >= ThesisStatusConsts.InProgress)
+            return new DataResponse
+            {
+                Status = DataResponseStatus.Failed,
+                Message = "Không thể công bố khi đề tài đang diễn ra hoặc đã kết thúc!"
+            };
 
-
-        await _context.SaveChangesAsync();
-        return new DataResponse
-        {
-            Status = DataResponseStatus.Success,
-            Message = "Đã công bố đề tài thành công!"
-        };
-    }
-
-    public async Task<DataResponse> PublishTheses(string[] thesisIds)
-    {
-        List<Thesis> theses = await _context.Theses.Where(t => t.IsDeleted == false && t.IsApproved == true)
-                       .WhereBulkContains(thesisIds, s => s.Id).ToListAsync();
-
-        foreach (Thesis thesis in theses)
-        {
-            thesis.IsPublished = true;
-            thesis.IsRejected = false;
-            thesis.IsApproved = false;
-            thesis.IsNew = false;
-        }
-
+        thesis.StatusId = ThesisStatusConsts.Published;
         await _context.SaveChangesAsync();
 
         return new DataResponse
@@ -1288,10 +1295,27 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
         };
     }
 
-    public async Task<DataResponse> StopPublishing(string thesisId)
+    public async Task<DataResponse> PublishThesesAsync(string[] thesisIds)
     {
-        Thesis thesis = await _context.Theses.Where(t => t.IsDeleted == false && t.IsPublished == true)
-                        .SingleOrDefaultAsync();
+        List<Thesis> theses = await _context.Theses
+            .Where(t => t.StatusId == ThesisStatusConsts.Approved && t.IsDeleted == false)
+            .WhereBulkContains(thesisIds, s => s.Id).ToListAsync();
+
+        theses.ForEach((t) => { t.StatusId = ThesisStatusConsts.Published; });
+        await _context.SaveChangesAsync();
+
+        return new DataResponse
+        {
+            Status = DataResponseStatus.Success,
+            Message = "Đã công bố đề tài thành công!"
+        };
+    }
+
+    public async Task<DataResponse> StopPublishingAsync(string thesisId)
+    {
+        Thesis thesis = await _context.Theses
+            .Where(t => t.Id == thesisId && t.IsDeleted == false).SingleOrDefaultAsync();
+
         if (thesis == null)
             return new DataResponse
             {
@@ -1299,14 +1323,16 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
                 Message = "Không tìm thấy đề tài có mã này!"
             };
 
+        if(thesis.StatusId != ThesisStatusConsts.Published)
+            return new DataResponse
+            {
+                Status = DataResponseStatus.Failed,
+                Message = "Không thể ngừng công bố khi đề tài chưa công bố!"
+            };
 
-        thesis.IsPublished = false;
-        thesis.InProgess = true;
-        thesis.IsRejected = false;
-        thesis.IsApproved = false;
-        thesis.IsNew = false;
-
+        thesis.StatusId = ThesisStatusConsts.InProgress;
         await _context.SaveChangesAsync();
+
         return new DataResponse
         {
             Status = DataResponseStatus.Success,
@@ -1314,20 +1340,13 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
         };
     }
 
-    public async Task<DataResponse> StopPublishings(string[] thesisIds)
+    public async Task<DataResponse> StopPublishingsAsync(string[] thesisIds)
     {
-        List<Thesis> theses = await _context.Theses.Where(t => t.IsDeleted == false && t.IsPublished == true)
-                        .WhereBulkContains(thesisIds, s => s.Id).ToListAsync();
+        List<Thesis> theses = await _context.Theses
+            .Where(t => t.StatusId == ThesisStatusConsts.Published && t.IsDeleted == false)
+            .WhereBulkContains(thesisIds, s => s.Id).ToListAsync();
 
-        foreach (Thesis thesis in theses)
-        {
-            thesis.IsPublished = false;
-            thesis.InProgess = true;
-            thesis.IsRejected = false;
-            thesis.IsApproved = false;
-            thesis.IsNew = false;
-        }
-
+        theses.ForEach((t) => { t.StatusId = ThesisStatusConsts.InProgress; });
         await _context.SaveChangesAsync();
 
         return new DataResponse
