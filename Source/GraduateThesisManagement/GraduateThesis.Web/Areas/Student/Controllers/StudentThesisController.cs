@@ -41,9 +41,20 @@ public class StudentThesisController : WebControllerBase
         Pagination<ThesisOutput> pagination = await _thesisRepository.GetPgnOfPubldThesesAsync(page, pageSize, orderBy, orderOpts, searchBy, keyword);
         StaticPagedList<ThesisOutput> pagedList = pagination.ToStaticPagedList();
 
+        ViewData["OrderByProperties"] = new Dictionary<string, string>
+        {
+            { "Id", "Mã" }, { "Name", "Tên" }, { "LectureName", "Tên GV" }, { "Year", "Năm học" }, { "CreatedAt", "Ngày tạo" }
+        };
+
+        ViewData["SearchByProperties"] = new Dictionary<string, string>
+        {
+            { "Id", "Mã" }, { "Name", "Tên" }, { "LectureName", "Tên GV" }, { "Year", "Năm học" },
+        };
+
         ViewData["PagedList"] = pagedList;
         ViewData["OrderBy"] = orderBy;
         ViewData["OrderOptions"] = orderOptions;
+        ViewData["SearchBy"] = searchBy;
         ViewData["Keyword"] = keyword;
 
         return View();

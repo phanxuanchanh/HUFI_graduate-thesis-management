@@ -4,6 +4,7 @@ using GraduateThesis.ApplicationCore.Models;
 using GraduateThesis.ApplicationCore.Repository;
 using GraduateThesis.ApplicationCore.Uuid;
 using GraduateThesis.ExtensionMethods;
+using GraduateThesis.Repository.BLL.Consts;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DAL;
 using GraduateThesis.Repository.DTO;
@@ -11,6 +12,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using MiniExcelLibs;
+using NPOI.SS.Formula.Functions;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -61,6 +63,11 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
                 Id = s.Lecture.Id,
                 Surname = s.Lecture.Surname,
                 Name = s.Lecture.Name
+            },
+            ThesisStatus = new ThesisStatusOutput
+            {
+                Id = s.Status.Id,
+                Name = s.Status.Name
             }
         };
 
@@ -162,7 +169,8 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
         entity.TrainingLevelId = input.TrainingLevelId;
         entity.SpecializationId = input.SpecializationId;
         entity.Semester = input.Semester;
-        entity.IsNew = true;
+        entity.LectureId = input.LectureId;
+        entity.StatusId = input.StatusId;
         entity.CreatedAt = DateTime.Now;
     }
 
@@ -171,8 +179,8 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
         int lastIndexOf = fullName.Trim(' ').LastIndexOf(" ");
         if (lastIndexOf > 0)
         {
-            string name = fullName.Substring(lastIndexOf);
-            string surname = fullName.Replace(name, "");
+            string name = fullName.Substring(lastIndexOf).Trim(' ');
+            string surname = fullName.Replace(name, "").Trim(' ');
             queryable = queryable.Where(t => t.Lecture.Surname.Contains(surname) && t.Lecture.Name.Contains(name));
         }
         else
@@ -288,13 +296,21 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
 
         thesis.CriticalLecturer = await _context.CounterArgumentResults.Include(i => i.Lecture)
             .Where(c => c.ThesisId == id && c.IsDeleted == false)
-            .Select(s => new FacultyStaffOutput { Id = s.Lecture.Id, Surname = s.Lecture.Surname, Name = s.Lecture.Name })
-            .SingleOrDefaultAsync();
+            .Select(s => new FacultyStaffOutput { 
+                Id = s.Lecture.Id, 
+                Surname = s.Lecture.Surname, 
+                Name = s.Lecture.Name,
+                Email = s.Lecture.Email
+            }).SingleOrDefaultAsync();
 
-        thesis.ThesisSupervisor = await _context.ThesisSupervisors.Include(i => i.Lecture)
-            .Where(t => t.ThesisId == id && t.IsDeleted == false)
-            .Select(s => new FacultyStaffOutput { Id = s.Lecture.Id, Surname = s.Lecture.Surname, Name = s.Lecture.Name })
-            .SingleOrDefaultAsync();
+        thesis.ThesisSupervisor = await _context.ThesisSupervisors.Include(i => i.Lecturer)
+            .Where(ts => ts.ThesisId == id && ts.Lecturer.IsDeleted == false)
+            .Select(s => new FacultyStaffOutput { 
+                Id = s.Lecturer.Id, 
+                Surname = s.Lecturer.Surname, 
+                Name = s.Lecturer.Name,
+                Email = s.Lecturer.Email
+            }).SingleOrDefaultAsync();
 
         return thesis;
     }
@@ -302,7 +318,7 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
     public override Task<DataResponse<ThesisOutput>> CreateAsync(ThesisInput input)
     {
         input.Description = HttpUtility.HtmlEncode(input.Description);
-        input.IsNew = true;
+        input.StatusId = ThesisStatusConsts.Pending;
 
         return base.CreateAsync(input);
     }
@@ -428,7 +444,7 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
                 Message = "Đề tài này không thuộc nhóm của bạn!"
             };
 
-        thesis.Finished = true;
+        thesis.StatusId = ThesisStatusConsts.Finished;
         await _context.SaveChangesAsync();
 
         return new DataResponse
@@ -441,7 +457,8 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
     public async Task<DataResponse> ApproveThesisAsync(ThesisApprovalInput approvalInput)
     {
         Thesis thesis = await _context.Theses
-            .Where(t => t.Id == approvalInput.ThesisId && t.IsDeleted == false).SingleOrDefaultAsync();
+            .Where(t => t.Id == approvalInput.ThesisId && t.IsDeleted == false)
+            .SingleOrDefaultAsync();
 
         if (thesis == null)
             return new DataResponse
@@ -450,10 +467,15 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
                 Message = "Không tìm thấy đề tài có mã này!"
             };
 
+        if(thesis.StatusId >= ThesisStatusConsts.Approved)
+            return new DataResponse
+            {
+                Status = DataResponseStatus.Failed,
+                Message = "Không thể thực hiện lại việc xét duyệt đề tài đã được duyệt!"
+            };
+
         thesis.Notes = approvalInput.Notes;
-        thesis.IsRejected = false;
-        thesis.IsApproved = true;
-        thesis.IsNew = false;
+        thesis.StatusId = ThesisStatusConsts.Approved;
 
         await _context.SaveChangesAsync();
 
@@ -484,10 +506,15 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
                 Message = "Không tìm thấy đề tài có mã này!"
             };
 
+        if(thesis.StatusId >= ThesisStatusConsts.Approved)
+            return new DataResponse
+            {
+                Status = DataResponseStatus.Failed,
+                Message = "Không thể từ chối xét duyệt khi đề tài đã được duyệt!"
+            };
+
         thesis.Notes = approvalInput.Notes;
-        thesis.IsRejected = true;
-        thesis.IsApproved = false;
-        thesis.IsNew = false;
+        thesis.StatusId = ThesisStatusConsts.Rejected;
 
         await _context.SaveChangesAsync();
 
@@ -521,7 +548,30 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
     public async Task<Pagination<ThesisOutput>> GetPgnOfPndgApvlThesesAsync(int page, int pageSize, string orderBy, OrderOptions orderOptions, string searchBy, string keyword)
     {
         IQueryable<Thesis> queryable = _context.Theses.Include(i => i.Lecture)
-                    .Where(t => t.IsNew == true && t.IsDeleted == false && t.Lecture.IsDeleted == false);
+                    .Where(t => t.StatusId == ThesisStatusConsts.Pending && t.IsDeleted == false && t.Lecture.IsDeleted == false);
+
+        queryable = SetSearchExpression(queryable, searchBy, keyword);
+        queryable = SetOrderExpression(queryable, orderBy, orderOptions);
+
+        int n = (page - 1) * pageSize;
+        int totalItemCount = await queryable.CountAsync();
+
+        List<ThesisOutput> onePageOfData = await queryable.Skip(n).Take(pageSize)
+            .Select(PaginationSelector).ToListAsync();
+
+        return new Pagination<ThesisOutput>
+        {
+            Page = page,
+            PageSize = pageSize,
+            TotalItemCount = totalItemCount,
+            Items = onePageOfData
+        };
+    }
+
+    public async Task<Pagination<ThesisOutput>> GetPgnOfPndgApvlThesesAsync(string lecturerId, int page, int pageSize, string orderBy, OrderOptions orderOptions, string searchBy, string keyword)
+    {
+        IQueryable<Thesis> queryable = _context.Theses.Include(i => i.Lecture)
+            .Where(t => t.LectureId == lecturerId && t.StatusId == ThesisStatusConsts.Pending && t.IsDeleted == false && t.Lecture.IsDeleted == false);
 
         queryable = SetSearchExpression(queryable, searchBy, keyword);
         queryable = SetOrderExpression(queryable, orderBy, orderOptions);
@@ -544,7 +594,7 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
     public async Task<Pagination<ThesisOutput>> GetPgnOfRejdThesesAsync(int page, int pageSize, string orderBy, OrderOptions orderOptions, string searchBy, string keyword)
     {
         IQueryable<Thesis> queryable = _context.Theses.Include(i => i.Lecture)
-                    .Where(t => t.IsRejected == true && t.IsDeleted == false && t.Lecture.IsDeleted == false);
+                    .Where(t => t.StatusId == ThesisStatusConsts.Rejected && t.IsDeleted == false && t.Lecture.IsDeleted == false);
 
         queryable = SetSearchExpression(queryable, searchBy, keyword);
         queryable = SetOrderExpression(queryable, orderBy, orderOptions);
@@ -581,7 +631,7 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
     public async Task<Pagination<ThesisOutput>> GetPgnOfAppdThesesAsync(int page, int pageSize, string orderBy, OrderOptions orderOptions, string searchBy, string keyword)
     {
         IQueryable<Thesis> queryable = _context.Theses.Include(i => i.Lecture)
-            .Where(t => t.IsApproved == true && t.Finished == false && t.IsDeleted == false && t.Lecture.IsDeleted == false);
+            .Where(t => t.StatusId == ThesisStatusConsts.Approved && t.IsDeleted == false && t.Lecture.IsDeleted == false);
 
         queryable = SetSearchExpression(queryable, searchBy, keyword);
         queryable = SetOrderExpression(queryable, orderBy, orderOptions);
@@ -621,7 +671,7 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
     public async Task<Pagination<ThesisOutput>> GetPgnOfPubldThesesAsync(int page, int pageSize, string orderBy, OrderOptions orderOptions, string searchBy, string keyword)
     {
         IQueryable<Thesis> queryable = _context.Theses.Include(i => i.Lecture)
-            .Where(t => t.IsPublished == true && t.Finished == false && t.IsDeleted == false && t.Lecture.IsDeleted == false);
+            .Where(t => t.StatusId == ThesisStatusConsts.Published && t.IsDeleted == false && t.Lecture.IsDeleted == false);
 
         queryable = SetSearchExpression(queryable, searchBy, keyword);
         queryable = SetOrderExpression(queryable, orderBy, orderOptions);
@@ -657,12 +707,12 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
     {
         int n = (page - 1) * pageSize;
         int totalItemCount = await _context.Theses
-            .Where(t => t.LectureId == lecturerId && t.IsPublished == true && t.IsDeleted == false)
+            .Where(t => t.LectureId == lecturerId && t.StatusId == ThesisStatusConsts.Published && t.IsDeleted == false)
             .Where(t => t.Id.Contains(keyword) || t.Name.Contains(keyword) || t.Description.Contains(keyword))
             .CountAsync();
 
         List<ThesisOutput> onePageOfData = await _context.Theses.Include(i => i.Lecture)
-            .Where(t => t.LectureId == lecturerId && t.IsPublished == true && t.IsDeleted == false)
+            .Where(t => t.LectureId == lecturerId && t.StatusId == 4 && t.IsDeleted == false)
             .Where(t => t.Id.Contains(keyword) || t.Name.Contains(keyword) || t.Description.Contains(keyword))
             .Skip(n).Take(pageSize)
             .Select(s => new ThesisOutput
@@ -688,30 +738,32 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
         };
     }
 
-    public async Task<Pagination<ThesisOutput>> GetPgnOfRejdThesesAsync(string lecturerId, int page, int pageSize, string keyword)
+    public async Task<Pagination<ThesisOutput>> GetPgnOfRejdThesesAsync(string lecturerId, int page, int pageSize, string orderBy, OrderOptions orderOptions, string searchBy, string keyword)
     {
-        int n = (page - 1) * pageSize;
-        int totalItemCount = await _context.Theses
-            .Where(t => t.LectureId == lecturerId && t.IsRejected == true && t.IsDeleted == false)
-            .Where(t => t.Id.Contains(keyword) || t.Name.Contains(keyword) || t.Description.Contains(keyword))
-            .CountAsync();
+        IQueryable<Thesis> queryable = _context.Theses.Include(i => i.Lecture)
+            .Where(t => t.LectureId == lecturerId && t.StatusId == ThesisStatusConsts.Rejected && t.IsDeleted == false && t.Lecture.IsDeleted == false);
 
-        List<ThesisOutput> onePageOfData = await _context.Theses.Include(i => i.Lecture)
-            .Where(t => t.LectureId == lecturerId && t.IsRejected == true && t.IsDeleted == false)
-            .Where(t => t.Id.Contains(keyword) || t.Name.Contains(keyword) || t.Description.Contains(keyword))
-            .Skip(n).Take(pageSize)
+        queryable = SetSearchExpression(queryable, searchBy, keyword);
+        queryable = SetOrderExpression(queryable, orderBy, orderOptions);
+
+        int n = (page - 1) * pageSize;
+        int totalItemCount = await queryable.CountAsync();
+
+        List<ThesisOutput> onePageOfData = await queryable.Skip(n).Take(pageSize)
             .Select(s => new ThesisOutput
             {
                 Id = s.Id,
                 Name = s.Name,
                 MaxStudentNumber = s.MaxStudentNumber,
-                ThesisGroupId = s.ThesisGroupId,
+                Year = s.Year,
+                Semester = s.Semester,
                 Lecturer = new FacultyStaffOutput
                 {
                     Id = s.Lecture.Id,
                     Surname = s.Lecture.Surname,
                     Name = s.Lecture.Name
-                }
+                },
+                Notes = s.Notes
             }).ToListAsync();
 
         return new Pagination<ThesisOutput>
@@ -723,30 +775,19 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
         };
     }
 
-    public async Task<Pagination<ThesisOutput>> GetPgnOfAppdThesesAsync(string lecturerId, int page, int pageSize, string keyword)
+    public async Task<Pagination<ThesisOutput>> GetPgnOfAppdThesesAsync(string lecturerId, int page, int pageSize, string orderBy, OrderOptions orderOptions, string searchBy, string keyword)
     {
-        int n = (page - 1) * pageSize;
-        int totalItemCount = await _context.Theses.Include(i => i.Lecture)
-            .Where(t => t.LectureId == lecturerId && t.IsApproved == true && t.IsDeleted == false && t.Lecture.IsDeleted == false)
-            .Where(t => t.Id.Contains(keyword) || t.Name.Contains(keyword) || t.Description.Contains(keyword))
-            .CountAsync();
+        IQueryable<Thesis> queryable = _context.Theses.Include(i => i.Lecture)
+            .Where(t => t.LectureId == lecturerId && t.StatusId == ThesisStatusConsts.Approved && t.IsDeleted == false && t.Lecture.IsDeleted == false);
 
-        List<ThesisOutput> onePageOfData = await _context.Theses.Include(i => i.Lecture)
-            .Where(t => t.LectureId == lecturerId && t.IsApproved == true && t.IsDeleted == false)
-            .Where(t => t.Id.Contains(keyword) || t.Name.Contains(keyword) || t.Description.Contains(keyword))
-            .Skip(n).Take(pageSize)
-            .Select(s => new ThesisOutput
-            {
-                Id = s.Id,
-                Name = s.Name,
-                MaxStudentNumber = s.MaxStudentNumber,
-                Lecturer = new FacultyStaffOutput
-                {
-                    Id = s.Lecture.Id,
-                    Surname = s.Lecture.Surname,
-                    Name = s.Lecture.Name
-                }
-            }).ToListAsync();
+        queryable = SetSearchExpression(queryable, searchBy, keyword);
+        queryable = SetOrderExpression(queryable, orderBy, orderOptions);
+
+        int n = (page - 1) * pageSize;
+        int totalItemCount = await queryable.CountAsync();
+
+        List<ThesisOutput> onePageOfData = await queryable.Skip(n).Take(pageSize)
+            .Select(PaginationSelector).ToListAsync();
 
         return new Pagination<ThesisOutput>
         {
@@ -757,18 +798,41 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
         };
     }
 
-    public async Task<DataResponse> AssignSupervisorAsync(string thesisId, string lectureId)
+    public async Task<DataResponse> AssignSupervisorAsync(string thesisId, string lecturerId)
     {
-        bool checkExists = await _context.Theses
+        bool checkThesisExists = await _context.Theses
           .AnyAsync(t => t.Id == thesisId && t.IsDeleted == false);
 
-        if (!checkExists)
-            return new DataResponse { Status = DataResponseStatus.NotFound, Message = "Không có đề tài này!" };
+        if (!checkThesisExists)
+            return new DataResponse { 
+                Status = DataResponseStatus.NotFound, 
+                Message = "Không tìm thấy đề tài này!" 
+            };
+
+        bool checkSupvExists = await _context.FacultyStaffs
+            .AnyAsync(f => f.Id == lecturerId && f.IsDeleted == false);
+
+        if(!checkSupvExists)
+            return new DataResponse
+            {
+                Status = DataResponseStatus.NotFound,
+                Message = "Không tìm thấy giảng viên này!"
+            };
+
+        bool checkAsgmtExists = await _context.ThesisSupervisors
+            .AnyAsync(ts => ts.ThesisId == thesisId);
+
+        if (checkAsgmtExists)
+            return new DataResponse
+            {
+                Status = DataResponseStatus.AlreadyExists,
+                Message = "Đề tài này đã được phân công, cần hủy phân công hiện tại trước khi phân công lại!"
+            };
 
         ThesisSupervisor thesisSupervisor = new ThesisSupervisor
         {
             ThesisId = thesisId,
-            LectureId = lectureId
+            LecturerId = lecturerId
         };
 
         await _context.ThesisSupervisors.AddAsync(thesisSupervisor);
@@ -777,63 +841,84 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
         return new DataResponse { Status = DataResponseStatus.Success, Message = "Phân công giảng viên cho đề tài thành công!" };
     }
 
-    public async Task<DataResponse> AssignSupervisorsAsync()
+    public async Task<DataResponse> AssignSupervisorsAsync(string[] thesisIds)
     {
-        List<string> thesisId = await _context.ThesisSupervisors.Include(i => i.Thesis)
-            .Where(t => t.IsDeleted == false && t.Thesis.IsDeleted == false)
-            .Where(gd => gd.IsCompleted == true).Select(gd => gd.ThesisId)
-               .ToListAsync();
+        List<Thesis> theses = await _context.Theses.Include(i => i.Lecture)
+            .Where(t => t.IsDeleted == false && t.Lecture.IsDeleted == false)
+            .WhereBulkContains(thesisIds, t => t.Id)
+            .ToListAsync();
 
-        List<Thesis> theses = await _context.Theses
-           .Where(t => t.IsDeleted == false).
-            WhereBulkNotContains(thesisId, s => s.Id)
-             .ToListAsync();
-
-        foreach (var thesis in theses)
+        List<ThesisSupervisor> thesisSupervisors = new List<ThesisSupervisor>();
+        foreach(Thesis thesis in theses)
         {
-            ThesisSupervisor thesisSupervisor = new ThesisSupervisor
-            {
-                LectureId = thesis.LectureId,
-                ThesisId = thesis.ThesisSupervisor.ThesisId
-            };
-            await _context.ThesisSupervisors.AddAsync(thesisSupervisor);
+            thesisSupervisors.Add(new ThesisSupervisor { ThesisId = thesis.Id, LecturerId = thesis.LectureId });
         }
 
+        await _context.ThesisSupervisors.AddRangeAsync(thesisSupervisors);
         await _context.SaveChangesAsync();
 
-        return new DataResponse { Status = DataResponseStatus.Success, Message = "Phân công giảng viên cho đề tài thành công!" };
-
+        return new DataResponse { 
+            Status = DataResponseStatus.Success, 
+            Message = "Hoàn tất phân công giảng viên hướng dẫn cho những đề tài đã chọn!" 
+        };
     }
 
     public async Task<DataResponse> AssignSupervisorAsync(string thesisId)
     {
         Thesis thesis = await _context.Theses.Where(t => t.Id == thesisId && t.IsDeleted == false).SingleOrDefaultAsync();
-
         if (thesis == null)
-            return new DataResponse { Status = DataResponseStatus.NotFound, Message = "Không có đề tài này!" };
+            return new DataResponse { 
+                Status = DataResponseStatus.NotFound, 
+                Message = "Không tìm thấy đề tài này!" 
+            };
 
-        bool checkExists = await _context.ThesisSupervisors
-        .AnyAsync(t => t.ThesisId == thesisId && t.LectureId == thesis.LectureId);
+        bool checkAsgmtExists = await _context.ThesisSupervisors
+            .AnyAsync(ts => ts.ThesisId == thesisId);
 
-        if (checkExists)
-            return new DataResponse { Status = DataResponseStatus.AlreadyExists, Message = "Đề tài này đã được phân công!" };
+        if (checkAsgmtExists)
+            return new DataResponse
+            {
+                Status = DataResponseStatus.AlreadyExists,
+                Message = "Đề tài này đã được phân công, cần hủy phân công hiện tại trước khi phân công lại!"
+            };
 
         ThesisSupervisor thesisSupervisor = new ThesisSupervisor
         {
             ThesisId = thesisId,
-            LectureId = thesis.LectureId
+            LecturerId = thesis.LectureId
         };
 
         await _context.ThesisSupervisors.AddAsync(thesisSupervisor);
         await _context.SaveChangesAsync();
 
-        return new DataResponse { Status = DataResponseStatus.Success, Message = "Phân công giảng viên cho đề tài thành công!" };
+        return new DataResponse { 
+            Status = DataResponseStatus.Success, 
+            Message = "Phân công giảng viên cho đề tài thành công!" 
+        };
 
     }
 
-    public Task<Pagination<ThesisOutput>> GetPgnOf(string lecturerId, int page, int pageSize, string orderBy, OrderOptions orderOptions, string searchBy, string keyword)
+    public async Task<Pagination<ThesisOutput>> GetPaginationAsync(string lecturerId, int page, int pageSize, string orderBy, OrderOptions orderOptions, string searchBy, string keyword)
     {
-        throw new NotImplementedException();
+        IQueryable<Thesis> queryable = _context.Theses.Include(i => i.Lecture)
+            .Where(t => t.LectureId == lecturerId && t.IsDeleted == false && t.Lecture.IsDeleted == false);
+
+        queryable = SetSearchExpression(queryable, searchBy, keyword);
+        queryable = SetOrderExpression(queryable, orderBy, orderOptions);
+
+        int n = (page - 1) * pageSize;
+        int totalItemCount = await queryable.CountAsync();
+
+        List<ThesisOutput> onePageOfData = await queryable.Skip(n).Take(pageSize)
+            .Select(PaginationSelector).ToListAsync();
+
+        return new Pagination<ThesisOutput>
+        {
+            Page = page,
+            PageSize = pageSize,
+            TotalItemCount = totalItemCount,
+            Items = onePageOfData
+        };
     }
 
     public async Task<DataResponse> AssignCounterArgumentAsync(string thesisId, string lectureId)
@@ -889,7 +974,7 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
 
             List<Thesis> theses = await _context.Theses
                 .Include(i => i.Topic).Include(i => i.Specialization).Include(i => i.Lecture)
-                .Where(t => t.IsDeleted == false && t.Topic.IsDeleted == false && t.Specialization.IsDeleted == false && t.Lecture.IsDeleted == false)
+                .Where(t => t.IsDeleted == false && t.Lecture.IsDeleted == false)
                 .OrderBy(f => f.Name).ToListAsync();
 
             await MiniExcel.SaveAsByTemplateAsync(memoryStream, path, new
@@ -931,7 +1016,7 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
 
             List<Thesis> theses = await _context.Theses
                 .Include(i => i.Topic).Include(i => i.Specialization).Include(i => i.Lecture)
-                .Where(t => t.IsNew == true && t.IsDeleted == false && t.Topic.IsDeleted == false && t.Specialization.IsDeleted == false && t.Lecture.IsDeleted == false)
+                .Where(t => t.StatusId == ThesisStatusConsts.Pending && t.IsDeleted == false && t.Lecture.IsDeleted == false)
                 .OrderBy(f => f.Name).ToListAsync();
 
             await MiniExcel.SaveAsByTemplateAsync(memoryStream, path, new
@@ -971,9 +1056,10 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
             memoryStream = new MemoryStream();
             int count = 1;
 
-            List<Thesis> theses = await _context.Theses.Include(i => i.Topic).Include(i => i.Specialization)
-            .Where(t => t.IsPublished == true && t.IsDeleted == false && t.Topic.IsDeleted == false && t.Specialization.IsDeleted == false)
-            .OrderBy(f => f.Name).ToListAsync();
+            List<Thesis> theses = await _context.Theses
+                .Include(i => i.Topic).Include(i => i.Specialization).Include(i => i.Lecture)
+                .Where(t => t.StatusId == ThesisStatusConsts.Published && t.IsDeleted == false)
+                .OrderBy(f => f.Name).ToListAsync();
 
             await MiniExcel.SaveAsByTemplateAsync(memoryStream, path, new
             {
@@ -1013,7 +1099,7 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
 
             List<Thesis> theses = await _context.Theses
                 .Include(i => i.Topic).Include(i => i.Specialization).Include(i => i.Lecture)
-                .Where(t => t.IsRejected == true && t.IsDeleted == false && t.Topic.IsDeleted == false && t.Specialization.IsDeleted == false && t.Lecture.IsDeleted == false)
+                .Where(t => t.StatusId == ThesisStatusConsts.Rejected && t.IsDeleted == false && t.Lecture.IsDeleted == false)
                 .OrderBy(f => f.Name).ToListAsync();
 
             await MiniExcel.SaveAsByTemplateAsync(memoryStream, path, new
@@ -1055,7 +1141,7 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
             int count = 1;
 
             List<Thesis> theses = await _context.Theses.Include(i => i.Topic).Include(i => i.Specialization)
-            .Where(t => t.IsApproved == true && t.IsDeleted == false && t.Topic.IsDeleted == false && t.Specialization.IsDeleted == false)
+            .Where(t => t.StatusId == ThesisStatusConsts.Approved && t.IsDeleted == false)
             .OrderBy(f => f.Name).ToListAsync();
 
             await MiniExcel.SaveAsByTemplateAsync(memoryStream, path, new
@@ -1094,7 +1180,7 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
             int count = 1;
 
             List<Thesis> theses = await _context.Theses.Include(i => i.Topic).Include(i => i.Specialization)
-            .Where(t => t.LectureId == lecturerId && t.IsDeleted == false && t.Topic.IsDeleted == false && t.Specialization.IsDeleted == false)
+            .Where(t => t.LectureId == lecturerId && t.IsDeleted == false)
             .OrderBy(f => f.Name).ToListAsync();
 
             await MiniExcel.SaveAsByTemplateAsync(memoryStream, path, new
@@ -1133,7 +1219,7 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
             int count = 1;
 
             List<Thesis> theses = await _context.Theses.Include(i => i.Topic).Include(i => i.Specialization)
-            .Where(t => t.LectureId == lecturerId && t.IsPublished == true && t.IsDeleted == false && t.Topic.IsDeleted == false && t.Specialization.IsDeleted == false)
+            .Where(t => t.LectureId == lecturerId && t.StatusId == ThesisStatusConsts.Published && t.IsDeleted == false)
             .OrderBy(f => f.Name).ToListAsync();
 
             await MiniExcel.SaveAsByTemplateAsync(memoryStream, path, new
@@ -1172,7 +1258,7 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
             int count = 1;
 
             List<Thesis> theses = await _context.Theses.Include(i => i.Topic).Include(i => i.Specialization)
-            .Where(t => t.LectureId == lecturerId && t.IsRejected == true && t.IsDeleted == false && t.Topic.IsDeleted == false && t.Specialization.IsDeleted == false)
+            .Where(t => t.LectureId == lecturerId && t.StatusId == ThesisStatusConsts.Rejected && t.IsDeleted == false)
             .OrderBy(f => f.Name).ToListAsync();
 
             await MiniExcel.SaveAsByTemplateAsync(memoryStream, path, new
@@ -1211,7 +1297,7 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
             int count = 1;
 
             List<Thesis> theses = await _context.Theses.Include(i => i.Topic).Include(i => i.Specialization)
-            .Where(t => t.LectureId == lecturerId && t.IsApproved == true && t.IsDeleted == false && t.Topic.IsDeleted == false && t.Specialization.IsDeleted == false)
+            .Where(t => t.LectureId == lecturerId && t.StatusId == ThesisStatusConsts.Approved && t.IsDeleted == false)
             .OrderBy(f => f.Name).ToListAsync();
 
             await MiniExcel.SaveAsByTemplateAsync(memoryStream, path, new
@@ -1240,10 +1326,11 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
         }
     }
 
-    public async Task<DataResponse> PublishThesis(string thesisId)
+    public async Task<DataResponse> PublishThesisAsync(string thesisId)
     {
-        Thesis thesis = await _context.Theses.Where(t => t.IsDeleted == false && t.IsApproved == true)
-                       .SingleOrDefaultAsync();
+        Thesis thesis = await _context.Theses.Where(t => t.Id == thesisId && t.IsDeleted == false)
+            .SingleOrDefaultAsync();
+
         if (thesis == null)
             return new DataResponse
             {
@@ -1251,34 +1338,21 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
                 Message = "Không tìm thấy đề tài có mã này!"
             };
 
+        if(thesis.StatusId < ThesisStatusConsts.Approved)
+            return new DataResponse
+            {
+                Status = DataResponseStatus.Failed,
+                Message = "Không thể công bố đề tài vì đề tài chưa được duyệt!"
+            };
 
-        thesis.IsPublished = true;
-        thesis.IsRejected = false;
-        thesis.IsApproved = false;
-        thesis.IsNew = false;
+        if(thesis.StatusId >= ThesisStatusConsts.InProgress)
+            return new DataResponse
+            {
+                Status = DataResponseStatus.Failed,
+                Message = "Không thể công bố khi đề tài đang diễn ra hoặc đã kết thúc!"
+            };
 
-
-        await _context.SaveChangesAsync();
-        return new DataResponse
-        {
-            Status = DataResponseStatus.Success,
-            Message = "Đã công bố đề tài thành công!"
-        };
-    }
-
-    public async Task<DataResponse> PublishTheses(string[] thesisIds)
-    {
-        List<Thesis> theses = await _context.Theses.Where(t => t.IsDeleted == false && t.IsApproved == true)
-                       .WhereBulkContains(thesisIds, s => s.Id).ToListAsync();
-
-        foreach (Thesis thesis in theses)
-        {
-            thesis.IsPublished = true;
-            thesis.IsRejected = false;
-            thesis.IsApproved = false;
-            thesis.IsNew = false;
-        }
-
+        thesis.StatusId = ThesisStatusConsts.Published;
         await _context.SaveChangesAsync();
 
         return new DataResponse
@@ -1288,10 +1362,27 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
         };
     }
 
-    public async Task<DataResponse> StopPublishing(string thesisId)
+    public async Task<DataResponse> PublishThesesAsync(string[] thesisIds)
     {
-        Thesis thesis = await _context.Theses.Where(t => t.IsDeleted == false && t.IsPublished == true)
-                        .SingleOrDefaultAsync();
+        List<Thesis> theses = await _context.Theses
+            .Where(t => t.StatusId == ThesisStatusConsts.Approved && t.IsDeleted == false)
+            .WhereBulkContains(thesisIds, s => s.Id).ToListAsync();
+
+        theses.ForEach((t) => { t.StatusId = ThesisStatusConsts.Published; });
+        await _context.SaveChangesAsync();
+
+        return new DataResponse
+        {
+            Status = DataResponseStatus.Success,
+            Message = "Đã công bố đề tài thành công!"
+        };
+    }
+
+    public async Task<DataResponse> StopPubgThesisAsync(string thesisId)
+    {
+        Thesis thesis = await _context.Theses
+            .Where(t => t.Id == thesisId && t.IsDeleted == false).SingleOrDefaultAsync();
+
         if (thesis == null)
             return new DataResponse
             {
@@ -1299,41 +1390,226 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
                 Message = "Không tìm thấy đề tài có mã này!"
             };
 
+        if(thesis.StatusId != ThesisStatusConsts.Published)
+            return new DataResponse
+            {
+                Status = DataResponseStatus.Failed,
+                Message = "Không thể ngừng công bố khi đề tài chưa công bố!"
+            };
 
-        thesis.IsPublished = false;
-        thesis.InProgess = true;
-        thesis.IsRejected = false;
-        thesis.IsApproved = false;
-        thesis.IsNew = false;
-
+        thesis.StatusId = ThesisStatusConsts.InProgress;
         await _context.SaveChangesAsync();
+
         return new DataResponse
         {
             Status = DataResponseStatus.Success,
-            Message = "Đã công bố đề tài thành công!"
+            Message = "Đã ngừng công bố đề tài thành công!"
         };
     }
 
-    public async Task<DataResponse> StopPublishings(string[] thesisIds)
+    public async Task<DataResponse> StopPubgThesesAsync(string[] thesisIds)
     {
-        List<Thesis> theses = await _context.Theses.Where(t => t.IsDeleted == false && t.IsPublished == true)
-                        .WhereBulkContains(thesisIds, s => s.Id).ToListAsync();
+        List<Thesis> theses = await _context.Theses
+            .Where(t => t.StatusId == ThesisStatusConsts.Published && t.IsDeleted == false)
+            .WhereBulkContains(thesisIds, s => s.Id).ToListAsync();
 
-        foreach (Thesis thesis in theses)
-        {
-            thesis.IsPublished = false;
-            thesis.InProgess = true;
-            thesis.IsRejected = false;
-            thesis.IsApproved = false;
-            thesis.IsNew = false;
-        }
-
+        theses.ForEach((t) => { t.StatusId = ThesisStatusConsts.InProgress; });
         await _context.SaveChangesAsync();
 
         return new DataResponse
         {
             Status = DataResponseStatus.Success,
-            Message = "Đã công bố đề tài thành công!"
+            Message = "Đã ngừng công bố đề tài thành công!"
+        };
+    }
+
+    public async Task<Pagination<ThesisOutput>> GetPgnOfThesesInprAsync(int page, int pageSize, string orderBy, OrderOptions orderOptions, string searchBy, string keyword)
+    {
+        IQueryable<Thesis> queryable = _context.Theses.Include(i => i.Lecture)
+            .Where(t => t.StatusId == ThesisStatusConsts.InProgress && t.IsDeleted == false && t.Lecture.IsDeleted == false);
+
+        queryable = SetSearchExpression(queryable, searchBy, keyword);
+        queryable = SetOrderExpression(queryable, orderBy, orderOptions);
+
+        int n = (page - 1) * pageSize;
+        int totalItemCount = await queryable.CountAsync();
+
+        List<ThesisOutput> onePageOfData = await queryable.Skip(n).Take(pageSize)
+            .Select(s => new ThesisOutput
+            {
+                Id = s.Id,
+                Name = s.Name,
+                MaxStudentNumber = s.MaxStudentNumber,
+                ThesisGroupId = s.ThesisGroupId,
+                Lecturer = new FacultyStaffOutput
+                {
+                    Id = s.Lecture.Id,
+                    Surname = s.Lecture.Surname,
+                    Name = s.Lecture.Name
+                }
+            }).ToListAsync();
+
+        return new Pagination<ThesisOutput>
+        {
+            Page = page,
+            PageSize = pageSize,
+            TotalItemCount = totalItemCount,
+            Items = onePageOfData
+        };
+    }
+
+    public async Task<Pagination<ThesisOutput>> GetPgnToAssignSupvAsync(int page, int pageSize, string orderBy, OrderOptions orderOptions, string searchBy, string keyword)
+    {
+        List<string> thesisIds = await _context.ThesisSupervisors.Include(i => i.Thesis)
+            .Where(ts => (ts.Thesis.StatusId == ThesisStatusConsts.Published || ts.Thesis.StatusId == ThesisStatusConsts.InProgress) && ts.Thesis.IsDeleted == false)
+            .Select(s => s.Thesis.Id).ToListAsync();
+
+        IQueryable<Thesis> queryable = _context.Theses.Include(i => i.Lecture)
+            .Where(t => (t.StatusId == ThesisStatusConsts.Published || t.StatusId == ThesisStatusConsts.InProgress) && t.ThesisGroupId != null && t.IsDeleted == false && t.Lecture.IsDeleted == false)
+            .WhereBulkNotContains(thesisIds, t => t.Id);
+
+        queryable = SetSearchExpression(queryable, searchBy, keyword);
+        queryable = SetOrderExpression(queryable, orderBy, orderOptions);
+
+        int n = (page - 1) * pageSize;
+        int totalItemCount = await queryable.CountAsync();
+
+        List<ThesisOutput> onePageOfData = await queryable.Skip(n).Take(pageSize)
+            .Select(s => new ThesisOutput
+            {
+                Id = s.Id,
+                Name = s.Name,
+                MaxStudentNumber = s.MaxStudentNumber,
+                ThesisGroupId = s.ThesisGroupId,
+                Semester = s.Semester,
+                Year = s.Year,
+                Lecturer = new FacultyStaffOutput
+                {
+                    Id = s.Lecture.Id,
+                    Surname = s.Lecture.Surname,
+                    Name = s.Lecture.Name
+                },
+                //Students = _context.ThesisGroupDetails.Include(i => i.Student)
+                //    .Where(gd => gd.StudentThesisGroupId == s.ThesisGroup.Id && gd.IsDeleted == false)
+                //    .Select(gd => new StudentOutput { Id = gd.Student.Id, Surname = gd.Student.Surname, Name = gd.Student.Name })
+                //    .ToList()
+            }).ToListAsync();
+
+        return new Pagination<ThesisOutput>
+        {
+            Page = page,
+            PageSize = pageSize,
+            TotalItemCount = totalItemCount,
+            Items = onePageOfData
+        };
+    }
+
+    public async Task<DataResponse> RemoveAssignSupvAsync(string thesisId, string lecturerId)
+    {
+        ThesisSupervisor thesisSupervisor = await _context.ThesisSupervisors.FindAsync(thesisId);
+        if (thesisSupervisor == null)
+            return new DataResponse
+            {
+                Status = DataResponseStatus.NotFound,
+                Message = "Không tìm thấy thông tin phân công giảng viên này!"
+            };
+
+        if (thesisSupervisor.LecturerId != lecturerId)
+            return new DataResponse
+            {
+                Status = DataResponseStatus.Failed,
+                Message = "Mã giảng viên không khớp!"
+            };
+
+        _context.ThesisSupervisors.Remove(thesisSupervisor);
+        await _context.SaveChangesAsync();
+
+        return new DataResponse
+        {
+            Status = DataResponseStatus.Success,
+            Message = "Hoàn tất hủy phân công!"
+        };
+    }
+
+    public async Task<Pagination<ThesisOutput>> GetPgnOfAssignedSupvAsync(int page, int pageSize, string orderBy, OrderOptions orderOptions, string searchBy, string keyword)
+    {
+        IQueryable<ThesisSupervisor> queryable = _context.ThesisSupervisors
+            .Include(i => i.Thesis).Include(i => i.Thesis.Lecture)
+            .Where(ts => (ts.Thesis.StatusId == ThesisStatusConsts.Published || ts.Thesis.StatusId == ThesisStatusConsts.InProgress) && ts.Thesis.IsDeleted == false && ts.Thesis.Lecture.IsDeleted == false);
+
+        if (!string.IsNullOrEmpty(keyword) && string.IsNullOrEmpty(searchBy))
+        {
+            queryable = queryable.Where(ts => ts.Thesis.Id.Contains(keyword) || ts.Thesis.Name.Contains(keyword) || ts.Thesis.Year.Contains(keyword));
+        }
+
+        if (!string.IsNullOrEmpty(keyword) && !string.IsNullOrEmpty(searchBy))
+        {
+            switch (searchBy)
+            {
+                case "All": queryable = queryable.Where(ts => ts.Thesis.Id.Contains(keyword) || ts.Thesis.Name.Contains(keyword) || ts.Thesis.Year.Contains(keyword)); break;
+                case "Id": queryable = queryable.Where(t => t.Thesis.Id.Contains(keyword)); break;
+                case "Name": queryable = queryable.Where(t => t.Thesis.Name.Contains(keyword)); break;
+                case "Year": queryable = queryable.Where(t => t.Thesis.Year.Contains(keyword)); break;
+                case "LectureName":
+                    {
+                        int lastIndexOf = keyword.Trim(' ').LastIndexOf(" ");
+                        if (lastIndexOf > 0)
+                        {
+                            string name = keyword.Substring(lastIndexOf).Trim(' ');
+                            string surname = keyword.Replace(name, "").Trim(' ');
+                            queryable = queryable.Where(t => t.Thesis.Lecture.Surname.Contains(surname) && t.Thesis.Lecture.Name.Contains(name));
+                        }
+                        else
+                        {
+                            queryable = queryable.Where(t => t.Thesis.Lecture.Name.Contains(keyword));
+                        }
+                        break;
+                    }
+                case "Semester":
+                    {
+                        int semester = 0;
+                        if (int.TryParse(keyword, out semester))
+                            queryable = queryable.Where(t => t.Thesis.Semester == semester);
+                        
+                        break;
+                    }
+            }
+        }
+
+        int n = (page - 1) * pageSize;
+        int totalItemCount = await queryable.CountAsync();
+
+        List<ThesisOutput> onePageOfData = await queryable.Skip(n).Take(pageSize)
+            .Select(s => new ThesisOutput
+            {
+                Id = s.Thesis.Id,
+                Name = s.Thesis.Name,
+                MaxStudentNumber = s.Thesis.MaxStudentNumber,
+                ThesisGroupId = s.Thesis.ThesisGroupId,
+                Semester = s.Thesis.Semester,
+                Year = s.Thesis.Year,
+                Lecturer = new FacultyStaffOutput
+                {
+                    Id = s.Thesis.Lecture.Id,
+                    Surname = s.Thesis.Lecture.Surname,
+                    Name = s.Thesis.Lecture.Name
+                },
+                ThesisSupervisor = _context.ThesisSupervisors.Include(i => i.Lecturer)
+                    .Where(ts => ts.ThesisId == s.Thesis.Id && ts.Lecturer.IsDeleted == false)
+                    .Select(s => new FacultyStaffOutput
+                    {
+                        Id = s.Lecturer.Id,
+                        Surname = s.Lecturer.Surname,
+                        Name = s.Lecturer.Name
+                    }).SingleOrDefault()
+            }).ToListAsync();
+
+        return new Pagination<ThesisOutput>
+        {
+            Page = page,
+            PageSize = pageSize,
+            TotalItemCount = totalItemCount,
+            Items = onePageOfData
         };
     }
 }

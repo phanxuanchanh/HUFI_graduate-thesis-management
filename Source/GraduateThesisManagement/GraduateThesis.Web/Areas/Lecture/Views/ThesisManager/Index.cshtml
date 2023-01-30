@@ -1,18 +1,19 @@
 ﻿@model IEnumerable<ThesisOutput>
 
-@await Component.InvokeAsync("FacultyStaffLayout_Toolbar")
+@await Component.InvokeAsync("FacultyStaffLayout_Toolbar" , new { showCreateButton = false })
 
 @await Component.InvokeAsync("FacultyStaffLayout_StatusArea")
 
 <section class="section">
     <div class="card">
         <div class="card-header">
-            Xem theo: 
-            <a asp-action="GetFinishedList" class="btn btn-sm btn-primary mb-1 me-1">Đã hoàn thành</a>
-            <a asp-action="GetPublishedList" class="btn btn-sm btn-primary mb-1 me-1">Đã công bố</a>
-            <a asp-action="GetApprovedList" class="btn btn-sm btn-success mb-1 me-1">Đã được duyệt</a>
-            <a asp-action="GetRejectedList" class="btn btn-sm btn-danger mb-1 me-1">Bị từ chối duyệt</a>
+            Xem theo:
             <a asp-action="GetPendingList" class="btn btn-sm btn-info mb-1 me-1">Đang chờ duyệt</a>
+            <a asp-action="GetRejectedList" class="btn btn-sm btn-danger mb-1 me-1">Bị từ chối duyệt</a>
+            <a asp-action="GetApprovedList" class="btn btn-sm btn-success mb-1 me-1">Đã được duyệt</a>
+            <a asp-action="GetPublishedList" class="btn btn-sm btn-primary mb-1 me-1">Đã công bố</a>
+            <a asp-action="GetInProgressList" class="btn btn-sm btn-primary mb-1 me-1">Đang thực hiện</a>
+            <a asp-action="GetFinishedList" class="btn btn-sm btn-secondary mb-1 me-1">Đã kết thúc</a>
         </div>
         <div class="card-body">
             <div class="dataTable-wrapper dataTable-loading no-footer sortable searchable fixed-columns">
@@ -53,7 +54,33 @@
                                 <tr>
                                     <td>@count</td>
                                     <td>@thesis.Id</td>
-                                    <td>@thesis.Name</td>
+                                    <td>
+                                        <p>@thesis.Name</p>
+                                        @if (thesis.ThesisStatus.Id == ThesisStatusConsts.Pending)
+                                        {
+                                            <span class="badge bg-info">@thesis.ThesisStatus.Name</span>
+                                        }
+                                        else if (thesis.ThesisStatus.Id == ThesisStatusConsts.Rejected)
+                                        {
+                                            <span class="badge bg-danger">@thesis.ThesisStatus.Name</span>
+                                        }
+                                        else if (thesis.ThesisStatus.Id == ThesisStatusConsts.Approved)
+                                        {
+                                            <span class="badge bg-success">@thesis.ThesisStatus.Name</span>
+                                        }
+                                        else if (thesis.ThesisStatus.Id == ThesisStatusConsts.Published)
+                                        {
+                                            <span class="badge bg-primary">@thesis.ThesisStatus.Name</span>
+                                        }
+                                        else if (thesis.ThesisStatus.Id == ThesisStatusConsts.InProgress)
+                                        {
+                                            <span class="badge bg-primary">@thesis.ThesisStatus.Name</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">@thesis.ThesisStatus.Name</span>
+                                        }
+                                    </td>
                                     <td>@thesis.Lecturer.FullName</td>
                                     <td>@thesis.Year</td>
                                     <td>@thesis.Semester</td>
@@ -61,12 +88,9 @@
                                         <a class="btn btn-success btn-sm" asp-action="Details" asp-route-id="@thesis.Id">
                                             <i class="fas fa-folder"></i> Chi tiết
                                         </a>
-                                        <a class="btn btn-primary btn-sm" asp-action="Edit" asp-route-id="@thesis.Id">
-                                            <i class="fas fa-folder"></i> Sửa
-                                        </a>
                                         <button type="submit" form="delete_@count" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i> Xóa</button>
                                         <form asp-action="BatchDelete" asp-route-id="@thesis.Id" id="delete_@count" method="post">
-                                        </form>      
+                                        </form>
                                     </td>
                                 </tr>
                                 count++;

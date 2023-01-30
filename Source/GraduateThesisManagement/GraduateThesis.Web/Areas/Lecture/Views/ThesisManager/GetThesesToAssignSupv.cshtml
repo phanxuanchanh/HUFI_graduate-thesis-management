@@ -1,39 +1,22 @@
 ﻿@model IEnumerable<ThesisOutput>
 
-<section id="basic-dropdown">
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-body">
-                    <a asp-action="ExportApprovedTheses" class="btn btn-info" type="button">Xuất</a>
-                    <a asp-action="Print" class="btn btn-secondary" type="button">In</a>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
 @await Component.InvokeAsync("FacultyStaffLayout_StatusArea")
 
 <section class="section">
     <div class="card">
         <div class="card-header">
             Xem theo:
-            <a asp-action="GetPendingList" class="btn btn-sm btn-info mb-1 me-1">Đang chờ duyệt</a>
-            <a asp-action="GetRejectedList" class="btn btn-sm btn-danger mb-1 me-1">Bị từ chối duyệt</a>
-            <a asp-action="GetApprovedList" class="btn btn-sm btn-success mb-1 me-1">Đã được duyệt</a>
-            <a asp-action="GetPublishedList" class="btn btn-sm btn-primary mb-1 me-1">Đã công bố</a>
-            <a asp-action="GetInProgressList" class="btn btn-sm btn-primary mb-1 me-1">Đang thực hiện</a>
-            <a asp-action="GetFinishedList" class="btn btn-sm btn-secondary mb-1 me-1">Đã kết thúc</a>
+            <a asp-action="GetThesesToAssignSupv" class="btn btn-sm btn-info mb-1 me-1">Đang chờ phân công</a>
+            <a asp-action="GetAssignedSupvTheses" class="btn btn-sm btn-success mb-1 me-1">Đã phân công</a>
         </div>
         <div class="card-body">
             <div class="dataTable-wrapper dataTable-loading no-footer sortable searchable fixed-columns">
-                @await Component.InvokeAsync("FacultyStaffLayout_PagedSearch", new { action = "GetRejectedList", enableSearchBy = true })
-                <form asp-action="PublishTheses" method="post">
+                @await Component.InvokeAsync("FacultyStaffLayout_PagedSearch", new { action = "GetPublishedList", enableSearchBy = true })
+                <form asp-action="AssignSupervisors" method="post">
                     <div class="dataTable-top">
                         <div class="dataTable-search">
                             <input type="hidden" name="thesisIds" id="thesisIds" value="" />
-                            <button type="submit" class="dataTable-input">Công bố những đề tài đã chọn</button>
+                            <button type="submit" class="dataTable-input">Phân công GV ra đề làm GVHD (đã chọn)</button>
                         </div>
                     </div>
                 </form>
@@ -54,7 +37,7 @@
                                     <a href="#" class="dataTable-sorter">@Html.DisplayNameFor(model => model.Name)</a>
                                 </th>
                                 <th data-sortable="" style="width: 15%;">
-                                    <a href="#" class="dataTable-sorter">@Html.DisplayNameFor(model => model.Lecturer.FullName)</a>
+                                    <a href="#" class="dataTable-sorter">GV ra đề</a>
                                 </th>
                                 <th data-sortable="" style="width: 12%;">
                                     <a href="#" class="dataTable-sorter">@Html.DisplayNameFor(model => model.Year)</a>
@@ -84,9 +67,8 @@
                                     <td>@thesis.Year</td>
                                     <td>@thesis.Semester</td>
                                     <td>
-                                        <button type="submit" form="publish_@count" class="btn btn-success btn-sm"><i class="fas fa-trash"></i> Công bố</button>
-                                        <form asp-action="PublishThesis" asp-route-thesisId="@thesis.Id" id="publish_@count" method="post">
-                                        </form>
+                                        <a asp-action="LoadAssignSupvView" asp-route-thesisId="@thesis.Id" class="btn btn-success btn-sm">
+                                            <i class="fas fa-trash"></i>Phân công</a>
                                     </td>
                                 </tr>
                                 count++;
@@ -94,7 +76,7 @@
                         </tbody>
                     </table>
                 </div>
-                @await Component.InvokeAsync("FacultyStaffLayout_Paged", new { action = "GetRejectedList", enableSearchBy = true })
+                @await Component.InvokeAsync("FacultyStaffLayout_Paged", new { action = "GetPublishedList", enableSearchBy = true })
             </div>
         </div>
     </div>

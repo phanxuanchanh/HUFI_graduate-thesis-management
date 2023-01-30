@@ -63,33 +63,7 @@
                                 <tr>
                                     <td>@count</td>
                                     <td>@thesis.Id</td>
-                                    <td>
-                                        <p>@thesis.Name</p>
-                                        @if (thesis.ThesisStatus.Id == ThesisStatusConsts.Pending)
-                                        {
-                                            <span class="badge bg-info">@thesis.ThesisStatus.Name</span>
-                                        }
-                                        else if (thesis.ThesisStatus.Id == ThesisStatusConsts.Rejected)
-                                        {
-                                            <span class="badge bg-danger">@thesis.ThesisStatus.Name</span>
-                                        }
-                                        else if (thesis.ThesisStatus.Id == ThesisStatusConsts.Approved)
-                                        {
-                                            <span class="badge bg-success">@thesis.ThesisStatus.Name</span>
-                                        }
-                                        else if (thesis.ThesisStatus.Id == ThesisStatusConsts.Published)
-                                        {
-                                            <span class="badge bg-primary">@thesis.ThesisStatus.Name</span>
-                                        }
-                                        else if (thesis.ThesisStatus.Id == ThesisStatusConsts.InProgress)
-                                        {
-                                            <span class="badge bg-primary">@thesis.ThesisStatus.Name</span>
-                                        }
-                                        else
-                                        {
-                                            <span class="badge bg-secondary">@thesis.ThesisStatus.Name</span>
-                                        }
-                                    </td>
+                                    <td>@thesis.Name</td>
                                     <td>@thesis.Year</td>
                                     <td>@thesis.Semester</td>
                                     <td>

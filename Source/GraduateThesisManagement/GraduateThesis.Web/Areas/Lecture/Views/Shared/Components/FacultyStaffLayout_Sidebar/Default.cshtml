@@ -241,13 +241,19 @@
                                 </li>
                             }
 
-                            <li class="submenu-item ">
-                                <a asp-action="GetRejectedList" asp-controller="ThesisManager">Đã phân công</a>
-                            </li>
+                            @if (appPages.Any(p => p.ControllerName == "ThesisManager" && p.ActionName == "GetThesesToAssignSupv"))
+                            {
+                                <li class="submenu-item ">
+                                    <a asp-action="GetThesesToAssignSupv" asp-controller="ThesisManager">Phân công GVHD</a>
+                                </li>
+                            }
 
-                            <li class="submenu-item ">
-                                <a asp-action="GetRejectedList" asp-controller="ThesisManager">Đã công bố</a>
-                            </li>
+                            @if (appPages.Any(p => p.ControllerName == "ThesisManager" && p.ActionName == "GetRejectedList"))
+                            {
+                                <li class="submenu-item ">
+                                    <a asp-action="GetRejectedList" asp-controller="ThesisManager">Phân công GVPB</a>
+                                </li>
+                            }
 
                             @if (appPages.Any(p => p.ControllerName == "ThesisManager" && p.ActionName == "Import"))
                             {

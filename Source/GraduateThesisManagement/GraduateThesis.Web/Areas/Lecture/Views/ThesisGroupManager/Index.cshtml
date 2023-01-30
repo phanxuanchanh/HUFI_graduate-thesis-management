@@ -10,21 +10,27 @@
         </div>
         <div class="card-body">
             <div class="dataTable-wrapper dataTable-loading no-footer sortable searchable fixed-columns">
-                @await Component.InvokeAsync("FacultyStaffLayout_PagedSearch")
+                @await Component.InvokeAsync("FacultyStaffLayout_PagedSearch", new { enableSearchBy = true })
                 <div class="dataTable-container">
                     <table class="table table-striped dataTable-table" id="table1">
                         <thead>
                             <tr>
-                                <th data-sortable="" style="width: 10%;">
+                                <th data-sortable="" style="width: 8%;">
                                     <a href="#" class="dataTable-sorter">STT</a>
                                 </th>
-                                <th data-sortable="" style="width: 20%;">
+                                <th data-sortable="" style="width: 14%;">
                                     <a href="#" class="dataTable-sorter">@Html.DisplayNameFor(model => model.Id)</a>
                                 </th>
-                                <th data-sortable="" style="width: 40%;">
-                                    <a href="#" class="dataTable-sorter">@Html.DisplayNameFor(model => model.Name)</a>
+                                <th data-sortable="" style="width: 15%;">
+                                    <a href="#" class="dataTable-sorter">@Html.DisplayNameFor(model => model.Thesis.Name)</a>
                                 </th>
-                                <th data-sortable="" style="width: 30%;">
+                                <th data-sortable="" style="width: 12%;">
+                                    <a href="#" class="dataTable-sorter">@Html.DisplayNameFor(model => model.Thesis.Lecturer.Name)</a>
+                                </th>
+                                <th data-sortable="" style="width: 26%;">
+                                    <a href="#" class="dataTable-sorter">@Html.DisplayNameFor(model => model.Students)</a>
+                                </th>
+                                <th data-sortable="" style="width: 15%;">
                                     <a href="#" class="dataTable-sorter">Công cụ</a>
                                 </th>
                             </tr>
@@ -38,7 +44,14 @@
                                 <tr>
                                     <td>@count</td>
                                     <td>@thesisGroup.Id</td>
-                                    <td>@thesisGroup.Name</td>
+                                    <td>@thesisGroup.Thesis.Name</td>
+                                    <td>@thesisGroup.Thesis.Lecturer.FullName</td>
+                                    <td>
+                                        @foreach (StudentOutput student in thesisGroup.Students)
+                                        {
+                                            <p>@student.Id - @student.FullName</p>
+                                        }
+                                    </td>
                                     <td>
                                         <a class="btn btn-success btn-sm" asp-action="Details" asp-route-id="@thesisGroup.Id">
                                             <i class="fas fa-folder"></i> Chi tiết
@@ -56,7 +69,7 @@
                         </tbody>
                     </table>
                 </div>
-                @await Component.InvokeAsync("FacultyStaffLayout_Paged")
+                @await Component.InvokeAsync("FacultyStaffLayout_Paged", new { enableSearchBy = true })
             </div>
         </div>
     </div>

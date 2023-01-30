@@ -13,10 +13,6 @@
   [TopicId] [varchar](50) NOT NULL DEFAULT ('rkrKd_KtQJemI'),
   [TrainingFormId] [varchar](50) NULL,
   [TrainingLevelId] [varchar](50) NOT NULL DEFAULT ('sHUaEg-qBhVh'),
-  [IsApproved] [bit] NOT NULL,
-  [IsNew] [bit] NOT NULL,
-  [InProgess] [bit] NOT NULL,
-  [Finished] [bit] NOT NULL,
   [SpecializationId] [varchar](50) NOT NULL,
   [DateFrom] [datetime] NULL,
   [DateTo] [datetime] NULL,
@@ -27,8 +23,7 @@
   [LectureId] [varchar](50) NOT NULL,
   [Semester] [int] NOT NULL,
   [ThesisGroupId] [varchar](50) NULL,
-  [IsRejected] [bit] NOT NULL,
-  [IsPublished] [bit] NOT NULL,
+  [StatusId] [int] NOT NULL DEFAULT (1),
   CONSTRAINT [PK_Thesis_ID] PRIMARY KEY CLUSTERED ([ID])
 )
 ON [PRIMARY]
@@ -45,6 +40,10 @@ GO
 
 ALTER TABLE [dbo].[Theses]
   ADD CONSTRAINT [FK_Theses_ThesisGroups_ID] FOREIGN KEY ([ThesisGroupId]) REFERENCES [dbo].[ThesisGroups] ([ID]) ON DELETE SET NULL
+GO
+
+ALTER TABLE [dbo].[Theses]
+  ADD CONSTRAINT [FK_Theses_ThesisStatus_Id] FOREIGN KEY ([StatusId]) REFERENCES [dbo].[ThesisStatus] ([Id])
 GO
 
 ALTER TABLE [dbo].[Theses]

@@ -19,7 +19,7 @@
                 </div>
             </div>
             <div class="dataTable-wrapper dataTable-loading no-footer sortable searchable fixed-columns">
-                @await Component.InvokeAsync("AdminLayout_PagedSearch", new { action = "GrantToPage", enableOrder = false })
+                @await Component.InvokeAsync("AdminLayout_PagedSearch", new { action = "GrantToUser", enableOrder = false })
                 <div class="dataTable-container">
                     <table class="table table-striped dataTable-table" id="table1">
                         <thead>
@@ -65,7 +65,7 @@
                         </tbody>
                     </table>
                 </div>
-                @await Component.InvokeAsync("AdminLayout_Paged", new { action = "GrantToPage", enableOrder = false })
+                @await Component.InvokeAsync("AdminLayout_Paged", new { action = "GrantToUser", enableOrder = false })
             </div>
         </div>
     </div>
