@@ -178,7 +178,13 @@
                             @if (appPages.Any(p => p.ControllerName == "CouncilManager" && p.ActionName == "Index"))
                             {
                                 <li class="submenu-item ">
-                                    <a asp-action="Index" asp-controller="CouncilManager">Danh sách</a>
+                                    <a asp-action="Index" asp-controller="CouncilManager">Danh sách hội đồng</a>
+                                </li>
+                            }
+                            @if (appPages.Any(p => p.ControllerName == "ThesisCommitteeManager" && p.ActionName == "Index"))
+                            {
+                                <li class="submenu-item ">
+                                    <a asp-action="Index" asp-controller="ThesisCommitteeManager">Danh sách tiểu ban</a>
                                 </li>
                             }
 
