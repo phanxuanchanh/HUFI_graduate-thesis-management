@@ -767,19 +767,16 @@ public partial class HufiGraduateThesisContext : DbContext
             entity.Property(e => e.Attitudes).HasColumnType("ntext");
             entity.Property(e => e.Conclusions).HasMaxLength(100);
             entity.Property(e => e.Contents).HasColumnType("ntext");
-            entity.Property(e => e.CreatedAt).HasColumnType("datetime");
-            entity.Property(e => e.DeletedAt).HasColumnType("datetime");
-            entity.Property(e => e.LectureId)
+            entity.Property(e => e.LecturerId)
                 .IsRequired()
                 .HasMaxLength(50)
                 .IsUnicode(false);
             entity.Property(e => e.Notes).HasMaxLength(200);
             entity.Property(e => e.Point).HasColumnType("decimal(5, 2)");
             entity.Property(e => e.Results).HasColumnType("ntext");
-            entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
-            entity.HasOne(d => d.Lecture).WithMany(p => p.ThesisSupervisors)
-                .HasForeignKey(d => d.LectureId)
+            entity.HasOne(d => d.Lecturer).WithMany(p => p.ThesisSupervisors)
+                .HasForeignKey(d => d.LecturerId)
                 .HasConstraintName("FK_ThesisSupervisors_FacultyStaffs_ID");
 
             entity.HasOne(d => d.Thesis).WithOne(p => p.ThesisSupervisor)
