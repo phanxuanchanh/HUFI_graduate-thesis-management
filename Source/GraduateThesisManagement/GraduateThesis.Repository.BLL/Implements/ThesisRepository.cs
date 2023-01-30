@@ -296,18 +296,20 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
 
         thesis.CriticalLecturer = await _context.CounterArgumentResults.Include(i => i.Lecturer)
             .Where(c => c.ThesisId == id && c.Lecturer.IsDeleted == false)
-            .Select(s => new FacultyStaffOutput { 
-                Id = s.Lecturer.Id, 
-                Surname = s.Lecturer.Surname, 
+            .Select(s => new FacultyStaffOutput
+            {
+                Id = s.Lecturer.Id,
+                Surname = s.Lecturer.Surname,
                 Name = s.Lecturer.Name,
                 Email = s.Lecturer.Email
             }).SingleOrDefaultAsync();
 
         thesis.ThesisSupervisor = await _context.ThesisSupervisors.Include(i => i.Lecturer)
             .Where(ts => ts.ThesisId == id && ts.Lecturer.IsDeleted == false)
-            .Select(s => new FacultyStaffOutput { 
-                Id = s.Lecturer.Id, 
-                Surname = s.Lecturer.Surname, 
+            .Select(s => new FacultyStaffOutput
+            {
+                Id = s.Lecturer.Id,
+                Surname = s.Lecturer.Surname,
                 Name = s.Lecturer.Name,
                 Email = s.Lecturer.Email
             }).SingleOrDefaultAsync();
@@ -467,7 +469,7 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
                 Message = "Không tìm thấy đề tài có mã này!"
             };
 
-        if(thesis.StatusId >= ThesisStatusConsts.Approved)
+        if (thesis.StatusId >= ThesisStatusConsts.Approved)
             return new DataResponse
             {
                 Status = DataResponseStatus.Failed,
@@ -506,7 +508,7 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
                 Message = "Không tìm thấy đề tài có mã này!"
             };
 
-        if(thesis.StatusId >= ThesisStatusConsts.Approved)
+        if (thesis.StatusId >= ThesisStatusConsts.Approved)
             return new DataResponse
             {
                 Status = DataResponseStatus.Failed,
@@ -686,6 +688,8 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
                 Name = s.Name,
                 MaxStudentNumber = s.MaxStudentNumber,
                 ThesisGroupId = s.ThesisGroupId,
+                Semester = s.Semester,
+                Year = s.Year,
                 Lecturer = new FacultyStaffOutput
                 {
                     Id = s.Lecture.Id,
@@ -804,15 +808,16 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
           .AnyAsync(t => t.Id == thesisId && t.IsDeleted == false);
 
         if (!checkThesisExists)
-            return new DataResponse { 
-                Status = DataResponseStatus.NotFound, 
-                Message = "Không tìm thấy đề tài này!" 
+            return new DataResponse
+            {
+                Status = DataResponseStatus.NotFound,
+                Message = "Không tìm thấy đề tài này!"
             };
 
         bool checkSupvExists = await _context.FacultyStaffs
             .AnyAsync(f => f.Id == lecturerId && f.IsDeleted == false);
 
-        if(!checkSupvExists)
+        if (!checkSupvExists)
             return new DataResponse
             {
                 Status = DataResponseStatus.NotFound,
@@ -849,7 +854,7 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
             .ToListAsync();
 
         List<ThesisSupervisor> thesisSupervisors = new List<ThesisSupervisor>();
-        foreach(Thesis thesis in theses)
+        foreach (Thesis thesis in theses)
         {
             thesisSupervisors.Add(new ThesisSupervisor { ThesisId = thesis.Id, LecturerId = thesis.LectureId });
         }
@@ -857,9 +862,10 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
         await _context.ThesisSupervisors.AddRangeAsync(thesisSupervisors);
         await _context.SaveChangesAsync();
 
-        return new DataResponse { 
-            Status = DataResponseStatus.Success, 
-            Message = "Hoàn tất phân công giảng viên hướng dẫn cho những đề tài đã chọn!" 
+        return new DataResponse
+        {
+            Status = DataResponseStatus.Success,
+            Message = "Hoàn tất phân công giảng viên hướng dẫn cho những đề tài đã chọn!"
         };
     }
 
@@ -867,9 +873,10 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
     {
         Thesis thesis = await _context.Theses.Where(t => t.Id == thesisId && t.IsDeleted == false).SingleOrDefaultAsync();
         if (thesis == null)
-            return new DataResponse { 
-                Status = DataResponseStatus.NotFound, 
-                Message = "Không tìm thấy đề tài này!" 
+            return new DataResponse
+            {
+                Status = DataResponseStatus.NotFound,
+                Message = "Không tìm thấy đề tài này!"
             };
 
         bool checkAsgmtExists = await _context.ThesisSupervisors
@@ -891,9 +898,10 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
         await _context.ThesisSupervisors.AddAsync(thesisSupervisor);
         await _context.SaveChangesAsync();
 
-        return new DataResponse { 
-            Status = DataResponseStatus.Success, 
-            Message = "Phân công giảng viên cho đề tài thành công!" 
+        return new DataResponse
+        {
+            Status = DataResponseStatus.Success,
+            Message = "Phân công giảng viên cho đề tài thành công!"
         };
 
     }
@@ -927,9 +935,10 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
             .AnyAsync(t => t.Id == thesisId && t.IsDeleted == false);
 
         if (!checkExists)
-            return new DataResponse { 
-                Status = DataResponseStatus.NotFound, 
-                Message = "Không có đề tài này!" 
+            return new DataResponse
+            {
+                Status = DataResponseStatus.NotFound,
+                Message = "Không có đề tài này!"
             };
 
         bool checkSupervisorExists = await _context.ThesisSupervisors
@@ -1343,14 +1352,14 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
                 Message = "Không tìm thấy đề tài có mã này!"
             };
 
-        if(thesis.StatusId < ThesisStatusConsts.Approved)
+        if (thesis.StatusId < ThesisStatusConsts.Approved)
             return new DataResponse
             {
                 Status = DataResponseStatus.Failed,
                 Message = "Không thể công bố đề tài vì đề tài chưa được duyệt!"
             };
 
-        if(thesis.StatusId >= ThesisStatusConsts.InProgress)
+        if (thesis.StatusId >= ThesisStatusConsts.InProgress)
             return new DataResponse
             {
                 Status = DataResponseStatus.Failed,
@@ -1395,14 +1404,18 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
                 Message = "Không tìm thấy đề tài có mã này!"
             };
 
-        if(thesis.StatusId != ThesisStatusConsts.Published)
+        if (thesis.StatusId != ThesisStatusConsts.Published)
             return new DataResponse
             {
                 Status = DataResponseStatus.Failed,
                 Message = "Không thể ngừng công bố khi đề tài chưa công bố!"
             };
 
-        thesis.StatusId = ThesisStatusConsts.InProgress;
+        if (thesis.ThesisGroupId == null)
+            thesis.StatusId = ThesisStatusConsts.Finished;
+        else
+            thesis.StatusId = ThesisStatusConsts.InProgress;
+
         await _context.SaveChangesAsync();
 
         return new DataResponse
@@ -1418,7 +1431,14 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
             .Where(t => t.StatusId == ThesisStatusConsts.Published && t.IsDeleted == false)
             .WhereBulkContains(thesisIds, s => s.Id).ToListAsync();
 
-        theses.ForEach((t) => { t.StatusId = ThesisStatusConsts.InProgress; });
+        theses.ForEach((t) =>
+        {
+            if (t.ThesisGroupId == null)
+                t.StatusId = ThesisStatusConsts.Finished;
+            else
+                t.StatusId = ThesisStatusConsts.InProgress;
+        });
+
         await _context.SaveChangesAsync();
 
         return new DataResponse
@@ -1571,7 +1591,7 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
                         int semester = 0;
                         if (int.TryParse(keyword, out semester))
                             queryable = queryable.Where(t => t.Thesis.Semester == semester);
-                        
+
                         break;
                     }
             }

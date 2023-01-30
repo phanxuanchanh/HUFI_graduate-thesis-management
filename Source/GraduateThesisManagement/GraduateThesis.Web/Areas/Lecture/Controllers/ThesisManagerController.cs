@@ -800,6 +800,26 @@ public class ThesisManagerController : WebControllerBase<IThesisRepository, Thes
         return View();
     }
 
+    [Route("get-assigned-cleturer-theses")]
+    [HttpGet]
+    [PageName(Name = "Danh sách đề tài đã phân công GVPB")]
+    public async Task<IActionResult> GetAssignedCLectTheses(int page = 1, int pageSize = 10, string orderBy = "CreatedAt", string orderOptions = "DESC", string searchBy = "All", string keyword = "")
+    {
+        OrderOptions orderOpts = (orderOptions == "ASC") ? OrderOptions.ASC : OrderOptions.DESC;
+        Pagination<ThesisOutput> pagination = await _thesisRepository.GetPgnOfAssignedCLectAsync(page, pageSize, orderBy, orderOpts, searchBy, keyword);
+        StaticPagedList<ThesisOutput> pagedList = pagination.ToStaticPagedList();
+
+        ViewData["OrderByProperties"] = SetOrderByProperties();
+        ViewData["SearchByProperties"] = SetSearchByProperties();
+        ViewData["PagedList"] = pagedList;
+        ViewData["OrderBy"] = orderBy;
+        ViewData["OrderOptions"] = orderOptions;
+        ViewData["SearchBy"] = searchBy;
+        ViewData["Keyword"] = keyword;
+
+        return View();
+    }
+
     [Route("assign-critical-lecturer/{thesisId}")]
     [HttpGet]
     [PageName(Name = "Phân công GVPB đề tài khóa luận")]
