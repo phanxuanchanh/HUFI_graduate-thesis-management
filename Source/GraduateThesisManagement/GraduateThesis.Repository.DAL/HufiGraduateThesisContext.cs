@@ -633,9 +633,7 @@ public partial class HufiGraduateThesisContext : DbContext
                 .IsUnicode(false);
             entity.Property(e => e.CreatedAt).HasColumnType("datetime");
             entity.Property(e => e.DeletedAt).HasColumnType("datetime");
-            entity.Property(e => e.Description)
-                .IsRequired()
-                .HasColumnType("ntext");
+            entity.Property(e => e.Description).HasColumnType("ntext");
             entity.Property(e => e.Name)
                 .IsRequired()
                 .HasMaxLength(100);

@@ -10,7 +10,7 @@
             <a asp-action="GetAssignedSupvTheses" class="btn btn-sm btn-success mb-1 me-1">Đã phân công</a>
         </div>
         <div class="card-body">
-            <div class="dataTable-wrapper dataTable-loading no-footer sortable searchable fixed-columns">
+            <div class="dataTable-wrapper dataTable-loading no-footer sortable searchable">
                 @await Component.InvokeAsync("FacultyStaffLayout_PagedSearch", new { action = "GetPublishedList", enableSearchBy = true })
                 <div class="dataTable-container">
                     <table class="table table-striped dataTable-table" id="table1">
@@ -29,7 +29,7 @@
                                     <a href="#" class="dataTable-sorter">GV ra đề</a>
                                 </th>
                                 <th data-sortable="" style="width: 15%;">
-                                    <a href="#" class="dataTable-sorter">GVHD</a>
+                                    <a href="#" class="dataTable-sorter">GVPB</a>
                                 </th>
                                 <th data-sortable="" style="width: 15%;">
                                     <a href="#" class="dataTable-sorter">Công cụ</a>
@@ -47,7 +47,7 @@
                                     <td>@thesis.Id</td>
                                     <td>@thesis.Name</td>
                                     <td>@thesis.Lecturer.FullName</td>
-                                    <td>@thesis.ThesisSupervisor.FullName</td>
+                                    <td>@thesis.CriticalLecturer.FullName</td>
                                     <td>
                                         <a asp-action="LoadAssignSupvView" asp-route-thesisId="@thesis.Id" class="btn btn-success btn-sm">
                                             <i class="fas fa-trash"></i>Xem phân công
