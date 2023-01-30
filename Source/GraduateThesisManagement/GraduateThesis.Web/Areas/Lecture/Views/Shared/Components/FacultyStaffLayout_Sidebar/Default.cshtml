@@ -235,10 +235,10 @@
                                 </li>
                             }
 
-                            @if (appPages.Any(p => p.ControllerName == "ThesisManager" && p.ActionName == "GetRejectedList"))
+                            @if (appPages.Any(p => p.ControllerName == "ThesisManager" && p.ActionName == "GetThesesToAssignSupv"))
                             {
                                 <li class="submenu-item ">
-                                    <a asp-action="GetRejectedList" asp-controller="ThesisManager">Phân công GVHD</a>
+                                    <a asp-action="GetThesesToAssignSupv" asp-controller="ThesisManager">Phân công GVHD</a>
                                 </li>
                             }
 

@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using MiniExcelLibs;
+using NPOI.SS.Formula.Functions;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -295,13 +296,21 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
 
         thesis.CriticalLecturer = await _context.CounterArgumentResults.Include(i => i.Lecture)
             .Where(c => c.ThesisId == id && c.IsDeleted == false)
-            .Select(s => new FacultyStaffOutput { Id = s.Lecture.Id, Surname = s.Lecture.Surname, Name = s.Lecture.Name })
-            .SingleOrDefaultAsync();
+            .Select(s => new FacultyStaffOutput { 
+                Id = s.Lecture.Id, 
+                Surname = s.Lecture.Surname, 
+                Name = s.Lecture.Name,
+                Email = s.Lecture.Email
+            }).SingleOrDefaultAsync();
 
-        thesis.ThesisSupervisor = await _context.ThesisSupervisors.Include(i => i.Lecture)
-            .Where(t => t.ThesisId == id && t.IsDeleted == false)
-            .Select(s => new FacultyStaffOutput { Id = s.Lecture.Id, Surname = s.Lecture.Surname, Name = s.Lecture.Name })
-            .SingleOrDefaultAsync();
+        thesis.ThesisSupervisor = await _context.ThesisSupervisors.Include(i => i.Lecturer)
+            .Where(ts => ts.ThesisId == id && ts.Lecturer.IsDeleted == false)
+            .Select(s => new FacultyStaffOutput { 
+                Id = s.Lecturer.Id, 
+                Surname = s.Lecturer.Surname, 
+                Name = s.Lecturer.Name,
+                Email = s.Lecturer.Email
+            }).SingleOrDefaultAsync();
 
         return thesis;
     }
@@ -789,18 +798,41 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
         };
     }
 
-    public async Task<DataResponse> AssignSupervisorAsync(string thesisId, string lectureId)
+    public async Task<DataResponse> AssignSupervisorAsync(string thesisId, string lecturerId)
     {
-        bool checkExists = await _context.Theses
+        bool checkThesisExists = await _context.Theses
           .AnyAsync(t => t.Id == thesisId && t.IsDeleted == false);
 
-        if (!checkExists)
-            return new DataResponse { Status = DataResponseStatus.NotFound, Message = "Không có đề tài này!" };
+        if (!checkThesisExists)
+            return new DataResponse { 
+                Status = DataResponseStatus.NotFound, 
+                Message = "Không tìm thấy đề tài này!" 
+            };
+
+        bool checkSupvExists = await _context.FacultyStaffs
+            .AnyAsync(f => f.Id == lecturerId && f.IsDeleted == false);
+
+        if(!checkSupvExists)
+            return new DataResponse
+            {
+                Status = DataResponseStatus.NotFound,
+                Message = "Không tìm thấy giảng viên này!"
+            };
+
+        bool checkAsgmtExists = await _context.ThesisSupervisors
+            .AnyAsync(ts => ts.ThesisId == thesisId);
+
+        if (checkAsgmtExists)
+            return new DataResponse
+            {
+                Status = DataResponseStatus.AlreadyExists,
+                Message = "Đề tài này đã được phân công, cần hủy phân công hiện tại trước khi phân công lại!"
+            };
 
         ThesisSupervisor thesisSupervisor = new ThesisSupervisor
         {
             ThesisId = thesisId,
-            LectureId = lectureId
+            LecturerId = lecturerId
         };
 
         await _context.ThesisSupervisors.AddAsync(thesisSupervisor);
@@ -809,57 +841,60 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
         return new DataResponse { Status = DataResponseStatus.Success, Message = "Phân công giảng viên cho đề tài thành công!" };
     }
 
-    public async Task<DataResponse> AssignSupervisorsAsync()
+    public async Task<DataResponse> AssignSupervisorsAsync(string[] thesisIds)
     {
-        List<string> thesisId = await _context.ThesisSupervisors.Include(i => i.Thesis)
-            .Where(t => t.IsDeleted == false && t.Thesis.IsDeleted == false)
-            .Where(gd => gd.IsCompleted == true).Select(gd => gd.ThesisId)
-               .ToListAsync();
+        List<Thesis> theses = await _context.Theses.Include(i => i.Lecture)
+            .Where(t => t.IsDeleted == false && t.Lecture.IsDeleted == false)
+            .WhereBulkContains(thesisIds, t => t.Id)
+            .ToListAsync();
 
-        List<Thesis> theses = await _context.Theses
-           .Where(t => t.IsDeleted == false).
-            WhereBulkNotContains(thesisId, s => s.Id)
-             .ToListAsync();
-
-        foreach (var thesis in theses)
+        List<ThesisSupervisor> thesisSupervisors = new List<ThesisSupervisor>();
+        foreach(Thesis thesis in theses)
         {
-            ThesisSupervisor thesisSupervisor = new ThesisSupervisor
-            {
-                LectureId = thesis.LectureId,
-                ThesisId = thesis.ThesisSupervisor.ThesisId
-            };
-            await _context.ThesisSupervisors.AddAsync(thesisSupervisor);
+            thesisSupervisors.Add(new ThesisSupervisor { ThesisId = thesis.Id, LecturerId = thesis.LectureId });
         }
 
+        await _context.ThesisSupervisors.AddRangeAsync(thesisSupervisors);
         await _context.SaveChangesAsync();
 
-        return new DataResponse { Status = DataResponseStatus.Success, Message = "Phân công giảng viên cho đề tài thành công!" };
-
+        return new DataResponse { 
+            Status = DataResponseStatus.Success, 
+            Message = "Hoàn tất phân công giảng viên hướng dẫn cho những đề tài đã chọn!" 
+        };
     }
 
     public async Task<DataResponse> AssignSupervisorAsync(string thesisId)
     {
         Thesis thesis = await _context.Theses.Where(t => t.Id == thesisId && t.IsDeleted == false).SingleOrDefaultAsync();
-
         if (thesis == null)
-            return new DataResponse { Status = DataResponseStatus.NotFound, Message = "Không có đề tài này!" };
+            return new DataResponse { 
+                Status = DataResponseStatus.NotFound, 
+                Message = "Không tìm thấy đề tài này!" 
+            };
 
-        bool checkExists = await _context.ThesisSupervisors
-        .AnyAsync(t => t.ThesisId == thesisId && t.LectureId == thesis.LectureId);
+        bool checkAsgmtExists = await _context.ThesisSupervisors
+            .AnyAsync(ts => ts.ThesisId == thesisId);
 
-        if (checkExists)
-            return new DataResponse { Status = DataResponseStatus.AlreadyExists, Message = "Đề tài này đã được phân công!" };
+        if (checkAsgmtExists)
+            return new DataResponse
+            {
+                Status = DataResponseStatus.AlreadyExists,
+                Message = "Đề tài này đã được phân công, cần hủy phân công hiện tại trước khi phân công lại!"
+            };
 
         ThesisSupervisor thesisSupervisor = new ThesisSupervisor
         {
             ThesisId = thesisId,
-            LectureId = thesis.LectureId
+            LecturerId = thesis.LectureId
         };
 
         await _context.ThesisSupervisors.AddAsync(thesisSupervisor);
         await _context.SaveChangesAsync();
 
-        return new DataResponse { Status = DataResponseStatus.Success, Message = "Phân công giảng viên cho đề tài thành công!" };
+        return new DataResponse { 
+            Status = DataResponseStatus.Success, 
+            Message = "Phân công giảng viên cho đề tài thành công!" 
+        };
 
     }
 
@@ -1412,6 +1447,161 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
                     Surname = s.Lecture.Surname,
                     Name = s.Lecture.Name
                 }
+            }).ToListAsync();
+
+        return new Pagination<ThesisOutput>
+        {
+            Page = page,
+            PageSize = pageSize,
+            TotalItemCount = totalItemCount,
+            Items = onePageOfData
+        };
+    }
+
+    public async Task<Pagination<ThesisOutput>> GetPgnToAssignSupvAsync(int page, int pageSize, string orderBy, OrderOptions orderOptions, string searchBy, string keyword)
+    {
+        List<string> thesisIds = await _context.ThesisSupervisors.Include(i => i.Thesis)
+            .Where(ts => (ts.Thesis.StatusId == ThesisStatusConsts.Published || ts.Thesis.StatusId == ThesisStatusConsts.InProgress) && ts.Thesis.IsDeleted == false)
+            .Select(s => s.Thesis.Id).ToListAsync();
+
+        IQueryable<Thesis> queryable = _context.Theses.Include(i => i.Lecture)
+            .Where(t => (t.StatusId == ThesisStatusConsts.Published || t.StatusId == ThesisStatusConsts.InProgress) && t.ThesisGroupId != null && t.IsDeleted == false && t.Lecture.IsDeleted == false)
+            .WhereBulkNotContains(thesisIds, t => t.Id);
+
+        queryable = SetSearchExpression(queryable, searchBy, keyword);
+        queryable = SetOrderExpression(queryable, orderBy, orderOptions);
+
+        int n = (page - 1) * pageSize;
+        int totalItemCount = await queryable.CountAsync();
+
+        List<ThesisOutput> onePageOfData = await queryable.Skip(n).Take(pageSize)
+            .Select(s => new ThesisOutput
+            {
+                Id = s.Id,
+                Name = s.Name,
+                MaxStudentNumber = s.MaxStudentNumber,
+                ThesisGroupId = s.ThesisGroupId,
+                Semester = s.Semester,
+                Year = s.Year,
+                Lecturer = new FacultyStaffOutput
+                {
+                    Id = s.Lecture.Id,
+                    Surname = s.Lecture.Surname,
+                    Name = s.Lecture.Name
+                },
+                //Students = _context.ThesisGroupDetails.Include(i => i.Student)
+                //    .Where(gd => gd.StudentThesisGroupId == s.ThesisGroup.Id && gd.IsDeleted == false)
+                //    .Select(gd => new StudentOutput { Id = gd.Student.Id, Surname = gd.Student.Surname, Name = gd.Student.Name })
+                //    .ToList()
+            }).ToListAsync();
+
+        return new Pagination<ThesisOutput>
+        {
+            Page = page,
+            PageSize = pageSize,
+            TotalItemCount = totalItemCount,
+            Items = onePageOfData
+        };
+    }
+
+    public async Task<DataResponse> RemoveAssignSupvAsync(string thesisId, string lecturerId)
+    {
+        ThesisSupervisor thesisSupervisor = await _context.ThesisSupervisors.FindAsync(thesisId);
+        if (thesisSupervisor == null)
+            return new DataResponse
+            {
+                Status = DataResponseStatus.NotFound,
+                Message = "Không tìm thấy thông tin phân công giảng viên này!"
+            };
+
+        if (thesisSupervisor.LecturerId != lecturerId)
+            return new DataResponse
+            {
+                Status = DataResponseStatus.Failed,
+                Message = "Mã giảng viên không khớp!"
+            };
+
+        _context.ThesisSupervisors.Remove(thesisSupervisor);
+        await _context.SaveChangesAsync();
+
+        return new DataResponse
+        {
+            Status = DataResponseStatus.Success,
+            Message = "Hoàn tất hủy phân công!"
+        };
+    }
+
+    public async Task<Pagination<ThesisOutput>> GetPgnOfAssignedSupvAsync(int page, int pageSize, string orderBy, OrderOptions orderOptions, string searchBy, string keyword)
+    {
+        IQueryable<ThesisSupervisor> queryable = _context.ThesisSupervisors
+            .Include(i => i.Thesis).Include(i => i.Thesis.Lecture)
+            .Where(ts => (ts.Thesis.StatusId == ThesisStatusConsts.Published || ts.Thesis.StatusId == ThesisStatusConsts.InProgress) && ts.Thesis.IsDeleted == false && ts.Thesis.Lecture.IsDeleted == false);
+
+        if (!string.IsNullOrEmpty(keyword) && string.IsNullOrEmpty(searchBy))
+        {
+            queryable = queryable.Where(ts => ts.Thesis.Id.Contains(keyword) || ts.Thesis.Name.Contains(keyword) || ts.Thesis.Year.Contains(keyword));
+        }
+
+        if (!string.IsNullOrEmpty(keyword) && !string.IsNullOrEmpty(searchBy))
+        {
+            switch (searchBy)
+            {
+                case "All": queryable = queryable.Where(ts => ts.Thesis.Id.Contains(keyword) || ts.Thesis.Name.Contains(keyword) || ts.Thesis.Year.Contains(keyword)); break;
+                case "Id": queryable = queryable.Where(t => t.Thesis.Id.Contains(keyword)); break;
+                case "Name": queryable = queryable.Where(t => t.Thesis.Name.Contains(keyword)); break;
+                case "Year": queryable = queryable.Where(t => t.Thesis.Year.Contains(keyword)); break;
+                case "LectureName":
+                    {
+                        int lastIndexOf = keyword.Trim(' ').LastIndexOf(" ");
+                        if (lastIndexOf > 0)
+                        {
+                            string name = keyword.Substring(lastIndexOf).Trim(' ');
+                            string surname = keyword.Replace(name, "").Trim(' ');
+                            queryable = queryable.Where(t => t.Thesis.Lecture.Surname.Contains(surname) && t.Thesis.Lecture.Name.Contains(name));
+                        }
+                        else
+                        {
+                            queryable = queryable.Where(t => t.Thesis.Lecture.Name.Contains(keyword));
+                        }
+                        break;
+                    }
+                case "Semester":
+                    {
+                        int semester = 0;
+                        if (int.TryParse(keyword, out semester))
+                            queryable = queryable.Where(t => t.Thesis.Semester == semester);
+                        
+                        break;
+                    }
+            }
+        }
+
+        int n = (page - 1) * pageSize;
+        int totalItemCount = await queryable.CountAsync();
+
+        List<ThesisOutput> onePageOfData = await queryable.Skip(n).Take(pageSize)
+            .Select(s => new ThesisOutput
+            {
+                Id = s.Thesis.Id,
+                Name = s.Thesis.Name,
+                MaxStudentNumber = s.Thesis.MaxStudentNumber,
+                ThesisGroupId = s.Thesis.ThesisGroupId,
+                Semester = s.Thesis.Semester,
+                Year = s.Thesis.Year,
+                Lecturer = new FacultyStaffOutput
+                {
+                    Id = s.Thesis.Lecture.Id,
+                    Surname = s.Thesis.Lecture.Surname,
+                    Name = s.Thesis.Lecture.Name
+                },
+                ThesisSupervisor = _context.ThesisSupervisors.Include(i => i.Lecturer)
+                    .Where(ts => ts.ThesisId == s.Thesis.Id && ts.Lecturer.IsDeleted == false)
+                    .Select(s => new FacultyStaffOutput
+                    {
+                        Id = s.Lecturer.Id,
+                        Surname = s.Lecturer.Surname,
+                        Name = s.Lecturer.Name
+                    }).SingleOrDefault()
             }).ToListAsync();
 
         return new Pagination<ThesisOutput>
