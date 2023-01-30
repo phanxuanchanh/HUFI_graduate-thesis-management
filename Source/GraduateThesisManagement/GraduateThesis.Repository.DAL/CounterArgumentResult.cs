@@ -7,7 +7,7 @@ public partial class CounterArgumentResult
 {
     public string ThesisId { get; set; }
 
-    public string LectureId { get; set; }
+    public string LecturerId { get; set; }
 
     public string Contents { get; set; }
 
@@ -21,21 +21,13 @@ public partial class CounterArgumentResult
 
     public string Conclusions { get; set; }
 
-    public string Questions { get; set; }
+    public string Answers { get; set; }
 
     public decimal? Point { get; set; }
 
     public bool IsCompleted { get; set; }
 
-    public DateTime? CreatedAt { get; set; }
-
-    public DateTime? UpdatedAt { get; set; }
-
-    public DateTime? DeletedAt { get; set; }
-
-    public bool IsDeleted { get; set; }
-
-    public virtual FacultyStaff Lecture { get; set; }
+    public virtual FacultyStaff Lecturer { get; set; }
 
     public virtual Thesis Thesis { get; set; }
 }

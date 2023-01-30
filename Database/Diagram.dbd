@@ -1100,7 +1100,7 @@
             </Location>
             <Size>
               <Width>240 px</Width>
-              <Height>331 px</Height>
+              <Height>263 px</Height>
             </Size>
             <DbOid>
               <Path>[HUFI_graduate-thesis].dbo.CounterArgumentResults</Path>
@@ -1178,8 +1178,8 @@
             <PortAnchors>
               <Port xsi:type="LinkPort">
                 <Location>
-                  <X>-198.875 px</X>
-                  <Y>-305.404296875 px</Y>
+                  <X>-27.75 px</X>
+                  <Y>-345.2021484375 px</Y>
                 </Location>
                 <Anchors>None</Anchors>
                 <Align>Bottom</Align>
@@ -1209,7 +1209,7 @@
               <Port>
                 <Location>
                   <X>0 px</X>
-                  <Y>106.8 px</Y>
+                  <Y>84.8592145015106 px</Y>
                 </Location>
                 <Anchors>Top Bottom</Anchors>
                 <Align>Left</Align>
@@ -1234,7 +1234,7 @@
             <BendPoints>
               <PointD>
                 <X>707.21875 px</X>
-                <Y>746.8 px</Y>
+                <Y>724.859214501511 px</Y>
               </PointD>
               <PointD>
                 <X>707.21875 px</X>
@@ -1258,7 +1258,7 @@
               <Port xsi:type="LinkPort">
                 <Location>
                   <X>451.390625 px</X>
-                  <Y>1.22070312045253E-05 px</Y>
+                  <Y>2.26069793143324E-05 px</Y>
                 </Location>
                 <Anchors>None</Anchors>
                 <Align>Left</Align>
@@ -2881,7 +2881,7 @@
           <Scale>0.5</Scale>
           <Location>
             <X>329.6 px</X>
-            <Y>598.399999237061 px</Y>
+            <Y>547.200000762939 px</Y>
           </Location>
         </ViewPort>
       </Model>

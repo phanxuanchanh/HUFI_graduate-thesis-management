@@ -708,38 +708,40 @@ public class ThesisManagerController : WebControllerBase<IThesisRepository, Thes
 
     [Route("assign-supervisor/{thesisId}")]
     [HttpGet]
-    [PageName(Name = "Phân công giảng viên đề tài khóa luận")]
+    [PageName(Name = "Phân công GVHD của đề tài khóa luận")]
     public async Task<IActionResult> LoadAssignSupvView(string thesisId, int page = 1, int pageSize = 5, string orderBy = "CreatedAt", string orderOptions = "DESC", string searchBy = "All", string keyword = "")
     {
         ThesisOutput thesis = await _thesisRepository.GetAsync(thesisId);
-        OrderOptions orderOpts = (orderOptions == "ASC") ? OrderOptions.ASC : OrderOptions.DESC;
-        Pagination<FacultyStaffOutput> pagination = await _facultyStaffRepository
-            .GetPaginationAsync(page, pageSize, orderBy, orderOpts, searchBy, keyword);
-
-        StaticPagedList<FacultyStaffOutput> pagedList = pagination.ToStaticPagedList();
-
-        ViewData["OrderByProperties"] = new Dictionary<string, string>
+        if(thesis.ThesisSupervisor == null)
         {
-            { "Id", "Mã" }, { "Surname", "Họ" }, { "Name", "Tên" }, { "Email", "Email" }, { "CreatedAt", "Ngày tạo" }
-        };
+            OrderOptions orderOpts = (orderOptions == "ASC") ? OrderOptions.ASC : OrderOptions.DESC;
+            Pagination<FacultyStaffOutput> pagination = await _facultyStaffRepository
+                .GetPaginationAsync(page, pageSize, orderBy, orderOpts, searchBy, keyword);
 
-        ViewData["SearchByProperties"] = new Dictionary<string, string>
-        {
-            { "All", "Tất cả" }, { "Id", "Mã" }, { "Surname", "Họ" }, { "Name", "Tên" }, { "Email", "Email" }
-        };
+            StaticPagedList<FacultyStaffOutput> pagedList = pagination.ToStaticPagedList();
 
-        ViewData["PagedList"] = pagedList;
-        ViewData["OrderBy"] = orderBy;
-        ViewData["OrderOptions"] = orderOptions;
-        ViewData["SearchBy"] = searchBy;
-        ViewData["Keyword"] = keyword;
+            ViewData["OrderByProperties"] = new Dictionary<string, string>
+            {
+                { "Id", "Mã" }, { "Surname", "Họ" }, { "Name", "Tên" }, { "Email", "Email" }, { "CreatedAt", "Ngày tạo" }
+            };
+
+                ViewData["SearchByProperties"] = new Dictionary<string, string>
+            {
+                { "All", "Tất cả" }, { "Id", "Mã" }, { "Surname", "Họ" }, { "Name", "Tên" }, { "Email", "Email" }
+            };
+
+            ViewData["PagedList"] = pagedList;
+            ViewData["OrderBy"] = orderBy;
+            ViewData["OrderOptions"] = orderOptions;
+            ViewData["SearchBy"] = searchBy;
+            ViewData["Keyword"] = keyword;
+        }
 
         return View(thesis);
     }
 
     [Route("assign-default-supervisor")]
     [HttpPost]
-    [PageName(Name = "Phân công giảng viên hướng dẫn")]
     public async Task<IActionResult> AssignDefautSupv(string thesisId)
     {
         DataResponse dataResponse = await _thesisRepository.AssignSupervisorAsync(thesisId);
@@ -750,7 +752,6 @@ public class ThesisManagerController : WebControllerBase<IThesisRepository, Thes
 
     [Route("assign-supervisor")]
     [HttpPost]
-    [PageName(Name = "Phân công giảng viên hướng dẫn")]
     public async Task<IActionResult> AssignSupervisor(string thesisId, string lecturerId)
     {
         DataResponse dataResponse = await _thesisRepository.AssignSupervisorAsync(thesisId, lecturerId);
@@ -761,7 +762,6 @@ public class ThesisManagerController : WebControllerBase<IThesisRepository, Thes
 
     [Route("assign-supervisors")]
     [HttpPost]
-    [PageName(Name = "Phân công giảng viên hướng dẫn cho đề tài đã chọn")]
     public async Task<IActionResult> AssignSupervisors(string thesisIds)
     {
         DataResponse dataResponse = await _thesisRepository.AssignSupervisorsAsync(thesisIds.Split(new char[] { ';' }));
@@ -770,9 +770,8 @@ public class ThesisManagerController : WebControllerBase<IThesisRepository, Thes
         return RedirectToAction("GetThesesToAssignSupv");
     }
 
-    [Route("remove-assign")]
+    [Route("remove-assign-supervisor")]
     [HttpPost]
-    [PageName(Name = "Phân công giảng viên hướng dẫn")]
     public async Task<IActionResult> RemoveAssignSupv(string thesisId, string lecturerId)
     {
         DataResponse dataResponse = await _thesisRepository.RemoveAssignSupvAsync(thesisId, lecturerId);
@@ -781,31 +780,75 @@ public class ThesisManagerController : WebControllerBase<IThesisRepository, Thes
         return RedirectToAction("LoadAssignSupvView", new { thesisId = thesisId });
     }
 
-    [Route("assignCounterArgument/{thesisId}")]
+    [Route("get-theses-to-assign-critical-lecturer")]
     [HttpGet]
-    [PageName(Name = "Phân công giảng viên phản biện đề tài khóa luận")]
-    public async Task<IActionResult> LoadCounterArgumentView(string thesisId, string roleId, int page = 1, int pageSize = 10, string keyword = "")
+    [PageName(Name = "Danh sách đề tài cần phân công GVPB")]
+    public async Task<IActionResult> GetThesesToAssignCLect(int page = 1, int pageSize = 10, string orderBy = "CreatedAt", string orderOptions = "DESC", string searchBy = "All", string keyword = "")
+    {
+        OrderOptions orderOpts = (orderOptions == "ASC") ? OrderOptions.ASC : OrderOptions.DESC;
+        Pagination<ThesisOutput> pagination = await _thesisRepository.GetPgnToAssignCLectAsync(page, pageSize, orderBy, orderOpts, searchBy, keyword);
+        StaticPagedList<ThesisOutput> pagedList = pagination.ToStaticPagedList();
+
+        ViewData["OrderByProperties"] = SetOrderByProperties();
+        ViewData["SearchByProperties"] = SetSearchByProperties();
+        ViewData["PagedList"] = pagedList;
+        ViewData["OrderBy"] = orderBy;
+        ViewData["OrderOptions"] = orderOptions;
+        ViewData["SearchBy"] = searchBy;
+        ViewData["Keyword"] = keyword;
+
+        return View();
+    }
+
+    [Route("assign-critical-lecturer/{thesisId}")]
+    [HttpGet]
+    [PageName(Name = "Phân công GVPB đề tài khóa luận")]
+    public async Task<IActionResult> LoadAssignCLectView(string thesisId, string roleId, int page = 1, int pageSize = 10, string orderBy = "CreatedAt", string orderOptions = "DESC", string searchBy = "All", string keyword = "")
     {
         ThesisOutput thesis = await _thesisRepository.GetAsync(thesisId);
-        Pagination<FacultyStaffOutput> pagination = await _facultyStaffRepository
-            .GetPaginationAsync(page, pageSize, null, OrderOptions.ASC, keyword);
+        if(thesis.CriticalLecturer == null)
+        {
+            OrderOptions orderOpts = (orderOptions == "ASC") ? OrderOptions.ASC : OrderOptions.DESC;
+            Pagination<FacultyStaffOutput> pagination = await _facultyStaffRepository
+                .GetPaginationAsync(page, pageSize, orderBy, OrderOptions.ASC, searchBy, keyword);
 
-        StaticPagedList<FacultyStaffOutput> pagedList = pagination.ToStaticPagedList();
+            StaticPagedList<FacultyStaffOutput> pagedList = pagination.ToStaticPagedList();
 
-        ViewData["PagedList"] = pagedList;
-        ViewData["Keyword"] = keyword;
-        ViewData["Role"] = thesisId;
+            ViewData["OrderByProperties"] = new Dictionary<string, string>
+            {
+                { "Id", "Mã" }, { "Surname", "Họ" }, { "Name", "Tên" }, { "Email", "Email" }, { "CreatedAt", "Ngày tạo" }
+            };
+
+            ViewData["SearchByProperties"] = new Dictionary<string, string>
+            {
+                { "All", "Tất cả" }, { "Id", "Mã" }, { "Surname", "Họ" }, { "Name", "Tên" }, { "Email", "Email" }
+            };
+
+            ViewData["PagedList"] = pagedList;
+            ViewData["Keyword"] = keyword;
+        }
 
         return View(thesis);
     }
-    [Route("assignCounter/{thesisId}/{lectureId}")]
+
+    [Route("assign-critical-lecturer")]
     [HttpPost]
     [PageName(Name = "Phân công giảng viên phản biện")]
-    public async Task<IActionResult> AssignCounterArgument(string thesisId, string lectureId)
+    public async Task<IActionResult> AssignCLect(string thesisId, string lecturerId)
     {
-        DataResponse dataResponse = await _thesisRepository.AssignCounterArgumentAsync(thesisId, lectureId);
+        DataResponse dataResponse = await _thesisRepository.AssignCLectAsync(thesisId, lecturerId);
         AddTempData(dataResponse);
-        return RedirectToAction("LoadCounterArgumentView", new { thesisId = thesisId });
+
+        return RedirectToAction("LoadAssignCLectView", new { thesisId = thesisId });
     }
 
+    [Route("remove-assign-critical-lecturer")]
+    [HttpPost]
+    public async Task<IActionResult> RemoveAssignCLect(string thesisId, string lecturerId)
+    {
+        DataResponse dataResponse = await _thesisRepository.RemoveAssignCLectAsync(thesisId, lecturerId);
+        AddTempData(dataResponse);
+
+        return RedirectToAction("LoadAssignCLectView", new { thesisId = thesisId });
+    }
 }
