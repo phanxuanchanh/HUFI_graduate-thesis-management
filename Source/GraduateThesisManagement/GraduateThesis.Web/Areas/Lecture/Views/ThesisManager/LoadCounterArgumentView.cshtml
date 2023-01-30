@@ -65,7 +65,7 @@
         <div class="card-body">
 
             <div class="dataTable-wrapper dataTable-loading no-footer sortable searchable fixed-columns">
-                @await Component.InvokeAsync("FacultyStaffLayout_PagedSearch", new { action = "LoadCounterArgumentView", enableOrder = false })
+                @await Component.InvokeAsync("FacultyStaffLayout_PagedSearch", new { action = "LoadThesisMemberView", enableOrder = false })
                 <div class="dataTable-container">
                     <table class="table table-striped dataTable-table" id="table1">
                         <thead>
@@ -122,7 +122,7 @@
                         </tbody>
                     </table>
                 </div>
-                @await Component.InvokeAsync("FacultyStaffLayout_Paged", new { action = "LoadCounterArgumentView", enableOrder = false })
+                @await Component.InvokeAsync("FacultyStaffLayout_Paged", new { action = "LoadThesisMemberView", enableOrder = false })
             </div>
         </div>
     </div>

@@ -36,8 +36,6 @@ public class Repository : IRepository
 
     public IFacultyRepository FacultyRepository => new FacultyRepository(_context);
 
-    public ICommitteeMemberRepository CommitteeMemberRepository => new CommitteeMemberRepository(_context);
-
     public IThesisCommitteeRepository ThesisCommitteeRepository => new ThesisCommitteeRepository(_context);
 
     public IFacultyStaffRepository FacultyStaffRepository => new FacultyStaffRepository(_context, _hostingEnvironment, _emailService, _fileManager);
