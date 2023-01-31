@@ -28,6 +28,8 @@ public interface IThesisRepository : IAsyncSubRepository<ThesisInput, ThesisOutp
     Task<Pagination<ThesisOutput>> GetPgnOfAppdThesesAsync(string lecturerId, int page, int pageSize, string orderBy, OrderOptions orderOptions, string searchBy, string keyword);
     Task<Pagination<ThesisOutput>> GetPgnToAssignSupvAsync(int page, int pageSize, string orderBy, OrderOptions orderOptions, string searchBy, string keyword);
     Task<Pagination<ThesisOutput>> GetPgnOfAssignedSupvAsync(int page, int pageSize, string orderBy, OrderOptions orderOptions, string searchBy, string keyword);
+    Task<Pagination<ThesisOutput>> GetPgnToAssignCLectAsync(int page, int pageSize, string orderBy, OrderOptions orderOptions, string searchBy, string keyword);
+    Task<Pagination<ThesisOutput>> GetPgnOfAssignedCLectAsync(int page, int pageSize, string orderBy, OrderOptions orderOptions, string searchBy, string keyword);
     Task<byte[]> ExportAsync();
     Task<byte[]> ExportPndgThesesAsync();
     Task<byte[]> ExportPubldThesesAsync();
@@ -41,8 +43,8 @@ public interface IThesisRepository : IAsyncSubRepository<ThesisInput, ThesisOutp
     Task<DataResponse> AssignSupervisorAsync(string thesisId);
     Task<DataResponse> AssignSupervisorsAsync(string[] thesisIds);
     Task<DataResponse> RemoveAssignSupvAsync(string thesisId, string lecturerId);
-    Task<DataResponse> AssignCounterArgumentAsync(string thesisId, string lecturerId);
-    Task<DataResponse> AssignCounterArgumentAsync(string thesisId);
+    Task<DataResponse> AssignCLectAsync(string thesisId, string lecturerId);
+    Task<DataResponse> RemoveAssignCLectAsync(string thesisId, string lecturerId);
     Task<DataResponse> PublishThesisAsync(string thesisId);
     Task<DataResponse> PublishThesesAsync(string[] thesisIds);
     Task<DataResponse> StopPubgThesisAsync(string thesisId);

@@ -181,10 +181,10 @@
                                     <a asp-action="Index" asp-controller="CouncilManager">Danh sách hội đồng</a>
                                 </li>
                             }
-                            @if (appPages.Any(p => p.ControllerName == "ThesisCommitteeManager" && p.ActionName == "Index"))
+                            @if (appPages.Any(p => p.ControllerName == "CommitteeManager" && p.ActionName == "Index"))
                             {
                                 <li class="submenu-item ">
-                                    <a asp-action="Index" asp-controller="ThesisCommitteeManager">Danh sách tiểu ban</a>
+                                    <a asp-action="Index" asp-controller="CommitteeManager">Danh sách tiểu ban</a>
                                 </li>
                             }
 
@@ -248,10 +248,10 @@
                                 </li>
                             }
 
-                            @if (appPages.Any(p => p.ControllerName == "ThesisManager" && p.ActionName == "GetRejectedList"))
+                            @if (appPages.Any(p => p.ControllerName == "ThesisManager" && p.ActionName == "GetThesesToAssignCLect"))
                             {
                                 <li class="submenu-item ">
-                                    <a asp-action="GetRejectedList" asp-controller="ThesisManager">Phân công GVPB</a>
+                                    <a asp-action="GetThesesToAssignCLect" asp-controller="ThesisManager">Phân công GVPB</a>
                                 </li>
                             }
 

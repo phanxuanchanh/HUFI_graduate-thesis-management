@@ -1,7 +1,7 @@
 ﻿CREATE TABLE [dbo].[ThesisCommittees] (
   [ID] [varchar](50) NOT NULL,
   [Name] [nvarchar](100) NOT NULL,
-  [Description] [ntext] NOT NULL,
+  [Description] [ntext] NULL,
   [CreatedAt] [datetime] NULL,
   [UpdatedAt] [datetime] NULL,
   [DeletedAt] [datetime] NULL,

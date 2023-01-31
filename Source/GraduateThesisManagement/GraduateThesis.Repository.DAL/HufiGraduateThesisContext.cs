@@ -251,24 +251,21 @@ public partial class HufiGraduateThesisContext : DbContext
             entity.Property(e => e.ThesisId)
                 .HasMaxLength(50)
                 .IsUnicode(false);
+            entity.Property(e => e.Answers).HasColumnType("ntext");
             entity.Property(e => e.Conclusions).HasColumnType("ntext");
             entity.Property(e => e.Contents).HasColumnType("ntext");
-            entity.Property(e => e.CreatedAt).HasColumnType("datetime");
             entity.Property(e => e.Defects).HasColumnType("ntext");
-            entity.Property(e => e.DeletedAt).HasColumnType("datetime");
-            entity.Property(e => e.LectureId)
+            entity.Property(e => e.LecturerId)
                 .IsRequired()
                 .HasMaxLength(50)
                 .IsUnicode(false);
             entity.Property(e => e.Point).HasColumnType("decimal(5, 2)");
             entity.Property(e => e.PracticalResults).HasColumnType("ntext");
-            entity.Property(e => e.Questions).HasColumnType("ntext");
             entity.Property(e => e.ResearchMethods).HasColumnType("ntext");
             entity.Property(e => e.ScientificResults).HasColumnType("ntext");
-            entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
-            entity.HasOne(d => d.Lecture).WithMany(p => p.CounterArgumentResults)
-                .HasForeignKey(d => d.LectureId)
+            entity.HasOne(d => d.Lecturer).WithMany(p => p.CounterArgumentResults)
+                .HasForeignKey(d => d.LecturerId)
                 .HasConstraintName("FK_Counterargument_FacultyStaffs_ID");
 
             entity.HasOne(d => d.Thesis).WithOne(p => p.CounterArgumentResult)
@@ -636,9 +633,7 @@ public partial class HufiGraduateThesisContext : DbContext
                 .IsUnicode(false);
             entity.Property(e => e.CreatedAt).HasColumnType("datetime");
             entity.Property(e => e.DeletedAt).HasColumnType("datetime");
-            entity.Property(e => e.Description)
-                .IsRequired()
-                .HasColumnType("ntext");
+            entity.Property(e => e.Description).HasColumnType("ntext");
             entity.Property(e => e.Name)
                 .IsRequired()
                 .HasMaxLength(100);
