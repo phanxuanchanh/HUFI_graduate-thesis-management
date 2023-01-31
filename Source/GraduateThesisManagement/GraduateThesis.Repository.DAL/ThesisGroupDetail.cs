@@ -13,13 +13,13 @@ public partial class ThesisGroupDetail
 
     public bool IsLeader { get; set; }
 
-    public bool IsCompleted { get; set; }
+    public int StatusId { get; set; }
 
-    public bool IsFinished { get; set; }
+    public decimal? SupervisorPoint { get; set; }
 
-    public bool IsApproved { get; set; }
+    public decimal? CriticalPoint { get; set; }
 
-    public bool InProgress { get; set; }
+    public decimal? CommitteePoint { get; set; }
 
     public DateTime? CreatedAt { get; set; }
 
@@ -28,6 +28,8 @@ public partial class ThesisGroupDetail
     public DateTime? DeletedAt { get; set; }
 
     public bool IsDeleted { get; set; }
+
+    public virtual GroupStatus Status { get; set; }
 
     public virtual Student Student { get; set; }
 

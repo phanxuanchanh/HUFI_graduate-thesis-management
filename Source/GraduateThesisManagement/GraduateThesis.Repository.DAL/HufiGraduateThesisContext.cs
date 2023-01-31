@@ -31,6 +31,8 @@ public partial class HufiGraduateThesisContext : DbContext
 
     public virtual DbSet<FacultyStaff> FacultyStaffs { get; set; }
 
+    public virtual DbSet<GroupStatus> GroupStatuses { get; set; }
+
     public virtual DbSet<ImplementationPlan> ImplementationPlans { get; set; }
 
     public virtual DbSet<MemberEvaluation> MemberEvaluations { get; set; }
@@ -42,8 +44,6 @@ public partial class HufiGraduateThesisContext : DbContext
     public virtual DbSet<Student> Students { get; set; }
 
     public virtual DbSet<StudentClass> StudentClasses { get; set; }
-
-    public virtual DbSet<Sysdiagram> Sysdiagrams { get; set; }
 
     public virtual DbSet<Thesis> Theses { get; set; }
 
@@ -336,6 +336,18 @@ public partial class HufiGraduateThesisContext : DbContext
                 .HasConstraintName("FK_FacultyStaffs_Faculties_ID");
         });
 
+        modelBuilder.Entity<GroupStatus>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK_GroupStatus_Id");
+
+            entity.ToTable("GroupStatus");
+
+            entity.Property(e => e.Description).HasColumnType("ntext");
+            entity.Property(e => e.Name)
+                .IsRequired()
+                .HasMaxLength(100);
+        });
+
         modelBuilder.Entity<ImplementationPlan>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK_ImplementationPlan_ID");
@@ -506,24 +518,6 @@ public partial class HufiGraduateThesisContext : DbContext
                 .HasConstraintName("FK_StudentClasses_Faculties_ID");
         });
 
-        modelBuilder.Entity<Sysdiagram>(entity =>
-        {
-            entity.HasKey(e => e.DiagramId).HasName("PK__sysdiagr__C2B05B61B31F7C2C");
-
-            entity.ToTable("sysdiagrams");
-
-            entity.HasIndex(e => new { e.PrincipalId, e.Name }, "UK_principal_name").IsUnique();
-
-            entity.Property(e => e.DiagramId).HasColumnName("diagram_id");
-            entity.Property(e => e.Definition).HasColumnName("definition");
-            entity.Property(e => e.Name)
-                .IsRequired()
-                .HasMaxLength(128)
-                .HasColumnName("name");
-            entity.Property(e => e.PrincipalId).HasColumnName("principal_id");
-            entity.Property(e => e.Version).HasColumnName("version");
-        });
-
         modelBuilder.Entity<Thesis>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK_Thesis_ID");
@@ -688,10 +682,19 @@ public partial class HufiGraduateThesisContext : DbContext
             entity.Property(e => e.StudentId)
                 .HasMaxLength(50)
                 .IsUnicode(false);
+            entity.Property(e => e.CommitteePoint).HasColumnType("decimal(5, 2)");
             entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+            entity.Property(e => e.CriticalPoint).HasColumnType("decimal(5, 2)");
             entity.Property(e => e.DeletedAt).HasColumnType("datetime");
             entity.Property(e => e.Notes).HasColumnType("ntext");
+            entity.Property(e => e.StatusId).HasDefaultValueSql("((1))");
+            entity.Property(e => e.SupervisorPoint).HasColumnType("decimal(5, 2)");
             entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+            entity.HasOne(d => d.Status).WithMany(p => p.ThesisGroupDetails)
+                .HasForeignKey(d => d.StatusId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ThesisGroupDetails_GroupStatus_Id");
 
             entity.HasOne(d => d.Student).WithMany(p => p.ThesisGroupDetails)
                 .HasForeignKey(d => d.StudentId)

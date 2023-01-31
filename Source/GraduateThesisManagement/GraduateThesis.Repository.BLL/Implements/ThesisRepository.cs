@@ -363,12 +363,14 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
                 {
                     StudentThesisGroupId = groupId,
                     StudentId = studentId,
-                    IsApproved = false,
                     CreatedAt = currentDatetime
                 };
 
                 if (studentId == thesisRegistrationInput.RegisteredStudentId)
+                {
                     thesisGroupDetail.IsLeader = true;
+                    thesisGroupDetail.StatusId = GroupStatusConsts.Joined;
+                }
 
                 thesisGroupDetails.Add(thesisGroupDetail);
             }

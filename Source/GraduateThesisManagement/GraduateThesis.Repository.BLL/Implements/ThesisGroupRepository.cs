@@ -2,6 +2,7 @@
 using GraduateThesis.ApplicationCore.Models;
 using GraduateThesis.ApplicationCore.Repository;
 using GraduateThesis.ApplicationCore.Uuid;
+using GraduateThesis.Repository.BLL.Consts;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DAL;
 using GraduateThesis.Repository.DTO;
@@ -85,7 +86,7 @@ public class ThesisGroupRepository : AsyncSubRepository<ThesisGroup, ThesisGroup
     public async Task<Pagination<ThesisGroupOutput>> GetPaginationAsync(int page, int pageSize, string orderBy, OrderOptions orderOptions, string searchBy, string keyword)
     {
         IQueryable<Thesis> queryable = _context.Theses.Include(i => i.Lecture).Include(i => i.ThesisGroup)
-            .Where(t => t.ThesisGroupId != null && t.IsDeleted == false && t.Lecture.IsDeleted == false);
+            .Where(t => t.ThesisGroupId != null && t.IsDeleted == false && t.Lecture.IsDeleted == false && t.ThesisGroup.IsDeleted == false);
 
         if (!string.IsNullOrEmpty(keyword) && string.IsNullOrEmpty(searchBy))
         {
@@ -218,10 +219,10 @@ public class ThesisGroupRepository : AsyncSubRepository<ThesisGroup, ThesisGroup
                 Message = "Không tìm thấy nhóm có mã này!"
             };
 
-        thesisGroupDetail.IsApproved = true;
+        thesisGroupDetail.StatusId = GroupStatusConsts.Joined;
 
         int studentQuantity = await _context.ThesisGroupDetails
-            .Where(gd => gd.StudentThesisGroupId == thesisGroupId && gd.IsApproved == true && gd.IsDeleted == false)
+            .Where(gd => gd.StudentThesisGroupId == thesisGroupId && gd.StatusId == GroupStatusConsts.Joined && gd.IsDeleted == false)
             .CountAsync();
 
         ThesisGroup thesisGroup = await _context.ThesisGroups
@@ -251,10 +252,10 @@ public class ThesisGroupRepository : AsyncSubRepository<ThesisGroup, ThesisGroup
                 Message = "Không tìm thấy nhóm có mã này!"
             };
 
-        thesisGroupDetail.IsApproved = false;
+        thesisGroupDetail.StatusId = GroupStatusConsts.Denied;
 
         int studentQuantity = await _context.ThesisGroupDetails
-            .Where(gd => gd.StudentThesisGroupId == thesisGroupId && gd.IsApproved == true && gd.IsDeleted == false)
+            .Where(gd => gd.StudentThesisGroupId == thesisGroupId && gd.StatusId == GroupStatusConsts.Joined && gd.IsDeleted == false)
             .CountAsync();
 
         ThesisGroup thesisGroup = await _context.ThesisGroups
@@ -289,12 +290,7 @@ public class ThesisGroupRepository : AsyncSubRepository<ThesisGroup, ThesisGroup
                     StudentQuantity = groupDetail.StudentThesisGroup.StudentQuantity,
                     RegistrationDate = groupDetail.StudentThesisGroup.CreatedAt,
                     GroupNotes = groupDetail.StudentThesisGroup.Notes,
-                    Group_IsCompleted = groupDetail.StudentThesisGroup.IsCompleted,
-                    Group_IsFinished = groupDetail.StudentThesisGroup.IsFinished,
-                    MemberNotes = groupDetail.Notes,
-                    Member_IsApproved = groupDetail.IsApproved,
-                    Member_IsCompleted = groupDetail.IsCompleted,
-                    Member_IsFinished = groupDetail.IsFinished
+                    MemberNotes = groupDetail.Notes
                 }
             ).ToListAsync();
     }

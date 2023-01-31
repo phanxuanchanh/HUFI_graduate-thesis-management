@@ -18,6 +18,7 @@ CREATE TABLE [dbo].[Students] (
   [CodeExpTime] [datetime] NULL,
   [Gender] [nvarchar](10) NULL DEFAULT (N'Nam'),
   [Surname] [nvarchar](200) NOT NULL,
+  [IsCompleted] [bit] NULL,
   CONSTRAINT [PK_Students_ID] PRIMARY KEY CLUSTERED ([ID]),
   UNIQUE ([Email])
 )

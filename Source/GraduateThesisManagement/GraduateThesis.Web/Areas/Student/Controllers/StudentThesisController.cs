@@ -37,6 +37,23 @@ public class StudentThesisController : WebControllerBase
     [PageName(Name = "Danh sách đề tài khóa luận")]
     public async Task<IActionResult> Index(int page = 1, int pageSize = 10, string orderBy = "", string orderOptions = "ASC", string searchBy = "All", string keyword = "")
     {
+        _accountManager.SetHttpContext(HttpContext);
+        string userId = _accountManager.GetUserId();
+
+        DataResponse<string> dataResponse = await _studentRepository.CheckRegisterThesis(userId);
+        if (dataResponse.Status != DataResponseStatus.Success)
+        {
+            if (dataResponse.Data == "NotFound")
+                return NotFound();
+
+            AddTempData(dataResponse);
+            if (dataResponse.Data == "Registered" || dataResponse.Data == "Completed")
+                return RedirectToAction("GetThesisGroups");
+
+            if(dataResponse.Data == "Invited")
+                return RedirectToAction("JoinToGroup");
+        }
+
         OrderOptions orderOpts = (orderOptions == "ASC") ? OrderOptions.ASC : OrderOptions.DESC;
         Pagination<ThesisOutput> pagination = await _thesisRepository.GetPgnOfPubldThesesAsync(page, pageSize, orderBy, orderOpts, searchBy, keyword);
         StaticPagedList<ThesisOutput> pagedList = pagination.ToStaticPagedList();
@@ -120,7 +137,7 @@ public class StudentThesisController : WebControllerBase
             DataResponse dataResponse = await _thesisRepository.RegisterThesisAsync(thesisRegistrationInput);
             AddTempData(dataResponse);
             if (dataResponse.Status == DataResponseStatus.Success)
-                return RedirectToAction("YourThesis");
+                return RedirectToAction("GetThesisGroups");
 
             AddViewData(dataResponse);
             return View(thesisRegistrationInput);
@@ -128,6 +145,13 @@ public class StudentThesisController : WebControllerBase
 
         AddTempData(DataResponseStatus.InvalidData);
         return View(thesisRegistrationInput);
+    }
+
+    [Route("join-to-group")]
+    [HttpGet]
+    public async Task<IActionResult> JoinToGroup()
+    {
+        return View();
     }
 
     [Route("join-to-group")]
