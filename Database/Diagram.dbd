@@ -8,7 +8,7 @@
     <ConnectionModel>
       <PropertyValue Name="OverrideMFA">false</PropertyValue>
       <PropertyValue Name="Database">aa8afe9c-7d62-4564-b477-c12e62e0f440</PropertyValue>
-      <PropertyValue Name="ConnectionString" xml:space="preserve">Data Source=LAPTOP-HP-PXCHA;Integrated Security=False;User ID=sa</PropertyValue>
+      <PropertyValue Name="ConnectionString" xml:space="preserve">Data Source=DESKTOP-T2JLATV\DONGKHANH;Integrated Security=False;User ID=sa</PropertyValue>
       <PropertyValue Name="ExecutionTimeout">0</PropertyValue>
     </ConnectionModel>
   </Connection>
@@ -2788,100 +2788,13 @@
               <TriggersCollapsed>True</TriggersCollapsed>
             </Compartments>
           </Model>
-          <Model xsi:type="RelationLinkModel">
-            <CustomProperties>
-              <OID>166</OID>
-              <Comment>167</Comment>
-              <OutModel>5</OutModel>
-              <InModel>165</InModel>
-              <OutPort>168</OutPort>
-              <InPort>169</InPort>
-              <Parent>0</Parent>
-            </CustomProperties>
-            <PortAnchors>
-              <Port>
-                <Location>
-                  <X>0 px</X>
-                  <Y>230.559701492537 px</Y>
-                </Location>
-                <Anchors>Top Bottom</Anchors>
-                <Align>Left</Align>
-                <CustomProperties>
-                  <OID>168</OID>
-                  <PortType>FloatAnchor</PortType>
-                </CustomProperties>
-              </Port>
-              <Port>
-                <Location>
-                  <X>0 px</X>
-                  <Y>63.5 px</Y>
-                </Location>
-                <Anchors>Top Bottom</Anchors>
-                <Align>Right</Align>
-                <CustomProperties>
-                  <OID>169</OID>
-                  <PortType>FloatAnchor</PortType>
-                </CustomProperties>
-              </Port>
-            </PortAnchors>
-            <BendPoints>
-              <PointD>
-                <X>450 px</X>
-                <Y>580.559701492537 px</Y>
-              </PointD>
-              <PointD>
-                <X>450 px</X>
-                <Y>613.5 px</Y>
-              </PointD>
-              <PointD>
-                <X>-268 px</X>
-                <Y>613.5 px</Y>
-              </PointD>
-              <PointD>
-                <X>-268 px</X>
-                <Y>593.5 px</Y>
-              </PointD>
-            </BendPoints>
-            <IsManuallyRouted>false</IsManuallyRouted>
-            <DbOid>
-              <Path>[HUFI_graduate-thesis].dbo.Theses.FK_Theses_ThesisStatus_Id</Path>
-              <TypeName>ForeignKey</TypeName>
-            </DbOid>
-          </Model>
-          <Model xsi:type="RelationCommentModel">
-            <CustomProperties>
-              <OID>167</OID>
-              <HolderModel>166</HolderModel>
-              <Port>170</Port>
-              <Parent>0</Parent>
-            </CustomProperties>
-            <PortAnchors>
-              <Port xsi:type="LinkPort">
-                <Location>
-                  <X>379 px</X>
-                  <Y>-32.940298507463 px</Y>
-                </Location>
-                <Anchors>None</Anchors>
-                <Align>Left</Align>
-                <CustomProperties>
-                  <OID>170</OID>
-                  <PortType>FixedAnchor</PortType>
-                </CustomProperties>
-                <LinkPortAnchor>OutPoint</LinkPortAnchor>
-              </Port>
-            </PortAnchors>
-            <CommentOffset>
-              <X>96.5972595214844 px</X>
-              <Y>-0.559701492536988 px</Y>
-            </CommentOffset>
-          </Model>
         </Children>
         <ViewPort>
           <ScaleMode>Free</ScaleMode>
           <Scale>0.5</Scale>
           <Location>
-            <X>329.6 px</X>
-            <Y>598.399999237061 px</Y>
+            <X>-387.2 px</X>
+            <Y>188.799999237061 px</Y>
           </Location>
         </ViewPort>
       </Model>

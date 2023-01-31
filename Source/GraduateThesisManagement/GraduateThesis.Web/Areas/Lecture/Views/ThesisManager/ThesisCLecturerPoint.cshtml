@@ -1,0 +1,107 @@
+﻿@model CLecturerPointInput
+
+@await Component.InvokeAsync("FacultyStaffLayout_StatusArea")
+
+<section id="basic-horizontal-layouts">
+    <div class="row match-height">
+        <div class="col-md-12 col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title">@ViewData["PageName"]:</h4>
+                </div>
+                <div class="card-content">
+                    <div class="card-body">
+                        <form asp-action="EditThesisCLecturerPoint" class="form form-horizontal" method="post">
+                            <div class="form-body">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <label asp-for="ThesisId"></label>
+                                    </div>
+                                    <div class="col-md-8 form-group">
+                                        <input asp-for="ThesisId" class="form-control" readonly />
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label asp-for="LecturerId"></label>
+                                    </div>
+                                    <div class="col-md-8 form-group">
+                                        <input asp-for="LecturerId" class="form-control" readonly />
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <label asp-for="Contents"></label>
+                                    </div>
+                                    <div class="col-md-8 form-group">
+                                        <textarea asp-for="Contents" class="form-control" placeholder="Đánh giá về nội dung"></textarea>
+                                        <span asp-validation-for="Contents" class="text-danger"></span>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label asp-for="ResearchMethods"></label>
+                                    </div>
+                                    <div class="col-md-8 form-group">
+                                        <textarea asp-for="ResearchMethods" class="form-control" placeholder="Đánh giá về phương pháp nghiên cứu"></textarea>
+                                        <span asp-validation-for="ResearchMethods" class="text-danger"></span>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label asp-for="ScientificResults"></label>
+                                    </div>
+                                    <div class="col-md-8 form-group">
+                                        <textarea asp-for="ScientificResults" class="form-control" placeholder="Đánh giá về kết quả khoa học"></textarea>
+                                        <span asp-validation-for="ScientificResults" class="text-danger"></span>
+                                      </div>
+                                    <div class="col-md-4">
+                                        <label asp-for="PracticalResults"></label>
+                                    </div>
+                                    <div class="col-md-8 form-group">
+                                         <textarea asp-for="PracticalResults" class="form-control" placeholder="Đánh giá về Kết quả thực hành"></textarea>
+                                        <span asp-validation-for="PracticalResults" class="text-danger"></span>
+                                    </div>
+                                     <div class="col-md-4">
+                                        <label asp-for="Defects"></label>
+                                    </div>
+                                    <div class="col-md-8 form-group">
+                                            <textarea asp-for="Defects" class="form-control" placeholder="Khuyết điểm của đề tài"></textarea>
+                                        <span asp-validation-for="Defects" class="text-danger"></span>
+                                    </div>
+                                     <div class="col-md-4">
+                                        <label asp-for="Questions"></label>
+                                    </div>
+                                    <div class="col-md-8 form-group">
+                                            <textarea asp-for="Questions" class="form-control" placeholder="Câu hỏi"></textarea>
+                                        <span asp-validation-for="Questions" class="text-danger"></span>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label asp-for="Conclusions"></label>
+                                    </div>
+                                    <div class="col-md-8 form-group">
+                                        <textarea asp-for="Conclusions" class="form-control" placeholder="Kết luận"></textarea>
+                                        <span asp-validation-for="Conclusions" class="text-danger"></span>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label asp-for="Point"></label>
+                                    </div>
+                                    <div class="col-md-8 form-group">
+                                        <input asp-for="Point" class="form-control" />
+                                    </div>
+
+
+                                    <div class="col-sm-12 d-flex justify-content-end">
+                                        <a asp-action="Index" class="btn btn-light-secondary me-1 mb-1">Quay về danh sách</a>
+                                        <button type="submit" class="btn btn-primary me-1 mb-1">Chỉnh sửa</button>
+                                    </div>
+                                    </div>
+                                 
+                             
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

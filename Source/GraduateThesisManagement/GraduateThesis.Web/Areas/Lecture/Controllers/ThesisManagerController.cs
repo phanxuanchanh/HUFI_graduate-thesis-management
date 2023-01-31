@@ -16,6 +16,7 @@ using Microsoft.Net.Http.Headers;
 using System.Net.Mime;
 using GraduateThesis.Repository.BLL.Consts;
 using static Microsoft.Extensions.Logging.EventSource.LoggingEventSource;
+using GraduateThesis.Repository.BLL.Implements;
 
 #nullable disable
 
@@ -808,4 +809,46 @@ public class ThesisManagerController : WebControllerBase<IThesisRepository, Thes
         return RedirectToAction("LoadCounterArgumentView", new { thesisId = thesisId });
     }
 
+    [Route("thesisPoint/{thesisId}")]
+    [HttpGet]
+    [PageName(Name = "Nhận xét, chấm điểm đề tài")]
+    public async Task<IActionResult> ThesisPoint(string thesisId)
+    {
+        _accountManager.SetHttpContext(HttpContext);
+        string userId = _accountManager.GetUserId();
+        ThesisOutput thesis = await _thesisRepository.GetAsync(thesisId);
+        ViewData["thesis"] = thesis;
+        return View(new SupervisorPointInput { ThesisId = thesisId, LecturerId=userId });
+    }
+    [Route("edit-thesis-point")]
+    [HttpPost]
+    [PageName(Name = "Chấm điểm đề tài")]
+    public async Task<IActionResult> EditThesisPoint(SupervisorPointInput input)
+    {
+        DataResponse dataResponse = await _thesisRepository.EditThesisPointAsync(input);
+        AddTempData(dataResponse);
+        return RedirectToAction("ThesisPoint", new { thesisId = input.ThesisId });
+    }
+
+
+    [Route("thesisclecturerpoint/{thesisId}")]
+    [HttpGet]
+    [PageName(Name = "Nhận xét, chấm điểm đề tài")]
+    public async Task<IActionResult> ThesisCLecturerPoint(string thesisId)
+    {
+        _accountManager.SetHttpContext(HttpContext);
+        string userId = _accountManager.GetUserId();
+        ThesisOutput thesis1 = await _thesisRepository.GetAsync(thesisId);
+        ViewData["thesis1"] = thesis1;
+        return View(new CLecturerPointInput { ThesisId = thesisId, LecturerId = userId });
+    }
+    [Route("edit-thesis-clecturer-point")]
+    [HttpPost]
+    [PageName(Name = "Chấm điểm đề tài")]
+    public async Task<IActionResult> EditThesisCLecturerPoint(CLecturerPointInput input)
+    {
+        DataResponse dataResponse = await _thesisRepository.EditThesisCLecturerPointAsync(input);
+        AddTempData(dataResponse);
+        return RedirectToAction("ThesisCLecturerPoint", new { thesisId = input.ThesisId });
+    }
 }
