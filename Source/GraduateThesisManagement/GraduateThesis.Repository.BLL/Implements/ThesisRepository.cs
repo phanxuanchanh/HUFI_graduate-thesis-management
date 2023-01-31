@@ -302,14 +302,6 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
                 Surname = s.Lecturer.Surname,
                 Name = s.Lecturer.Name,
                 Email = s.Lecturer.Email
-        thesis.CriticalLecturer = await _context.CounterArgumentResults.Include(i => i.Lecture)
-            .Where(c => c.ThesisId == id && c.IsDeleted == false)
-            .Select(s => new FacultyStaffOutput
-            {
-                Id = s.Lecture.Id,
-                Surname = s.Lecture.Surname,
-                Name = s.Lecture.Name,
-                Email = s.Lecture.Email
             }).SingleOrDefaultAsync();
 
         thesis.ThesisSupervisor = await _context.ThesisSupervisors.Include(i => i.Lecturer)
@@ -1793,7 +1785,7 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
     public async Task<DataResponse> EditThesisCLecturerPointAsync(CLecturerPointInput input)
     {
         CounterArgumentResult counterArgumentResult = await _context.CounterArgumentResults
-                 .Where(t => t.ThesisId == input.ThesisId && t.LectureId == input.LecturerId).SingleOrDefaultAsync();
+                 .Where(t => t.ThesisId == input.ThesisId && t.LecturerId == input.LecturerId).SingleOrDefaultAsync();
 
         if (counterArgumentResult == null)
             return new DataResponse
@@ -1808,7 +1800,7 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
         counterArgumentResult.PracticalResults = input.PracticalResults;
         counterArgumentResult.Defects = input.Defects;
         counterArgumentResult.Conclusions = input.Conclusions;
-        counterArgumentResult.Questions = input.Questions;
+        counterArgumentResult.Answers = input.Answers;
         counterArgumentResult.Point = input.Point;
 
         await _context.SaveChangesAsync();
@@ -1817,6 +1809,32 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
         {
             Status = DataResponseStatus.Success,
             Message = "Cập nhật điểm thành công!"
+        };
+    }
+    public async Task<DataResponse> RemoveAssignCLectAsync(string thesisId, string lecturerId)
+    {
+        CounterArgumentResult counterArgument = await _context.CounterArgumentResults.FindAsync(thesisId);
+        if (counterArgument == null)
+            return new DataResponse
+            {
+                Status = DataResponseStatus.NotFound,
+                Message = "Không tìm thấy thông tin phân công giảng viên này!"
+            };
+
+        if (counterArgument.LecturerId != lecturerId)
+            return new DataResponse
+            {
+                Status = DataResponseStatus.Failed,
+                Message = "Mã giảng viên không khớp!"
+            };
+
+        _context.CounterArgumentResults.Remove(counterArgument);
+        await _context.SaveChangesAsync();
+
+        return new DataResponse
+        {
+            Status = DataResponseStatus.Success,
+            Message = "Hoàn tất hủy phân công!"
         };
     }
 }

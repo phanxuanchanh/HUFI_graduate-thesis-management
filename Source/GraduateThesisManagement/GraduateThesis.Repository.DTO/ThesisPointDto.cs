@@ -72,9 +72,9 @@ public class CLecturerPointInput
     [Required(ErrorMessage = "{0} không được để trống")]
     public string Conclusions { get; set; }
 
-    [Display(Name = "Câu hỏi")] 
+    [Display(Name = "Câu trả lời")] 
     [Required(ErrorMessage = "{0} không được để trống")]
-    public string Questions { get; set; }
+    public string Answers { get; set; }
 
     public decimal? Point { get; set; }
 }
