@@ -302,6 +302,14 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
                 Surname = s.Lecturer.Surname,
                 Name = s.Lecturer.Name,
                 Email = s.Lecturer.Email
+        thesis.CriticalLecturer = await _context.CounterArgumentResults.Include(i => i.Lecture)
+            .Where(c => c.ThesisId == id && c.IsDeleted == false)
+            .Select(s => new FacultyStaffOutput
+            {
+                Id = s.Lecture.Id,
+                Surname = s.Lecture.Surname,
+                Name = s.Lecture.Name,
+                Email = s.Lecture.Email
             }).SingleOrDefaultAsync();
 
         thesis.ThesisSupervisor = await _context.ThesisSupervisors.Include(i => i.Lecturer)
@@ -1754,30 +1762,61 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
         };
     }
 
-    public async Task<DataResponse> RemoveAssignCLectAsync(string thesisId, string lecturerId)
+    public async Task<DataResponse> EditThesisPointAsync(SupervisorPointInput input)
     {
-        CounterArgumentResult counterArgument = await _context.CounterArgumentResults.FindAsync(thesisId);
-        if (counterArgument == null)
+        ThesisSupervisor thesisSupervisor = await _context.ThesisSupervisors
+            .Where(t => t.ThesisId == input.ThesisId && t.LecturerId == input.LecturerId).SingleOrDefaultAsync();
+
+        if (thesisSupervisor == null)
             return new DataResponse
             {
                 Status = DataResponseStatus.NotFound,
-                Message = "Không tìm thấy thông tin phân công giảng viên này!"
+                Message = "Không tìm thấy thông tin!"
             };
 
-        if (counterArgument.LecturerId != lecturerId)
-            return new DataResponse
-            {
-                Status = DataResponseStatus.Failed,
-                Message = "Mã giảng viên không khớp!"
-            };
+        thesisSupervisor.Contents = input.Contents;
+        thesisSupervisor.Attitudes = input.Attitudes;
+        thesisSupervisor.Results = input.Results;
+        thesisSupervisor.Conclusions = input.Conclusions;
+        thesisSupervisor.Point = input.Point;
+        thesisSupervisor.Notes = input.Notes;
 
-        _context.CounterArgumentResults.Remove(counterArgument);
         await _context.SaveChangesAsync();
 
         return new DataResponse
         {
             Status = DataResponseStatus.Success,
-            Message = "Hoàn tất hủy phân công!"
+            Message = "Cập nhật điểm thành công!"
+        };
+    }
+
+    public async Task<DataResponse> EditThesisCLecturerPointAsync(CLecturerPointInput input)
+    {
+        CounterArgumentResult counterArgumentResult = await _context.CounterArgumentResults
+                 .Where(t => t.ThesisId == input.ThesisId && t.LectureId == input.LecturerId).SingleOrDefaultAsync();
+
+        if (counterArgumentResult == null)
+            return new DataResponse
+            {
+                Status = DataResponseStatus.NotFound,
+                Message = "Không tìm thấy thông tin!"
+            };
+
+        counterArgumentResult.Contents = input.Contents;
+        counterArgumentResult.ResearchMethods = counterArgumentResult.ResearchMethods;
+        counterArgumentResult.ScientificResults = input.ScientificResults;
+        counterArgumentResult.PracticalResults = input.PracticalResults;
+        counterArgumentResult.Defects = input.Defects;
+        counterArgumentResult.Conclusions = input.Conclusions;
+        counterArgumentResult.Questions = input.Questions;
+        counterArgumentResult.Point = input.Point;
+
+        await _context.SaveChangesAsync();
+
+        return new DataResponse
+        {
+            Status = DataResponseStatus.Success,
+            Message = "Cập nhật điểm thành công!"
         };
     }
 }
