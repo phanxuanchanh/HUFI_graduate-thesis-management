@@ -7,7 +7,6 @@ using GraduateThesis.Repository.DAL;
 using GraduateThesis.Repository.DTO;
 using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -87,61 +86,75 @@ public class ThesisCommitteeRepository : AsyncSubRepository<ThesisCommittee, The
         output.Name = entity.Name;
     }
 
+    public override async Task<ThesisCommitteeOutput> GetAsync(string id)
+    {
+        ThesisCommitteeOutput thesisCommittee = await base.GetAsync(id);
+
+        if(thesisCommittee != null)
+        {
+            thesisCommittee.Members = await _context.CommitteeMembers
+            .Where(cm => cm.ThesisCommitteeId == thesisCommittee.Id)
+            .Select(s => new CommitteeMemberOutput
+            {
+                MemberId = s.MemberId,
+                Surname = s.Member.Surname,
+                Name = s.Member.Name,
+                Email = s.Member.Email,
+                Titles = s.Titles
+            }).ToListAsync();
+        }
+
+        return thesisCommittee;
+    }
+
     public async Task<DataResponse> AddMemberAsync(CommitteeMemberInput input)
     {
         bool checkExists = await _context.CommitteeMembers
-         .AnyAsync(t => t.MemberId == input.MemberId && t.ThesisCommitteeId == input.ThesisCommitteeId);
+         .AnyAsync(t => t.MemberId == input.MemberId && t.ThesisCommitteeId == input.CommitteeId);
 
         if (checkExists)
-            return new DataResponse { Status = DataResponseStatus.AlreadyExists, Message = "Thành viên đã được thêm vào tiểu ban!" };
+            return new DataResponse { 
+                Status = DataResponseStatus.AlreadyExists, 
+                Message = "Thành viên đã được thêm vào tiểu ban!" 
+            };
 
         CommitteeMember committeeMember = new CommitteeMember
         {
             Id = UidHelper.GetShortUid(),
-            ThesisCommitteeId = input.ThesisCommitteeId,
+            ThesisCommitteeId = input.CommitteeId,
             MemberId = input.MemberId,
             Titles = input.Titles
-
         };
 
         await _context.CommitteeMembers.AddAsync(committeeMember);
         await _context.SaveChangesAsync();
 
-        return new DataResponse { Status = DataResponseStatus.Success, Message = "Thêm giảng viên vào tiểu ban thành công!" };
-
+        return new DataResponse { 
+            Status = DataResponseStatus.Success, 
+            Message = "Thêm giảng viên vào tiểu ban thành công!" 
+        };
     }
 
-    public async Task<DataResponse> DeleteCommitteeMemberAsync(string thesisCommitteeId, string memberId)
+    public async Task<DataResponse> DeleteMemberAsync(string committeeId, string memberId)
     {
         CommitteeMember committeeMember = await _context.CommitteeMembers
-            .Where(t => t.ThesisCommitteeId == thesisCommitteeId && t.MemberId == memberId)
+            .Where(t => t.ThesisCommitteeId == committeeId && t.MemberId == memberId)
                        .SingleOrDefaultAsync();
+
         if (committeeMember == null)
             return new DataResponse
             {
                 Status = DataResponseStatus.NotFound,
-                Message = "Không tìm thấy !"
+                Message = "Không tìm thấy thành viên này trong tiểu ban!"
             };
+
         _context.CommitteeMembers.Remove(committeeMember);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
+
         return new DataResponse
         {
             Status = DataResponseStatus.Success,
             Message = "Xóa thành công!"
         };
-    }
-
-    public async Task<List<FacultyStaffOutput>> LoadCommitteeMemberAsync(string committeeId)
-    {
-        return await _context.CommitteeMembers.Include(t => t.Member).Where(t => t.ThesisCommitteeId == committeeId && t.IsDeleted == false)
-              .Select(s => new FacultyStaffOutput
-              {
-                  Id = s.Member.Id,
-                  Name = s.Member.Name,
-                  Surname = s.Member.Surname,
-
-                  Email = s.Member.Email
-
-              }).ToListAsync();
     }
 }

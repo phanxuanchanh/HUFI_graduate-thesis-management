@@ -170,8 +170,6 @@ public partial class HufiGraduateThesisContext : DbContext
                 .HasMaxLength(50)
                 .IsUnicode(false)
                 .HasColumnName("ID");
-            entity.Property(e => e.CreatedAt).HasColumnType("datetime");
-            entity.Property(e => e.DeletedAt).HasColumnType("datetime");
             entity.Property(e => e.MemberId)
                 .IsRequired()
                 .HasMaxLength(50)
@@ -182,9 +180,7 @@ public partial class HufiGraduateThesisContext : DbContext
                 .IsUnicode(false);
             entity.Property(e => e.Titles)
                 .IsRequired()
-                .HasMaxLength(50)
-                .IsUnicode(false);
-            entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+                .HasMaxLength(50);
 
             entity.HasOne(d => d.Member).WithMany(p => p.CommitteeMembers)
                 .HasForeignKey(d => d.MemberId)
@@ -205,14 +201,10 @@ public partial class HufiGraduateThesisContext : DbContext
             entity.Property(e => e.CommitteeMemberId)
                 .HasMaxLength(50)
                 .IsUnicode(false);
-            entity.Property(e => e.CreatedAt).HasColumnType("datetime");
-            entity.Property(e => e.DeletedAt).HasColumnType("datetime");
             entity.Property(e => e.EvaluationId)
-                .IsRequired()
                 .HasMaxLength(50)
                 .IsUnicode(false);
             entity.Property(e => e.Point).HasColumnType("decimal(5, 2)");
-            entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
             entity.HasOne(d => d.CommitteeMember).WithMany(p => p.CommitteeMemberResults)
                 .HasForeignKey(d => d.CommitteeMemberId)
@@ -653,14 +645,11 @@ public partial class HufiGraduateThesisContext : DbContext
                 .IsUnicode(false);
             entity.Property(e => e.Conclusions).HasColumnType("ntext");
             entity.Property(e => e.Contents).HasColumnType("ntext");
-            entity.Property(e => e.CreatedAt).HasColumnType("datetime");
-            entity.Property(e => e.DeletedAt).HasColumnType("datetime");
             entity.Property(e => e.Point).HasColumnType("decimal(5, 2)");
             entity.Property(e => e.ThesisCommitteeId)
                 .IsRequired()
                 .HasMaxLength(50)
                 .IsUnicode(false);
-            entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
             entity.HasOne(d => d.ThesisCommittee).WithMany(p => p.ThesisCommitteeResults)
                 .HasForeignKey(d => d.ThesisCommitteeId)

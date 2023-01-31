@@ -9,8 +9,5 @@ namespace GraduateThesis.Repository.BLL.Interfaces;
 public interface IThesisCommitteeRepository : IAsyncSubRepository<ThesisCommitteeInput, ThesisCommitteeOutput, string>
 {
     Task<DataResponse> AddMemberAsync(CommitteeMemberInput input);
-    Task<List<FacultyStaffOutput>> LoadCommitteeMemberAsync(string committeeId);
-    Task<DataResponse> DeleteCommitteeMemberAsync(string thesisCommitteeId, string memberId);
-
-
+    Task<DataResponse> DeleteMemberAsync(string committeeId, string memberId);
 }

@@ -11,14 +11,6 @@ public partial class CommitteeMember
 
     public string MemberId { get; set; }
 
-    public DateTime? CreatedAt { get; set; }
-
-    public DateTime? UpdatedAt { get; set; }
-
-    public DateTime? DeletedAt { get; set; }
-
-    public bool IsDeleted { get; set; }
-
     public string Titles { get; set; }
 
     public virtual ICollection<CommitteeMemberResult> CommitteeMemberResults { get; } = new List<CommitteeMemberResult>();

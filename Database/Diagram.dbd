@@ -1682,7 +1682,7 @@
             </Location>
             <Size>
               <Width>221 px</Width>
-              <Height>212 px</Height>
+              <Height>144 px</Height>
             </Size>
             <DbOid>
               <Path>[HUFI_graduate-thesis].dbo.CommitteeMembers</Path>
@@ -1708,7 +1708,7 @@
               <Port>
                 <Location>
                   <X>0 px</X>
-                  <Y>106 px</Y>
+                  <Y>72 px</Y>
                 </Location>
                 <Anchors>Top Bottom</Anchors>
                 <Align>Right</Align>
@@ -1733,7 +1733,7 @@
             <BendPoints>
               <PointD>
                 <X>2239.5 px</X>
-                <Y>2236 px</Y>
+                <Y>2202 px</Y>
               </PointD>
             </BendPoints>
             <IsManuallyRouted>false</IsManuallyRouted>
@@ -1783,7 +1783,7 @@
               <Port>
                 <Location>
                   <X>0 px</X>
-                  <Y>106 px</Y>
+                  <Y>72 px</Y>
                 </Location>
                 <Anchors>Top Bottom</Anchors>
                 <Align>Left</Align>
@@ -1808,7 +1808,7 @@
             <BendPoints>
               <PointD>
                 <X>93.5 px</X>
-                <Y>2236 px</Y>
+                <Y>2202 px</Y>
               </PointD>
             </BendPoints>
             <IsManuallyRouted>true</IsManuallyRouted>
@@ -1855,7 +1855,7 @@
             </Location>
             <Size>
               <Width>264 px</Width>
-              <Height>212 px</Height>
+              <Height>144 px</Height>
             </Size>
             <DbOid>
               <Path>[HUFI_graduate-thesis].dbo.CommitteeMemberResults</Path>
@@ -1881,7 +1881,7 @@
               <Port>
                 <Location>
                   <X>0 px</X>
-                  <Y>53 px</Y>
+                  <Y>36 px</Y>
                 </Location>
                 <Anchors>Top Bottom</Anchors>
                 <Align>Left</Align>
@@ -1906,7 +1906,7 @@
             <BendPoints>
               <PointD>
                 <X>1222 px</X>
-                <Y>2183 px</Y>
+                <Y>2166 px</Y>
               </PointD>
             </BendPoints>
             <IsManuallyRouted>false</IsManuallyRouted>
@@ -1926,7 +1926,7 @@
               <Port xsi:type="LinkPort">
                 <Location>
                   <X>0 px</X>
-                  <Y>-225.5 px</Y>
+                  <Y>-251 px</Y>
                 </Location>
                 <Anchors>None</Anchors>
                 <Align>Bottom</Align>
@@ -2032,7 +2032,7 @@
             </Location>
             <Size>
               <Width>251 px</Width>
-              <Height>229 px</Height>
+              <Height>161 px</Height>
             </Size>
             <DbOid>
               <Path>[HUFI_graduate-thesis].dbo.ThesisCommitteeResults</Path>
@@ -2172,7 +2172,7 @@
               <Port xsi:type="LinkPort">
                 <Location>
                   <X>0 px</X>
-                  <Y>-123.5 px</Y>
+                  <Y>-157.5 px</Y>
                 </Location>
                 <Anchors>None</Anchors>
                 <Align>Bottom</Align>
@@ -2880,8 +2880,8 @@
           <ScaleMode>Free</ScaleMode>
           <Scale>0.5</Scale>
           <Location>
-            <X>-728 px</X>
-            <Y>1059.20000076294 px</Y>
+            <X>219.2 px</X>
+            <Y>1076.79999923706 px</Y>
           </Location>
         </ViewPort>
       </Model>

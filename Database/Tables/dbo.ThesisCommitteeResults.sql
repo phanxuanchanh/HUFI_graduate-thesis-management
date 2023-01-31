@@ -4,10 +4,6 @@
   [Contents] [ntext] NULL,
   [Conclusions] [ntext] NULL,
   [Point] [decimal](5, 2) NULL,
-  [CreatedAt] [datetime] NULL,
-  [UpdatedAt] [datetime] NULL,
-  [DeletedAt] [datetime] NULL,
-  [IsDeleted] [bit] NOT NULL,
   CONSTRAINT [PK_ThesisCommitteeResults_ThesisId] PRIMARY KEY CLUSTERED ([ThesisId])
 )
 ON [PRIMARY]
