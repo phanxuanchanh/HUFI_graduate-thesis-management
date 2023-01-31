@@ -61,7 +61,7 @@ public class ThesisManagerController : WebControllerBase<IThesisRepository, Thes
     {
         return new Dictionary<string, string>
         {
-            { "Id", "Mã" }, { "Name", "Tên" }, { "LectureName", "Tên GV" }, { "Year", "Năm học" },
+            { "Id", "Mã" }, { "Name", "Tên" }, { "LectureName", "Tên GV" }, { "Year", "Năm học" }
         };
     }
 
@@ -515,6 +515,26 @@ public class ThesisManagerController : WebControllerBase<IThesisRepository, Thes
     {
         OrderOptions orderOpts = (orderOptions == "ASC") ? OrderOptions.ASC : OrderOptions.DESC;
         Pagination<ThesisOutput> pagination = await _thesisRepository.GetPgnOfThesesInprAsync(page, pageSize, orderBy, orderOpts, searchBy, keyword);
+        StaticPagedList<ThesisOutput> pagedList = pagination.ToStaticPagedList();
+
+        ViewData["OrderByProperties"] = SetOrderByProperties();
+        ViewData["SearchByProperties"] = SetSearchByProperties();
+        ViewData["PagedList"] = pagedList;
+        ViewData["OrderBy"] = orderBy;
+        ViewData["OrderOptions"] = orderOptions;
+        ViewData["SearchBy"] = searchBy;
+        ViewData["Keyword"] = keyword;
+
+        return View();
+    }
+
+    [Route("finished-list")]
+    [HttpGet]
+    [PageName(Name = "Danh sách đề tài đã hoàn thành")]
+    public async Task<IActionResult> GetFinishedList(int page = 1, int pageSize = 10, string orderBy = "CreatedAt", string orderOptions = "DESC", string searchBy = "All", string keyword = "")
+    {
+        OrderOptions orderOpts = (orderOptions == "ASC") ? OrderOptions.ASC : OrderOptions.DESC;
+        Pagination<ThesisOutput> pagination = await _thesisRepository.GetPgnOfFinishedThesesAsync(page, pageSize, orderBy, orderOpts, searchBy, keyword);
         StaticPagedList<ThesisOutput> pagedList = pagination.ToStaticPagedList();
 
         ViewData["OrderByProperties"] = SetOrderByProperties();

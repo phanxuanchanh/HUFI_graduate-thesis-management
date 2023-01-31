@@ -5,7 +5,7 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-body">
-                    <a asp-action="ExportThesesInProgress" class="btn btn-info" type="button">Xuất</a>
+                    <a asp-action="ExportPublishedTheses" class="btn btn-info" type="button">Xuất</a>
                     <a asp-action="Print" class="btn btn-secondary" type="button">In</a>
                 </div>
             </div>
@@ -28,7 +28,7 @@
         </div>
         <div class="card-body">
             <div class="dataTable-wrapper dataTable-loading no-footer sortable searchable fixed-columns">
-                @await Component.InvokeAsync("FacultyStaffLayout_PagedSearch", new { action = "GetInProgressList", enableSearchBy = true })
+                @await Component.InvokeAsync("FacultyStaffLayout_PagedSearch", new { action = "GetFinishedList", enableSearchBy = true })
                 <div class="dataTable-container">
                     <table class="table table-striped dataTable-table" id="table1">
                         <thead>
@@ -39,14 +39,17 @@
                                 <th data-sortable="" style="width: 12%;">
                                     <a href="#" class="dataTable-sorter">@Html.DisplayNameFor(model => model.Id)</a>
                                 </th>
-                                <th data-sortable="" style="width: 20%;">
+                                <th data-sortable="" style="width: 28%;">
                                     <a href="#" class="dataTable-sorter">@Html.DisplayNameFor(model => model.Name)</a>
                                 </th>
-                                <th data-sortable="" style="width: 20%;">
-                                    <a href="#" class="dataTable-sorter">Giảng viên</a>
+                                <th data-sortable="" style="width: 15%;">
+                                    <a href="#" class="dataTable-sorter">@Html.DisplayNameFor(model => model.Lecturer.FullName)</a>
                                 </th>
-                                <th data-sortable="" style="width: 20%;">
-                                    <a href="#" class="dataTable-sorter">Nhóm</a>
+                                <th data-sortable="" style="width: 12%;">
+                                    <a href="#" class="dataTable-sorter">@Html.DisplayNameFor(model => model.Year)</a>
+                                </th>
+                                <th data-sortable="" style="width: 8%">
+                                    <a href="#" class="dataTable-sorter">@Html.DisplayNameFor(model => model.Semester)</a>
                                 </th>
                                 <th data-sortable="" style="width: 15%;">
                                     <a href="#" class="dataTable-sorter">Công cụ</a>
@@ -63,17 +66,9 @@
                                     <td>@count</td>
                                     <td>@thesis.Id</td>
                                     <td>@thesis.Name</td>
-                                    <td>
-                                        <p class="m-0">GV ra đề: @thesis.Lecturer.FullName</p>
-                                        <p class="m-0">GVHD: @thesis.ThesisSupervisor?.FullName</p>
-                                        <p class="m-0">GVPB: @thesis.CriticalLecturer?.FullName</p>
-                                    </td>
-                                    <td>
-                                        @foreach (StudentOutput student in thesis.ThesisGroup.Students)
-                                        {
-                                            <p class="m-0">@student.Id - @student.FullName</p>
-                                        }
-                                    </td>
+                                    <td>@thesis.Lecturer.FullName</td>
+                                    <td>@thesis.Year</td>
+                                    <td>@thesis.Semester</td>
                                     <td>
                                         <a class="btn btn-success btn-sm" asp-action="Details" asp-route-id="@thesis.Id">
                                             <i class="fas fa-folder"></i> Chi tiết
@@ -85,7 +80,7 @@
                         </tbody>
                     </table>
                 </div>
-                @await Component.InvokeAsync("FacultyStaffLayout_Paged", new { action = "GetInProgressList", enableSearchBy = true })
+                @await Component.InvokeAsync("FacultyStaffLayout_Paged", new { action = "GetFinishedList", enableSearchBy = true })
             </div>
         </div>
     </div>

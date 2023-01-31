@@ -90,18 +90,61 @@ public class ThesisCommitteeRepository : AsyncSubRepository<ThesisCommittee, The
     {
         ThesisCommitteeOutput thesisCommittee = await base.GetAsync(id);
 
-        if(thesisCommittee != null)
+        if (thesisCommittee != null)
         {
+            thesisCommittee.Theses = await _context.ThesisCommitteeResults
+                .Include(i => i.Thesis).Include(i => i.Thesis.Lecture)
+                .Where(tc => tc.ThesisCommitteeId == thesisCommittee.Id && tc.Thesis.IsDeleted == false)
+                .Join(
+                    _context.ThesisSupervisors.Include(i => i.Lecturer).Where(ts => ts.Lecturer.IsDeleted == false),
+                    committeeRes => committeeRes.ThesisId,
+                    supervisor => supervisor.ThesisId,
+                    (committeeRes, supervisor) => new ThesisOutput
+                    {
+                        Id = committeeRes.ThesisId,
+                        Name = committeeRes.Thesis.Name,
+                        Lecturer = new FacultyStaffOutput
+                        {
+                            Id = committeeRes.Thesis.Id,
+                            Surname = committeeRes.Thesis.Lecture.Surname,
+                            Name = committeeRes.Thesis.Lecture.Name
+                        },
+                        ThesisSupervisor = new FacultyStaffOutput
+                        {
+                            Id = supervisor.Lecturer.Id,
+                            Surname = supervisor.Lecturer.Surname,
+                            Name = supervisor.Lecturer.Name
+                        }
+                    }
+                ).Join(
+                    _context.CounterArgumentResults.Include(i => i.Lecturer).Where(c => c.Lecturer.IsDeleted == false),
+                    combined => combined.Id,
+                    criticalLecturer => criticalLecturer.ThesisId,
+                    (combined, criticalLecturer) => new ThesisOutput
+                    {
+                        Id = combined.Id,
+                        Name = combined.Name,
+                        Lecturer = combined.Lecturer,
+                        ThesisSupervisor = combined.ThesisSupervisor,
+                        CriticalLecturer = new FacultyStaffOutput
+                        {
+                            Id = criticalLecturer.Lecturer.Id,
+                            Surname = criticalLecturer.Lecturer.Surname,
+                            Name = criticalLecturer.Lecturer.Name
+                        }
+                    }
+                ).ToListAsync();
+
             thesisCommittee.Members = await _context.CommitteeMembers
-            .Where(cm => cm.ThesisCommitteeId == thesisCommittee.Id)
-            .Select(s => new CommitteeMemberOutput
-            {
-                MemberId = s.MemberId,
-                Surname = s.Member.Surname,
-                Name = s.Member.Name,
-                Email = s.Member.Email,
-                Titles = s.Titles
-            }).ToListAsync();
+                .Where(cm => cm.ThesisCommitteeId == thesisCommittee.Id)
+                .Select(s => new CommitteeMemberOutput
+                {
+                    MemberId = s.MemberId,
+                    Surname = s.Member.Surname,
+                    Name = s.Member.Name,
+                    Email = s.Member.Email,
+                    Titles = s.Titles
+                }).ToListAsync();
         }
 
         return thesisCommittee;
@@ -113,9 +156,10 @@ public class ThesisCommitteeRepository : AsyncSubRepository<ThesisCommittee, The
          .AnyAsync(t => t.MemberId == input.MemberId && t.ThesisCommitteeId == input.CommitteeId);
 
         if (checkExists)
-            return new DataResponse { 
-                Status = DataResponseStatus.AlreadyExists, 
-                Message = "Thành viên đã được thêm vào tiểu ban!" 
+            return new DataResponse
+            {
+                Status = DataResponseStatus.AlreadyExists,
+                Message = "Thành viên đã được thêm vào tiểu ban!"
             };
 
         CommitteeMember committeeMember = new CommitteeMember
@@ -129,9 +173,10 @@ public class ThesisCommitteeRepository : AsyncSubRepository<ThesisCommittee, The
         await _context.CommitteeMembers.AddAsync(committeeMember);
         await _context.SaveChangesAsync();
 
-        return new DataResponse { 
-            Status = DataResponseStatus.Success, 
-            Message = "Thêm giảng viên vào tiểu ban thành công!" 
+        return new DataResponse
+        {
+            Status = DataResponseStatus.Success,
+            Message = "Thêm giảng viên vào tiểu ban thành công!"
         };
     }
 
@@ -149,6 +194,57 @@ public class ThesisCommitteeRepository : AsyncSubRepository<ThesisCommittee, The
             };
 
         _context.CommitteeMembers.Remove(committeeMember);
+        await _context.SaveChangesAsync();
+
+        return new DataResponse
+        {
+            Status = DataResponseStatus.Success,
+            Message = "Xóa thành công!"
+        };
+    }
+
+    public async Task<DataResponse> AddThesisAsync(string committeeId, string thesisId)
+    {
+        bool checkExists = await _context.ThesisCommitteeResults
+         .AnyAsync(t => t.ThesisId == thesisId && t.ThesisCommitteeId == committeeId);
+
+        if (checkExists)
+            return new DataResponse
+            {
+                Status = DataResponseStatus.AlreadyExists,
+                Message = "Đề tài đã được thêm vào tiểu ban!"
+            };
+
+        ThesisCommitteeResult committeeResult = new ThesisCommitteeResult
+        {
+            ThesisCommitteeId = committeeId,
+            ThesisId = thesisId,
+        };
+
+        await _context.ThesisCommitteeResults.AddAsync(committeeResult);
+        await _context.SaveChangesAsync();
+
+        return new DataResponse
+        {
+            Status = DataResponseStatus.Success,
+            Message = "Thêm giảng viên vào tiểu ban thành công!"
+        };
+    }
+
+    public async Task<DataResponse> DeleteThesisAsync(string committeeId, string thesisId)
+    {
+        ThesisCommitteeResult committeeResult = await _context.ThesisCommitteeResults
+            .Where(tc => tc.ThesisCommitteeId == committeeId && tc.ThesisId == thesisId)
+            .SingleOrDefaultAsync();
+
+        if (committeeResult == null)
+            return new DataResponse
+            {
+                Status = DataResponseStatus.NotFound,
+                Message = "Không tìm thấy đề tài này trong tiểu ban!"
+            };
+
+        _context.ThesisCommitteeResults.Remove(committeeResult);
         await _context.SaveChangesAsync();
 
         return new DataResponse
