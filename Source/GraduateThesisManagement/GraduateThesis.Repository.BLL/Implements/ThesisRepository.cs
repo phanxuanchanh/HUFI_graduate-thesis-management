@@ -398,7 +398,7 @@ public partial class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, 
         }
     }
 
-    public async Task<DataResponse> SubmitThesisAsync(string thesisId, string thesisGroupId)
+    public async Task<DataResponse> SubmitThesisAsync(string thesisId, string groupId)
     {
         Thesis thesis = await _context.Theses.FindAsync(thesisId);
         if (thesis == null)
@@ -415,7 +415,7 @@ public partial class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, 
                 Message = "Đề tài này chưa được đăng ký ! Bạn không được phép nộp đề tài này"
             };
 
-        if (thesis.ThesisGroupId != thesisGroupId)
+        if (thesis.ThesisGroupId != groupId)
             return new DataResponse
             {
                 Status = DataResponseStatus.InvalidData,

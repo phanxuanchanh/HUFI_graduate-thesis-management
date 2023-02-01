@@ -816,20 +816,20 @@ public class StudentRepository : AsyncSubRepository<Student, StudentInput, Stude
                 Data = "Completed"
             };
 
-        if (student.ThesisGroupDetails.Any(gd => gd.StatusId == GroupStatusConsts.Joined && gd.IsLeader == true))
+        if (student.ThesisGroupDetails.Any(gd => gd.StatusId == GroupStatusConsts.Pending))
+            return new DataResponse<string>
+            {
+                Status = DataResponseStatus.AlreadyExists,
+                Message = "Không thể đăng ký mới đề tài vì bạn đã được mời vào nhóm",
+                Data = "Invited"
+            };
+
+        if (student.ThesisGroupDetails.Any(gd => gd.StatusId == GroupStatusConsts.Joined))
             return new DataResponse<string>
             {
                 Status = DataResponseStatus.AlreadyExists,
                 Message = "Bạn đã đăng ký đề tài, không thể đăng ký thêm",
                 Data = "Registered"
-            };
-
-        if (student.ThesisGroupDetails.Any(gd => gd.StatusId == GroupStatusConsts.Joined && gd.IsLeader == false))
-            return new DataResponse<string>
-            {
-                Status = DataResponseStatus.AlreadyExists,
-                Message = "Bạn không thể đăng ký đề tài vì đã được mời vào nhóm!",
-                Data = "Invited"
             };
 
         return new DataResponse<string>

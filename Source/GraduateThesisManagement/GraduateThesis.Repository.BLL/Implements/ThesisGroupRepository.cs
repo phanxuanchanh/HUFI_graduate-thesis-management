@@ -300,6 +300,6 @@ public class ThesisGroupRepository : AsyncSubRepository<ThesisGroup, ThesisGroup
     public async Task<bool> CheckIsLeaderAsync(string studentId, string groupId)
     {
         return await _context.ThesisGroupDetails
-            .AnyAsync(gd => gd.StudentId == studentId && gd.StudentThesisGroupId == groupId);
+            .AnyAsync(gd => gd.StudentId == studentId && gd.StudentThesisGroupId == groupId && gd.IsLeader == true);
     }
 }

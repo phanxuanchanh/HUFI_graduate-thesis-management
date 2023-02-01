@@ -39,6 +39,14 @@
                     {
                         <p class="m-0 text-danger">Trạng thái: Đã bị hủy</p>
                     }
+                    else if (thesisGroupDt.StatusId == GroupStatusConsts.Submitted)
+                    {
+                        <p class="m-0 text-danger">Trạng thái: Đã nộp đề tài</p>
+                    }
+                    else if (thesisGroupDt.StatusId == GroupStatusConsts.Failed)
+                    {
+                        <p class="m-0 text-danger">Trạng thái: Không đạt</p>
+                    }
                     else
                     {
                         <p class="m-0 text-primary">Trạng thái: Đã hoàn thành</p>
@@ -48,13 +56,28 @@
             <div class="card-content">
                 <div class="card-body">
                     <div class="d-flex justify-content-center">
-                        <a asp-action="GetThesis" asp-route-thesisId="@thesisGroupDt.ThesisId" class="btn btn-success me-1 mb-1">Xem đề tài</a>
-                        @if (thesisGroupDt.StatusId == GroupStatusConsts.Joined){ 
+                        @if (thesisGroupDt.StatusId != GroupStatusConsts.Denied){
+                            <a asp-action="GetThesis" asp-route-thesisId="@thesisGroupDt.ThesisId" class="btn btn-success me-1 mb-1">Xem đề tài</a>
+                        }
+                        
+                        @if (thesisGroupDt.StatusId == GroupStatusConsts.Joined || thesisGroupDt.StatusId == GroupStatusConsts.Submitted)
+                        {
                             <a asp-action="GetRevisions" asp-route-thesisId="@thesisGroupDt.ThesisId" asp-route-groupId="@thesisGroupDt.GroupId" class="btn btn-success me-1 mb-1">Xem tiến độ</a>
                             if (thesisGroupDt.IsLeader)
                             {
                                 <a asp-action="SubmitThesis" asp-route-thesisId="@thesisGroupDt.ThesisId" asp-route-groupId="@thesisGroupDt.GroupId" class="btn btn-success me-1 mb-1">Nộp đề tài</a>
                             }
+                        }
+
+                        @if(thesisGroupDt.StatusId == GroupStatusConsts.Pending){
+                            <button type="submit" form="joinToGroup" class="btn btn-success me-1 mb-1">Tham gia</button>
+                            <button type="submit" form="denyFromGroup" class="btn btn-danger me-1 mb-1">Từ chối</button>
+                            <form asp-action="JoinToGroup" id="joinToGroup" method="post">
+                                <input type="hidden" name="groupId" value="@thesisGroupDt.GroupId">
+                            </form>
+                            <form asp-action="DenyFromGroup" id="denyFromGroup" method="post">
+                                <input type="hidden" name="groupId" value="@thesisGroupDt.GroupId">
+                            </form>
                         }
                     </div>
                 </div>

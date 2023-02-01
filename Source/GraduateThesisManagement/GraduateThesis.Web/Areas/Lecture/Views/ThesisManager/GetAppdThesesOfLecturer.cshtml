@@ -64,12 +64,9 @@
                                     <td>@thesis.Year</td>
                                     <td>@thesis.Semester</td>
                                     <td>
-                                        <a class="btn btn-primary btn-sm" asp-action="Edit" asp-route-id="@thesis.Id">
-                                            <i class="fas fa-folder"></i> Sửa
+                                        <a class="btn btn-success btn-sm" asp-action="Details" asp-route-id="@thesis.Id">
+                                            <i class="fas fa-folder"></i> Chi tiết
                                         </a>
-                                        <button type="submit" form="publish_@count" class="btn btn-success btn-sm"><i class="fas fa-trash"></i> Công bố</button>
-                                        <form asp-action="PublishThesis" asp-route-thesisId="@thesis.Id" id="publish_@count" method="post">
-                                        </form>
                                     </td>
                                 </tr>
                                 count++;
