@@ -18,7 +18,7 @@
 <section class="section">
     <div class="card">
         <div class="card-header">
-            @await Component.InvokeAsync("FacultyStaffLayout_MyTListSlctn", new { action = "GetThesesToSupv" })
+            @await Component.InvokeAsync("FacultyStaffLayout_MyTListSlctn", new { action = "GetThesesToCriticize" })
         </div>
         <div class="card-body">
             <div class="dataTable-wrapper dataTable-loading no-footer sortable searchable fixed-columns">
@@ -80,7 +80,7 @@
                         </tbody>
                     </table>
                 </div>
-                @await Component.InvokeAsync("FacultyStaffLayout_Paged", new { action = "GetThesesToSupv", enableSearchBy = true })
+                @await Component.InvokeAsync("FacultyStaffLayout_Paged", new { action = "GetThesesToCriticize", enableSearchBy = true })
             </div>
         </div>
     </div>

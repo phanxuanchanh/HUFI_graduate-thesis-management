@@ -866,4 +866,83 @@ public partial class ThesisRepository
             Items = onePageOfData
         };
     }
+
+    public async Task<Pagination<ThesisOutput>> GetPgnToCriticizeAsync(string lecturerId, int page, int pageSize, string orderBy, OrderOptions orderOptions, string searchBy, string keyword)
+    {
+        IQueryable<CounterArgumentResult> queryable = _context.CounterArgumentResults
+            .Include(i => i.Thesis).Include(i => i.Thesis.ThesisGroup)
+            .Where(ts => ts.LecturerId == lecturerId && ts.Thesis.StatusId == ThesisStatusConsts.Submitted && ts.Thesis.IsDeleted == false);
+
+        if (!string.IsNullOrEmpty(keyword) && string.IsNullOrEmpty(searchBy))
+        {
+            queryable = queryable.Where(ts => ts.Thesis.Id.Contains(keyword) || ts.Thesis.Name.Contains(keyword) || ts.Thesis.Year.Contains(keyword));
+        }
+
+        if (!string.IsNullOrEmpty(keyword) && !string.IsNullOrEmpty(searchBy))
+        {
+            switch (searchBy)
+            {
+                case "All": queryable = queryable.Where(ts => ts.Thesis.Id.Contains(keyword) || ts.Thesis.Name.Contains(keyword) || ts.Thesis.Year.Contains(keyword)); break;
+                case "Id": queryable = queryable.Where(ts => ts.Thesis.Id.Contains(keyword)); break;
+                case "Name": queryable = queryable.Where(ts => ts.Thesis.Name.Contains(keyword)); break;
+                case "Year": queryable = queryable.Where(ts => ts.Thesis.Year.Contains(keyword)); break;
+            }
+        }
+
+        if (string.IsNullOrEmpty(orderBy))
+        {
+            queryable = queryable.OrderByDescending(ts => ts.Thesis.CreatedAt);
+        }
+        else if (orderOptions == OrderOptions.ASC)
+        {
+            switch (orderBy)
+            {
+                case "Id": queryable = queryable.OrderBy(ts => ts.Thesis.Id); break;
+                case "Name": queryable = queryable.OrderBy(ts => ts.Thesis.Name); break;
+                case "Year": queryable = queryable.OrderBy(ts => ts.Thesis.Year); break;
+                case "CreatedAt": queryable = queryable.OrderBy(t => t.Thesis.CreatedAt); break;
+            }
+        }
+        else
+        {
+            switch (orderBy)
+            {
+                case "Id": queryable = queryable.OrderByDescending(ts => ts.Thesis.Id); break;
+                case "Name": queryable = queryable.OrderByDescending(ts => ts.Thesis.Name); break;
+                case "Year": queryable = queryable.OrderByDescending(ts => ts.Thesis.Year); break;
+                case "CreatedAt": queryable = queryable.OrderByDescending(t => t.Thesis.CreatedAt); break;
+            }
+        }
+
+        int n = (page - 1) * pageSize;
+        int totalItemCount = await queryable.CountAsync();
+
+        List<ThesisOutput> onePageOfData = await queryable.Skip(n).Take(pageSize)
+            .Select(s => new ThesisOutput
+            {
+                Id = s.Thesis.Id,
+                Name = s.Thesis.Name,
+                MaxStudentNumber = s.Thesis.MaxStudentNumber,
+                ThesisGroupId = s.Thesis.ThesisGroupId,
+                ThesisGroup = new ThesisGroupOutput
+                {
+                    Students = _context.ThesisGroupDetails.Include(i => i.Student)
+                        .Where(i => i.StudentThesisGroupId == s.Thesis.ThesisGroupId && i.Student.IsDeleted == false)
+                        .Select(st => new StudentOutput
+                        {
+                            Id = st.StudentId,
+                            Surname = st.Student.Surname,
+                            Name = st.Student.Name
+                        }).ToList()
+                }
+            }).ToListAsync();
+
+        return new Pagination<ThesisOutput>
+        {
+            Page = page,
+            PageSize = pageSize,
+            TotalItemCount = totalItemCount,
+            Items = onePageOfData
+        };
+    }
 }

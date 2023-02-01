@@ -66,6 +66,10 @@
                                                     <p><span class="fw-bold">Điểm quá trình</span>: @thesisRevision.Point</p>
                                                 </div>
                                             </div>
+                                        }else{
+                                            <div class="review mt-4">
+                                                <a asp-action="ReviewRevision" asp-route-revisionId="@thesisRevision.Id" class="btn btn-success">Thực hiện đánh giá</a>
+                                            </div>
                                         }
                                     </div>
                                     count--;
