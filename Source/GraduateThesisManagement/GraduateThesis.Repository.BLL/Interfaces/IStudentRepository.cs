@@ -11,7 +11,7 @@ public interface IStudentRepository : IAsyncSubRepository<StudentInput, StudentO
     Task<Pagination<StudentOutput>> GetPaginationAsync(int page, int pageSize, string orderBy, OrderOptions orderOptions, string searchBy, string keyword);
     Task<DataResponse> UpdateProfileAsync(StudentInput input, FileUploadModel avtUploadModel);
     Task<DataResponse> SetDefaultAvatarAsync(string studentId);
-    Task<DataResponse<string>> CheckRegisterThesis(string studentId);
+    Task<DataResponse<string>> CheckRegThesisAsync(string studentId);
     Task<object> SearchForThesisRegAsync(string keyword);
     Task<object> GetForThesisRegAsync(string studentId);
     Task<Pagination<StudentOutput>> GetPgnOfUnRegdStdntAsync(int page, int pageSize, string orderBy, OrderOptions orderOptions, string searchBy, string keyword);

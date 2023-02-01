@@ -795,7 +795,7 @@ public class StudentRepository : AsyncSubRepository<Student, StudentInput, Stude
         }
     }
 
-    public async Task<DataResponse<string>> CheckRegisterThesis(string studentId)
+    public async Task<DataResponse<string>> CheckRegThesisAsync(string studentId)
     {
         Student student = await _context.Students.Include(i => i.ThesisGroupDetails)
            .Where(st => st.Id == studentId && st.IsDeleted == false).SingleOrDefaultAsync();

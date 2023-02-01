@@ -1953,4 +1953,39 @@ public class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, ThesisOu
             Items = onePageOfData
         };
     }
+
+    public async Task<DataResponse<string>> CheckHasThesisAsync(string thesisId, string studentId)
+    {
+        Thesis thesis = await _context.Theses
+            .Include(i => i.ThesisGroup).Include(i => i.ThesisGroup.ThesisGroupDetails)
+            .Where(t => t.Id == thesisId && t.IsDeleted == false)
+            .Select(s => new Thesis
+            {
+                Id = s.Id,
+                ThesisGroup = s.ThesisGroup
+            }).SingleOrDefaultAsync();
+
+        if (thesis == null)
+            return new DataResponse<string>
+            {
+                Status = DataResponseStatus.NotFound,
+                Message = "Không tìm thấy đề tài này!",
+                Data = "ThesisNotFound"
+            };
+
+        if (!thesis.ThesisGroup.ThesisGroupDetails.Any(gd => gd.StudentId == studentId))
+            return new DataResponse<string>
+            {
+                Status = DataResponseStatus.NotFound,
+                Message = "Không tìm thấy sinh viên này!",
+                Data = "StudentNotFound"
+            };
+
+        return new DataResponse<string>
+        {
+            Status = DataResponseStatus.Success,
+            Message = "Tìm thấy sinh viên này!",
+            Data = "Found"
+        };
+    }
 }

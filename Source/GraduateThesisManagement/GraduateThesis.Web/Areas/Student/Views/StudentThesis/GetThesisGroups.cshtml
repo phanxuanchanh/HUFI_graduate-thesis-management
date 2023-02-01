@@ -23,23 +23,40 @@
                     <p class="m-0">Tên nhóm: @thesisGroupDt.GroupName</p>
                     <p class="m-0">Số thành viên: @thesisGroupDt.StudentQuantity</p>
                     <p class="m-0">Ngày đăng ký: @thesisGroupDt.RegistrationDate</p>
+                    @if (thesisGroupDt.StatusId == GroupStatusConsts.Pending)
+                    {
+                        <p class="m-0 text-info">Trạng thái: Đang chờ chấp thuận vào nhóm</p>
+                    }
+                    else if (thesisGroupDt.StatusId == GroupStatusConsts.Denied)
+                    {
+                        <p class="m-0 text-danger">Trạng thái: Đã từ chối vào nhóm</p>
+                    }
+                    else if (thesisGroupDt.StatusId == GroupStatusConsts.Joined)
+                    {
+                        <p class="m-0 text-success">Trạng thái: Đã tham gia vào nhóm</p>
+                    }
+                    else if (thesisGroupDt.StatusId == GroupStatusConsts.Canceled)
+                    {
+                        <p class="m-0 text-danger">Trạng thái: Đã bị hủy</p>
+                    }
+                    else
+                    {
+                        <p class="m-0 text-primary">Trạng thái: Đã hoàn thành</p>
+                    }
                 </div>
             </div>
             <div class="card-content">
                 <div class="card-body">
                     <div class="d-flex justify-content-center">
-                        <a asp-action="GetThesisGroup" class="btn btn-success me-1 mb-1">Xem</a>
+                        <a asp-action="GetThesis" asp-route-thesisId="@thesisGroupDt.ThesisId" class="btn btn-success me-1 mb-1">Xem đề tài</a>
+                        @if (thesisGroupDt.StatusId == GroupStatusConsts.Joined){ 
+                            <a asp-action="GetRevisions" asp-route-thesisId="@thesisGroupDt.ThesisId" asp-route-groupId="@thesisGroupDt.GroupId" class="btn btn-success me-1 mb-1">Xem tiến độ</a>
+                            if (thesisGroupDt.IsLeader)
+                            {
+                                <a asp-action="SubmitThesis" asp-route-thesisId="@thesisGroupDt.ThesisId" class="btn btn-success me-1 mb-1">Nộp đề tài</a>
+                            }
+                        }
                     </div>
-                    
-                    @if (thesisGroupDt.Group_IsFinished && thesisGroupDt.Group_IsCompleted)
-                    {
-
-                    }
-
-                    @if(thesisGroupDt.Member_IsApproved){
-
-                    }
-
                 </div>
             </div>
         </div>
