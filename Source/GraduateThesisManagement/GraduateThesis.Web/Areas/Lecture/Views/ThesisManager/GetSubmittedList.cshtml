@@ -5,7 +5,7 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-body">
-                    <a asp-action="ExportThesesInProgress" class="btn btn-info" type="button">Xuất</a>
+                    <a asp-action="ExportSubmittedTheses" class="btn btn-info" type="button">Xuất</a>
                     <a asp-action="Print" class="btn btn-secondary" type="button">In</a>
                 </div>
             </div>
@@ -18,11 +18,11 @@
 <section class="section">
     <div class="card">
         <div class="card-header">
-            @await Component.InvokeAsync("FacultyStaffLayout_ThesisListSlctn", new { action = "GetInProgressList" })
+            @await Component.InvokeAsync("FacultyStaffLayout_ThesisListSlctn", new { action = "GetSubmittedList" });
         </div>
         <div class="card-body">
             <div class="dataTable-wrapper dataTable-loading no-footer sortable searchable fixed-columns">
-                @await Component.InvokeAsync("FacultyStaffLayout_PagedSearch", new { action = "GetInProgressList", enableSearchBy = true })
+                @await Component.InvokeAsync("FacultyStaffLayout_PagedSearch", new { action = "GetSubmittedList", enableSearchBy = true })
                 <div class="dataTable-container">
                     <table class="table table-striped dataTable-table" id="table1">
                         <thead>
@@ -79,7 +79,7 @@
                         </tbody>
                     </table>
                 </div>
-                @await Component.InvokeAsync("FacultyStaffLayout_Paged", new { action = "GetInProgressList", enableSearchBy = true })
+                @await Component.InvokeAsync("FacultyStaffLayout_Paged", new { action = "GetSubmittedList", enableSearchBy = true })
             </div>
         </div>
     </div>

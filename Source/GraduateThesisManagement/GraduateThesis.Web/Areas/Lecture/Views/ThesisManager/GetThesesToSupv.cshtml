@@ -5,7 +5,7 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-body">
-                    <a asp-action="ExportThesesInProgress" class="btn btn-info" type="button">Xuất</a>
+                    <a asp-action="Export" class="btn btn-info" type="button">Xuất</a>
                     <a asp-action="Print" class="btn btn-secondary" type="button">In</a>
                 </div>
             </div>
@@ -18,11 +18,11 @@
 <section class="section">
     <div class="card">
         <div class="card-header">
-            @await Component.InvokeAsync("FacultyStaffLayout_ThesisListSlctn", new { action = "GetInProgressList" })
+            
         </div>
         <div class="card-body">
             <div class="dataTable-wrapper dataTable-loading no-footer sortable searchable fixed-columns">
-                @await Component.InvokeAsync("FacultyStaffLayout_PagedSearch", new { action = "GetInProgressList", enableSearchBy = true })
+                @await Component.InvokeAsync("FacultyStaffLayout_PagedSearch", new { action = "GetThesesToSupv", enableSearchBy = true })
                 <div class="dataTable-container">
                     <table class="table table-striped dataTable-table" id="table1">
                         <thead>
@@ -36,13 +36,10 @@
                                 <th data-sortable="" style="width: 20%;">
                                     <a href="#" class="dataTable-sorter">@Html.DisplayNameFor(model => model.Name)</a>
                                 </th>
-                                <th data-sortable="" style="width: 20%;">
-                                    <a href="#" class="dataTable-sorter">Giảng viên</a>
-                                </th>
-                                <th data-sortable="" style="width: 20%;">
+                                <th data-sortable="" style="width: 35%;">
                                     <a href="#" class="dataTable-sorter">Nhóm</a>
                                 </th>
-                                <th data-sortable="" style="width: 15%;">
+                                <th data-sortable="" style="width: 20%;">
                                     <a href="#" class="dataTable-sorter">Công cụ</a>
                                 </th>
                             </tr>
@@ -58,20 +55,24 @@
                                     <td>@thesis.Id</td>
                                     <td>@thesis.Name</td>
                                     <td>
-                                        <p class="m-0">GV ra đề: @thesis.Lecturer.FullName</p>
-                                        <p class="m-0">GVHD: @thesis.ThesisSupervisor?.FullName</p>
-                                        <p class="m-0">GVPB: @thesis.CriticalLecturer?.FullName</p>
-                                    </td>
-                                    <td>
                                         @foreach (StudentOutput student in thesis.ThesisGroup.Students)
                                         {
                                             <p class="m-0">@student.Id - @student.FullName</p>
                                         }
                                     </td>
                                     <td>
-                                        <a class="btn btn-success btn-sm" asp-action="Details" asp-route-id="@thesis.Id">
-                                            <i class="fas fa-folder"></i> Chi tiết
-                                        </a>
+                                        <div class="dropdown">
+                                            <a class="btn btn-success btn-sm" asp-action="Details" asp-route-id="@thesis.Id">
+                                                <i class="fas fa-folder"></i> Chi tiết
+                                            </a>
+                                            <button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                Tác vụ
+                                            </button>
+                                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" style="margin: 0px;">
+                                                <a class="dropdown-item" asp-action="GetRevisions" asp-route-thesisId="@thesis.Id">Xem tiến độ</a>
+                                                <a class="dropdown-item" asp-action="GetRevisions" asp-route-thesisId="@thesis.Id">Cập nhật điểm</a>
+                                            </div>
+                                        </div>
                                     </td>
                                 </tr>
                                 count++;
@@ -79,7 +80,7 @@
                         </tbody>
                     </table>
                 </div>
-                @await Component.InvokeAsync("FacultyStaffLayout_Paged", new { action = "GetInProgressList", enableSearchBy = true })
+                @await Component.InvokeAsync("FacultyStaffLayout_Paged", new { action = "GetThesesToSupv", enableSearchBy = true })
             </div>
         </div>
     </div>

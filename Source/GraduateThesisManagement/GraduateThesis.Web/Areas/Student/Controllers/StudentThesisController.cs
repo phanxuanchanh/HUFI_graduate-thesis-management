@@ -146,18 +146,6 @@ public class StudentThesisController : WebControllerBase
     }
 
     [Route("join-to-group")]
-    [HttpGet]
-    public async Task<IActionResult> JoinToGroup()
-    {
-        _accountManager.SetHttpContext(HttpContext);
-        string userId = _accountManager.GetUserId();
-
-
-
-        return View();
-    }
-
-    [Route("join-to-group")]
     [HttpPost]
     public async Task<IActionResult> JoinToGroupAsync([Required] string groupId)
     {
@@ -201,13 +189,6 @@ public class StudentThesisController : WebControllerBase
         return View(thesis);
     }
 
-    [Route("get-to-update-revision")]
-    [HttpGet]
-    public async Task<IActionResult> GetToUpdateRevision()
-    {
-        return View();
-    }
-
     [Route("get-revisions/{thesisId}/{groupId}")]
     [HttpGet]
     [PageName(Name = "Xem tiến độ đề tài")]
@@ -240,13 +221,22 @@ public class StudentThesisController : WebControllerBase
         return RedirectToAction("GetRevisions", new { thesisId = input.ThesisId });
     }
 
-    [Route("submit-thesis")]
+    [Route("submit-thesis/{thesisId}/{groupId}")]
+    [HttpGet]
+    [PageName(Name = "Nộp đề tài khóa luận")]
+    public async Task<IActionResult> SubmitThesis([Required] string thesisId, string groupId)
+    {
+        ThesisOutput thesis = await _thesisRepository.GetAsync(thesisId);
+        return View(new ThesisSubmissionInput { ThesisId = thesisId, GroupId = groupId });
+    }
+
+    [Route("submit-thesis/{thesisId}/{groupId}")]
     [HttpPost]
     [PageName(Name = "Nộp đề tài")]
-    public async Task<IActionResult> SubmitThesisAsync([Required] string thesisId, string thesisGroupId)
+    public async Task<IActionResult> SubmitThesis(ThesisSubmissionInput input)
     {
-        DataResponse dataResponse = await _thesisRepository.SubmitThesisAsync(thesisId, thesisGroupId);
-        AddTempData(dataResponse);
-        return RedirectToAction("YourThesis");
+        //DataResponse dataResponse = await _thesisRepository.SubmitThesisAsync(thesisId, thesisGroupId);
+        //AddTempData(dataResponse);
+        return RedirectToAction("GetThesis");
     }
 }

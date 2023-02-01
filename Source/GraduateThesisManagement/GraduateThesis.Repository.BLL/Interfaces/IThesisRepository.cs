@@ -21,6 +21,7 @@ public interface IThesisRepository : IAsyncSubRepository<ThesisInput, ThesisOutp
     Task<Pagination<ThesisOutput>> GetPgnOfAppdThesesAsync(int page, int pageSize, string orderBy, OrderOptions orderOptions, string searchBy, string keyword);
     Task<Pagination<ThesisOutput>> GetPgnOfPndgApvlThesesAsync(int page, int pageSize, string orderBy, OrderOptions orderOptions, string searchBy, string keyword);
     Task<Pagination<ThesisOutput>> GetPgnOfThesesInprAsync(int page, int pageSize, string orderBy, OrderOptions orderOptions, string searchBy, string keyword);
+    Task<Pagination<ThesisOutput>> GetPgnOfSubmdThesesAsync(int page, int pageSize, string orderBy, OrderOptions orderOptions, string searchBy, string keyword);
     Task<Pagination<ThesisOutput>> GetPgnOfFinishedThesesAsync(int page, int pageSize, string orderBy, OrderOptions orderOptions, string searchBy, string keyword);
     Task<Pagination<ThesisOutput>> GetPaginationAsync(string lecturerId, int page, int pageSize, string orderBy, OrderOptions orderOptions, string searchBy, string keyword);
     Task<Pagination<ThesisOutput>> GetPgnOfPndgApvlThesesAsync(string lecturerId, int page, int pageSize, string orderBy, OrderOptions orderOptions, string searchBy, string keyword);
@@ -32,6 +33,7 @@ public interface IThesisRepository : IAsyncSubRepository<ThesisInput, ThesisOutp
     Task<Pagination<ThesisOutput>> GetPgnToAssignCLectAsync(int page, int pageSize, string orderBy, OrderOptions orderOptions, string searchBy, string keyword);
     Task<Pagination<ThesisOutput>> GetPgnOfAssignedCLectAsync(int page, int pageSize, string orderBy, OrderOptions orderOptions, string searchBy, string keyword);
     Task<Pagination<ThesisOutput>> GetPgnToAssignCmteAsync(int page, int pageSize, string orderBy, OrderOptions orderOptions, string searchBy, string keyword);
+    Task<Pagination<ThesisOutput>> GetPgnToSupvAsync(string lecturerId, int page, int pageSize, string orderBy, OrderOptions orderOptions, string searchBy, string keyword);
     Task<byte[]> ExportAsync();
     Task<byte[]> ExportPndgThesesAsync();
     Task<byte[]> ExportPubldThesesAsync();

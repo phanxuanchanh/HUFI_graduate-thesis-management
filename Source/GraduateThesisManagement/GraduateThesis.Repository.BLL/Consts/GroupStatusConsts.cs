@@ -6,5 +6,6 @@ public class GroupStatusConsts
     public const int Denied = 2;
     public const int Joined = 3;
     public const int Canceled = 4;
-    public const int Completed = 5;
+    public const int Submitted = 5;
+    public const int Completed = 6;
 }
