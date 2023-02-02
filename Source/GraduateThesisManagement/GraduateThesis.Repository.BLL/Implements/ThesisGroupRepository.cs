@@ -53,7 +53,6 @@ public class ThesisGroupRepository : AsyncSubRepository<ThesisGroup, ThesisGroup
                 Id = ts.Id,
                 Name = ts.Name,
                 Description = ts.Description,
-                SourceCode = ts.SourceCode,
                 Notes = ts.Notes,
                 TopicId = ts.Notes,
                 MaxStudentNumber = ts.MaxStudentNumber,

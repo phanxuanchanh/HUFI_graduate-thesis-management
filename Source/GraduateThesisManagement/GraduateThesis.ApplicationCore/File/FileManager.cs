@@ -1,10 +1,5 @@
 ﻿using GraduateThesis.ApplicationCore.Enums;
 using GraduateThesis.ApplicationCore.Models;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Internal;
-using NPOI.HPSF;
-using System.Collections.ObjectModel;
-using System.IO;
 
 #nullable disable
 
@@ -67,6 +62,11 @@ public class FileManager : IFileManager
     public void SetPath(string path)
     {
         _path = path;
+    }
+
+    public void CreateFolder(string folderName)
+    {
+        Directory.CreateDirectory($"{_path}\\{folderName}");
     }
 
     public FileStream Read(string path)

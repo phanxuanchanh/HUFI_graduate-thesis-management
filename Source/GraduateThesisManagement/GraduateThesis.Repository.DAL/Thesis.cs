@@ -13,14 +13,6 @@ public partial class Thesis
 
     public int MaxStudentNumber { get; set; }
 
-    public string DocumentFile { get; set; }
-
-    public string PresentationFile { get; set; }
-
-    public string PdfFile { get; set; }
-
-    public string SourceCode { get; set; }
-
     public int Credits { get; set; }
 
     public string Year { get; set; }
@@ -54,6 +46,8 @@ public partial class Thesis
     public string ThesisGroupId { get; set; }
 
     public int StatusId { get; set; }
+
+    public string File { get; set; }
 
     public virtual ICollection<CommitteeMemberResult> CommitteeMemberResults { get; } = new List<CommitteeMemberResult>();
 

@@ -201,6 +201,7 @@ public class StudentThesisController : WebControllerBase
         if (dataResponse.Status == DataResponseStatus.NotFound)
             return NotFound();
 
+        ViewData["InProgress"] = await _thesisRepository.CheckIsInprAsync(thesisId);
         ViewData["IsLeader"] = await _thesisGroupRepository.CheckIsLeaderAsync(userId, groupId);
         ViewData["Revisions"] = await _thesisRevisionRepository.GetRevsByThesisIdAsync(thesisId);
 
@@ -227,16 +228,23 @@ public class StudentThesisController : WebControllerBase
     public async Task<IActionResult> SubmitThesis([Required] string thesisId, string groupId)
     {
         ThesisOutput thesis = await _thesisRepository.GetAsync(thesisId);
+        if (thesis == null)
+            return NotFound();
+
+        ViewData["Thesis"] = thesis;
+
         return View(new ThesisSubmissionInput { ThesisId = thesisId, GroupId = groupId });
     }
 
     [Route("submit-thesis/{thesisId}/{groupId}")]
     [HttpPost]
+    [RequestSizeLimit(100_000_000)]
     [PageName(Name = "Nộp đề tài")]
     public async Task<IActionResult> SubmitThesis(ThesisSubmissionInput input)
     {
-        //DataResponse dataResponse = await _thesisRepository.SubmitThesisAsync(thesisId, thesisGroupId);
-        //AddTempData(dataResponse);
-        return RedirectToAction("GetThesis");
+        DataResponse dataResponse = await _thesisRepository.SubmitThesisAsync(input);
+        AddTempData(dataResponse);
+
+        return RedirectToAction("GetThesisGroups");
     }
 }

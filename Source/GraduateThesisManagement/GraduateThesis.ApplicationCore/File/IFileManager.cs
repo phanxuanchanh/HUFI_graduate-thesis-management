@@ -9,6 +9,7 @@ public interface IFileManager: IDisposable
     string GetExtension(string contentType);
     string GetExtension(ExportTypeOptions exportTypeOptions);
     string GetContentType(ExportTypeOptions exportTypeOptions);
+    void CreateFolder(string folderName);
     FileStream Read(string path);
     void Save(FileUploadModel uploadModel);
     void Remove(string fileName);

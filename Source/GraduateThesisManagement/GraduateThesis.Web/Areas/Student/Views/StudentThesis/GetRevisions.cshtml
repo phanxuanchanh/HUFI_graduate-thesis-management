@@ -80,7 +80,7 @@
     </div>
 </section>
 
-@if ((bool)ViewData["IsLeader"]!)
+@if ((bool)ViewData["IsLeader"]! && (bool)ViewData["InProgress"]!)
 {
     <section class="list-group-navigation">
         <div class="card">

@@ -1,5 +1,6 @@
 ﻿using GraduateThesis.ApplicationCore.Email;
 using GraduateThesis.ApplicationCore.Enums;
+using GraduateThesis.ApplicationCore.File;
 using GraduateThesis.ApplicationCore.Models;
 using GraduateThesis.ApplicationCore.Repository;
 using GraduateThesis.ApplicationCore.Uuid;
@@ -10,6 +11,7 @@ using GraduateThesis.Repository.DTO;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -26,12 +28,14 @@ public partial class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, 
     private HufiGraduateThesisContext _context;
     private IEmailService _emailService;
     private IHostingEnvironment _hostingEnvironment;
+    private IFileManager _fileManager;
 
-    internal ThesisRepository(HufiGraduateThesisContext context, IHostingEnvironment hostingEnvironment, IEmailService emailService)
+    internal ThesisRepository(HufiGraduateThesisContext context, IHostingEnvironment hostingEnvironment, IEmailService emailService, IFileManager fileManager)
         : base(context, context.Theses)
     {
         _context = context;
         _emailService = emailService;
+        _fileManager = fileManager;
         _hostingEnvironment = hostingEnvironment;
     }
 
@@ -76,7 +80,7 @@ public partial class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, 
             Description = s.Description,
             MaxStudentNumber = s.MaxStudentNumber,
             Credits = s.Credits,
-            SourceCode = s.SourceCode,
+            File = s.File,
             Notes = s.Notes,
             TopicId = s.TopicId,
             Topic = new TopicOutput
@@ -910,5 +914,67 @@ public partial class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, 
             Message = "Tìm thấy sinh viên này!",
             Data = "Found"
         };
+    }
+
+    public async Task<DataResponse> SubmitThesisAsync(ThesisSubmissionInput input)
+    {
+        Thesis thesis = await _context.Theses
+            .Where(t => t.Id == input.ThesisId && t.IsDeleted == false).SingleOrDefaultAsync();
+
+        if (thesis == null)
+            return new DataResponse
+            {
+                Status = DataResponseStatus.NotFound,
+                Message = "Không tìm thấy đề tài này!"
+            };
+
+        List<ThesisGroupDetail> groupDetails = await _context.ThesisGroupDetails
+            .Where(gd => gd.StudentThesisGroupId == input.GroupId).ToListAsync();
+
+        if (groupDetails.Count == 0)
+            return new DataResponse
+            {
+                Status = DataResponseStatus.NotFound,
+                Message = "Không tìm thấy nhóm này!"
+            };
+
+        string currentDateString = DateTime.Now.ToString("ddMMyyyy");
+
+        string path = Path.Combine(_hostingEnvironment.WebRootPath, "theses");
+        _fileManager.SetPath(path);
+        _fileManager.CreateFolder(currentDateString);
+        path = Path.Combine(path, currentDateString);
+        _fileManager.SetPath(path);
+
+        FileUploadModel file = new FileUploadModel
+        {
+            FileName = $"file_{input.ThesisId}.rar",
+            Length = input.File.Length,
+            ContentType = input.File.ContentType,
+            Stream = input.File.OpenReadStream()
+        };
+
+        _fileManager.Save(file);
+
+        thesis.File = $"theses/{currentDateString}/file_{input.ThesisId}.rar";
+        thesis.StatusId = ThesisStatusConsts.Submitted;
+
+        groupDetails.ForEach(gd => {
+            if (gd.StatusId == GroupStatusConsts.Joined)
+                gd.StatusId = GroupStatusConsts.Submitted;
+        });
+
+        await _context.SaveChangesAsync();
+
+        return new DataResponse
+        {
+            Status = DataResponseStatus.Success,
+            Message = "Đã nộp đề tài thành công!"
+        };
+    }
+
+    public async Task<bool> CheckIsInprAsync(string thesisId)
+    {
+        return await _context.Theses.AnyAsync(t => t.Id == thesisId && t.StatusId == ThesisStatusConsts.InProgress);
     }
 }

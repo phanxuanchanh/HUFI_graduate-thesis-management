@@ -533,7 +533,7 @@ public partial class HufiGraduateThesisContext : DbContext
             entity.Property(e => e.Description)
                 .IsRequired()
                 .HasColumnType("ntext");
-            entity.Property(e => e.DocumentFile).HasMaxLength(50);
+            entity.Property(e => e.File).HasMaxLength(500);
             entity.Property(e => e.LectureId)
                 .IsRequired()
                 .HasMaxLength(50)
@@ -542,9 +542,6 @@ public partial class HufiGraduateThesisContext : DbContext
                 .IsRequired()
                 .HasMaxLength(400);
             entity.Property(e => e.Notes).HasMaxLength(200);
-            entity.Property(e => e.PdfFile).HasMaxLength(50);
-            entity.Property(e => e.PresentationFile).HasMaxLength(50);
-            entity.Property(e => e.SourceCode).HasMaxLength(50);
             entity.Property(e => e.SpecializationId)
                 .IsRequired()
                 .HasMaxLength(50)

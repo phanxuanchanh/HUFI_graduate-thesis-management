@@ -55,4 +55,6 @@ public interface IThesisRepository : IAsyncSubRepository<ThesisInput, ThesisOutp
     Task<DataResponse> StopPubgThesisAsync(string thesisId);
     Task<DataResponse> StopPubgThesesAsync(string[] thesisIds);
     Task<DataResponse<string>> CheckHasThesisAsync(string thesisId, string studentId);
+    Task<DataResponse> SubmitThesisAsync(ThesisSubmissionInput input);
+    Task<bool> CheckIsInprAsync(string thesisId);
 }

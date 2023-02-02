@@ -2,6 +2,8 @@
     List<ThesisGroupDtOutput> thesisGroupDts = (Model as List<ThesisGroupDtOutput>)!;
 }
 
+@await Component.InvokeAsync("StudentLayout_StatusArea")
+
 @if (thesisGroupDts.Count == 0)
 {
     <section class="list-group-navigation">
@@ -63,7 +65,7 @@
                         @if (thesisGroupDt.StatusId == GroupStatusConsts.Joined || thesisGroupDt.StatusId == GroupStatusConsts.Submitted)
                         {
                             <a asp-action="GetRevisions" asp-route-thesisId="@thesisGroupDt.ThesisId" asp-route-groupId="@thesisGroupDt.GroupId" class="btn btn-success me-1 mb-1">Xem tiến độ</a>
-                            if (thesisGroupDt.IsLeader)
+                            if (thesisGroupDt.StatusId == GroupStatusConsts.Joined && thesisGroupDt.IsLeader)
                             {
                                 <a asp-action="SubmitThesis" asp-route-thesisId="@thesisGroupDt.ThesisId" asp-route-groupId="@thesisGroupDt.GroupId" class="btn btn-success me-1 mb-1">Nộp đề tài</a>
                             }

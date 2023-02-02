@@ -824,7 +824,7 @@ public class StudentRepository : AsyncSubRepository<Student, StudentInput, Stude
                 Data = "Invited"
             };
 
-        if (student.ThesisGroupDetails.Any(gd => gd.StatusId == GroupStatusConsts.Joined))
+        if (student.ThesisGroupDetails.Any(gd => gd.StatusId == GroupStatusConsts.Joined || gd.StatusId == GroupStatusConsts.Submitted))
             return new DataResponse<string>
             {
                 Status = DataResponseStatus.AlreadyExists,

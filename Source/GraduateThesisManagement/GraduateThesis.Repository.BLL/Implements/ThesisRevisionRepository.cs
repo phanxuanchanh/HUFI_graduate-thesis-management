@@ -55,6 +55,7 @@ public class ThesisRevisionRepository : AsyncSubRepository<ThesisRevision, Thesi
             {
                 Id = s.Thesis.Id,
                 Name = s.Thesis.Name,
+                StatusId = s.Thesis.StatusId
             },
             CreatedAt = s.CreatedAt,
             UpdatedAt = s.UpdatedAt,
