@@ -385,21 +385,14 @@ public class StudentRepository : AsyncSubRepository<Student, StudentInput, Stude
 
     public async Task<object> SearchForThesisRegAsync(string keyword)
     {
-        List<Student> students = await _context.Theses.Where(t => t.IsDeleted == false)
-            .Join(
-                _context.ThesisGroupDetails,//.Where(gd => gd.IsCompleted == true),
-                thesis => thesis.ThesisGroupId, groupDetail => groupDetail.StudentThesisGroupId,
-                (thesis, groupDetail) => new { StudentId = groupDetail.StudentId }
-            ).Join(
-                _context.Students,
-                combined => combined.StudentId,
-                student => student.Id,
-                (combined, student) => new Student { Id = student.Id, Name = student.Name }
-            ).Distinct().ToListAsync();
+        List<string> studentIds = await _context.ThesisGroupDetails
+            .Include(i => i.Student)
+            .Where(gd => (gd.StatusId == GroupStatusConsts.Pending || gd.StatusId == GroupStatusConsts.Joined || gd.StatusId == GroupStatusConsts.Submitted || gd.StatusId == GroupStatusConsts.Completed) && gd.Student.IsDeleted == false)
+            .Select(s => s.Student.Id).ToListAsync();
 
         return await _context.Students.Include(i => i.StudentClass)
             .Where(s => (s.Id.Contains(keyword) || s.Name.Contains(keyword)) && s.IsDeleted == false)
-            .WhereBulkNotContains(students)
+            .WhereBulkNotContains(studentIds, s => s.Id)
             .Take(50).Select(s => new
             {
                 Id = s.Id,

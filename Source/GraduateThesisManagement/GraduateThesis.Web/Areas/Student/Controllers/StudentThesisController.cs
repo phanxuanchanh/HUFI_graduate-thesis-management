@@ -87,13 +87,6 @@ public class StudentThesisController : WebControllerBase
         return View(thesis);
     }
 
-    [Route("check-available/{id}")]
-    [HttpGet]
-    public async Task<IActionResult> CheckAvailable([Required] string id)
-    {
-        return Json(await _thesisRepository.CheckThesisAvailAsync(id));
-    }
-
     [Route("search-students")]
     [HttpGet]
     public async Task<IActionResult> SearchStudents(string keyword)
@@ -108,11 +101,11 @@ public class StudentThesisController : WebControllerBase
         return Json(await _studentRepository.GetForThesisRegAsync(studentId));
     }
 
-    [Route("check-max-student-number")]
+    [Route("can-add-member")]
     [HttpPost]
-    public async Task<IActionResult> CheckMaxStudentNumber(string thesisId, int currentStudentNumber)
+    public async Task<IActionResult> CanAddMember(string thesisId, int currentStudentNumber)
     {
-        return Json(await _thesisRepository.CheckMaxStudentNumberAsync(thesisId, currentStudentNumber));
+        return Json(await _thesisRepository.CanAddMember(thesisId, currentStudentNumber));
     }
 
     [Route("register/{studentId}/{thesisId}")]
@@ -205,7 +198,7 @@ public class StudentThesisController : WebControllerBase
         ViewData["IsLeader"] = await _thesisGroupRepository.CheckIsLeaderAsync(userId, groupId);
         ViewData["Revisions"] = await _thesisRevisionRepository.GetRevsByThesisIdAsync(thesisId);
 
-        return View(new ThesisRevisionInput { ThesisId = thesisId });
+        return View(new ThesisRevisionInput { ThesisId = thesisId, GroupId = groupId });
     }
 
     public async Task<IActionResult> AddRevision(ThesisRevisionInput input)
@@ -213,13 +206,13 @@ public class StudentThesisController : WebControllerBase
         if (!ModelState.IsValid)
         {
             AddTempData(DataResponseStatus.InvalidData);
-            return RedirectToAction("GetRevisions", new { thesisId = input.ThesisId });
+            return RedirectToAction("GetRevisions", new { thesisId = input.ThesisId, groupId = input.GroupId });
         }
 
         DataResponse dataResponse = await _thesisRevisionRepository.CreateAsync(input);
         AddTempData(dataResponse);
 
-        return RedirectToAction("GetRevisions", new { thesisId = input.ThesisId });
+        return RedirectToAction("GetRevisions", new { thesisId = input.ThesisId, groupId = input.GroupId });
     }
 
     [Route("submit-thesis/{thesisId}/{groupId}")]

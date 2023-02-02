@@ -312,7 +312,17 @@ public partial class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, 
 
             Thesis thesis = await _context.Theses.FindAsync(thesisRegistrationInput.ThesisId);
             if (thesis == null)
-                return new DataResponse { Status = DataResponseStatus.NotFound };
+                return new DataResponse { 
+                    Status = DataResponseStatus.NotFound,
+                    Message = "Không tìm thấy đề tài này!"
+                };
+
+            if (thesis.ThesisGroup != null)
+                return new DataResponse
+                {
+                    Status = DataResponseStatus.Failed,
+                    Message = "Đề tài đã có nhóm khác thực hiện đăng ký!"
+                };
 
             string groupId = UidHelper.GetShortUid();
             DateTime currentDatetime = DateTime.Now;
@@ -515,33 +525,9 @@ public partial class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, 
         };
     }
 
-    public async Task<DataResponse> CheckMaxStudentNumberAsync(string thesisId, int currentStudentNumber)
-    {
-        Thesis thesis = await _context.Theses.FindAsync(thesisId);
-        if (thesis == null)
-            return new DataResponse { Status = DataResponseStatus.NotFound };
-
-        if (currentStudentNumber > thesis.MaxStudentNumber)
-            return new DataResponse { Status = DataResponseStatus.Failed };
-
-        return new DataResponse { Status = DataResponseStatus.Success };
-    }
-
     public Task<DataResponse> AllowedRegistration(string studentId, string thesisId)
     {
         throw new NotImplementedException();
-    }
-
-    public async Task<DataResponse<string>> CheckThesisAvailAsync(string thesisId)
-    {
-        Thesis thesis = await _context.Theses.FindAsync(thesisId);
-        if (thesis == null)
-            return new DataResponse<string> { Status = DataResponseStatus.NotFound };
-
-        if (string.IsNullOrEmpty(thesis.ThesisGroupId))
-            return new DataResponse<string> { Status = DataResponseStatus.Success, Data = "Available" };
-
-        return new DataResponse<string> { Status = DataResponseStatus.Success, Data = "Unavailable" };
     }
 
     public async Task<DataResponse> AssignSupervisorAsync(string thesisId, string lecturerId)
@@ -976,5 +962,17 @@ public partial class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, 
     public async Task<bool> CheckIsInprAsync(string thesisId)
     {
         return await _context.Theses.AnyAsync(t => t.Id == thesisId && t.StatusId == ThesisStatusConsts.InProgress);
+    }
+
+    public async Task<DataResponse> CanAddMember(string thesisId, int currentStdntNumber)
+    {
+        Thesis thesis = await _context.Theses
+            .Where(t => t.Id == thesisId && t.IsDeleted == false)
+            .Select(s => new Thesis { Id = s.Id, MaxStudentNumber = s.MaxStudentNumber }).SingleOrDefaultAsync();
+
+        if (currentStdntNumber < thesis.MaxStudentNumber)
+            return new DataResponse { Status = DataResponseStatus.Success };
+
+        return new DataResponse { Status = DataResponseStatus.Failed };
     }
 }

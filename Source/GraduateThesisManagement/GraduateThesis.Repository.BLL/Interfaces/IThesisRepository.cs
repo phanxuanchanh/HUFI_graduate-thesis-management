@@ -13,8 +13,6 @@ public interface IThesisRepository : IAsyncSubRepository<ThesisInput, ThesisOutp
     Task<DataResponse> SubmitThesisAsync(string thesisId, string thesisGroupId);
     Task<DataResponse> ApproveThesisAsync(ThesisApprovalInput approvalInput); 
     Task<DataResponse> RejectThesisAsync(ThesisApprovalInput approvalInput); 
-    Task<DataResponse> CheckMaxStudentNumberAsync(string thesisId, int currentStudentNumber);
-    Task<DataResponse<string>> CheckThesisAvailAsync(string thesisId);
     Task<DataResponse> AllowedRegistration(string studentId, string thesisId);
     Task<Pagination<ThesisOutput>> GetPgnOfPubldThesesAsync(int page, int pageSize, string orderBy, OrderOptions orderOptions, string searchBy, string keyword);
     Task<Pagination<ThesisOutput>> GetPgnOfRejdThesesAsync(int page, int pageSize, string orderBy, OrderOptions orderOptions, string searchBy, string keyword);
@@ -57,4 +55,5 @@ public interface IThesisRepository : IAsyncSubRepository<ThesisInput, ThesisOutp
     Task<DataResponse<string>> CheckHasThesisAsync(string thesisId, string studentId);
     Task<DataResponse> SubmitThesisAsync(ThesisSubmissionInput input);
     Task<bool> CheckIsInprAsync(string thesisId);
+    Task<DataResponse> CanAddMember(string thesisId, int currentStdntNumber);
 }

@@ -12,6 +12,10 @@ public class ThesisRevisionInput
     [Required(ErrorMessage = "{0} không được để trống")]
     public string ThesisId { get; set; }
 
+    [Display(Name = "Mã nhóm")]
+    [Required(ErrorMessage = "{0} không được để trống")]
+    public string GroupId { get; set; }
+
     [Display(Name = "Tóm tắt")]
     [Required(ErrorMessage = "{0} không được để trống")]
     public string Summary { get; set; }
