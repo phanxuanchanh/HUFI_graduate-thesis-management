@@ -120,6 +120,9 @@ public class ThesisExport
     public int Semester { get; set; }
     public string SpecializationName { get; set; }
     public string TopicName { get; set; }
-    public string LectureName { get; set; }
+    public string LecturerName { get; set; }
     public string Notes { get; set; }
+    public string SupervisorName { get; set; }
+    public string CLectName { get; set; }
+    public string Students { get; set; }
 }

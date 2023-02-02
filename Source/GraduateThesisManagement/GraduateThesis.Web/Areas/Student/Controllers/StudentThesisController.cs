@@ -5,6 +5,7 @@ using GraduateThesis.ApplicationCore.Models;
 using GraduateThesis.ApplicationCore.WebAttributes;
 using GraduateThesis.Common.WebAttributes;
 using GraduateThesis.Repository.BLL.Interfaces;
+using GraduateThesis.Repository.DAL;
 using GraduateThesis.Repository.DTO;
 using GraduateThesis.WebExtensions;
 using Microsoft.AspNetCore.Mvc;
@@ -236,8 +237,16 @@ public class StudentThesisController : WebControllerBase
     public async Task<IActionResult> SubmitThesis(ThesisSubmissionInput input)
     {
         DataResponse dataResponse = await _thesisRepository.SubmitThesisAsync(input);
+        if(dataResponse.Status == DataResponseStatus.Success)
+        {
+            AddTempData(dataResponse);
+            return RedirectToAction("GetThesisGroups");
+        }
+
+        ThesisOutput thesis = await _thesisRepository.GetAsync(input.ThesisId);
+        ViewData["Thesis"] = thesis;
         AddTempData(dataResponse);
 
-        return RedirectToAction("GetThesisGroups");
+        return View(input);
     }
 }

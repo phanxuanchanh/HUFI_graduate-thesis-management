@@ -222,7 +222,7 @@ public class ThesisManagerController : WebControllerBase<IThesisRepository, Thes
         byte[] bytes = await _thesisRepository.ExportRejdThesesAsync();
         ContentDisposition contentDisposition = new ContentDisposition
         {
-            FileName = $"thesis_{DateTime.Now.ToString("ddMMyyyy_HHmmss")}.xlsx"
+            FileName = $"rejected-thesis_{DateTime.Now.ToString("ddMMyyyy_HHmmss")}.xlsx"
         };
 
         Response.Headers.Add(HeaderNames.ContentDisposition, contentDisposition.ToString());
@@ -245,7 +245,7 @@ public class ThesisManagerController : WebControllerBase<IThesisRepository, Thes
         byte[] bytes = await _thesisRepository.ExportAppdThesesAsync();
         ContentDisposition contentDisposition = new ContentDisposition
         {
-            FileName = $"thesis_{DateTime.Now.ToString("ddMMyyyy_HHmmss")}.xlsx"
+            FileName = $"approved-thesis_{DateTime.Now.ToString("ddMMyyyy_HHmmss")}.xlsx"
         };
 
         Response.Headers.Add(HeaderNames.ContentDisposition, contentDisposition.ToString());
@@ -268,7 +268,30 @@ public class ThesisManagerController : WebControllerBase<IThesisRepository, Thes
         byte[] bytes = await _thesisRepository.ExportPubldThesesAsync();
         ContentDisposition contentDisposition = new ContentDisposition
         {
-            FileName = $"thesis_{DateTime.Now.ToString("ddMMyyyy_HHmmss")}.xlsx"
+            FileName = $"published-thesis_{DateTime.Now.ToString("ddMMyyyy_HHmmss")}.xlsx"
+        };
+
+        Response.Headers.Add(HeaderNames.ContentDisposition, contentDisposition.ToString());
+
+        return File(bytes, ContentTypeConsts.XLSX);
+    }
+
+    [Route("export-theses-in-progress")]
+    [HttpGet]
+    [PageName(Name = "Xuất danh sách đề tài đang được thực hiện")]
+    public async Task<IActionResult> ExportThesesInpr()
+    {
+        return await ExportResult();
+    }
+
+    [Route("export-theses-in-progress")]
+    [HttpPost]
+    public async Task<IActionResult> ExportThesesInpr(ExportMetadata exportMetadata)
+    {
+        byte[] bytes = await _thesisRepository.ExportThesesInprAsync();
+        ContentDisposition contentDisposition = new ContentDisposition
+        {
+            FileName = $"thesis-in-progress_{DateTime.Now.ToString("ddMMyyyy_HHmmss")}.xlsx"
         };
 
         Response.Headers.Add(HeaderNames.ContentDisposition, contentDisposition.ToString());

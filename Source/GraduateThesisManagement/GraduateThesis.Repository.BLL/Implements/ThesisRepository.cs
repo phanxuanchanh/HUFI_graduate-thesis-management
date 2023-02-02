@@ -923,6 +923,13 @@ public partial class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, 
                 Message = "Không tìm thấy nhóm này!"
             };
 
+        if (input.File == null)
+            return new DataResponse
+            {
+                Status = DataResponseStatus.InvalidData,
+                Message = "Bạn chưa chọn tập tin!"
+            };
+
         string currentDateString = DateTime.Now.ToString("ddMMyyyy");
 
         string path = Path.Combine(_hostingEnvironment.WebRootPath, "theses");
