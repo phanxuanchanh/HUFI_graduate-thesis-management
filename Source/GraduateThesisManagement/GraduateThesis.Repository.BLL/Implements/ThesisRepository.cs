@@ -11,7 +11,6 @@ using GraduateThesis.Repository.DTO;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -974,5 +973,63 @@ public partial class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, 
             return new DataResponse { Status = DataResponseStatus.Success };
 
         return new DataResponse { Status = DataResponseStatus.Failed };
+    }
+
+    public async Task<DataResponse> EditThesisPointAsync(SupervisorPointInput input)
+    {
+        ThesisSupervisor thesisSupervisor = await _context.ThesisSupervisors
+            .Where(t => t.ThesisId == input.ThesisId && t.LecturerId == input.LecturerId).SingleOrDefaultAsync();
+
+        if (thesisSupervisor == null)
+            return new DataResponse
+            {
+                Status = DataResponseStatus.NotFound,
+                Message = "Không tìm thấy thông tin!"
+            };
+
+        thesisSupervisor.Contents = input.Contents;
+        thesisSupervisor.Attitudes = input.Attitudes;
+        thesisSupervisor.Results = input.Results;
+        thesisSupervisor.Conclusions = input.Conclusions;
+        thesisSupervisor.Point = input.Point;
+        thesisSupervisor.Notes = input.Notes;
+
+        await _context.SaveChangesAsync();
+
+        return new DataResponse
+        {
+            Status = DataResponseStatus.Success,
+            Message = "Cập nhật điểm thành công!"
+        };
+    }
+
+    public async Task<DataResponse> EditThesisCLecturerPointAsync(CLecturerPointInput input)
+    {
+        CounterArgumentResult counterArgumentResult = await _context.CounterArgumentResults
+                 .Where(t => t.ThesisId == input.ThesisId && t.LecturerId == input.LecturerId).SingleOrDefaultAsync();
+
+        if (counterArgumentResult == null)
+            return new DataResponse
+            {
+                Status = DataResponseStatus.NotFound,
+                Message = "Không tìm thấy thông tin!"
+            };
+
+        counterArgumentResult.Contents = input.Contents;
+        counterArgumentResult.ResearchMethods = counterArgumentResult.ResearchMethods;
+        counterArgumentResult.ScientificResults = input.ScientificResults;
+        counterArgumentResult.PracticalResults = input.PracticalResults;
+        counterArgumentResult.Defects = input.Defects;
+        counterArgumentResult.Conclusions = input.Conclusions;
+        counterArgumentResult.Answers = input.Answers;
+        counterArgumentResult.Point = input.Point;
+
+        await _context.SaveChangesAsync();
+
+        return new DataResponse
+        {
+            Status = DataResponseStatus.Success,
+            Message = "Cập nhật điểm thành công!"
+        };
     }
 }
