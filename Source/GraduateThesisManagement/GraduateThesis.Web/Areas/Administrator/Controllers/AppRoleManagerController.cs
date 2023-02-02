@@ -7,7 +7,6 @@ using GraduateThesis.Repository.DTO;
 using GraduateThesis.WebExtensions;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
-using static Microsoft.Extensions.Logging.EventSource.LoggingEventSource;
 using X.PagedList;
 
 #nullable disable
@@ -131,80 +130,6 @@ public class AppRoleManagerController : WebControllerBase<IAppRoleRepository, Ap
     public override Task<IActionResult> Import([FromForm] IFormFile formFile, ImportMetadata importMetadata)
     {
         throw new NotImplementedException();
-    }
-
-    [Route("grant-to-user/{roleId}")]
-    [HttpGet]
-    [PageName(Name = "Gán quyền cho tài khoản")]
-    public async Task<IActionResult> GrantToUser(string roleId, int page = 1, int pageSize = 10, string keyword = "")
-    {
-        AppRoleOutput appRole = await _appRoleRepository.GetAsync(roleId);
-        if (appRole == null)
-            return RedirectToAction("Index");
-
-        Pagination<FacultyStaffOutput> pagination = await _facultyStaffRepository
-            .GetPaginationAsync(page, pageSize, null, OrderOptions.ASC, keyword);
-
-        StaticPagedList<FacultyStaffOutput> pagedList = pagination.ToStaticPagedList();
-        
-        ViewData["PagedList"] = pagedList;
-        ViewData["Keyword"] = keyword;
-        ViewData["Role"] = appRole;
-
-        return View();
-    }
-
-    [Route("grant-to-user/{roleId}")]
-    [HttpPost]
-    public async Task<IActionResult> GrantToUser(AppUserRoleInput input)
-    {
-        if (ModelState.IsValid)
-        {
-            DataResponse dataResponse = await _appRoleRepository.GrantToUserAsync(input);
-            AddTempData(dataResponse);
-
-            return RedirectToAction("GrantToUser", new { roleId = input.RoleId });
-        }
-
-        AddTempData(DataResponseStatus.InvalidData);
-        return RedirectToAction("GrantToUser", new { roleId = input.RoleId });
-    }
-
-    [Route("revoke-from-user/{roleId}")]
-    [HttpGet]
-    [PageName(Name = "Thu hồi quyền của tài khoản")]
-    public async Task<IActionResult> RevokeFromUser(string roleId, int page = 1, int pageSize = 10, string keyword = "")
-    {
-        AppRoleOutput appRole = await _appRoleRepository.GetAsync(roleId);
-        if (appRole == null)
-            return RedirectToAction("Index");
-
-        Pagination<FacultyStaffOutput> pagination = await _facultyStaffRepository
-            .GetPgnHasRoleIdAsync(roleId, page, pageSize, keyword);
-
-        StaticPagedList<FacultyStaffOutput> pagedList = pagination.ToStaticPagedList();
-
-        ViewData["PagedList"] = pagedList;
-        ViewData["Keyword"] = keyword;
-        ViewData["Role"] = appRole;
-
-        return View();
-    }
-
-    [Route("revoke-from-user/{roleId}")]
-    [HttpPost]
-    public async Task<IActionResult> RevokeFromUser(AppUserRoleInput input)
-    {
-        if (ModelState.IsValid)
-        {
-            DataResponse dataResponse = await _appRoleRepository.RevokeFromUserAsync(input);
-            AddTempData(dataResponse);
-
-            return RedirectToAction("RevokeFromUser", new { roleId = input.RoleId });
-        }
-
-        AddTempData(DataResponseStatus.InvalidData);
-        return RedirectToAction("RevokeFormUser", new { roleId = input.RoleId });
     }
 
     [Route("grant-to-page/{roleId}")]

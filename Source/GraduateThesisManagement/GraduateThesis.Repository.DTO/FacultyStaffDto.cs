@@ -1,5 +1,6 @@
 ﻿using MiniExcelLibs.Attributes;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace GraduateThesis.Repository.DTO;
@@ -69,6 +70,7 @@ public class FacultyStaffOutput : FacultyStaffInput
     public DateTime? DeletedAt { get; set; }
 
     public FacultyOutput Faculty { get; set; }
+    public List<AppRoleOutput> Roles { get; set; }
 }
 
 public class FacultyStaffExport

@@ -70,6 +70,21 @@
                 </li>
 
                 <li class="sidebar-item has-sub">
+                    <a asp-action="Index" asp-controller="UserManager" class='sidebar-link'>
+                        <i class="bi bi-stack"></i>
+                        <span>Người dùng</span>
+                    </a>
+                    <ul class="submenu has-sub">
+                        <li class="submenu-item ">
+                            <a asp-action="GetFacultyStaffs" asp-controller="UserManager">Nhân viên khoa</a>
+                        </li>
+                        <li class="submenu-item ">
+                            <a asp-action="GetFacultyStaffs" asp-controller="UserManager">Sinh viên</a>
+                        </li>
+                    </ul>
+                </li>
+
+                <li class="sidebar-item has-sub">
                     <a asp-action="Index" asp-controller="AppPageManager" class='sidebar-link'>
                         <i class="bi bi-stack"></i>
                         <span>Trang</span>

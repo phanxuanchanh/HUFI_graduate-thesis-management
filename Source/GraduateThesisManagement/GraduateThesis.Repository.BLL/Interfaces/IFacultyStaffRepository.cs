@@ -13,4 +13,6 @@ public interface IFacultyStaffRepository : IAsyncSubRepository<FacultyStaffInput
     Task<DataResponse> UpdateProfileAsync(FacultyStaffInput input, FileUploadModel avtUploadModel);
     Task<DataResponse> SetDefaultAvatarAsync(string facultyStaffId);
     Task<byte[]> ExportAsync();
+    Task<DataResponse> GrantRoleAsync(AppUserRoleInput input);
+    Task<DataResponse> RevokeRoleAsync(AppUserRoleInput input);
 }
