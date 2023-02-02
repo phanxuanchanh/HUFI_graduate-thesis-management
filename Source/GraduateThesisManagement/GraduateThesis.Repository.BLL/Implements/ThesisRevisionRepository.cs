@@ -55,6 +55,7 @@ public class ThesisRevisionRepository : AsyncSubRepository<ThesisRevision, Thesi
             {
                 Id = s.Thesis.Id,
                 Name = s.Thesis.Name,
+                StatusId = s.Thesis.StatusId
             },
             CreatedAt = s.CreatedAt,
             UpdatedAt = s.UpdatedAt,
@@ -84,6 +85,10 @@ public class ThesisRevisionRepository : AsyncSubRepository<ThesisRevision, Thesi
         entity.ThesisId = input.ThesisId;
         entity.Title = input.Title;
         entity.Summary = input.Summary;
+        entity.DocumentFile = input.DocumentFile;
+        entity.PresentationFile = input.PresentationFile;
+        entity.PdfFile = input.PdfFile;
+        entity.SourceCode = input.SourceCode;
         entity.CreatedAt = DateTime.Now;
     }
 

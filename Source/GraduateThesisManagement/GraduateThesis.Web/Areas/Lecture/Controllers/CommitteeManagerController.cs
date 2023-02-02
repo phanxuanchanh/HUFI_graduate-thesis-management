@@ -22,6 +22,7 @@ public class CommitteeManagerController : WebControllerBase<IThesisCommitteeRepo
     private readonly IThesisCommitteeRepository _thesisCommitteeRepository;
     private readonly IFacultyStaffRepository _facultyStaffRepository;
     private readonly ICouncilRepository _councilRepository;
+    private readonly IThesisRepository _thesisRepository;
 
     public CommitteeManagerController(IRepository repository)
         : base(repository.ThesisCommitteeRepository)
@@ -29,6 +30,7 @@ public class CommitteeManagerController : WebControllerBase<IThesisCommitteeRepo
         _thesisCommitteeRepository = repository.ThesisCommitteeRepository;
         _councilRepository = repository.CouncilRepository;
         _facultyStaffRepository = repository.FacultyStaffRepository;
+        _thesisRepository = repository.ThesisRepository;
     }
 
     protected override Dictionary<string, string> SetOrderByProperties()
@@ -144,44 +146,105 @@ public class CommitteeManagerController : WebControllerBase<IThesisCommitteeRepo
         return await RestoreResult(id);
     }
 
-    [Route("thesisMember/{thesisCommitteeId}")]
+    [Route("add-member-view/{committeeId}")]
     [HttpGet]
-    [PageName(Name = "Thêm giảng viên vào tiểu ban")]
-    public async Task<IActionResult> LoadThesisMemberView(string thesisCommitteeId, int page = 1, int pageSize = 5, string keyword = "")
+    [PageName(Name = "Thêm thành viên vào tiểu ban")]
+    public async Task<IActionResult> LoadAddMemberView(string committeeId, int page = 1, int pageSize = 5, string orderBy = "CreatedAt", string orderOptions = "DESC", string searchBy = "All", string keyword = "")
     {
-        ThesisCommitteeOutput thesisCommittee = await _thesisCommitteeRepository.GetAsync(thesisCommitteeId);
-        List<FacultyStaffOutput> facultyStaffs = await _thesisCommitteeRepository.LoadCommitteeMemberAsync(thesisCommitteeId);
+        ThesisCommitteeOutput thesisCommittee = await _thesisCommitteeRepository.GetAsync(committeeId);
+        OrderOptions orderOpts = (orderOptions == "ASC") ? OrderOptions.ASC : OrderOptions.DESC;
         Pagination<FacultyStaffOutput> pagination = await _facultyStaffRepository
-         .GetPaginationAsync(page, pageSize, null, OrderOptions.ASC, keyword);
+         .GetPaginationAsync(page, pageSize, orderBy, orderOpts, searchBy, keyword);
 
         StaticPagedList<FacultyStaffOutput> pagedList = pagination.ToStaticPagedList();
 
+        ViewData["OrderByProperties"] = new Dictionary<string, string>
+            {
+                { "Id", "Mã" }, { "Surname", "Họ" }, { "Name", "Tên" }, { "Email", "Email" }, { "CreatedAt", "Ngày tạo" }
+            };
+
+        ViewData["SearchByProperties"] = new Dictionary<string, string>
+            {
+                { "All", "Tất cả" }, { "Id", "Mã" }, { "Surname", "Họ" }, { "Name", "Tên" }, { "Email", "Email" }
+            };
+
         ViewData["PagedList"] = pagedList;
+        ViewData["OrderBy"] = orderBy;
+        ViewData["OrderOptions"] = orderOptions;
+        ViewData["SearchBy"] = searchBy;
         ViewData["Keyword"] = keyword;
-        ViewData["Role"] = thesisCommitteeId;
-        ViewData["FacultyStaffs"] = facultyStaffs;
 
         return View(thesisCommittee);
     }
 
-    [Route("addMember/{MemberId}")]
+    [Route("add-member")]
     [HttpPost]
-    [PageName(Name = "Phân công giảng viên vào tiểu ban")]
     public async Task<IActionResult> AddMember(CommitteeMemberInput input)
     {
         DataResponse dataResponse = await _thesisCommitteeRepository.AddMemberAsync(input);
         AddTempData(dataResponse);
-        return RedirectToAction("LoadThesisMemberView", new { thesisCommitteeId = input.ThesisCommitteeId });
 
+        return RedirectToAction("LoadAddMemberView", new { committeeId = input.CommitteeId });
     }
 
-    [Route("delete/{thesisCommitteeId}/{memberId}")]
+    [Route("delete-member")]
     [HttpPost]
-    [PageName(Name = "Xóa giảng viên tiểu ban")]
-    public async Task<IActionResult> DeleteCommitteeMember(string thesisCommitteeId, string memberId)
+    public async Task<IActionResult> DeleteMember([Required] string committeeId, [Required] string memberId)
     {
-        DataResponse dataResponse = await _thesisCommitteeRepository.DeleteCommitteeMemberAsync(thesisCommitteeId, memberId);
+        DataResponse dataResponse = await _thesisCommitteeRepository.DeleteMemberAsync(committeeId, memberId);
         AddTempData(dataResponse);
-        return RedirectToAction("LoadThesisMemberView", new { thesisCommitteeId = thesisCommitteeId });
+
+        return RedirectToAction("LoadAddMemberView", new { committeeId = committeeId });
+    }
+
+    [Route("add-thesis-view/{committeeId}")]
+    [HttpGet]
+    [PageName(Name = "Thêm thành viên vào tiểu ban")]
+    public async Task<IActionResult> LoadAddThesisView(string committeeId, int page = 1, int pageSize = 5, string orderBy = "CreatedAt", string orderOptions = "DESC", string searchBy = "All", string keyword = "")
+    {
+        ThesisCommitteeOutput thesisCommittee = await _thesisCommitteeRepository.GetAsync(committeeId);
+        OrderOptions orderOpts = (orderOptions == "ASC") ? OrderOptions.ASC : OrderOptions.DESC;
+        Pagination<ThesisOutput> pagination = await _thesisRepository
+         .GetPgnToAssignCmteAsync(page, pageSize, orderBy, orderOpts, searchBy, keyword);
+
+        StaticPagedList<ThesisOutput> pagedList = pagination.ToStaticPagedList();
+
+        ViewData["OrderByProperties"] = new Dictionary<string, string>
+        {
+            { "Id", "Mã" }, { "Name", "Tên" }, { "LectureName", "Tên GV" }, { "Year", "Năm học" }, { "CreatedAt", "Ngày tạo" }
+        };
+
+        ViewData["SearchByProperties"] = new Dictionary<string, string>
+        {
+            { "Id", "Mã" }, { "Name", "Tên" }, { "LectureName", "Tên GV" }, { "Year", "Năm học" }
+        };
+
+        ViewData["PagedList"] = pagedList;
+        ViewData["OrderBy"] = orderBy;
+        ViewData["OrderOptions"] = orderOptions;
+        ViewData["SearchBy"] = searchBy;
+        ViewData["Keyword"] = keyword;
+
+        return View(thesisCommittee);
+    }
+
+    [Route("add-thesis")]
+    [HttpPost]
+    public async Task<IActionResult> AddThesis([Required] string committeeId, [Required] string thesisId)
+    {
+        DataResponse dataResponse = await _thesisCommitteeRepository.AddThesisAsync(committeeId, thesisId);
+        AddTempData(dataResponse);
+
+        return RedirectToAction("LoadAddThesisView", new { committeeId = committeeId });
+    }
+
+    [Route("delete-thesis")]
+    [HttpPost]
+    public async Task<IActionResult> DeleteThesis([Required] string committeeId, [Required] string thesisId)
+    {
+        DataResponse dataResponse = await _thesisCommitteeRepository.DeleteThesisAsync(committeeId, thesisId);
+        AddTempData(dataResponse);
+
+        return RedirectToAction("LoadAddThesisView", new { committeeId = committeeId });
     }
 }

@@ -16,7 +16,7 @@ function trim(str, ch) {
 var thesisId = undefined;
 var searchStudentUrl = undefined;
 var getStudentByIdUrl = undefined;
-var checkMaxStudentNumberUrl = undefined;
+var checkCanAddMemberUrl = undefined;
 
 function clearSeachResult() {
     let searchResult = document.querySelector('#searchResult');
@@ -47,7 +47,7 @@ function loadToSearchResTable(items) {
             let selectTdElement = document.createElement('td');
 
             idTdElement.innerText = item['id'];
-            nameTdElement.innerText = item['name'];
+            nameTdElement.innerText = `${item['surname']} ${item['name']}`;
             classNameTdElement.innerText = item['studentClass']['name'];
             selectTdElement.innerHTML =  `<button type="button" class="btn btn-sm btn-success" onclick="selectStudent('${item['id']}')">Chọn</button>`;
 
@@ -124,7 +124,7 @@ function addToSelectedTable(item) {
     let selectTdElement = document.createElement('td');
 
     idTdElement.innerText = item['id'];
-    nameTdElement.innerText = item['name'];
+    nameTdElement.innerText = `${item['surname']} ${item['name']}`;
     classNameTdElement.innerText = item['studentClass']['name'];
     selectTdElement.innerHTML = `<button type="button" class="btn btn-sm btn-danger" onclick="removeSelected('${item['id']}')">Xóa</button>`;
 
@@ -149,10 +149,15 @@ function setToSelectedInput(studentId) {
 
 function checkAndLoadSeletedTable(student) {
     $.ajax({
-        url: checkMaxStudentNumberUrl,
+        url: checkCanAddMemberUrl,
         type: 'POST',
         data: { thesisId: thesisId, currentStudentNumber: countSelectedStudent() },
         success: function (data) {
+            if (data['status'] == 'Failed') {
+                alert('Bạn không thể thêm thành viên vì đã vượt quá số lượng quy định')
+                return;
+            }
+
             let check = document.querySelector(`#selected_${student['id']}`);
             if (check == null) {
                 addToSelectedTable(student);

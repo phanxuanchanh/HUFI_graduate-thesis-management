@@ -21,13 +21,7 @@ public class ThesisInput
     [Range(1, 3, ErrorMessage = "{0} có giá từ 1 đến 3")]
     public int MaxStudentNumber { get; set; }
 
-    public string DocumentFile { get; set; }
-
-    public string PresentationFile { get; set; }
-
-    public string PdfFile { get; set; }
-
-    public string SourceCode { get; set; }
+    public string File { get; set; }
 
     [Display(Name = "Số tín chỉ")]
     [Required(ErrorMessage = "{0} không được để trống")]

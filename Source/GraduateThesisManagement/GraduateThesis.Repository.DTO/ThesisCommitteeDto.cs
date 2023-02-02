@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace GraduateThesis.Repository.DTO;
@@ -30,6 +31,6 @@ public class ThesisCommitteeOutput : ThesisCommitteeInput
     public DateTime? DeletedAt { get; set; }
 
     public CouncilOutput Council { get; set; }
+    public List<ThesisOutput> Theses { get; set; }
+    public List<CommitteeMemberOutput> Members { get; set; }
 }
-
-

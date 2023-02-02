@@ -1,6 +1,6 @@
 ﻿@model ThesisApprovalInput
 @{
-    ThesisOutput thesisOutput = (ViewData["Thesis"] as ThesisOutput)!;
+    ThesisOutput thesis = (ViewData["Thesis"] as ThesisOutput)!;
 }
 
 @await Component.InvokeAsync("FacultyStaffLayout_StatusArea")
@@ -10,7 +10,7 @@
         <div class="col-md-12 col-12">
             <div class="card">
                 <div class="card-header">
-                    <h4 class="card-title">@ViewData["PageName"]: "@thesisOutput.Name"</h4>
+                    <h4 class="card-title">@ViewData["PageName"]: "@thesis.Name"</h4>
                 </div>
                 <div class="card-content">
                     <div class="card-body">
@@ -18,30 +18,67 @@
                             <div class="form-body">
                                 <div class="form-group">
                                     <label class="form-label">Mã đề tài</label>
-                                    <input class="form-control" value="@thesisOutput.Id" disabled />
+                                    <input class="form-control" value="@thesis.Id" disabled />
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Tên đề tài</label>
-                                    <input class="form-control" value="@thesisOutput.Name" placeholder="Nhập tên đề tài" disabled />
+                                    <input class="form-control" value="@thesis.Name" placeholder="Nhập tên đề tài" disabled />
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Mô tả đề tài</label>
-                                    <textarea class="form-control" id="thesisDescription" placeholder="Mô tả" style="height: 350px;" disabled>@thesisOutput.Description</textarea>
+                                    <textarea class="form-control" id="thesisDescription" placeholder="Mô tả" style="height: 350px;" disabled>@thesis.Description</textarea>
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Giảng viên ra đề</label>
-                                    <input class="form-control" value="@thesisOutput.Lecturer.FullName" placeholder="Nhập tên giảng viên ra đề tài" disabled />
+                                    <input class="form-control" value="@thesis.Lecturer.FullName" placeholder="Nhập tên giảng viên ra đề tài" disabled />
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-12 col-md-6 col-lg-6 form-group">
+                                        <label class="form-label">Số SV tối đa</label>
+                                        <input class="form-control" value="@thesis.MaxStudentNumber" placeholder="Nhập số sinh viên tối đa" disabled />
+                                    </div>
+                                    <div class="col-sm-12 col-md-6 col-lg-6 form-group">
+                                        <label class="form-label">Số tín chỉ</label>
+                                        <input class="form-control" value="@thesis.Credits" placeholder="Nhập số tín chỉ" disabled />
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-12 col-md-6 col-lg-6 form-group">
+                                        <label class="form-label">Chủ đề</label>
+                                        <input class="form-control" value="@thesis.Topic.Name" placeholder="Nhập vào tên chủ đề khóa luận" disabled />
+                                    </div>
+                                    <div class="col-sm-12 col-md-6 col-lg-6 form-group">
+                                        <label class="form-label">Chuyên ngành</label>
+                                        <input class="form-control" value="@thesis.Specialization.Name" placeholder="Nhập vào tên chuyên ngành" disabled />
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-12 col-md-6 col-lg-6 form-group">
+                                        <label class="form-label">Bậc đào tạo</label>
+                                        <input class="form-control" value="@thesis.TrainingLevel.Name" placeholder="Nhập vào bậc đào tạo" disabled />
+                                    </div>
+                                    <div class="col-sm-12 col-md-6 col-lg-6 form-group">
+                                        <label class="form-label">Hình thức đạo tạo</label>
+                                        <input class="form-control" value="@thesis.TrainingForm.Name" placeholder="Nhập vào hình thức đào tạo" disabled />
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-12 col-md-6 col-lg-6 form-group">
+                                        <label class="form-label">Từ ngày</label>
+                                        <input class="form-control" value="@thesis.DateFrom" disabled />
+                                    </div>
+                                    <div class="col-sm-12 col-md-6 col-lg-6 form-group">
+                                        <label class="form-label">Đến ngày</label>
+                                        <input class="form-control" value="@thesis.DateTo" disabled />
+                                    </div>
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Ngày tạo</label>
-                                    <input class="form-control" value="@thesisOutput.CreatedAt" disabled />
+                                    <input class="form-control" value="@thesis.CreatedAt" disabled />
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Ngày cập nhật</label>
-                                    <input class="form-control" value="@thesisOutput.UpdatedAt" disabled />
-                                </div>
-
-                                <div class="d-flex justify-content-end">
+                                    <input class="form-control" value="@thesis.UpdatedAt" disabled />
                                 </div>
                             </div>
                         </form>

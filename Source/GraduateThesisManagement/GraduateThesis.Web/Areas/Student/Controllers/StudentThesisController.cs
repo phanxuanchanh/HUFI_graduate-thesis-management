@@ -19,16 +19,18 @@ namespace GraduateThesis.Web.Areas.Student.Controllers;
 [AccountInfo(typeof(StudentOutput))]
 public class StudentThesisController : WebControllerBase
 {
-    private IAccountManager _accountManager;
-    private IThesisRepository _thesisRepository;
-    private IStudentRepository _studentRepository;
-    private IThesisGroupRepository _thesisGroupRepository;
+    private readonly IAccountManager _accountManager;
+    private readonly IThesisRepository _thesisRepository;
+    private readonly IStudentRepository _studentRepository;
+    private readonly IThesisGroupRepository _thesisGroupRepository;
+    private readonly IThesisRevisionRepository _thesisRevisionRepository;
 
     public StudentThesisController(IRepository repository, IAuthorizationManager authorizationManager)
     {
         _thesisRepository = repository.ThesisRepository;
         _studentRepository = repository.StudentRepository;
         _thesisGroupRepository = repository.ThesisGroupRepository;
+        _thesisRevisionRepository = repository.ThesisRevisionRepository;
         _accountManager = authorizationManager.AccountManager;
     }
 
@@ -37,6 +39,19 @@ public class StudentThesisController : WebControllerBase
     [PageName(Name = "Danh sách đề tài khóa luận")]
     public async Task<IActionResult> Index(int page = 1, int pageSize = 10, string orderBy = "", string orderOptions = "ASC", string searchBy = "All", string keyword = "")
     {
+        _accountManager.SetHttpContext(HttpContext);
+        string userId = _accountManager.GetUserId();
+
+        DataResponse<string> dataResponse = await _studentRepository.CheckRegThesisAsync(userId);
+        if (dataResponse.Status != DataResponseStatus.Success)
+        {
+            if (dataResponse.Data == "NotFound")
+                return NotFound();
+
+            if (dataResponse.Data == "Registered" || dataResponse.Data == "Completed" || dataResponse.Data == "Invited")
+                return RedirectToAction("GetThesisGroups");
+        }
+
         OrderOptions orderOpts = (orderOptions == "ASC") ? OrderOptions.ASC : OrderOptions.DESC;
         Pagination<ThesisOutput> pagination = await _thesisRepository.GetPgnOfPubldThesesAsync(page, pageSize, orderBy, orderOpts, searchBy, keyword);
         StaticPagedList<ThesisOutput> pagedList = pagination.ToStaticPagedList();
@@ -72,13 +87,6 @@ public class StudentThesisController : WebControllerBase
         return View(thesis);
     }
 
-    [Route("check-available/{id}")]
-    [HttpGet]
-    public async Task<IActionResult> CheckAvailable([Required] string id)
-    {
-        return Json(await _thesisRepository.CheckThesisAvailAsync(id));
-    }
-
     [Route("search-students")]
     [HttpGet]
     public async Task<IActionResult> SearchStudents(string keyword)
@@ -93,11 +101,11 @@ public class StudentThesisController : WebControllerBase
         return Json(await _studentRepository.GetForThesisRegAsync(studentId));
     }
 
-    [Route("check-max-student-number")]
+    [Route("can-add-member")]
     [HttpPost]
-    public async Task<IActionResult> CheckMaxStudentNumber(string thesisId, int currentStudentNumber)
+    public async Task<IActionResult> CanAddMember(string thesisId, int currentStudentNumber)
     {
-        return Json(await _thesisRepository.CheckMaxStudentNumberAsync(thesisId, currentStudentNumber));
+        return Json(await _thesisRepository.CanAddMember(thesisId, currentStudentNumber));
     }
 
     [Route("register/{studentId}/{thesisId}")]
@@ -120,7 +128,7 @@ public class StudentThesisController : WebControllerBase
             DataResponse dataResponse = await _thesisRepository.RegisterThesisAsync(thesisRegistrationInput);
             AddTempData(dataResponse);
             if (dataResponse.Status == DataResponseStatus.Success)
-                return RedirectToAction("YourThesis");
+                return RedirectToAction("GetThesisGroups");
 
             AddViewData(dataResponse);
             return View(thesisRegistrationInput);
@@ -159,30 +167,77 @@ public class StudentThesisController : WebControllerBase
     {
         _accountManager.SetHttpContext(HttpContext);
         List<ThesisGroupDtOutput> thesisGroups = await _thesisGroupRepository
-            .GetGrpsByStdntIdAsync(_accountManager.GetUserId());
+            .GetGroupsByStdntIdAsync(_accountManager.GetUserId());
 
         return View(thesisGroups);
     }
 
     [Route("my-thesis/{thesisId}")]
-    [HttpPost]
+    [HttpGet]
     [PageName(Name = "Đề tài khóa luận của bạn")]
-    public async Task<IActionResult> GetYourThesis([Required] string thesisId)
+    public async Task<IActionResult> GetThesis([Required] string thesisId)
     {
-        //StudentThesisOutput studentThesis = await _thesisRepository.GetStudentThesisAsync(thesisId);
-        //if (studentThesis == null)
-        //    return RedirectToAction("GetList");
+        ThesisOutput thesis = await _thesisRepository.GetAsync(thesisId);
 
-        return View();
+        return View(thesis);
     }
 
-    [Route("submit-thesis")]
-    [HttpPost]
-    [PageName(Name = "Nộp đề tài")]
-    public async Task<IActionResult> SubmitThesisAsync([Required] string thesisId, string thesisGroupId)
+    [Route("get-revisions/{thesisId}/{groupId}")]
+    [HttpGet]
+    [PageName(Name = "Xem tiến độ đề tài")]
+    public async Task<IActionResult> GetRevisions([Required] string thesisId, [Required] string groupId)
     {
-        DataResponse dataResponse = await _thesisRepository.SubmitThesisAsync(thesisId, thesisGroupId);
+        _accountManager.SetHttpContext(HttpContext);
+        string userId = _accountManager.GetUserId();
+
+        DataResponse<string> dataResponse = await _thesisRepository.CheckHasThesisAsync(thesisId, userId);
+        if (dataResponse.Status == DataResponseStatus.NotFound)
+            return NotFound();
+
+        ViewData["InProgress"] = await _thesisRepository.CheckIsInprAsync(thesisId);
+        ViewData["IsLeader"] = await _thesisGroupRepository.CheckIsLeaderAsync(userId, groupId);
+        ViewData["Revisions"] = await _thesisRevisionRepository.GetRevsByThesisIdAsync(thesisId);
+
+        return View(new ThesisRevisionInput { ThesisId = thesisId, GroupId = groupId });
+    }
+
+    public async Task<IActionResult> AddRevision(ThesisRevisionInput input)
+    {
+        if (!ModelState.IsValid)
+        {
+            AddTempData(DataResponseStatus.InvalidData);
+            return RedirectToAction("GetRevisions", new { thesisId = input.ThesisId, groupId = input.GroupId });
+        }
+
+        DataResponse dataResponse = await _thesisRevisionRepository.CreateAsync(input);
         AddTempData(dataResponse);
-        return RedirectToAction("YourThesis");
+
+        return RedirectToAction("GetRevisions", new { thesisId = input.ThesisId, groupId = input.GroupId });
+    }
+
+    [Route("submit-thesis/{thesisId}/{groupId}")]
+    [HttpGet]
+    [PageName(Name = "Nộp đề tài khóa luận")]
+    public async Task<IActionResult> SubmitThesis([Required] string thesisId, string groupId)
+    {
+        ThesisOutput thesis = await _thesisRepository.GetAsync(thesisId);
+        if (thesis == null)
+            return NotFound();
+
+        ViewData["Thesis"] = thesis;
+
+        return View(new ThesisSubmissionInput { ThesisId = thesisId, GroupId = groupId });
+    }
+
+    [Route("submit-thesis/{thesisId}/{groupId}")]
+    [HttpPost]
+    [RequestSizeLimit(100_000_000)]
+    [PageName(Name = "Nộp đề tài")]
+    public async Task<IActionResult> SubmitThesis(ThesisSubmissionInput input)
+    {
+        DataResponse dataResponse = await _thesisRepository.SubmitThesisAsync(input);
+        AddTempData(dataResponse);
+
+        return RedirectToAction("GetThesisGroups");
     }
 }

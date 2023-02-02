@@ -28,7 +28,7 @@ public class Repository : IRepository
 
     public IStudentClassRepository StudentClassRepository => new StudentClassRepository(_context);
 
-    public IThesisRepository ThesisRepository => new ThesisRepository(_context, _hostingEnvironment, _emailService);
+    public IThesisRepository ThesisRepository => new ThesisRepository(_context, _hostingEnvironment, _emailService, _fileManager);
 
     public ITopicRepository TopicRepository => new TopicRepository(_context);
 

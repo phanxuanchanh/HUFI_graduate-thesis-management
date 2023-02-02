@@ -1,5 +1,4 @@
-﻿@using Microsoft.AspNetCore.Html
-@{
+﻿@{
     List<ThesisRevisionOutput> thesisRevisions = Model;
 }
 
@@ -49,20 +48,25 @@
                                         </div>
                                         <div class="summary mt-4">
                                             <p class="fw-bold">Tóm lược sửa đổi:</p>
-                                            @thesisRevision.Summary
+                                            @(new HtmlString(thesisRevision.Summary))
+                                        </div>
+                                        <div class="file mt-4">
+                                            <p>DOC: <a href="@thesisRevision.DocumentFile">@thesisRevision.DocumentFile</a></p>
+                                            <p>PPT: <a href="@thesisRevision.PresentationFile">@thesisRevision.PresentationFile</a></p>
+                                            <p>Source Code: <a href="@thesisRevision.SourceCode">@thesisRevision.SourceCode</a></p>
                                         </div>
                                         @if (thesisRevision.Reviewed)
                                         {
-                                            <div class="lecturer-comment mt-4">
-                                                <p class="fw-bold">Nhận xét của giảng viên hướng dẫn:</p>
-                                                @(new HtmlString(thesisRevision.LecturerComment))
+                                            <div class="border border-primary p-2">
+                                                <div class="lecturer-comment mt-1">
+                                                    <p class="fw-bold">Nhận xét của giảng viên hướng dẫn:</p>
+                                                    @(new HtmlString(thesisRevision.LecturerComment))
+                                                </div>
+                                                <div class="point mt-4">
+                                                    <p><span class="fw-bold">Điểm quá trình</span>: @thesisRevision.Point</p>
+                                                </div>
                                             </div>
-                                            <div class="create-at mt-4">
-                                                <p><span class="fw-bold">Điểm quá trình</span>: @thesisRevision.Point</p>
-                                            </div>
-                                        }
-                                        else
-                                        {
+                                        }else{
                                             <div class="review mt-4">
                                                 <a asp-action="ReviewRevision" asp-route-revisionId="@thesisRevision.Id" class="btn btn-success">Thực hiện đánh giá</a>
                                             </div>

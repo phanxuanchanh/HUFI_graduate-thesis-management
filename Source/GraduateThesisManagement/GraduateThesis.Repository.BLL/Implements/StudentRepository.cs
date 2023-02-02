@@ -5,6 +5,7 @@ using GraduateThesis.ApplicationCore.Hash;
 using GraduateThesis.ApplicationCore.Models;
 using GraduateThesis.ApplicationCore.Repository;
 using GraduateThesis.ExtensionMethods;
+using GraduateThesis.Repository.BLL.Consts;
 using GraduateThesis.Repository.BLL.Interfaces;
 using GraduateThesis.Repository.DAL;
 using GraduateThesis.Repository.DTO;
@@ -384,21 +385,14 @@ public class StudentRepository : AsyncSubRepository<Student, StudentInput, Stude
 
     public async Task<object> SearchForThesisRegAsync(string keyword)
     {
-        List<Student> students = await _context.Theses.Where(t => t.IsDeleted == false)
-            .Join(
-                _context.ThesisGroupDetails.Where(gd => gd.IsCompleted == true),
-                thesis => thesis.ThesisGroupId, groupDetail => groupDetail.StudentThesisGroupId,
-                (thesis, groupDetail) => new { StudentId = groupDetail.StudentId }
-            ).Join(
-                _context.Students,
-                combined => combined.StudentId,
-                student => student.Id,
-                (combined, student) => new Student { Id = student.Id, Name = student.Name }
-            ).Distinct().ToListAsync();
+        List<string> studentIds = await _context.ThesisGroupDetails
+            .Include(i => i.Student)
+            .Where(gd => (gd.StatusId == GroupStatusConsts.Pending || gd.StatusId == GroupStatusConsts.Joined || gd.StatusId == GroupStatusConsts.Submitted || gd.StatusId == GroupStatusConsts.Completed) && gd.Student.IsDeleted == false)
+            .Select(s => s.Student.Id).ToListAsync();
 
         return await _context.Students.Include(i => i.StudentClass)
             .Where(s => (s.Id.Contains(keyword) || s.Name.Contains(keyword)) && s.IsDeleted == false)
-            .WhereBulkNotContains(students)
+            .WhereBulkNotContains(studentIds, s => s.Id)
             .Take(50).Select(s => new
             {
                 Id = s.Id,
@@ -511,7 +505,7 @@ public class StudentRepository : AsyncSubRepository<Student, StudentInput, Stude
 
         List<string> studentIds = await _context.ThesisGroupDetails.Include(i => i.Student)
                 .Where(gd => gd.IsDeleted == false && gd.Student.IsDeleted == false)
-                .Where(gd => (gd.IsApproved == true && gd.InProgress == true) || gd.IsCompleted == true)
+                .Where(gd => gd.StatusId == GroupStatusConsts.Completed || gd.StatusId == GroupStatusConsts.Joined)
                 .Select(s => s.StudentId).ToListAsync();
 
         queryable.WhereBulkNotContains(studentIds, s => s.Id);
@@ -577,7 +571,7 @@ public class StudentRepository : AsyncSubRepository<Student, StudentInput, Stude
         IQueryable<ThesisGroupDetail> queryable = _context.ThesisGroupDetails
             .Include(i => i.StudentThesisGroup).Include(i => i.Student).Include(i => i.Student.StudentClass)
             .Where(gd => gd.IsDeleted == false && gd.Student.IsDeleted == false && gd.StudentThesisGroup.IsDeleted == false)
-            .Where(gd => (gd.IsApproved == true && gd.InProgress == true) || gd.IsCompleted == true);
+            .Where(gd => gd.StatusId == GroupStatusConsts.Completed || gd.StatusId == GroupStatusConsts.Joined);
 
         if (!string.IsNullOrEmpty(keyword) && string.IsNullOrEmpty(searchBy))
         {
@@ -714,7 +708,7 @@ public class StudentRepository : AsyncSubRepository<Student, StudentInput, Stude
 
             List<string> studentIds = await _context.ThesisGroupDetails.Include(i => i.Student)
                 .Where(gd => gd.IsDeleted == false && gd.Student.IsDeleted == false)
-                .Where(gd => (gd.IsApproved == true && gd.InProgress == true) || gd.IsCompleted == true)
+                .Where(gd => gd.StatusId == GroupStatusConsts.Completed || gd.StatusId == GroupStatusConsts.Joined)
                 .Select(s => s.StudentId).ToListAsync();
 
             List<Student> students = await _context.Students.Include(i => i.StudentClass)
@@ -758,7 +752,7 @@ public class StudentRepository : AsyncSubRepository<Student, StudentInput, Stude
             List<RegdStudentExport> regdStudents = await _context.ThesisGroupDetails
                 .Include(i => i.Student).Include(i => i.Student.StudentClass)
                 .Where(gd => gd.IsDeleted == false && gd.Student.IsDeleted == false)
-                .Where(gd => (gd.IsApproved == true && gd.InProgress == true) || gd.IsCompleted == true)
+                .Where(gd => gd.StatusId == GroupStatusConsts.Completed || gd.StatusId == GroupStatusConsts.Joined)
                 .Join(
                     _context.Theses.Where(t => t.IsDeleted == false),
                     groudDetail => groudDetail.StudentThesisGroupId,
@@ -792,5 +786,50 @@ public class StudentRepository : AsyncSubRepository<Student, StudentInput, Stude
             if (memoryStream != null)
                 memoryStream.Dispose();
         }
+    }
+
+    public async Task<DataResponse<string>> CheckRegThesisAsync(string studentId)
+    {
+        Student student = await _context.Students.Include(i => i.ThesisGroupDetails)
+           .Where(st => st.Id == studentId && st.IsDeleted == false).SingleOrDefaultAsync();
+
+        if (student == null)
+            return new DataResponse<string>
+            {
+                Status = DataResponseStatus.NotFound,
+                Message = "Không tìm thấy sinh viên này!",
+                Data = "NotFound"
+            };
+
+        if (student.ThesisGroupDetails.Any(gd => gd.StatusId == GroupStatusConsts.Completed))
+            return new DataResponse<string>
+            {
+                Status = DataResponseStatus.AlreadyExists,
+                Message = "Không thể đăng ký khóa luận vì bạn đã hoàn thành khóa luận",
+                Data = "Completed"
+            };
+
+        if (student.ThesisGroupDetails.Any(gd => gd.StatusId == GroupStatusConsts.Pending))
+            return new DataResponse<string>
+            {
+                Status = DataResponseStatus.AlreadyExists,
+                Message = "Không thể đăng ký mới đề tài vì bạn đã được mời vào nhóm",
+                Data = "Invited"
+            };
+
+        if (student.ThesisGroupDetails.Any(gd => gd.StatusId == GroupStatusConsts.Joined || gd.StatusId == GroupStatusConsts.Submitted))
+            return new DataResponse<string>
+            {
+                Status = DataResponseStatus.AlreadyExists,
+                Message = "Bạn đã đăng ký đề tài, không thể đăng ký thêm",
+                Data = "Registered"
+            };
+
+        return new DataResponse<string>
+        {
+            Status = DataResponseStatus.Success,
+            Message = "Bạn có thể đăng ký đề tài",
+            Data = "Success"
+        };
     }
 }

@@ -2,11 +2,7 @@
   [ThesisId] [varchar](50) NOT NULL,
   [CommitteeMemberId] [varchar](50) NOT NULL,
   [Point] [decimal](5, 2) NULL,
-  [CreatedAt] [datetime] NULL,
-  [UpdatedAt] [datetime] NULL,
-  [DeletedAt] [datetime] NULL,
-  [IsDeleted] [bit] NOT NULL,
-  [EvaluationId] [varchar](50) NOT NULL,
+  [EvaluationId] [varchar](50) NULL,
   CONSTRAINT [PK_CouncilMembers_ID] PRIMARY KEY CLUSTERED ([ThesisId], [CommitteeMemberId])
 )
 ON [PRIMARY]

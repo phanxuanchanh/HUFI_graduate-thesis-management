@@ -2,7 +2,7 @@
 
 namespace GraduateThesis.Web.Areas.Student.ViewComponents;
 
-[ViewComponent(Name = "FacultyStaffLayout_Footer")]
+[ViewComponent(Name = "StudentLayout_Footer")]
 public class FooterViewComponent : ViewComponent
 {
     public FooterViewComponent()
