@@ -50,7 +50,8 @@
                                                 </button>
                                                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" style="margin: 0px;">
                                                     <a class="dropdown-item" asp-action="Edit" asp-route-Id="@appRole.Id">Sửa</a>
-                                                    <a class="dropdown-item" asp-action="GrantToPage" asp-route-roleId="@appRole.Id">Danh sách trang</a>
+                                                    <a class="dropdown-item" asp-action="AddPage" asp-route-roleId="@appRole.Id">Thêm trang</a>
+                                                    <a class="dropdown-item" asp-action="RemovePage" asp-route-roleId="@appRole.Id">Xóa trang</a>
                                                 </div>
                                             </div>
                                         </div>

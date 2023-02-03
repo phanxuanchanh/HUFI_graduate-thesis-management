@@ -7,6 +7,8 @@ using GraduateThesis.Repository.DAL;
 using GraduateThesis.Repository.DTO;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace GraduateThesis.Repository.BLL.Implements;
@@ -71,7 +73,26 @@ public class AppRoleRepository : AsyncSubRepository<AppRole, AppRoleInput, AppRo
         entity.CreatedAt = DateTime.Now;
     }
 
-    public async Task<DataResponse> GrantToPageAsync(AppRoleMappingInput input)
+    public override async Task<AppRoleOutput> GetAsync(string id)
+    {
+        AppRoleOutput appRole = await base.GetAsync(id);
+        if(appRole != null)
+        {
+            appRole.AppPages = await _context.AppRoleMappings.Include(i => i.Page)
+                .Where(rm => rm.RoleId == appRole.Id && rm.Page.IsDeleted == false)
+                .Select(s => new AppPageOutput
+                {
+                    Id = s.Page.Id,
+                    PageName = s.Page.PageName,
+                    ControllerName = s.Page.ControllerName,
+                    ActionName = s.Page.ActionName
+                }).ToListAsync();
+        }
+
+        return appRole;
+    }
+
+    public async Task<DataResponse> AddPageAsync(AppRoleMappingInput input)
     {
         bool checkRolesExists = await _context.AppRoles
             .AnyAsync(r => r.Id == input.RoleId && r.IsDeleted == false);
@@ -114,11 +135,11 @@ public class AppRoleRepository : AsyncSubRepository<AppRole, AppRoleInput, AppRo
         return new DataResponse
         {
             Status = DataResponseStatus.Success,
-            Message = "Đã gán quyền cho trang thành công!"
+            Message = "Thêm trang thành công!"
         };
     }
 
-    public async Task<DataResponse> RevokeFromPageAsync(AppRoleMappingInput input)
+    public async Task<DataResponse> RemovePageAsync(AppRoleMappingInput input)
     {
         bool checkRolesExists = await _context.AppRoles
             .AnyAsync(r => r.Id == input.RoleId && r.IsDeleted == false);
@@ -154,7 +175,117 @@ public class AppRoleRepository : AsyncSubRepository<AppRole, AppRoleInput, AppRo
         return new DataResponse
         {
             Status = DataResponseStatus.Success,
-            Message = "Đã thu hồi quyền được gán cho trang thành công!"
+            Message = "Xóa trang thành công!"
+        };
+    }
+
+    public async Task<DataResponse> AddPagesAsync(AppRoleMappingInput input)
+    {
+        bool checkRolesExists = await _context.AppRoles
+            .AnyAsync(r => r.Id == input.RoleId && r.IsDeleted == false);
+        if (!checkRolesExists)
+            return new DataResponse
+            {
+                Status = DataResponseStatus.NotFound,
+                Message = "Không tìm thấy quyền có Id này!"
+            };
+
+        string[] pageIds = input.PageIds.Split(new char[] { ';' });
+        List<AppRoleMapping> roleMappings = new List<AppRoleMapping>();
+        foreach(string pageId in pageIds)
+        {
+            roleMappings.Add(new AppRoleMapping { RoleId = input.RoleId, PageId = pageId });
+        }
+
+        await _context.AppRoleMappings.AddRangeAsync(roleMappings);
+        await _context.SaveChangesAsync();
+
+        return new DataResponse
+        {
+            Status = DataResponseStatus.Success,
+            Message = "Thêm các trang đã chọn thành công!"
+        };
+    }
+
+    public async Task<DataResponse> RemovePagesAsync(AppRoleMappingInput input)
+    {
+        bool checkRolesExists = await _context.AppRoles
+            .AnyAsync(r => r.Id == input.RoleId && r.IsDeleted == false);
+        if (!checkRolesExists)
+            return new DataResponse
+            {
+                Status = DataResponseStatus.NotFound,
+                Message = "Không tìm thấy quyền có Id này!"
+            };
+
+        string[] pageIds = input.PageIds.Split(new char[] { ';' });
+        List<AppRoleMapping> roleMappings = await _context.AppRoleMappings
+            .Where(rm => rm.RoleId == input.RoleId && pageIds.Any(p => p == rm.PageId))
+            .ToListAsync();
+
+        _context.AppRoleMappings.RemoveRange(roleMappings);
+        await _context.SaveChangesAsync();
+
+        return new DataResponse
+        {
+            Status = DataResponseStatus.Success,
+            Message = "Xóa các trang đã chọn thành công!"
+        };
+    }
+
+    public async Task<Pagination<AppRoleOutput>> GetPgnHasNtUserId(string userId, int page, int pageSize, string orderBy, OrderOptions orderOptions, string keyword)
+    {
+        List<string> roleIds = await _context.AppUserRoles
+            .Where(ur => ur.UserId == userId && ur.Role.IsDeleted == false)
+            .Select(s => s.RoleId).ToListAsync();
+
+        IQueryable<AppRole> queryable = _context.AppRoles
+            .Where(r => r.IsDeleted == false).WhereBulkNotContains(roleIds, r => r.Id);
+
+        if (!string.IsNullOrEmpty(keyword))
+        {
+            queryable = queryable.Where(r => r.Id.Contains(keyword) || r.Name.Contains(keyword));
+        }
+
+        if (string.IsNullOrEmpty(orderBy))
+        {
+            queryable = queryable.OrderByDescending(p => p.CreatedAt);
+        }
+        else if (orderOptions == OrderOptions.ASC)
+        {
+            switch (orderBy)
+            {
+                case "Id": queryable = queryable.OrderBy(r => r.Id); break;
+                case "Name": queryable = queryable.OrderBy(r => r.Name); break;
+                case "CreatedAt": queryable = queryable.OrderBy(r => r.CreatedAt); break;
+            }
+        }
+        else
+        {
+            switch (orderBy)
+            {
+                case "Id": queryable = queryable.OrderByDescending(r => r.Id); break;
+                case "Name": queryable = queryable.OrderByDescending(r => r.Name); break;
+                case "CreatedAt": queryable = queryable.OrderByDescending(r => r.CreatedAt); break;
+            }
+        }
+
+        int n = (page - 1) * pageSize;
+        int totalItemCount = await queryable.CountAsync();
+
+        List<AppRoleOutput> onePageOfData = await queryable.Skip(n).Take(pageSize)
+            .Select(s => new AppRoleOutput
+            {
+                Id = s.Id,
+                Name = s.Name,
+            }).ToListAsync();
+
+        return new Pagination<AppRoleOutput>
+        {
+            Page = page,
+            PageSize = pageSize,
+            TotalItemCount = totalItemCount,
+            Items = onePageOfData
         };
     }
 }

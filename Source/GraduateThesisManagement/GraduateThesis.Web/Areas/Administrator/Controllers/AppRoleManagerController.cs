@@ -19,14 +19,12 @@ public class AppRoleManagerController : WebControllerBase<IAppRoleRepository, Ap
 {
     private IAppRoleRepository _appRoleRepository;
     private IAppPageRepository _appPageRepository;
-    private IFacultyStaffRepository _facultyStaffRepository;
 
     public AppRoleManagerController(IRepository repository) 
         : base(repository.AppRolesRepository)
     {
         _appRoleRepository = repository.AppRolesRepository;
         _appPageRepository = repository.AppPageRepository;
-        _facultyStaffRepository = repository.FacultyStaffRepository;
     }
 
     protected override Dictionary<string, string> SetOrderByProperties()
@@ -53,12 +51,39 @@ public class AppRoleManagerController : WebControllerBase<IAppRoleRepository, Ap
         return await GetTrashResult(count);
     }
 
+    [NonAction]
+    public override Task<IActionResult> Details([Required] string id)
+    {
+        throw new NotImplementedException();
+    }
+
     [Route("details/{id}")]
     [HttpGet]
     [PageName(Name = "Chi tiết quyền")]
-    public override async Task<IActionResult> Details([Required] string id)
+    public async Task<IActionResult> Details([Required] string id, int page = 1, int pageSize = 10, string orderBy = "CreatedAt", string orderOptions = "DESC", string keyword = "")
     {
-        return await GetDetailsResult(id);
+        AppRoleOutput appRole = await _appRoleRepository.GetAsync(id);
+        if (appRole == null)
+            return RedirectToAction("Index");
+
+        OrderOptions orderOpts = (orderOptions == "ASC") ? OrderOptions.ASC : OrderOptions.DESC;
+        Pagination<AppPageOutput> pagination = await _appPageRepository
+            .GetPgnHasRoleIdAsync(id, page, pageSize, orderBy, orderOpts, keyword);
+
+        StaticPagedList<AppPageOutput> pagedList = pagination.ToStaticPagedList();
+
+        ViewData["OrderByProperties"] = new Dictionary<string, string>
+        {
+            { "Id", "Mã" }, { "PageName", "Tên" }, { "ControllerName", "Tên bộ điều khiển" },
+            { "ActionName", "Tên hành động" }, { "Area", "Khu vực" }, { "CreatedAt", "Ngày tạo" }
+        };
+
+        ViewData["OrderBy"] = orderBy;
+        ViewData["OrderOptions"] = orderOptions;
+        ViewData["PagedList"] = pagedList;
+        ViewData["Keyword"] = keyword;
+
+        return View(appRole);
     }
 
     [Route("create")]
@@ -132,20 +157,29 @@ public class AppRoleManagerController : WebControllerBase<IAppRoleRepository, Ap
         throw new NotImplementedException();
     }
 
-    [Route("grant-to-page/{roleId}")]
+    [Route("add-page/{roleId}")]
     [HttpGet]
-    [PageName(Name = "Gán quyền cho trang")]
-    public async Task<IActionResult> GrantToPage(string roleId, int page = 1, int pageSize = 10, string keyword = "")
+    [PageName(Name = "Thêm chức năng cho nhóm quyền")]
+    public async Task<IActionResult> AddPage(string roleId, int page = 1, int pageSize = 10, string orderBy = "CreatedAt", string orderOptions = "DESC", string keyword = "")
     {
         AppRoleOutput appRole = await _appRoleRepository.GetAsync(roleId);
         if (appRole == null)
             return RedirectToAction("Index");
 
+        OrderOptions orderOpts = (orderOptions == "ASC") ? OrderOptions.ASC : OrderOptions.DESC;
         Pagination<AppPageOutput> pagination = await _appPageRepository
-            .GetPaginationAsync(page, pageSize, null, OrderOptions.ASC, keyword);
+            .GetPgnHasNtRoleIdAsync(roleId, page, pageSize, orderBy, orderOpts, keyword);
 
         StaticPagedList<AppPageOutput> pagedList = pagination.ToStaticPagedList();
 
+        ViewData["OrderByProperties"] = new Dictionary<string, string>
+        {
+            { "Id", "Mã" }, { "PageName", "Tên" }, { "ControllerName", "Tên bộ điều khiển" },
+            { "ActionName", "Tên hành động" }, { "Area", "Khu vực" }, { "CreatedAt", "Ngày tạo" }
+        };
+
+        ViewData["OrderBy"] = orderBy;
+        ViewData["OrderOptions"] = orderOptions;
         ViewData["PagedList"] = pagedList;
         ViewData["Keyword"] = keyword;
         ViewData["Role"] = appRole;
@@ -153,36 +187,61 @@ public class AppRoleManagerController : WebControllerBase<IAppRoleRepository, Ap
         return View();
     }
 
-    [Route("grant-to-page/{roleId}")]
+    [Route("add-page/{roleId}")]
     [HttpPost]
-    public async Task<IActionResult> GrantToPage(AppRoleMappingInput input)
+    public async Task<IActionResult> AddPage(AppRoleMappingInput input)
     {
         if (ModelState.IsValid)
         {
-            DataResponse dataResponse = await _appRoleRepository.GrantToPageAsync(input);
+            DataResponse dataResponse = await _appRoleRepository.AddPageAsync(input);
             AddTempData(dataResponse);
 
-            return RedirectToAction("GrantToPage", new { roleId = input.RoleId });
+            return RedirectToAction("AddPage", new { roleId = input.RoleId });
         }
 
         AddTempData(DataResponseStatus.InvalidData);
-        return RedirectToAction("GrantToPage", new { roleId = input.RoleId });
+        return RedirectToAction("AddPage", new { roleId = input.RoleId });
     }
 
-    [Route("revoke-from-page/{roleId}")]
+    [Route("add-pages/{roleId}")]
+    [HttpPost]
+    public async Task<IActionResult> AddPages(AppRoleMappingInput input)
+    {
+        if (ModelState.IsValid)
+        {
+            DataResponse dataResponse = await _appRoleRepository.AddPagesAsync(input);
+            AddTempData(dataResponse);
+
+            return RedirectToAction("AddPage", new { roleId = input.RoleId });
+        }
+
+        AddTempData(DataResponseStatus.InvalidData);
+        return RedirectToAction("AddPage", new { roleId = input.RoleId });
+    }
+
+    [Route("remove-page/{roleId}")]
     [HttpGet]
-    [PageName(Name = "Thu hồi quyền của trang")]
-    public async Task<IActionResult> RevokeFromPage(string roleId, int page = 1, int pageSize = 10, string keyword = "")
+    [PageName(Name = "Xóa chức năng ra khỏi nhóm quyền")]
+    public async Task<IActionResult> RemovePage(string roleId, int page = 1, int pageSize = 10, string orderBy = "CreatedAt", string orderOptions = "DESC", string keyword = "")
     {
         AppRoleOutput appRole = await _appRoleRepository.GetAsync(roleId);
         if (appRole == null)
             return RedirectToAction("Index");
 
+        OrderOptions orderOpts = (orderOptions == "ASC") ? OrderOptions.ASC : OrderOptions.DESC;
         Pagination<AppPageOutput> pagination = await _appPageRepository
-            .GetPgnHasRoleIdAsync(roleId, page, pageSize, keyword);
+            .GetPgnHasRoleIdAsync(roleId, page, pageSize, orderBy, orderOpts, keyword);
 
         StaticPagedList<AppPageOutput> pagedList = pagination.ToStaticPagedList();
 
+        ViewData["OrderByProperties"] = new Dictionary<string, string>
+        {
+            { "Id", "Mã" }, { "PageName", "Tên" }, { "ControllerName", "Tên bộ điều khiển" },
+            { "ActionName", "Tên hành động" }, { "Area", "Khu vực" }, { "CreatedAt", "Ngày tạo" }
+        };
+
+        ViewData["OrderBy"] = orderBy;
+        ViewData["OrderOptions"] = orderOptions;
         ViewData["PagedList"] = pagedList;
         ViewData["Keyword"] = keyword;
         ViewData["Role"] = appRole;
@@ -190,20 +249,36 @@ public class AppRoleManagerController : WebControllerBase<IAppRoleRepository, Ap
         return View();
     }
 
-    [Route("revoke-from-page/{roleId}")]
+    [Route("remove-page/{roleId}")]
     [HttpPost]
-    public async Task<IActionResult> RevokeFromPage(AppRoleMappingInput input)
+    public async Task<IActionResult> RemovePage(AppRoleMappingInput input)
     {
         if (ModelState.IsValid)
         {
-            DataResponse dataResponse = await _appRoleRepository.RevokeFromPageAsync(input);
+            DataResponse dataResponse = await _appRoleRepository.RemovePageAsync(input);
             AddTempData(dataResponse);
 
-            return RedirectToAction("RevokeFromPage", new { roleId = input.RoleId });
+            return RedirectToAction("RemovePage", new { roleId = input.RoleId });
         }
 
         AddTempData(DataResponseStatus.InvalidData);
-        return RedirectToAction("RevokeFromPage", new { roleId = input.RoleId });
+        return RedirectToAction("RemovePage", new { roleId = input.RoleId });
+    }
+
+    [Route("remove-pages/{roleId}")]
+    [HttpPost]
+    public async Task<IActionResult> RemovePages(AppRoleMappingInput input)
+    {
+        if (ModelState.IsValid)
+        {
+            DataResponse dataResponse = await _appRoleRepository.RemovePagesAsync(input);
+            AddTempData(dataResponse);
+
+            return RedirectToAction("RemovePage", new { roleId = input.RoleId });
+        }
+
+        AddTempData(DataResponseStatus.InvalidData);
+        return RedirectToAction("RemovePage", new { roleId = input.RoleId });
     }
 
     [NonAction]

@@ -64,7 +64,7 @@ public class UserManagerController : WebControllerBase
 
         OrderOptions orderOpts = (orderOptions == "ASC") ? OrderOptions.ASC : OrderOptions.DESC;
         Pagination<AppRoleOutput> pagination = await _appRoleRepository
-            .GetPaginationAsync(page, pageSize, orderBy, orderOpts, keyword);
+            .GetPgnHasNtUserId(userId, page, pageSize, orderBy, orderOpts, keyword);
 
         StaticPagedList<AppRoleOutput> pagedList = pagination.ToStaticPagedList();
 

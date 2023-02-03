@@ -375,35 +375,6 @@ public class FacultyStaffRepository : AsyncSubRepository<FacultyStaff, FacultySt
         };
     }
 
-    public async Task<Pagination<FacultyStaffOutput>> GetPgnHasRoleIdAsync(string roleId, int page, int pageSize, string keyword)
-    {
-        int n = (page - 1) * pageSize;
-        int totalItemCount = await _context.AppUserRoles
-            .Where(f => f.RoleId == roleId && f.User.IsDeleted == false)
-            .Where(f => f.User.Id.Contains(keyword) || f.User.Surname.Contains(keyword) || f.User.Name.Contains(keyword) || f.User.Email.Contains(keyword))
-            .CountAsync();
-
-        List<FacultyStaffOutput> onePageOfData = await _context.AppUserRoles.Include(i => i.User)
-            .Where(f => f.RoleId == roleId && f.User.IsDeleted == false)
-            .Where(f => f.User.Id.Contains(keyword) || f.User.Surname.Contains(keyword) || f.User.Name.Contains(keyword) || f.User.Email.Contains(keyword))
-            .Skip(n).Take(pageSize)
-            .Select(s => new FacultyStaffOutput
-            {
-                Id = s.User.Id,
-                Surname = s.User.Surname,
-                Name = s.User.Name,
-                Email = s.User.Email
-            }).ToListAsync();
-
-        return new Pagination<FacultyStaffOutput>
-        {
-            Page = page,
-            PageSize = pageSize,
-            TotalItemCount = totalItemCount,
-            Items = onePageOfData
-        };
-    }
-
     public async Task<DataResponse> UpdateProfileAsync(FacultyStaffInput input, FileUploadModel avtUploadModel)
     {
         FacultyStaff facultyStaff_fromDb = await _context.FacultyStaffs.FindAsync(input.Id);
