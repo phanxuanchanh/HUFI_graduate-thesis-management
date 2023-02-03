@@ -18,13 +18,13 @@
                                 <th data-sortable="" style="width: 10%;">
                                     <a href="#" class="dataTable-sorter">STT</a>
                                 </th>
-                                <th data-sortable="" style="width: 20%;">
+                                <th data-sortable="" style="width: 30%;">
                                     <a href="#" class="dataTable-sorter">@Html.DisplayNameFor(model => model.Id)</a>
                                 </th>
-                                <th data-sortable="" style="width: 30%;">
+                                <th data-sortable="" style="width: 35%;">
                                     <a href="#" class="dataTable-sorter">@Html.DisplayNameFor(model => model.Name)</a>
                                 </th>
-                                <th data-sortable="" style="width: 40%;">
+                                <th data-sortable="" style="width: 25%;">
                                     <a href="#" class="dataTable-sorter">Công cụ</a>
                                 </th>
                             </tr>
@@ -43,28 +43,15 @@
                                         <a class="btn btn-success btn-sm" asp-action="Details" asp-route-id="@appRole.Id">
                                             <i class="fas fa-folder"></i> Chi tiết
                                         </a>
-                                        <a class="btn btn-primary btn-sm" asp-action="Edit" asp-route-id="@appRole.Id">
-                                            <i class="fas fa-folder"></i> Sửa
-                                        </a>
                                         <div class="btn-group">
                                             <div class="dropdown">
                                                 <button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                    Cấp quyền
+                                                    Tác vụ
                                                 </button>
                                                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" style="margin: 0px;">
-                                                    <a class="dropdown-item" asp-action="GrantToUser" asp-route-roleId="@appRole.Id">Gán quyền cho người dùng</a>
-                                                    <a class="dropdown-item" asp-action="GrantToPage" asp-route-roleId="@appRole.Id">Gán quyền vào trang</a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="btn-group">
-                                            <div class="dropdown">
-                                                <button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                    Thu hồi
-                                                </button>
-                                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" style="margin: 0px;">
-                                                    <a class="dropdown-item" asp-action="RevokeFromUser" asp-route-roleId="@appRole.Id">Thu hồi quyền người dùng</a>
-                                                    <a class="dropdown-item" asp-action="RevokeFromPage" asp-route-roleId="@appRole.Id">Thu hồi quyền của trang</a>
+                                                    <a class="dropdown-item" asp-action="Edit" asp-route-Id="@appRole.Id">Sửa</a>
+                                                    <a class="dropdown-item" asp-action="AddPage" asp-route-roleId="@appRole.Id">Thêm trang</a>
+                                                    <a class="dropdown-item" asp-action="RemovePage" asp-route-roleId="@appRole.Id">Xóa trang</a>
                                                 </div>
                                             </div>
                                         </div>

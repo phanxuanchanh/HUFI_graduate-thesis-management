@@ -38,6 +38,7 @@ public interface IThesisRepository : IAsyncSubRepository<ThesisInput, ThesisOutp
     Task<byte[]> ExportPubldThesesAsync();
     Task<byte[]> ExportRejdThesesAsync();
     Task<byte[]> ExportAppdThesesAsync();
+    Task<byte[]> ExportThesesInprAsync();
     Task<byte[]> ExportAsync(string lecturerId);
     Task<byte[]> ExportPubldThesesAsync(string lecturerId);
     Task<byte[]> ExportRejdThesesAsync(string lecturerId);
