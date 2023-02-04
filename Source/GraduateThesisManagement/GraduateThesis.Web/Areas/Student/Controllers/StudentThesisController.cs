@@ -179,6 +179,14 @@ public class StudentThesisController : WebControllerBase
     public async Task<IActionResult> GetThesis([Required] string thesisId)
     {
         ThesisOutput thesis = await _thesisRepository.GetAsync(thesisId);
+        if (thesis == null)
+            return NotFound();
+
+        ViewData["SupvResult"] = await _thesisRepository.GetSupvResultAsync(thesis.Id);
+        ViewData["CtrArgResult"] = await _thesisRepository.GetCtrArgResultAsync(thesis.Id);
+
+        if (thesis.ThesisGroupId != null)
+            ViewData["StudentGroupDts"] = await _thesisGroupRepository.GetStndtGrpDtsAsync(thesis.ThesisGroupId);
 
         return View(thesis);
     }

@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace GraduateThesis.Repository.DTO;
 
-public class SupervisorPointInput
+public class SupvResultInput
 {
     [Display(Name = "Mã đề tài")]
     [Required(ErrorMessage = "{0} không được để trống")]
@@ -36,7 +36,7 @@ public class SupervisorPointInput
     public decimal? Point { get; set; }
 }
 
-public class SupervisorPointOutput : SupervisorPointInput
+public class SupvResultOutput : SupvResultInput
 {
 
 }

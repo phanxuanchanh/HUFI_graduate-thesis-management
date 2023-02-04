@@ -94,11 +94,6 @@ public class ThesisOutput : ThesisInput
     public SpecializationOutput Specialization { get; set; }
 
     public ThesisStatusOutput ThesisStatus { get; set; }
-
-    public SupervisorPointOutput SupervisorResult { get; set; }
-    
-    public List<StudentPointOutput> StudentPoints { get; set; }
-
 }
 
 public class PublishedThesisOutput

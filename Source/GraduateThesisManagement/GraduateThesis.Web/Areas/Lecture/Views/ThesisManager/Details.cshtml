@@ -1,7 +1,8 @@
 ﻿@model ThesisOutput
 @{
-    SupervisorPointOutput supervisorPoint = (ViewData["SupervisorResult"] as SupervisorPointOutput)!;
-    CriticialPointOutput criticialPoint = (ViewData["CriticialPoint"] as CriticialPointOutput)!;
+    SupvResultOutput supvResult = (ViewData["SupvResult"] as SupvResultOutput)!;
+    CtrArgResultOutput ctrArgResult = (ViewData["CtrArgResult"] as CtrArgResultOutput)!;
+    List<StudentGroupDtOutput> studentGroupDts = (ViewData["StudentGroupDts"] as List<StudentGroupDtOutput>)!;
 }
 
 <section id="basic-horizontal-layouts">
@@ -98,7 +99,68 @@
     </div>
 </section>
 
-@if (supervisorPoint != null)
+@if(studentGroupDts != null){
+    <section class="section">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title">Danh sách thành viên nhóm</h4>
+            </div>
+            <div class="card-body">
+                <div class="dataTable-wrapper dataTable-loading no-footer sortable searchable fixed-columns">
+                    <div class="dataTable-container">
+                        <table class="table table-striped dataTable-table" id="table1">
+                            <thead>
+                                <tr>
+                                    <th data-sortable="" style="width: 10%;">
+                                        <a href="#" class="dataTable-sorter">STT</a>
+                                    </th>
+                                    <th data-sortable="" style="width: 20%;">
+                                        <a href="#" class="dataTable-sorter">Mã</a>
+                                    </th>
+                                    <th data-sortable="" style="width: 25%;">
+                                        <a href="#" class="dataTable-sorter">Tên & Email</a>
+                                    </th>
+                                    <th data-sortable="" style="width: 25%;">
+                                        <a href="#" class="dataTable-sorter">Điểm</a>
+                                    </th>
+                                    <th data-sortable="" style="width: 20%;">
+                                        <a href="#" class="dataTable-sorter">Trạng thái</a>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{
+                                    int count = 1;
+                                }
+                                @foreach (StudentGroupDtOutput studentGroupDt in studentGroupDts)
+                                {
+                                    <tr>
+                                        <td>@count</td>
+                                        <td>@studentGroupDt.StudentId</td>
+                                        <td>
+                                            @studentGroupDt.FullName
+                                            <span class="badge bg-light-primary">@studentGroupDt.Email</span>
+                                        </td>
+                                        <td>
+                                            <p class="m-0">Điểm HD: @studentGroupDt.SupvPoint</p>
+                                            <p class="m-0">Điểm PB: @studentGroupDt.CtrArgPoint</p>
+                                            <p class="m-0">Điểm HĐ: @studentGroupDt.CmtePoint</p>
+                                        </td>
+                                        <td>@studentGroupDt.StatusName</td>
+                                    </tr>
+                                    count++;
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </section>
+}
+
+@if (supvResult != null)
 {
     <section id="basic-horizontal-layouts">
         <div class="card">
@@ -113,31 +175,31 @@
                                 <label>Đánh giá về nội dung</label>
                             </div>
                             <div class="col-md-8 form-group">
-                                <textarea class="form-control" id="contents" placeholder="Đánh giá về nội dung">@supervisorPoint.Contents</textarea>
+                                <textarea class="form-control" id="contents" placeholder="Đánh giá về nội dung">@supvResult.Contents</textarea>
                             </div>
                             <div class="col-md-4">
                                 <label>Đánh giá về thái độ</label>
                             </div>
                             <div class="col-md-8 form-group">
-                                <textarea class="form-control" id="attitudes" placeholder="Đánh giá về thái độ">@supervisorPoint.Attitudes</textarea>
+                                <textarea class="form-control" id="attitudes" placeholder="Đánh giá về thái độ">@supvResult.Attitudes</textarea>
                             </div>
                             <div class="col-md-4">
                                 <label>Đánh giá về kết quả thực hiện</label>
                             </div>
                             <div class="col-md-8 form-group">
-                                <textarea class="form-control" id="results" placeholder="Đánh giá về kết quả">@supervisorPoint.Results</textarea>
+                                <textarea class="form-control" id="results" placeholder="Đánh giá về kết quả">@supvResult.Results</textarea>
                             </div>
                             <div class="col-md-4">
                                 <label>Kết luận</label>
                             </div>
                             <div class="col-md-8 form-group">
-                                <textarea class="form-control" id="conclusions" placeholder="Kết luận">@supervisorPoint.Conclusions</textarea>
+                                <textarea class="form-control" id="conclusions" placeholder="Kết luận">@supvResult.Conclusions</textarea>
                             </div>
                             <div class="col-md-4">
                                 <label>Điểm</label>
                             </div>
                             <div class="col-md-8 form-group">
-                                <input class="form-control" value="@supervisorPoint.Point" />
+                                <input class="form-control" value="@supvResult.Point" />
                             </div>
                         </div>
                     </div>
@@ -147,7 +209,7 @@
     </section>
 }
 
-@if (criticialPoint != null)
+@if (ctrArgResult != null)
 {
     <section id="basic-horizontal-layouts">
         <div class="card">
@@ -162,49 +224,49 @@
                                 <label>Đánh giá về nội dung</label>
                             </div>
                             <div class="col-md-8 form-group">
-                                <textarea class="form-control" id="c_contents" placeholder="Đánh giá về nội dung">@criticialPoint.Contents</textarea>
+                                <textarea class="form-control" id="c_contents" placeholder="Đánh giá về nội dung">@ctrArgResult.Contents</textarea>
                             </div>
                             <div class="col-md-4">
                                 <label>Đánh giá về phương pháp nghiên cứu</label>
                             </div>
                             <div class="col-md-8 form-group">
-                                <textarea class="form-control" id="researchMethods" placeholder="Đánh giá về pp nghiên cứu">@criticialPoint.ResearchMethods</textarea>
+                                <textarea class="form-control" id="researchMethods" placeholder="Đánh giá về pp nghiên cứu">@ctrArgResult.ResearchMethods</textarea>
                             </div>
                             <div class="col-md-4">
                                 <label>Đánh giá về mặt khoa học</label>
                             </div>
                             <div class="col-md-8 form-group">
-                                <textarea class="form-control" id="scientificResults" placeholder="Đánh giá về KQKH">@criticialPoint.ScientificResults</textarea>
+                                <textarea class="form-control" id="scientificResults" placeholder="Đánh giá về KQKH">@ctrArgResult.ScientificResults</textarea>
                             </div>
                             <div class="col-md-4">
                                 <label>Đánh giá về mặt thực tiễn</label>
                             </div>
                             <div class="col-md-8 form-group">
-                                <textarea class="form-control" id="practicalResults" placeholder="Đánh giá về mặt thực tiễn">@criticialPoint.PracticalResults</textarea>
+                                <textarea class="form-control" id="practicalResults" placeholder="Đánh giá về mặt thực tiễn">@ctrArgResult.PracticalResults</textarea>
                             </div>
                             <div class="col-md-4">
                                 <label>Những thiếu sót</label>
                             </div>
                             <div class="col-md-8 form-group">
-                                <textarea class="form-control" id="defects" placeholder="Những thiếu sót">@criticialPoint.Defects</textarea>
+                                <textarea class="form-control" id="defects" placeholder="Những thiếu sót">@ctrArgResult.Defects</textarea>
                             </div>
                             <div class="col-md-4">
                                 <label>Câu trả lời</label>
                             </div>
                             <div class="col-md-8 form-group">
-                                <textarea class="form-control" id="answers" placeholder="Câu trả lời">@criticialPoint.Answers</textarea>
+                                <textarea class="form-control" id="answers" placeholder="Câu trả lời">@ctrArgResult.Answers</textarea>
                             </div>
                             <div class="col-md-4">
                                 <label>Kết luận</label>
                             </div>
                             <div class="col-md-8 form-group">
-                                <textarea class="form-control" id="c_conclusions" placeholder="Kết luận">@criticialPoint.Conclusions</textarea>
+                                <textarea class="form-control" id="c_conclusions" placeholder="Kết luận">@ctrArgResult.Conclusions</textarea>
                             </div>
                             <div class="col-md-4">
                                 <label>Điểm</label>
                             </div>
                             <div class="col-md-8 form-group">
-                                <input class="form-control" value="@criticialPoint.Point" />
+                                <input class="form-control" value="@ctrArgResult.Point" />
                             </div>
                         </div>
                     </div>

@@ -15,8 +15,6 @@ using GraduateThesis.ApplicationCore.File;
 using Microsoft.Net.Http.Headers;
 using System.Net.Mime;
 using GraduateThesis.Repository.BLL.Consts;
-using static Microsoft.Extensions.Logging.EventSource.LoggingEventSource;
-using GraduateThesis.Repository.DAL;
 
 #nullable disable
 
@@ -36,6 +34,7 @@ public class ThesisManagerController : WebControllerBase<IThesisRepository, Thes
     private readonly IThesisRevisionRepository _thesisRevisionRepository;
     private readonly ISpecializationRepository _specializationRepository;
     private readonly IFacultyStaffRepository _facultyStaffRepository;
+    private readonly IThesisGroupRepository _thesisGroupRepository;
 
     public ThesisManagerController(IRepository repository, IAuthorizationManager authorizationManager)
         : base(repository.ThesisRepository)
@@ -47,6 +46,7 @@ public class ThesisManagerController : WebControllerBase<IThesisRepository, Thes
         _topicRepository = repository.TopicRepository;
         _specializationRepository = repository.SpecializationRepository;
         _facultyStaffRepository = repository.FacultyStaffRepository;
+        _thesisGroupRepository = repository.ThesisGroupRepository;
         _accountManager = authorizationManager.AccountManager;
     }
 
@@ -116,8 +116,11 @@ public class ThesisManagerController : WebControllerBase<IThesisRepository, Thes
         if (thesis == null)
             return NotFound();
 
-        ViewData["SupervisorResult"] = await _thesisRepository.GetSupervisorResult(thesis.Id);
-        ViewData["CriticialPoint"] = await _thesisRepository.GetCriticialResult(thesis.Id);
+        ViewData["SupvResult"] = await _thesisRepository.GetSupvResultAsync(thesis.Id);
+        ViewData["CtrArgResult"] = await _thesisRepository.GetCtrArgResultAsync(thesis.Id);
+
+        if (thesis.ThesisGroupId != null)
+            ViewData["StudentGroupDts"] = await _thesisGroupRepository.GetStndtGrpDtsAsync(thesis.ThesisGroupId);
  
         return View(thesis);
     }
@@ -936,10 +939,10 @@ public class ThesisManagerController : WebControllerBase<IThesisRepository, Thes
         return RedirectToAction("LoadAssignCLectView", new { thesisId = thesisId });
     }
 
-    [Route("update-supv-point/{thesisId}")]
+    [Route("update-supv-result/{thesisId}")]
     [HttpGet]
     [PageName(Name = "Phiếu đánh giá của GVHD")]
-    public async Task<IActionResult> UpdateSupvPoint(string thesisId)
+    public async Task<IActionResult> UpdateSupvResult(string thesisId)
     {
         _accountManager.SetHttpContext(HttpContext);
         string userId = _accountManager.GetUserId();
@@ -947,31 +950,31 @@ public class ThesisManagerController : WebControllerBase<IThesisRepository, Thes
         ThesisOutput thesis = await _thesisRepository.GetAsync(thesisId);
         ViewData["thesis"] = thesis;
 
-        return View(new SupervisorPointInput { ThesisId = thesisId, LecturerId = userId });
+        return View(new SupvResultInput { ThesisId = thesisId, LecturerId = userId });
     }
 
-    [Route("update-supv-point/{thesisId}")]
+    [Route("update-supv-result/{thesisId}")]
     [HttpPost]
-    public async Task<IActionResult> UpdateSupvPoint(SupervisorPointInput input)
+    public async Task<IActionResult> UpdateSupvResult(SupvResultInput input)
     {
         if (!ModelState.IsValid)
         {
             AddTempData(DataResponseStatus.InvalidData);
-            return RedirectToAction("UpdateSupvPoint", new { thesisId = input.ThesisId });
+            return RedirectToAction("UpdateSupvResult", new { thesisId = input.ThesisId });
         }
 
-        DataResponse dataResponse = await _thesisRepository.UpdateSupvPointAsync(input);
+        DataResponse dataResponse = await _thesisRepository.UpdateSupvResultAsync(input);
         if (dataResponse.Status == DataResponseStatus.Success)
             return RedirectToAction("Details", new { id = input.ThesisId });
 
         AddTempData(dataResponse);
-        return RedirectToAction("UpdateSupvPoint", new { thesisId = input.ThesisId });
+        return RedirectToAction("UpdateSupvResult", new { thesisId = input.ThesisId });
     }
 
-    [Route("update-criticial-point/{thesisId}")]
+    [Route("update-ctrarg-result/{thesisId}")]
     [HttpGet]
     [PageName(Name = "Phiếu đánh giá của GVPB")]
-    public async Task<IActionResult> UpdateCriticialPoint(string thesisId)
+    public async Task<IActionResult> UpdateCtrArgResult(string thesisId)
     {
         _accountManager.SetHttpContext(HttpContext);
         string userId = _accountManager.GetUserId();
@@ -979,25 +982,25 @@ public class ThesisManagerController : WebControllerBase<IThesisRepository, Thes
         ThesisOutput thesis = await _thesisRepository.GetAsync(thesisId);
         ViewData["Thesis"] = thesis;
 
-        return View(new CriticialPointInput { ThesisId = thesisId, LecturerId = userId });
+        return View(new CtrArgResultInput { ThesisId = thesisId, LecturerId = userId });
     }
 
-    [Route("update-criticial-point/{thesisId}")]
+    [Route("update-ctrarg-result/{thesisId}")]
     [HttpPost]
-    public async Task<IActionResult> UpdateCriticialPoint(CriticialPointInput input)
+    public async Task<IActionResult> UpdateCtrArgResult(CtrArgResultInput input)
     {
         if (!ModelState.IsValid)
         {
             AddTempData(DataResponseStatus.InvalidData);
-            return RedirectToAction("UpdateCriticialPoint", new { thesisId = input.ThesisId });
+            return RedirectToAction("UpdateCtrArgResult", new { thesisId = input.ThesisId });
         }
 
-        DataResponse dataResponse = await _thesisRepository.UpdateCriticialPointAsync(input);
+        DataResponse dataResponse = await _thesisRepository.UpdateCtrArgResultAsync(input);
         if (dataResponse.Status == DataResponseStatus.Success)
             return RedirectToAction("Details", new { id = input.ThesisId });
 
         AddTempData(dataResponse);
-        return RedirectToAction("UpdateCriticialPoint", new { thesisId = input.ThesisId });
+        return RedirectToAction("UpdateCtrArgResult", new { thesisId = input.ThesisId });
     }
 
     [Route("get-theses-to-supervise")]
