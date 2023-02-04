@@ -279,21 +279,6 @@ public partial class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, 
 
         thesis.Description = HttpUtility.HtmlDecode(thesis.Description);
 
-        if (thesis.ThesisGroup != null)
-        {
-            thesis.StudentPoints = await _context.ThesisGroupDetails.Include(i => i.Student)
-                .Where(gd => gd.StudentThesisGroupId == thesis.ThesisGroupId && gd.Student.IsDeleted == false)
-                .Select(s => new StudentPointOutput
-                {
-                    StudentId = s.StudentId,
-                    Surname = s.Student.Surname,
-                    Name = s.Student.Name,
-                    SupervisorPoint = s.SupervisorPoint,
-                    CriticialPoint = s.CriticialPoint,
-                    CommitteePoint = s.CommitteePoint,
-                }).ToListAsync();
-        }
-
         thesis.CriticalLecturer = await _context.CounterArgumentResults.Include(i => i.Lecturer)
             .Where(c => c.ThesisId == id && c.Lecturer.IsDeleted == false)
             .Select(s => new FacultyStaffOutput
@@ -1002,7 +987,7 @@ public partial class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, 
         return new DataResponse { Status = DataResponseStatus.Failed };
     }
 
-    public async Task<DataResponse> UpdateSupvPointAsync(SupervisorPointInput input)
+    public async Task<DataResponse> UpdateSupvPointAsync(SupvResultInput input)
     {
         ThesisSupervisor thesisSupervisor = await _context.ThesisSupervisors
             .Where(t => t.ThesisId == input.ThesisId && t.LecturerId == input.LecturerId)
@@ -1031,7 +1016,7 @@ public partial class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, 
         };
     }
 
-    public async Task<DataResponse> UpdateCriticialPointAsync(CriticialPointInput input)
+    public async Task<DataResponse> UpdateCriticialPointAsync(CtrArgResultInput input)
     {
         CounterArgumentResult argumentResult = await _context.CounterArgumentResults
                  .Where(t => t.ThesisId == input.ThesisId && t.LecturerId == input.LecturerId).SingleOrDefaultAsync();
@@ -1062,7 +1047,7 @@ public partial class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, 
         };
     }
 
-    public async Task<SupervisorPointOutput> GetSupervisorResult(string thesisId)
+    public async Task<SupvResultOutput> GetSupervisorResult(string thesisId)
     {
         ThesisSupervisor thesisSupervisor = await _context.ThesisSupervisors
             .Where(ts => ts.ThesisId == thesisId && ts.IsCompleted == true)
@@ -1071,7 +1056,7 @@ public partial class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, 
         if (thesisSupervisor == null)
             return null;
 
-        return new SupervisorPointOutput
+        return new SupvResultOutput
         {
             ThesisId = thesisSupervisor.ThesisId,
             LecturerId = thesisSupervisor.LecturerId,
@@ -1083,7 +1068,7 @@ public partial class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, 
         };
     }
 
-    public async Task<CriticialPointOutput> GetCriticialResult(string thesisId)
+    public async Task<CtrArgResultOutput> GetCriticialResult(string thesisId)
     {
         CounterArgumentResult argumentResult = await _context.CounterArgumentResults
             .Where(ts => ts.ThesisId == thesisId && ts.IsCompleted == true)
@@ -1092,7 +1077,7 @@ public partial class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, 
         if (argumentResult == null)
             return null;
 
-        return new CriticialPointOutput
+        return new CtrArgResultOutput
         {
             ThesisId = argumentResult.ThesisId,
             LecturerId = argumentResult.LecturerId,

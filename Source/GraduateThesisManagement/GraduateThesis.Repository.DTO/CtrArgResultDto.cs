@@ -2,7 +2,7 @@
 
 namespace GraduateThesis.Repository.DTO;
 
-public class CriticialPointInput
+public class CtrArgResultInput
 {
     [Display(Name = "Tên đề tài")]
     [Required(ErrorMessage = "{0} không được để trống")]
@@ -43,8 +43,7 @@ public class CriticialPointInput
     public decimal? Point { get; set; }
 }
 
-public class CriticialPointOutput : CriticialPointInput
+public class CtrArgResultOutput : CtrArgResultInput
 {
 
 }
-
