@@ -301,4 +301,13 @@ public class ThesisGroupRepository : AsyncSubRepository<ThesisGroup, ThesisGroup
         return await _context.ThesisGroupDetails
             .AnyAsync(gd => gd.StudentId == studentId && gd.StudentThesisGroupId == groupId && gd.IsLeader == true);
     }
+
+    public async Task<DataResponse> UpdatePointsAsync(string groupId)
+    {
+        List<ThesisGroupDetail> thesisGroupDetails = await _context.ThesisGroupDetails
+            .Where(gd => gd.StudentThesisGroupId == groupId && gd.StatusId == GroupStatusConsts.Submitted)
+            .ToListAsync();
+
+        return null;
+    }
 }

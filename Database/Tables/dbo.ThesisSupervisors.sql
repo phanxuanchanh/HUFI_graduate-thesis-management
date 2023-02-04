@@ -7,7 +7,6 @@
   [Conclusions] [nvarchar](100) NULL,
   [IsCompleted] [bit] NOT NULL,
   [Point] [decimal](5, 2) NULL,
-  [Notes] [nvarchar](200) NULL,
   CONSTRAINT [PK_Guide_PK_Thesis_ID] PRIMARY KEY CLUSTERED ([ThesisId])
 )
 ON [PRIMARY]

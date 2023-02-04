@@ -1312,7 +1312,7 @@
             </Location>
             <Size>
               <Width>206 px</Width>
-              <Height>229 px</Height>
+              <Height>212 px</Height>
             </Size>
             <DbOid>
               <Path>[HUFI_graduate-thesis].dbo.ThesisSupervisors</Path>
@@ -1338,7 +1338,7 @@
               <Port>
                 <Location>
                   <X>0 px</X>
-                  <Y>114.5 px</Y>
+                  <Y>106 px</Y>
                 </Location>
                 <Anchors>Top Bottom</Anchors>
                 <Align>Left</Align>
@@ -1363,7 +1363,7 @@
             <BendPoints>
               <PointD>
                 <X>840 px</X>
-                <Y>904.5 px</Y>
+                <Y>896 px</Y>
               </PointD>
               <PointD>
                 <X>840 px</X>
@@ -1470,7 +1470,7 @@
               <Port xsi:type="LinkPort">
                 <Location>
                   <X>-294.583381008219 px</X>
-                  <Y>-271 px</Y>
+                  <Y>-288 px</Y>
                 </Location>
                 <Anchors>None</Anchors>
                 <Align>Bottom</Align>
@@ -2582,7 +2582,7 @@
               <Port xsi:type="LinkPort">
                 <Location>
                   <X>-303 px</X>
-                  <Y>-39.1277173913033 px</Y>
+                  <Y>-39.127717391303 px</Y>
                 </Location>
                 <Anchors>None</Anchors>
                 <Align>Right</Align>
@@ -2594,8 +2594,8 @@
               </Port>
             </PortAnchors>
             <CommentOffset>
-              <X>176 px</X>
-              <Y>-31.75 px</Y>
+              <X>196 px</X>
+              <Y>-12.6222826086966 px</Y>
             </CommentOffset>
           </Model>
           <Model xsi:type="RelationLinkModel">
@@ -2767,7 +2767,7 @@
               <Port xsi:type="LinkPort">
                 <Location>
                   <X>379 px</X>
-                  <Y>-56.4104477611943 px</Y>
+                  <Y>-56.4104477611941 px</Y>
                 </Location>
                 <Anchors>None</Anchors>
                 <Align>Left</Align>
@@ -2886,8 +2886,8 @@
           <ScaleMode>Free</ScaleMode>
           <Scale>0.7</Scale>
           <Location>
-            <X>-210.285714081356 px</X>
-            <Y>308.571428571429 px</Y>
+            <X>308.571428571429 px</X>
+            <Y>591.99999836513 px</Y>
           </Location>
         </ViewPort>
       </Model>

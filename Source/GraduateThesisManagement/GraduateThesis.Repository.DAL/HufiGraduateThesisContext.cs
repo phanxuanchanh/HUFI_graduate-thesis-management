@@ -681,7 +681,7 @@ public partial class HufiGraduateThesisContext : DbContext
                 .IsUnicode(false);
             entity.Property(e => e.CommitteePoint).HasColumnType("decimal(5, 2)");
             entity.Property(e => e.CreatedAt).HasColumnType("datetime");
-            entity.Property(e => e.CriticalPoint).HasColumnType("decimal(5, 2)");
+            entity.Property(e => e.CriticialPoint).HasColumnType("decimal(5, 2)");
             entity.Property(e => e.DeletedAt).HasColumnType("datetime");
             entity.Property(e => e.Notes).HasColumnType("ntext");
             entity.Property(e => e.StatusId).HasDefaultValueSql("((1))");
@@ -755,7 +755,6 @@ public partial class HufiGraduateThesisContext : DbContext
                 .IsRequired()
                 .HasMaxLength(50)
                 .IsUnicode(false);
-            entity.Property(e => e.Notes).HasMaxLength(200);
             entity.Property(e => e.Point).HasColumnType("decimal(5, 2)");
             entity.Property(e => e.Results).HasColumnType("ntext");
 

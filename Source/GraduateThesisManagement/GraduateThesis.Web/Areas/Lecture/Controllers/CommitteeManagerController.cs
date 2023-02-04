@@ -1,4 +1,5 @@
 ﻿using GraduateThesis.ApplicationCore.AppController;
+using GraduateThesis.ApplicationCore.Authorization;
 using GraduateThesis.ApplicationCore.Enums;
 using GraduateThesis.ApplicationCore.Models;
 using GraduateThesis.ApplicationCore.WebAttributes;
@@ -23,14 +24,16 @@ public class CommitteeManagerController : WebControllerBase<IThesisCommitteeRepo
     private readonly IFacultyStaffRepository _facultyStaffRepository;
     private readonly ICouncilRepository _councilRepository;
     private readonly IThesisRepository _thesisRepository;
+    private readonly IAccountManager _accountManager;
 
-    public CommitteeManagerController(IRepository repository)
+    public CommitteeManagerController(IRepository repository, IAuthorizationManager authorizationManager)
         : base(repository.ThesisCommitteeRepository)
     {
         _thesisCommitteeRepository = repository.ThesisCommitteeRepository;
         _councilRepository = repository.CouncilRepository;
         _facultyStaffRepository = repository.FacultyStaffRepository;
         _thesisRepository = repository.ThesisRepository;
+        _accountManager = authorizationManager.AccountManager;
     }
 
     protected override Dictionary<string, string> SetOrderByProperties()
@@ -246,5 +249,36 @@ public class CommitteeManagerController : WebControllerBase<IThesisCommitteeRepo
         AddTempData(dataResponse);
 
         return RedirectToAction("LoadAddThesisView", new { committeeId = committeeId });
+    }
+
+    [Route("get-my-cmtes")]
+    [HttpGet]
+    [PageName(Name = "Danh sách tiểu ban của tôi")]
+    public async Task<IActionResult> GetCmtesOfLecturer(int page = 1, int pageSize = 10, string orderBy = "CreatedAt", string orderOptions = "DESC", string searchBy = "All", string keyword = "")
+    {
+        _accountManager.SetHttpContext(HttpContext);
+        string userId = _accountManager.GetUserId();
+
+        OrderOptions orderOpts = (orderOptions == "ASC") ? OrderOptions.ASC : OrderOptions.DESC;
+        Pagination<ThesisCommitteeOutput> pagination = await _thesisCommitteeRepository.GetPaginationAsync(userId, page, pageSize, orderBy, orderOpts, searchBy, keyword);
+        StaticPagedList<ThesisCommitteeOutput> pagedList = pagination.ToStaticPagedList();
+
+        ViewData["OrderByProperties"] = SetOrderByProperties();
+        ViewData["SearchByProperties"] = SetSearchByProperties();
+        ViewData["PagedList"] = pagedList;
+        ViewData["OrderBy"] = orderBy;
+        ViewData["OrderOptions"] = orderOptions;
+        ViewData["SearchBy"] = searchBy;
+        ViewData["Keyword"] = keyword;
+
+        return View();
+    }
+
+    [Route("get-my-cmte/{committeeId}")]
+    [HttpGet]
+    [PageName(Name = "Chi tiết tiểu ban")]
+    public async Task<IActionResult> GetCmteOfLecturer(string committeeId)
+    {
+        return await GetDetailsResult(committeeId);
     }
 }

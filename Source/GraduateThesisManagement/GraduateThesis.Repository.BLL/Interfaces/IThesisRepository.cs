@@ -13,7 +13,6 @@ public interface IThesisRepository : IAsyncSubRepository<ThesisInput, ThesisOutp
     Task<DataResponse> SubmitThesisAsync(string thesisId, string thesisGroupId);
     Task<DataResponse> ApproveThesisAsync(ThesisApprovalInput approvalInput); 
     Task<DataResponse> RejectThesisAsync(ThesisApprovalInput approvalInput); 
-    Task<DataResponse> AllowedRegistration(string studentId, string thesisId);
     Task<Pagination<ThesisOutput>> GetPgnOfPubldThesesAsync(int page, int pageSize, string orderBy, OrderOptions orderOptions, string searchBy, string keyword);
     Task<Pagination<ThesisOutput>> GetPgnOfRejdThesesAsync(int page, int pageSize, string orderBy, OrderOptions orderOptions, string searchBy, string keyword);
     Task<Pagination<ThesisOutput>> GetPgnOfAppdThesesAsync(int page, int pageSize, string orderBy, OrderOptions orderOptions, string searchBy, string keyword);
@@ -43,6 +42,7 @@ public interface IThesisRepository : IAsyncSubRepository<ThesisInput, ThesisOutp
     Task<byte[]> ExportPubldThesesAsync(string lecturerId);
     Task<byte[]> ExportRejdThesesAsync(string lecturerId);
     Task<byte[]> ExportAppdThesesAsync(string lecturerId);
+    Task<byte[]> ExportThesesToSupv(string lecturerId);
     Task<DataResponse> AssignSupervisorAsync(string thesisId, string lecturerId);
     Task<DataResponse> AssignSupervisorAsync(string thesisId);
     Task<DataResponse> AssignSupervisorsAsync(string[] thesisIds);
@@ -57,6 +57,8 @@ public interface IThesisRepository : IAsyncSubRepository<ThesisInput, ThesisOutp
     Task<DataResponse> SubmitThesisAsync(ThesisSubmissionInput input);
     Task<bool> CheckIsInprAsync(string thesisId);
     Task<DataResponse> CanAddMember(string thesisId, int currentStdntNumber);
-    Task<DataResponse> EditThesisPointAsync(SupervisorPointInput input);
-    Task<DataResponse> EditThesisCLecturerPointAsync(CLecturerPointInput input);
+    Task<DataResponse> UpdateSupvPointAsync(SupervisorPointInput input);
+    Task<DataResponse> UpdateCriticialPointAsync(CriticialPointInput input);
+    Task<SupervisorPointOutput> GetSupervisorResult(string thesisId);
+    Task<CriticialPointOutput> GetCriticialResult(string thesisId);
 }

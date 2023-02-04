@@ -72,7 +72,7 @@
                                     <td>@appPage.ControllerName</td>
                                     <td>@appPage.ActionName</td>
                                     <td style="text-align: center;">
-                                        <button type="submit" form="grant_@count" class="btn btn-success btn-sm"><i class="fas fa-trash"></i> Gán quyền</button>
+                                        <button type="submit" form="grant_@count" class="btn btn-success btn-sm"><i class="fas fa-trash"></i> Thêm</button>
                                         <form asp-action="AddPage" id="grant_@count" method="post">
                                             <input type="hidden" name="PageId" value="@appPage.Id" />
                                             <input type="hidden" name="RoleId" value="@appRole.Id" />

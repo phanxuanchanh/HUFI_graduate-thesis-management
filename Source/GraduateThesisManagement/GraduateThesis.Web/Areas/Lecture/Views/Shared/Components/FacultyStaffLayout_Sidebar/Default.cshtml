@@ -181,10 +181,18 @@
                                     <a asp-action="Index" asp-controller="CouncilManager">Danh sách hội đồng</a>
                                 </li>
                             }
+
                             @if (appPages.Any(p => p.ControllerName == "CommitteeManager" && p.ActionName == "Index"))
                             {
                                 <li class="submenu-item ">
                                     <a asp-action="Index" asp-controller="CommitteeManager">Danh sách tiểu ban</a>
+                                </li>
+                            }
+
+                            @if (appPages.Any(p => p.ControllerName == "CommitteeManager" && p.ActionName == "GetCmtesOfLecturer"))
+                            {
+                                <li class="submenu-item ">
+                                    <a asp-action="GetCmtesOfLecturer" asp-controller="CommitteeManager">Tiểu ban của tôi</a>
                                 </li>
                             }
 

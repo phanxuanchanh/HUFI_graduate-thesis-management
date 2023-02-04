@@ -4,9 +4,7 @@ using GraduateThesis.ApplicationCore.File;
 using GraduateThesis.ApplicationCore.Models;
 using GraduateThesis.ApplicationCore.WebAttributes;
 using GraduateThesis.Common.WebAttributes;
-using GraduateThesis.Repository.BLL.Implements;
 using GraduateThesis.Repository.BLL.Interfaces;
-using GraduateThesis.Repository.DAL;
 using GraduateThesis.Repository.DTO;
 using GraduateThesis.WebExtensions;
 using Microsoft.AspNetCore.Mvc;
@@ -169,5 +167,24 @@ public class ThesisGroupManagerController : WebControllerBase<IThesisGroupReposi
     public override async Task<IActionResult> Restore([Required] string id)
     {
         return await RestoreResult(id);
+    }
+
+    [Route("update-points/{groupId}")]
+    [HttpGet]
+    public async Task<IActionResult> UpdatePoints(string groupId)
+    {
+        List<StudentPointInput> studentPoints = new List<StudentPointInput>();
+        studentPoints.Add(new StudentPointInput { StudentId = "A" });
+        studentPoints.Add(new StudentPointInput { StudentId = "B" });
+
+        return View(new GroupPointInput { GroupId = groupId, StudentPoints = studentPoints });
+    }
+
+    [Route("update-points/{groupId}")]
+    [HttpPost]
+    public async Task<IActionResult> UpdatePoints(GroupPointInput input)
+    {
+
+        return View(new GroupPointInput { StudentPoints = new List<StudentPointInput>(2) });
     }
 }

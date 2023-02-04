@@ -21,8 +21,6 @@ public partial class ThesisSupervisor
 
     public decimal? Point { get; set; }
 
-    public string Notes { get; set; }
-
     public virtual FacultyStaff Lecturer { get; set; }
 
     public virtual Thesis Thesis { get; set; }
