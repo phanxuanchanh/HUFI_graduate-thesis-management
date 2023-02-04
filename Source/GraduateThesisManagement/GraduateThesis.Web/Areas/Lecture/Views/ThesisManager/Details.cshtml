@@ -1,4 +1,8 @@
 ﻿@model ThesisOutput
+@{
+    SupervisorPointOutput supervisorPoint = (ViewData["SupervisorResult"] as SupervisorPointOutput)!;
+    CriticialPointOutput criticialPoint = (ViewData["CriticialPoint"] as CriticialPointOutput)!;
+}
 
 <section id="basic-horizontal-layouts">
     <div class="row match-height">
@@ -9,87 +13,84 @@
                 </div>
                 <div class="card-content">
                     <div class="card-body">
-                        <form class="form form-horizontal">
-                            <div class="form-body">
-                                <div class="form-group">
-                                    <label asp-for="Id" class="form-label"></label>
-                                    <input asp-for="Id" class="form-control" disabled />
+                        <div class="form-body">
+                            <div class="form-group">
+                                <label asp-for="Id" class="form-label"></label>
+                                <input asp-for="Id" class="form-control" disabled />
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="Name" class="form-label"></label>
+                                <input asp-for="Name" class="form-control" placeholder="Nhập tên đề tài" disabled />
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="Description" class="form-label"></label>
+                                <textarea asp-for="Description" class="form-control" id="thesisDescription" placeholder="Mô tả" disabled></textarea>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-12 col-md-6 col-lg-6 form-group">
+                                    <label asp-for="MaxStudentNumber" class="form-label"></label>
+                                    <input asp-for="MaxStudentNumber" class="form-control" placeholder="Nhập số sinh viên tối đa" disabled />
                                 </div>
-                                <div class="form-group">
-                                    <label asp-for="Name" class="form-label"></label>
-                                    <input asp-for="Name" class="form-control" placeholder="Nhập tên đề tài" disabled />
-                                </div>
-                                <div class="form-group">
-                                    <label asp-for="Description" class="form-label"></label>
-                                    <textarea asp-for="Description" class="form-control" id="thesisDescription" placeholder="Mô tả" disabled></textarea>
-                                </div>
-                                <div class="row">
-                                    <div class="col-sm-12 col-md-6 col-lg-6 form-group">
-                                        <label asp-for="MaxStudentNumber" class="form-label"></label>
-                                        <input asp-for="MaxStudentNumber" class="form-control" placeholder="Nhập số sinh viên tối đa" disabled />
-                                    </div>
-                                    <div class="col-sm-12 col-md-6 col-lg-6 form-group">
-                                        <label asp-for="Credits" class="form-label"></label>
-                                        <input asp-for="Credits" class="form-control" placeholder="Nhập số tín chỉ" disabled />
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-sm-12 col-md-6 col-lg-6 form-group">
-                                        <label asp-for="Topic.Name" class="form-label"></label>
-                                        <input asp-for="Topic.Name" class="form-control" placeholder="Nhập vào tên chủ đề khóa luận" disabled />
-                                    </div>
-                                    <div class="col-sm-12 col-md-6 col-lg-6 form-group">
-                                        <label asp-for="Specialization.Name" class="form-label"></label>
-                                        <input asp-for="Specialization.Name" class="form-control" placeholder="Nhập vào tên chuyên ngành" disabled />
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-sm-12 col-md-6 col-lg-6 form-group">
-                                        <label asp-for="TrainingLevel.Name" class="form-label"></label>
-                                        <input asp-for="TrainingLevel.Name" class="form-control" placeholder="Nhập vào bậc đào tạo" disabled />
-                                    </div>
-                                    <div class="col-sm-12 col-md-6 col-lg-6 form-group">
-                                        <label asp-for="TrainingForm.Name" class="form-label"></label>
-                                        <input asp-for="TrainingForm.Name" class="form-control" placeholder="Nhập vào hình thức đào tạo" disabled />
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-sm-12 col-md-6 col-lg-6 form-group">
-                                        <label asp-for="DateFrom" class="form-label"></label>
-                                        <input asp-for="DateFrom" class="form-control" disabled />
-                                    </div>
-                                    <div class="col-sm-12 col-md-6 col-lg-6 form-group">
-                                        <label asp-for="DateTo" class="form-label"></label>
-                                        <input asp-for="DateTo" class="form-control" disabled />
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label asp-for="Lecturer.FullName" class="form-label">Giảng viên ra đề</label>
-                                    <input value="@Model.Lecturer.Id - @Model.Lecturer.FullName" class="form-control" placeholder="Nhập tên giảng viên" disabled />
-                                </div>
-                                <div class="form-group">
-                                    <label asp-for="ThesisSupervisor.FullName" class="form-label">Giảng viên hướng dẫn</label>
-                                    <input value="@Model.ThesisSupervisor?.Id - @Model.ThesisSupervisor?.FullName" class="form-control" placeholder="Nhập tên giảng viên" disabled />
-                                </div>
-                                <div class="form-group">
-                                    <label asp-for="CriticalLecturer.FullName" class="form-label">Giảng viên phản biện</label>
-                                    <input value="@Model.CriticalLecturer?.Id - @Model.CriticalLecturer?.FullName" class="form-control" placeholder="Nhập tên giảng viên" disabled />
-                                </div>
-                                <div class="form-group">
-                                    <label asp-for="CreatedAt" class="form-label"></label>
-                                    <input asp-for="CreatedAt" class="form-control" disabled />
-                                </div>
-                                <div class="form-group">
-                                    <label asp-for="UpdatedAt" class="form-label"></label>
-                                    <input asp-for="UpdatedAt" class="form-control" disabled />
-                                </div>
-
-                                <div class="d-flex justify-content-end">
-                                    <a asp-action="Index" class="btn btn-light-secondary me-1 mb-1">Quay về danh sách</a>
-                                    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary me-1 mb-1">Chỉnh sửa</a>
+                                <div class="col-sm-12 col-md-6 col-lg-6 form-group">
+                                    <label asp-for="Credits" class="form-label"></label>
+                                    <input asp-for="Credits" class="form-control" placeholder="Nhập số tín chỉ" disabled />
                                 </div>
                             </div>
-                        </form>
+                            <div class="row">
+                                <div class="col-sm-12 col-md-6 col-lg-6 form-group">
+                                    <label asp-for="Topic.Name" class="form-label"></label>
+                                    <input asp-for="Topic.Name" class="form-control" placeholder="Nhập vào tên chủ đề khóa luận" disabled />
+                                </div>
+                                <div class="col-sm-12 col-md-6 col-lg-6 form-group">
+                                    <label asp-for="Specialization.Name" class="form-label"></label>
+                                    <input asp-for="Specialization.Name" class="form-control" placeholder="Nhập vào tên chuyên ngành" disabled />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-12 col-md-6 col-lg-6 form-group">
+                                    <label asp-for="TrainingLevel.Name" class="form-label"></label>
+                                    <input asp-for="TrainingLevel.Name" class="form-control" placeholder="Nhập vào bậc đào tạo" disabled />
+                                </div>
+                                <div class="col-sm-12 col-md-6 col-lg-6 form-group">
+                                    <label asp-for="TrainingForm.Name" class="form-label"></label>
+                                    <input asp-for="TrainingForm.Name" class="form-control" placeholder="Nhập vào hình thức đào tạo" disabled />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-12 col-md-6 col-lg-6 form-group">
+                                    <label asp-for="DateFrom" class="form-label"></label>
+                                    <input asp-for="DateFrom" class="form-control" disabled />
+                                </div>
+                                <div class="col-sm-12 col-md-6 col-lg-6 form-group">
+                                    <label asp-for="DateTo" class="form-label"></label>
+                                    <input asp-for="DateTo" class="form-control" disabled />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="Lecturer.FullName" class="form-label">Giảng viên ra đề</label>
+                                <input value="@Model.Lecturer.Id - @Model.Lecturer.FullName" class="form-control" placeholder="Nhập tên giảng viên" disabled />
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="ThesisSupervisor.FullName" class="form-label">Giảng viên hướng dẫn</label>
+                                <input value="@Model.ThesisSupervisor?.Id - @Model.ThesisSupervisor?.FullName" class="form-control" placeholder="Nhập tên giảng viên" disabled />
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="CriticalLecturer.FullName" class="form-label">Giảng viên phản biện</label>
+                                <input value="@Model.CriticalLecturer?.Id - @Model.CriticalLecturer?.FullName" class="form-control" placeholder="Nhập tên giảng viên" disabled />
+                            </div>
+                             <div class="form-group">
+                                <label asp-for="ThesisStatus.Name" class="form-label"></label>
+                                <input asp-for="ThesisStatus.Name" class="form-control bg-info" disabled />
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="CreatedAt" class="form-label"></label>
+                                <input asp-for="CreatedAt" class="form-control" disabled />
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="UpdatedAt" class="form-label"></label>
+                                <input asp-for="UpdatedAt" class="form-control" disabled />
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -97,12 +98,120 @@
     </div>
 </section>
 
-@section Styles {
-    <style>
-        .ck-editor__editable {
-            min-height: 450px;
-        }
-    </style>
+@if (supervisorPoint != null)
+{
+    <section id="basic-horizontal-layouts">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title">Đánh giá của GVHD</h4>
+            </div>
+            <div class="card-content">
+                <div class="card-body">
+                    <div class="form-body">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <label>Đánh giá về nội dung</label>
+                            </div>
+                            <div class="col-md-8 form-group">
+                                <textarea class="form-control" id="contents" placeholder="Đánh giá về nội dung">@supervisorPoint.Contents</textarea>
+                            </div>
+                            <div class="col-md-4">
+                                <label>Đánh giá về thái độ</label>
+                            </div>
+                            <div class="col-md-8 form-group">
+                                <textarea class="form-control" id="attitudes" placeholder="Đánh giá về thái độ">@supervisorPoint.Attitudes</textarea>
+                            </div>
+                            <div class="col-md-4">
+                                <label>Đánh giá về kết quả thực hiện</label>
+                            </div>
+                            <div class="col-md-8 form-group">
+                                <textarea class="form-control" id="results" placeholder="Đánh giá về kết quả">@supervisorPoint.Results</textarea>
+                            </div>
+                            <div class="col-md-4">
+                                <label>Kết luận</label>
+                            </div>
+                            <div class="col-md-8 form-group">
+                                <textarea class="form-control" id="conclusions" placeholder="Kết luận">@supervisorPoint.Conclusions</textarea>
+                            </div>
+                            <div class="col-md-4">
+                                <label>Điểm</label>
+                            </div>
+                            <div class="col-md-8 form-group">
+                                <input class="form-control" value="@supervisorPoint.Point" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+}
+
+@if (criticialPoint != null)
+{
+    <section id="basic-horizontal-layouts">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title">Đánh giá của GVPB</h4>
+            </div>
+            <div class="card-content">
+                <div class="card-body">
+                    <div class="form-body">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <label>Đánh giá về nội dung</label>
+                            </div>
+                            <div class="col-md-8 form-group">
+                                <textarea class="form-control" id="c_contents" placeholder="Đánh giá về nội dung">@criticialPoint.Contents</textarea>
+                            </div>
+                            <div class="col-md-4">
+                                <label>Đánh giá về phương pháp nghiên cứu</label>
+                            </div>
+                            <div class="col-md-8 form-group">
+                                <textarea class="form-control" id="researchMethods" placeholder="Đánh giá về pp nghiên cứu">@criticialPoint.ResearchMethods</textarea>
+                            </div>
+                            <div class="col-md-4">
+                                <label>Đánh giá về mặt khoa học</label>
+                            </div>
+                            <div class="col-md-8 form-group">
+                                <textarea class="form-control" id="scientificResults" placeholder="Đánh giá về KQKH">@criticialPoint.ScientificResults</textarea>
+                            </div>
+                            <div class="col-md-4">
+                                <label>Đánh giá về mặt thực tiễn</label>
+                            </div>
+                            <div class="col-md-8 form-group">
+                                <textarea class="form-control" id="practicalResults" placeholder="Đánh giá về mặt thực tiễn">@criticialPoint.PracticalResults</textarea>
+                            </div>
+                            <div class="col-md-4">
+                                <label>Những thiếu sót</label>
+                            </div>
+                            <div class="col-md-8 form-group">
+                                <textarea class="form-control" id="defects" placeholder="Những thiếu sót">@criticialPoint.Defects</textarea>
+                            </div>
+                            <div class="col-md-4">
+                                <label>Câu trả lời</label>
+                            </div>
+                            <div class="col-md-8 form-group">
+                                <textarea class="form-control" id="answers" placeholder="Câu trả lời">@criticialPoint.Answers</textarea>
+                            </div>
+                            <div class="col-md-4">
+                                <label>Kết luận</label>
+                            </div>
+                            <div class="col-md-8 form-group">
+                                <textarea class="form-control" id="c_conclusions" placeholder="Kết luận">@criticialPoint.Conclusions</textarea>
+                            </div>
+                            <div class="col-md-4">
+                                <label>Điểm</label>
+                            </div>
+                            <div class="col-md-8 form-group">
+                                <input class="form-control" value="@criticialPoint.Point" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 }
 
 @section Scripts {
@@ -114,7 +223,133 @@
     <script>
         ClassicEditor
             .create(document.querySelector('#thesisDescription'))
-            .catch(error => {
+            .then(editor => {
+                editor.isReadOnly = true;
+                editor.ui.view.editable.element.style.height = '450px';
+                const toolbarElement = editor.ui.view.toolbar.element;
+                toolbarElement.style.display = 'none';
+            }).catch(error => {
+                console.error(error);
+            });
+
+        ClassicEditor
+            .create(document.querySelector('#contents'))
+            .then(editor => {
+                editor.isReadOnly = true;
+                editor.ui.view.editable.element.style.height = '150px';
+                const toolbarElement = editor.ui.view.toolbar.element;
+                toolbarElement.style.display = 'none';
+            }).catch(error => {
+                console.error(error);
+            });
+
+        ClassicEditor
+            .create(document.querySelector('#attitudes'))
+            .then(editor => {
+                editor.isReadOnly = true;
+                editor.ui.view.editable.element.style.height = '150px';
+                const toolbarElement = editor.ui.view.toolbar.element;
+                toolbarElement.style.display = 'none';
+            }).catch(error => {
+                console.error(error);
+            });
+
+        ClassicEditor
+            .create(document.querySelector('#results'))
+            .then(editor => {
+                editor.isReadOnly = true;
+                editor.ui.view.editable.element.style.height = '150px';
+                const toolbarElement = editor.ui.view.toolbar.element;
+                toolbarElement.style.display = 'none';
+            }).catch(error => {
+                console.error(error);
+            });
+
+        ClassicEditor
+            .create(document.querySelector('#conclusions'))
+            .then(editor => {
+                editor.isReadOnly = true;
+                editor.ui.view.editable.element.style.height = '150px';
+                const toolbarElement = editor.ui.view.toolbar.element;
+                toolbarElement.style.display = 'none';
+            }).catch(error => {
+                console.error(error);
+            });
+
+        ClassicEditor
+            .create(document.querySelector('#c_contents'))
+            .then(editor => {
+                editor.isReadOnly = true;
+                editor.ui.view.editable.element.style.height = '150px';
+                const toolbarElement = editor.ui.view.toolbar.element;
+                toolbarElement.style.display = 'none';
+            }).catch(error => {
+                console.error(error);
+            });
+
+        ClassicEditor
+            .create(document.querySelector('#researchMethods'))
+            .then(editor => {
+                editor.isReadOnly = true;
+                editor.ui.view.editable.element.style.height = '150px';
+                const toolbarElement = editor.ui.view.toolbar.element;
+                toolbarElement.style.display = 'none';
+            }).catch(error => {
+                console.error(error);
+            });
+
+        ClassicEditor
+            .create(document.querySelector('#scientificResults'))
+            .then(editor => {
+                editor.isReadOnly = true;
+                editor.ui.view.editable.element.style.height = '150px';
+                const toolbarElement = editor.ui.view.toolbar.element;
+                toolbarElement.style.display = 'none';
+            }).catch(error => {
+                console.error(error);
+            });
+
+        ClassicEditor
+            .create(document.querySelector('#practicalResults'))
+            .then(editor => {
+                editor.isReadOnly = true;
+                editor.ui.view.editable.element.style.height = '150px';
+                const toolbarElement = editor.ui.view.toolbar.element;
+                toolbarElement.style.display = 'none';
+            }).catch(error => {
+                console.error(error);
+            });
+
+        ClassicEditor
+            .create(document.querySelector('#defects'))
+            .then(editor => {
+                editor.isReadOnly = true;
+                editor.ui.view.editable.element.style.height = '150px';
+                const toolbarElement = editor.ui.view.toolbar.element;
+                toolbarElement.style.display = 'none';
+            }).catch(error => {
+                console.error(error);
+            });
+
+        ClassicEditor
+            .create(document.querySelector('#answers'))
+            .then(editor => {
+                editor.isReadOnly = true;
+                editor.ui.view.editable.element.style.height = '150px';
+                const toolbarElement = editor.ui.view.toolbar.element;
+                toolbarElement.style.display = 'none';
+            }).catch(error => {
+                console.error(error);
+            });
+
+        ClassicEditor
+            .create(document.querySelector('#c_conclusions'))
+            .then(editor => {
+                editor.isReadOnly = true;
+                editor.ui.view.editable.element.style.height = '150px';
+                const toolbarElement = editor.ui.view.toolbar.element;
+                toolbarElement.style.display = 'none';
+            }).catch(error => {
                 console.error(error);
             });
     </script>

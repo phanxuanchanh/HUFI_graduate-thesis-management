@@ -17,7 +17,7 @@ public partial class ThesisGroupDetail
 
     public decimal? SupervisorPoint { get; set; }
 
-    public decimal? CriticalPoint { get; set; }
+    public decimal? CriticialPoint { get; set; }
 
     public decimal? CommitteePoint { get; set; }
 

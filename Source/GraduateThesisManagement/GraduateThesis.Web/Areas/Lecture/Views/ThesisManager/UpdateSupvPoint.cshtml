@@ -1,4 +1,7 @@
 ﻿@model SupervisorPointInput
+@{
+    ThesisOutput thesis = (ViewData["Thesis"] as ThesisOutput)!;
+}
 
 @await Component.InvokeAsync("FacultyStaffLayout_StatusArea")
 
@@ -11,48 +14,43 @@
                 </div>
                 <div class="card-content">
                     <div class="card-body">
-                        <form asp-action="EditThesisPoint" class="form form-horizontal" method="post">
+                        <form asp-action="UpdateSupvPoint" class="form form-horizontal" method="post">
+                            <input type="hidden" asp-for="LecturerId"/>
+                            <input type="hidden" asp-for="ThesisId" />
                             <div class="form-body">
                                 <div class="row">
                                     <div class="col-md-4">
-                                        <label asp-for="ThesisId"></label>
+                                        <label>Tên đề tài</label>
                                     </div>
                                     <div class="col-md-8 form-group">
-                                        <input asp-for="ThesisId" class="form-control" readonly />
+                                        <input class="form-control" value="@thesis.Name" readonly />
                                     </div>
-                                    <div class="col-md-4">
-                                        <label asp-for="LecturerId"></label>
-                                    </div>
-                                    <div class="col-md-8 form-group">
-                                        <input asp-for="LecturerId" class="form-control" readonly />
-                                    </div>
-                                  
                                     <div class="col-md-4">
                                         <label asp-for="Contents"></label>
                                     </div>
                                     <div class="col-md-8 form-group">
-                                        <textarea asp-for="Contents" class="form-control" placeholder="Đánh giá về nội dung"></textarea>
+                                        <textarea asp-for="Contents" class="form-control" id="contents" placeholder="Đánh giá về nội dung"></textarea>
                                         <span asp-validation-for="Contents" class="text-danger"></span>
                                     </div>
                                     <div class="col-md-4">
                                         <label asp-for="Attitudes"></label>
                                     </div>
                                     <div class="col-md-8 form-group">
-                                        <textarea asp-for="Attitudes" class="form-control" placeholder="Đánh giá về thái độ"></textarea>
+                                        <textarea asp-for="Attitudes" class="form-control" id="attitudes" placeholder="Đánh giá về thái độ"></textarea>
                                         <span asp-validation-for="Attitudes" class="text-danger"></span>
                                     </div>
                                     <div class="col-md-4">
                                         <label asp-for="Results"></label>
                                     </div>
                                     <div class="col-md-8 form-group">
-                                        <textarea asp-for="Results" class="form-control" placeholder="Đánh giá về kết quả"></textarea>
+                                        <textarea asp-for="Results" class="form-control" id="results" placeholder="Đánh giá về kết quả"></textarea>
                                         <span asp-validation-for="Results" class="text-danger"></span>
                                     </div>
                                     <div class="col-md-4">
                                         <label asp-for="Conclusions"></label>
                                     </div>
                                     <div class="col-md-8 form-group">
-                                        <textarea asp-for="Conclusions" class="form-control" placeholder="Kết luận"></textarea>
+                                        <textarea asp-for="Conclusions" class="form-control" id="conclusions" placeholder="Kết luận"></textarea>
                                         <span asp-validation-for="Conclusions" class="text-danger"></span>
                                     </div>
                                     <div class="col-md-4">
@@ -61,17 +59,9 @@
                                     <div class="col-md-8 form-group">
                                         <input asp-for="Point" class="form-control" />
                                     </div>
-                                    <div class="col-md-4">
-                                        <label asp-for="Notes"></label>
-                                    </div>
-                                    <div class="col-md-8 form-group">
-                                        <textarea asp-for="Notes" class="form-control" placeholder="Ghi chú"></textarea>
-                                        <span asp-validation-for="Notes" class="text-danger"></span>
-                                    </div>
-                                   
                                     <div class="col-sm-12 d-flex justify-content-end">
-                                        <a asp-action="Index" class="btn btn-light-secondary me-1 mb-1">Quay về danh sách</a>
-                                        <button type="submit" class="btn btn-primary me-1 mb-1">Chỉnh sửa</button>
+                                        <a asp-action="GetThesesToSupv" class="btn btn-light-secondary me-1 mb-1">Quay về danh sách</a>
+                                        <button type="submit" class="btn btn-primary me-1 mb-1">Hoàn tất</button>
                                     </div>
                                 </div>
                             </div>
@@ -83,8 +73,44 @@
     </div>
 </section>
 
+@section Styles {
+    <style>
+        .ck-editor__editable {
+            min-height: 250px;
+        }
+    </style>
+}
+
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+
+    <script src="~/mazer-main/vendors/ckeditor/ckeditor.js"></script>
+    <script>
+        ClassicEditor
+            .create(document.querySelector('#contents'))
+            .catch(error => {
+                console.error(error);
+            });
+
+        ClassicEditor
+            .create(document.querySelector('#attitudes'))
+            .catch(error => {
+                console.error(error);
+            });
+
+        ClassicEditor
+            .create(document.querySelector('#results'))
+            .catch(error => {
+                console.error(error);
+            });
+
+        ClassicEditor
+            .create(document.querySelector('#conclusions'))
+            .catch(error => {
+                console.error(error);
+            });
+
+    </script>
 }

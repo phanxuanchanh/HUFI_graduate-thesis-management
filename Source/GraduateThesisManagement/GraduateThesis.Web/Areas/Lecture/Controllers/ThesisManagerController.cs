@@ -16,6 +16,7 @@ using Microsoft.Net.Http.Headers;
 using System.Net.Mime;
 using GraduateThesis.Repository.BLL.Consts;
 using static Microsoft.Extensions.Logging.EventSource.LoggingEventSource;
+using GraduateThesis.Repository.DAL;
 
 #nullable disable
 
@@ -111,7 +112,14 @@ public class ThesisManagerController : WebControllerBase<IThesisRepository, Thes
     [PageName(Name = "Chi tiết đề tài khóa luận")]
     public override async Task<IActionResult> Details([Required] string id)
     {
-        return await GetDetailsResult(id);
+        ThesisOutput thesis = await _thesisRepository.GetAsync(id);
+        if (thesis == null)
+            return NotFound();
+
+        ViewData["SupervisorResult"] = await _thesisRepository.GetSupervisorResult(thesis.Id);
+        ViewData["CriticialPoint"] = await _thesisRepository.GetCriticialResult(thesis.Id);
+ 
+        return View(thesis);
     }
 
     [Route("create")]
@@ -908,6 +916,9 @@ public class ThesisManagerController : WebControllerBase<IThesisRepository, Thes
             };
 
             ViewData["PagedList"] = pagedList;
+            ViewData["OrderBy"] = orderBy;
+            ViewData["OrderOptions"] = orderOptions;
+            ViewData["SearchBy"] = searchBy;
             ViewData["Keyword"] = keyword;
         }
 
@@ -925,49 +936,68 @@ public class ThesisManagerController : WebControllerBase<IThesisRepository, Thes
         return RedirectToAction("LoadAssignCLectView", new { thesisId = thesisId });
     }
 
-    [Route("thesisPoint/{thesisId}")]
+    [Route("update-supv-point/{thesisId}")]
     [HttpGet]
-    [PageName(Name = "Nhận xét, chấm điểm đề tài")]
-    public async Task<IActionResult> ThesisPoint(string thesisId)
+    [PageName(Name = "Phiếu đánh giá của GVHD")]
+    public async Task<IActionResult> UpdateSupvPoint(string thesisId)
     {
         _accountManager.SetHttpContext(HttpContext);
         string userId = _accountManager.GetUserId();
+
         ThesisOutput thesis = await _thesisRepository.GetAsync(thesisId);
         ViewData["thesis"] = thesis;
-        return View(new SupervisorPointInput { ThesisId = thesisId, LecturerId=userId });
+
+        return View(new SupervisorPointInput { ThesisId = thesisId, LecturerId = userId });
     }
 
-    [Route("edit-thesis-point")]
+    [Route("update-supv-point/{thesisId}")]
     [HttpPost]
-    [PageName(Name = "Chấm điểm đề tài")]
-    public async Task<IActionResult> EditThesisPoint(SupervisorPointInput input)
+    public async Task<IActionResult> UpdateSupvPoint(SupervisorPointInput input)
     {
-        DataResponse dataResponse = await _thesisRepository.EditThesisPointAsync(input);
+        if (!ModelState.IsValid)
+        {
+            AddTempData(DataResponseStatus.InvalidData);
+            return RedirectToAction("UpdateSupvPoint", new { thesisId = input.ThesisId });
+        }
+
+        DataResponse dataResponse = await _thesisRepository.UpdateSupvPointAsync(input);
+        if (dataResponse.Status == DataResponseStatus.Success)
+            return RedirectToAction("Details", new { id = input.ThesisId });
+
         AddTempData(dataResponse);
-        return RedirectToAction("ThesisPoint", new { thesisId = input.ThesisId });
+        return RedirectToAction("UpdateSupvPoint", new { thesisId = input.ThesisId });
     }
 
-
-    [Route("thesisclecturerpoint/{thesisId}")]
+    [Route("update-criticial-point/{thesisId}")]
     [HttpGet]
-    [PageName(Name = "Nhận xét, chấm điểm đề tài")]
-    public async Task<IActionResult> ThesisCLecturerPoint(string thesisId)
+    [PageName(Name = "Phiếu đánh giá của GVPB")]
+    public async Task<IActionResult> UpdateCriticialPoint(string thesisId)
     {
         _accountManager.SetHttpContext(HttpContext);
         string userId = _accountManager.GetUserId();
-        ThesisOutput thesis1 = await _thesisRepository.GetAsync(thesisId);
-        ViewData["thesis1"] = thesis1;
-        return View(new CLecturerPointInput { ThesisId = thesisId, LecturerId = userId });
+
+        ThesisOutput thesis = await _thesisRepository.GetAsync(thesisId);
+        ViewData["Thesis"] = thesis;
+
+        return View(new CriticialPointInput { ThesisId = thesisId, LecturerId = userId });
     }
 
-    [Route("edit-thesis-clecturer-point")]
+    [Route("update-criticial-point/{thesisId}")]
     [HttpPost]
-    [PageName(Name = "Chấm điểm đề tài")]
-    public async Task<IActionResult> EditThesisCLecturerPoint(CLecturerPointInput input)
+    public async Task<IActionResult> UpdateCriticialPoint(CriticialPointInput input)
     {
-        DataResponse dataResponse = await _thesisRepository.EditThesisCLecturerPointAsync(input);
+        if (!ModelState.IsValid)
+        {
+            AddTempData(DataResponseStatus.InvalidData);
+            return RedirectToAction("UpdateCriticialPoint", new { thesisId = input.ThesisId });
+        }
+
+        DataResponse dataResponse = await _thesisRepository.UpdateCriticialPointAsync(input);
+        if (dataResponse.Status == DataResponseStatus.Success)
+            return RedirectToAction("Details", new { id = input.ThesisId });
+
         AddTempData(dataResponse);
-        return RedirectToAction("ThesisCLecturerPoint", new { thesisId = input.ThesisId });
+        return RedirectToAction("UpdateCriticialPoint", new { thesisId = input.ThesisId });
     }
 
     [Route("get-theses-to-supervise")]
@@ -995,7 +1025,7 @@ public class ThesisManagerController : WebControllerBase<IThesisRepository, Thes
 
     [Route("get-theses-to-criticize")]
     [HttpGet]
-    [PageName(Name = "Danh sách đề tài cần hướng dẫn của tôi")]
+    [PageName(Name = "Danh sách đề tài cần phản biện của tôi")]
     public async Task<IActionResult> GetThesesToCriticize(int page = 1, int pageSize = 10, string orderBy = "CreatedAt", string orderOptions = "DESC", string searchBy = "All", string keyword = "")
     {
         _accountManager.SetHttpContext(HttpContext);
@@ -1014,5 +1044,31 @@ public class ThesisManagerController : WebControllerBase<IThesisRepository, Thes
         ViewData["Keyword"] = keyword;
 
         return View();
+    }
+
+    [Route("export-to-supervise")]
+    [HttpGet]
+    [PageName(Name = "Xuất danh sách các đề tài cần HD của tôi")]
+    public async Task<IActionResult> ExportThesesToSupv()
+    {
+        return await ExportResult();
+    }
+
+    [Route("export-to-supervise")]
+    [HttpPost]
+    public async Task<IActionResult> ExportThesesToSupv(ExportMetadata exportMetadata)
+    {
+        _accountManager.SetHttpContext(HttpContext);
+        string userId = _accountManager.GetUserId();
+
+        byte[] bytes = await _thesisRepository.ExportThesesToSupv(userId);
+        ContentDisposition contentDisposition = new ContentDisposition
+        {
+            FileName = $"thesis-in-progress_{DateTime.Now.ToString("ddMMyyyy_HHmmss")}.xlsx"
+        };
+
+        Response.Headers.Add(HeaderNames.ContentDisposition, contentDisposition.ToString());
+
+        return File(bytes, ContentTypeConsts.XLSX);
     }
 }

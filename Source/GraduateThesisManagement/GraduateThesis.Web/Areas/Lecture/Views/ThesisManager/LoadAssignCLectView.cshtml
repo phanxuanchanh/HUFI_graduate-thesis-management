@@ -133,7 +133,7 @@
                                     <div>
                                         <h4 class="card-title">Chọn giảng viên</h4>
                                     </div>
-                                    @await Component.InvokeAsync("FacultyStaffLayout_PagedSearch", new { action = "LoadAssignSupvView", enableSearchBy = true })
+                                    @await Component.InvokeAsync("FacultyStaffLayout_PagedSearch", new { action = "LoadAssignCLectView", enableSearchBy = true })
                                     <div class="dataTable-container">
                                         <table class="table table-striped dataTable-table" id="table1">
                                             <thead>
@@ -179,7 +179,7 @@
                                             </tbody>
                                         </table>
                                     </div>
-                                    @await Component.InvokeAsync("FacultyStaffLayout_Paged", new { action = "LoadAssignSupvView", enableSearchBy = true })
+                                    @await Component.InvokeAsync("FacultyStaffLayout_Paged", new { action = "LoadAssignCLectView", enableSearchBy = true })
                                 </div>
                             </div>
                         }

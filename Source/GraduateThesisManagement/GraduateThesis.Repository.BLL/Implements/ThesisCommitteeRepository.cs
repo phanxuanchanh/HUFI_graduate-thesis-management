@@ -7,6 +7,7 @@ using GraduateThesis.Repository.DAL;
 using GraduateThesis.Repository.DTO;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -103,6 +104,7 @@ public class ThesisCommitteeRepository : AsyncSubRepository<ThesisCommittee, The
                     {
                         Id = committeeRes.ThesisId,
                         Name = committeeRes.Thesis.Name,
+                        ThesisGroupId = committeeRes.Thesis.ThesisGroupId,
                         Lecturer = new FacultyStaffOutput
                         {
                             Id = committeeRes.Thesis.Id,
@@ -131,7 +133,8 @@ public class ThesisCommitteeRepository : AsyncSubRepository<ThesisCommittee, The
                             Id = criticalLecturer.Lecturer.Id,
                             Surname = criticalLecturer.Lecturer.Surname,
                             Name = criticalLecturer.Lecturer.Name
-                        }
+                        },
+                        ThesisGroupId = combined.ThesisGroupId
                     }
                 ).ToListAsync();
 
@@ -251,6 +254,80 @@ public class ThesisCommitteeRepository : AsyncSubRepository<ThesisCommittee, The
         {
             Status = DataResponseStatus.Success,
             Message = "Xóa thành công!"
+        };
+    }
+
+    public async Task<Pagination<ThesisCommitteeOutput>> GetPaginationAsync(string lectureId, int page, int pageSize, string orderBy, OrderOptions orderOptions, string searchBy, string keyword)
+    {
+        IQueryable<CommitteeMember> queryable = _context.CommitteeMembers
+            .Include(i => i.ThesisCommittee).Include(i => i.ThesisCommittee.Council)
+            .Where(cm => cm.MemberId == lectureId && cm.ThesisCommittee.IsDeleted == false);
+
+        if (!string.IsNullOrEmpty(keyword) && string.IsNullOrEmpty(searchBy))
+        {
+            queryable = queryable.Where(cm => cm.ThesisCommittee.Id.Contains(keyword) || cm.ThesisCommittee.Name.Contains(keyword) || cm.ThesisCommittee.Council.Name.Contains(keyword));
+        }
+
+        if (!string.IsNullOrEmpty(keyword) && !string.IsNullOrEmpty(searchBy))
+        {
+            switch (searchBy)
+            {
+                case "All": queryable = queryable.Where(cm => cm.ThesisCommittee.Id.Contains(keyword) || cm.ThesisCommittee.Name.Contains(keyword) || cm.ThesisCommittee.Council.Name.Contains(keyword)); break;
+                case "Id": queryable = queryable.Where(cm => cm.ThesisCommittee.Id.Contains(keyword)); break;
+                case "Name": queryable = queryable.Where(cm => cm.ThesisCommittee.Name.Contains(keyword)); break;
+                case "CouncilName": queryable = queryable.Where(cm => cm.ThesisCommittee.Council.Name.Contains(keyword)); break;
+            }
+        }
+
+        if (string.IsNullOrEmpty(orderBy))
+        {
+            queryable = queryable.OrderByDescending(cm => cm.ThesisCommittee.CreatedAt);
+        }
+        else if (orderOptions == OrderOptions.ASC)
+        {
+            switch (orderBy)
+            {
+                case "Id": queryable = queryable.OrderBy(cm => cm.ThesisCommittee.Id); break;
+                case "Surname": queryable = queryable.OrderBy(cm => cm.ThesisCommittee.Name); break;
+                case "Name": queryable = queryable.OrderBy(cm => cm.ThesisCommittee.Council.Name); break;
+                case "CreatedAt": queryable = queryable.OrderBy(cm => cm.ThesisCommittee.CreatedAt); break;
+            }
+        }
+        else
+        {
+            switch (orderBy)
+            {
+                case "Id": queryable = queryable.OrderByDescending(cm => cm.ThesisCommittee.Id); break;
+                case "Surname": queryable = queryable.OrderByDescending(cm => cm.ThesisCommittee.Name); break;
+                case "Name": queryable = queryable.OrderByDescending(cm => cm.ThesisCommittee.Council.Name); break;
+                case "CreatedAt": queryable = queryable.OrderByDescending(cm => cm.ThesisCommittee.CreatedAt); break;
+            }
+        }
+
+        int n = (page - 1) * pageSize;
+        int totalItemCount = await queryable.CountAsync();
+
+        List<ThesisCommitteeOutput> onePageOfData = await queryable.Skip(n).Take(pageSize)
+            .Select(s => new ThesisCommitteeOutput
+            {
+                Id = s.ThesisCommittee.Id,
+                Name = s.ThesisCommittee.Name,
+                Description = s.ThesisCommittee.Description,
+                Council = new CouncilOutput
+                {
+                    Id = s.ThesisCommittee.Council.Id,
+                    Name = s.ThesisCommittee.Council.Name
+                },
+                CreatedAt = s.ThesisCommittee.CreatedAt,
+                UpdatedAt = s.ThesisCommittee.UpdatedAt
+            }).ToListAsync();
+
+        return new Pagination<ThesisCommitteeOutput>
+        {
+            Page = page,
+            PageSize = pageSize,
+            TotalItemCount = totalItemCount,
+            Items = onePageOfData
         };
     }
 }

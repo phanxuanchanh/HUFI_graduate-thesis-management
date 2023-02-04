@@ -5,7 +5,7 @@
   [IsLeader] [bit] NOT NULL,
   [StatusId] [int] NOT NULL DEFAULT (1),
   [SupervisorPoint] [decimal](5, 2) NULL,
-  [CriticalPoint] [decimal](5, 2) NULL,
+  [CriticialPoint] [decimal](5, 2) NULL,
   [CommitteePoint] [decimal](5, 2) NULL,
   [CreatedAt] [datetime] NULL,
   [UpdatedAt] [datetime] NULL,
