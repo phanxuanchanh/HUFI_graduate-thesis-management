@@ -152,7 +152,7 @@ public class CommitteeManagerController : WebControllerBase<IThesisCommitteeRepo
     [Route("add-member-view/{committeeId}")]
     [HttpGet]
     [PageName(Name = "Thêm thành viên vào tiểu ban")]
-    public async Task<IActionResult> LoadAddMemberView(string committeeId, int page = 1, int pageSize = 5, string orderBy = "CreatedAt", string orderOptions = "DESC", string searchBy = "All", string keyword = "")
+    public async Task<IActionResult> LoadAddMemberView(string committeeId, int page = 1, int pageSize = 10, string orderBy = "CreatedAt", string orderOptions = "DESC", string searchBy = "All", string keyword = "")
     {
         ThesisCommitteeOutput thesisCommittee = await _thesisCommitteeRepository.GetAsync(committeeId);
         OrderOptions orderOpts = (orderOptions == "ASC") ? OrderOptions.ASC : OrderOptions.DESC;
@@ -203,7 +203,7 @@ public class CommitteeManagerController : WebControllerBase<IThesisCommitteeRepo
     [Route("add-thesis-view/{committeeId}")]
     [HttpGet]
     [PageName(Name = "Thêm thành viên vào tiểu ban")]
-    public async Task<IActionResult> LoadAddThesisView(string committeeId, int page = 1, int pageSize = 5, string orderBy = "CreatedAt", string orderOptions = "DESC", string searchBy = "All", string keyword = "")
+    public async Task<IActionResult> LoadAddThesisView(string committeeId, int page = 1, int pageSize = 10, string orderBy = "CreatedAt", string orderOptions = "DESC", string searchBy = "All", string keyword = "")
     {
         ThesisCommitteeOutput thesisCommittee = await _thesisCommitteeRepository.GetAsync(committeeId);
         OrderOptions orderOpts = (orderOptions == "ASC") ? OrderOptions.ASC : OrderOptions.DESC;

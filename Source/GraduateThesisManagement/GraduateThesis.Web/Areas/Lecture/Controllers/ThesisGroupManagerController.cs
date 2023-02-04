@@ -169,22 +169,32 @@ public class ThesisGroupManagerController : WebControllerBase<IThesisGroupReposi
         return await RestoreResult(id);
     }
 
-    [Route("update-points/{groupId}")]
+    [Route("update-points/{thesisId}/{groupId}")]
     [HttpGet]
-    public async Task<IActionResult> UpdatePoints(string groupId)
+    [PageName(Name = "Cập nhật điểm cho nhóm thực hiện đề tài")]
+    public async Task<IActionResult> UpdatePoints(string thesisId, string groupId)
     {
-        List<StudentPointInput> studentPoints = new List<StudentPointInput>();
-        studentPoints.Add(new StudentPointInput { StudentId = "A" });
-        studentPoints.Add(new StudentPointInput { StudentId = "B" });
+        List<StudentGroupDtInput> studentGroupDts = (await _thesisGroupRepository
+            .GetStndtGrpDtsAsync(groupId)).Select(s => { return (s as StudentGroupDtInput); }).ToList();
 
-        return View(new GroupPointInput { GroupId = groupId, StudentPoints = studentPoints });
+        return View(new GroupPointInput { ThesisId = thesisId, GroupId = groupId, StudentPoints = studentGroupDts });
     }
 
     [Route("update-points/{groupId}")]
     [HttpPost]
     public async Task<IActionResult> UpdatePoints(GroupPointInput input)
     {
+        if (!ModelState.IsValid)
+        {
+            AddTempData(DataResponseStatus.InvalidData);
+        }
 
-        return View(new GroupPointInput { StudentPoints = new List<StudentPointInput>(2) });
+        DataResponse dataResponse = await _thesisGroupRepository.UpdatePointsAsync(input);
+        if(dataResponse.Status == DataResponseStatus.Success)
+        {
+            return RedirectToAction("Details", "ThesisManager", new { id = input.ThesisId });
+        }
+
+        return View();
     }
 }

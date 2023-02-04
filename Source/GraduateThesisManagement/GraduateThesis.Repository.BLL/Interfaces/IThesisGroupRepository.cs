@@ -17,5 +17,5 @@ public interface IThesisGroupRepository : IAsyncSubRepository<ThesisGroupInput, 
     Task<DataResponse> DenyFromGroupAsync(string studentId, string groupId);
     Task<bool> CheckIsLeaderAsync(string studentId, string groupId);
     Task<List<StudentGroupDtOutput>> GetStndtGrpDtsAsync(string groupId);
-    Task<DataResponse> UpdatePointsAsync(string groupId);
+    Task<DataResponse> UpdatePointsAsync(GroupPointInput input);
 }
