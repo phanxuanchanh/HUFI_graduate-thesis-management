@@ -310,4 +310,24 @@ public class ThesisGroupRepository : AsyncSubRepository<ThesisGroup, ThesisGroup
 
         return null;
     }
+
+    public async Task<List<StudentGroupDtOutput>> GetStndtGrpDtsAsync(string groupId)
+    {
+        return await _context.ThesisGroupDetails.Include(i => i.Student).Include(i => i.Status)
+            .Where(gd => gd.StudentThesisGroupId == groupId && gd.Student.IsDeleted == false)
+            .Where(gd => gd.StatusId != GroupStatusConsts.Denied)
+            .Select(s => new StudentGroupDtOutput
+            {
+                StudentId = s.Student.Id,
+                Surname = s.Student.Surname,
+                Name = s.Student.Name,
+                Email = s.Student.Email,
+                IsLeader = s.IsLeader,
+                StatusId = s.StatusId,
+                StatusName = s.Status.Name,
+                SupvPoint = s.SupervisorPoint,
+                CtrArgPoint = s.CtrArgPoint,
+                CmtePoint = s.CommitteePoint
+            }).ToListAsync();
+    }
 }

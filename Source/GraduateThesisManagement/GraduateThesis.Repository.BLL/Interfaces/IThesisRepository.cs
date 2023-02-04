@@ -57,8 +57,8 @@ public interface IThesisRepository : IAsyncSubRepository<ThesisInput, ThesisOutp
     Task<DataResponse> SubmitThesisAsync(ThesisSubmissionInput input);
     Task<bool> CheckIsInprAsync(string thesisId);
     Task<DataResponse> CanAddMember(string thesisId, int currentStdntNumber);
-    Task<DataResponse> UpdateSupvPointAsync(SupvResultInput input);
-    Task<DataResponse> UpdateCriticialPointAsync(CtrArgResultInput input);
-    Task<SupvResultOutput> GetSupervisorResult(string thesisId);
-    Task<CtrArgResultOutput> GetCriticialResult(string thesisId);
+    Task<DataResponse> UpdateSupvResultAsync(SupvResultInput input);
+    Task<DataResponse> UpdateCtrArgResultAsync(CtrArgResultInput input);
+    Task<SupvResultOutput> GetSupvResultAsync(string thesisId);
+    Task<CtrArgResultOutput> GetCtrArgResultAsync(string thesisId);
 }
