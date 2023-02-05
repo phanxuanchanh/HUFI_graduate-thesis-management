@@ -21,6 +21,8 @@ public partial class ThesisGroupDetail
 
     public decimal? CommitteePoint { get; set; }
 
+    public decimal? FinalPoint { get; set; }
+
     public DateTime? CreatedAt { get; set; }
 
     public DateTime? UpdatedAt { get; set; }

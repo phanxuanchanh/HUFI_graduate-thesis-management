@@ -302,20 +302,53 @@ public class ThesisGroupRepository : AsyncSubRepository<ThesisGroup, ThesisGroup
             .AnyAsync(gd => gd.StudentId == studentId && gd.StudentThesisGroupId == groupId && gd.IsLeader == true);
     }
 
-    public async Task<DataResponse> UpdatePointsAsync(string groupId)
+    public async Task<DataResponse> UpdatePointsAsync(GroupPointInput input)
     {
-        List<ThesisGroupDetail> thesisGroupDetails = await _context.ThesisGroupDetails
-            .Where(gd => gd.StudentThesisGroupId == groupId && gd.StatusId == GroupStatusConsts.Submitted)
+        Thesis thesis = await _context.Theses.Where(t => t.Id == input.ThesisId && t.IsDeleted == false)
+            .SingleOrDefaultAsync();
+
+        if (thesis == null)
+            return new DataResponse
+            {
+                Status = DataResponseStatus.NotFound,
+                Message = "Không tìm thấy đề tài này!"
+            };
+
+        thesis.StatusId = ThesisStatusConsts.Finished;
+
+        List<ThesisGroupDetail> groupDetails = await _context.ThesisGroupDetails
+            .Where(gd => gd.StudentThesisGroupId == input.GroupId && gd.StatusId == GroupStatusConsts.Submitted)
             .ToListAsync();
 
-        return null;
+        foreach(ThesisGroupDetail groupDetail in groupDetails)
+        {
+            StudentGroupDtInput studentGroupDt = input.StudentPoints
+                .Find(s => s.StudentId == groupDetail.StudentId);
+
+            groupDetail.SupervisorPoint = studentGroupDt.SupvPoint;
+            groupDetail.CtrArgPoint = studentGroupDt.CtrArgPoint;
+            groupDetail.CommitteePoint = studentGroupDt.CmtePoint;
+            groupDetail.FinalPoint = (groupDetail.SupervisorPoint + groupDetail.CtrArgPoint + groupDetail.CommitteePoint) / 3;
+            if (groupDetail.FinalPoint >= (decimal)5.0)
+                groupDetail.StatusId = GroupStatusConsts.Completed;
+            else
+                groupDetail.StatusId = GroupStatusConsts.Failed;
+        }
+
+        await _context.SaveChangesAsync();
+
+        return new DataResponse
+        {
+            Status = DataResponseStatus.Success,
+            Message = "Đã cập nhật điểm cho nhóm thành công!"
+        };
     }
 
     public async Task<List<StudentGroupDtOutput>> GetStndtGrpDtsAsync(string groupId)
     {
         return await _context.ThesisGroupDetails.Include(i => i.Student).Include(i => i.Status)
             .Where(gd => gd.StudentThesisGroupId == groupId && gd.Student.IsDeleted == false)
-            .Where(gd => gd.StatusId != GroupStatusConsts.Denied)
+            .Where(gd => gd.StatusId != GroupStatusConsts.Denied && gd.StatusId != GroupStatusConsts.Pending)
             .Select(s => new StudentGroupDtOutput
             {
                 StudentId = s.Student.Id,

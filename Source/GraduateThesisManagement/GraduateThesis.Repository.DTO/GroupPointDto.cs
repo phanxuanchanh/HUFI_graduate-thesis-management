@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace GraduateThesis.Repository.DTO;
 
 public class GroupPointInput
 {
+    public string ThesisId { get; set; }
     public string GroupId { get; set; }
-    public List<StudentPointInput> StudentPoints { get; set; }
+    public List<StudentGroupDtInput> StudentPoints { get; set; }
 }

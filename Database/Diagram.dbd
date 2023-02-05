@@ -633,7 +633,7 @@
             </Location>
             <Size>
               <Width>269 px</Width>
-              <Height>280 px</Height>
+              <Height>297 px</Height>
             </Size>
             <DbOid>
               <Path>[HUFI_graduate-thesis].dbo.ThesisGroupDetails</Path>
@@ -659,7 +659,7 @@
               <Port>
                 <Location>
                   <X>0 px</X>
-                  <Y>210 px</Y>
+                  <Y>222.75 px</Y>
                 </Location>
                 <Anchors>Top Bottom</Anchors>
                 <Align>Right</Align>
@@ -684,7 +684,7 @@
             <BendPoints>
               <PointD>
                 <X>1649 px</X>
-                <Y>170 px</Y>
+                <Y>182.75 px</Y>
               </PointD>
               <PointD>
                 <X>1649 px</X>
@@ -708,7 +708,7 @@
               <Port xsi:type="LinkPort">
                 <Location>
                   <X>-170.5 px</X>
-                  <Y>-10.4049835205078 px</Y>
+                  <Y>2.34501647949219 px</Y>
                 </Location>
                 <Anchors>None</Anchors>
                 <Align>Right</Align>
@@ -777,7 +777,7 @@
               <Port xsi:type="LinkPort">
                 <Location>
                   <X>0 px</X>
-                  <Y>-75 px</Y>
+                  <Y>-66.5 px</Y>
                 </Location>
                 <Anchors>None</Anchors>
                 <Align>Bottom</Align>
@@ -2884,10 +2884,10 @@
         </Children>
         <ViewPort>
           <ScaleMode>Free</ScaleMode>
-          <Scale>0.7</Scale>
+          <Scale>0.3</Scale>
           <Location>
-            <X>308.571428571429 px</X>
-            <Y>-66.2857159205846 px</Y>
+            <X>-133.333333333333 px</X>
+            <Y>-421.333335876465 px</Y>
           </Location>
         </ViewPort>
       </Model>

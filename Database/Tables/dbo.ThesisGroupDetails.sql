@@ -7,6 +7,7 @@
   [SupervisorPoint] [decimal](5, 2) NULL,
   [CtrArgPoint] [decimal](5, 2) NULL,
   [CommitteePoint] [decimal](5, 2) NULL,
+  [FinalPoint] [decimal](5, 2) NULL,
   [CreatedAt] [datetime] NULL,
   [UpdatedAt] [datetime] NULL,
   [DeletedAt] [datetime] NULL,

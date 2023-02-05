@@ -683,6 +683,7 @@ public partial class HufiGraduateThesisContext : DbContext
             entity.Property(e => e.CreatedAt).HasColumnType("datetime");
             entity.Property(e => e.CtrArgPoint).HasColumnType("decimal(5, 2)");
             entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+            entity.Property(e => e.FinalPoint).HasColumnType("decimal(5, 2)");
             entity.Property(e => e.Notes).HasColumnType("ntext");
             entity.Property(e => e.StatusId).HasDefaultValueSql("((1))");
             entity.Property(e => e.SupervisorPoint).HasColumnType("decimal(5, 2)");

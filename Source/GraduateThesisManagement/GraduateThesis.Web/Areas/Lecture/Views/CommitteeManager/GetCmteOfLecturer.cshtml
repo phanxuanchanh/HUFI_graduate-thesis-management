@@ -1,4 +1,8 @@
 ﻿@model ThesisCommitteeOutput
+@{
+    FacultyStaffOutput facultyStaff = (ViewData["AccountModel"] as FacultyStaffOutput)!;
+    CommitteeMemberOutput cmteMember = Model.Members.Find(f => f.MemberId == facultyStaff.Id)!;
+}
 
 <section id="basic-horizontal-layouts">
     <div class="row match-height">
@@ -165,7 +169,10 @@
                                                                         </ul>
                                                                     </td>
                                                                     <td>
-                                                                       <a asp-action="UpdatePoints" asp-controller="ThesisGroupManager" asp-route-groupId="@thesis.ThesisGroupId" class="btn btn-success btn-sm">Cập nhật điểm</a>
+                                                                        @if (thesis.StatusId == ThesisStatusConsts.Submitted && cmteMember.Titles == "Trưởng ban")
+                                                                        {
+                                                                            <a asp-action="UpdatePoints" asp-controller="ThesisGroupManager" asp-route-groupId="@thesis.ThesisGroupId" asp-route-thesisId="@thesis.Id" class="btn btn-success btn-sm">Cập nhật điểm</a>
+                                                                        }
                                                                     </td>
                                                                 </tr>
                                                                 count++;
