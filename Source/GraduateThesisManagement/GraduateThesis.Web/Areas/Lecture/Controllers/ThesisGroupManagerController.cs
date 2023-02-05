@@ -22,11 +22,13 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers;
 public class ThesisGroupManagerController : WebControllerBase<IThesisGroupRepository, ThesisGroupInput, ThesisGroupOutput, string>
 {
     private readonly IThesisGroupRepository _thesisGroupRepository;
+    private readonly IThesisRepository _thesisRepository;
 
     public ThesisGroupManagerController(IRepository repository)
         :base(repository.ThesisGroupRepository)
     {
-        _thesisGroupRepository = repository.ThesisGroupRepository; 
+        _thesisGroupRepository = repository.ThesisGroupRepository;
+        _thesisRepository = repository.ThesisRepository;
     }
 
     protected override Dictionary<string, string> SetOrderByProperties()
@@ -177,16 +179,19 @@ public class ThesisGroupManagerController : WebControllerBase<IThesisGroupReposi
         List<StudentGroupDtInput> studentGroupDts = (await _thesisGroupRepository
             .GetStndtGrpDtsAsync(groupId)).Select(s => { return (s as StudentGroupDtInput); }).ToList();
 
+        ViewData["Thesis"] = await _thesisRepository.GetAsync(thesisId);
+
         return View(new GroupPointInput { ThesisId = thesisId, GroupId = groupId, StudentPoints = studentGroupDts });
     }
 
-    [Route("update-points/{groupId}")]
+    [Route("update-points/{thesisId}/{groupId}")]
     [HttpPost]
     public async Task<IActionResult> UpdatePoints(GroupPointInput input)
     {
         if (!ModelState.IsValid)
         {
             AddTempData(DataResponseStatus.InvalidData);
+            return RedirectToAction("UpdatePoints", new { thesisId = input.ThesisId, groupId = input.GroupId });
         }
 
         DataResponse dataResponse = await _thesisGroupRepository.UpdatePointsAsync(input);
@@ -195,6 +200,7 @@ public class ThesisGroupManagerController : WebControllerBase<IThesisGroupReposi
             return RedirectToAction("Details", "ThesisManager", new { id = input.ThesisId });
         }
 
-        return View();
+        AddTempData(DataResponseStatus.InvalidData);
+        return RedirectToAction("UpdatePoints", new { thesisId = input.ThesisId, groupId = input.GroupId });
     }
 }

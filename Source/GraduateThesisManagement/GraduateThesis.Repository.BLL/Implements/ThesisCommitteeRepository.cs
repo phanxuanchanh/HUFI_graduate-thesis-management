@@ -116,7 +116,8 @@ public class ThesisCommitteeRepository : AsyncSubRepository<ThesisCommittee, The
                             Id = supervisor.Lecturer.Id,
                             Surname = supervisor.Lecturer.Surname,
                             Name = supervisor.Lecturer.Name
-                        }
+                        },
+                        StatusId = committeeRes.Thesis.StatusId
                     }
                 ).Join(
                     _context.CounterArgumentResults.Include(i => i.Lecturer).Where(c => c.Lecturer.IsDeleted == false),
@@ -134,7 +135,8 @@ public class ThesisCommitteeRepository : AsyncSubRepository<ThesisCommittee, The
                             Surname = criticalLecturer.Lecturer.Surname,
                             Name = criticalLecturer.Lecturer.Name
                         },
-                        ThesisGroupId = combined.ThesisGroupId
+                        ThesisGroupId = combined.ThesisGroupId,
+                        StatusId = combined.StatusId
                     }
                 ).ToListAsync();
 

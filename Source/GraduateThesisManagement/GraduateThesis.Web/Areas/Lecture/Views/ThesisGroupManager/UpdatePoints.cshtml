@@ -1,4 +1,7 @@
 ﻿@model GroupPointInput
+@{
+    ThesisOutput thesis = (ViewData["Thesis"] as ThesisOutput)!;
+}
 
 <section id="basic-horizontal-layouts">
     <div class="card">
@@ -8,13 +11,15 @@
         <div class="card-content">
             <div class="card-body">
                 <form class="form form-horizontal" asp-action="UpdatePoints" asp-route-groupId="@Model.GroupId">
+                    <input type="hidden" asp-for="ThesisId" />
+                    <input type="hidden" asp-for="GroupId" />
                     <div class="form-body">
                         <div class="row">
                             <div class="col-md-4">
-                                <label asp-for="GroupId"></label>
+                                <label>Tên đồ án</label>
                             </div>
                             <div class="col-md-8 form-group">
-                                <input asp-for="GroupId" class="form-control" disabled />
+                                <input class="form-control" value="@thesis.Name" disabled />
                             </div>
                         </div>
 
@@ -54,6 +59,7 @@
                                                             <span class="badge bg-light-primary">@studentGroupDt.StudentId</span>
                                                             <span class="badge bg-light-primary">@studentGroupDt.FullName</span>
                                                             <span class="badge bg-light-primary">@studentGroupDt.Email</span>
+                                                            <input type="hidden" asp-for="StudentPoints[count].StudentId" />
                                                         </td>
                                                         <td>
                                                             <input asp-for="StudentPoints[count].SupvPoint" />

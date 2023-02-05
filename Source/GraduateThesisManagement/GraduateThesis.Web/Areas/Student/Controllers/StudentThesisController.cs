@@ -147,7 +147,7 @@ public class StudentThesisController : WebControllerBase
         DataResponse dataResponse = await _thesisGroupRepository.JoinToGroupAsync(_accountManager.GetUserId(), groupId);
         AddTempData(dataResponse);
 
-        return RedirectToAction("YourStudentThesisGroup");
+        return RedirectToAction("GetThesisGroups");
     }
 
     [Route("deny-from-group")]
@@ -158,7 +158,7 @@ public class StudentThesisController : WebControllerBase
         DataResponse dataResponse = await _thesisGroupRepository.DenyFromGroupAsync(_accountManager.GetUserId(), groupId);
         AddTempData(dataResponse);
 
-        return RedirectToAction("YourStudentThesisGroup");
+        return RedirectToAction("GetThesisGroups");
     }
 
     [Route("thesis-groups")]

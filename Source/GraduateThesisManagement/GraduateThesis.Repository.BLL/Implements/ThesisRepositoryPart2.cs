@@ -465,8 +465,9 @@ public partial class ThesisRepository
             .Where(ts => ts.Thesis.StatusId == ThesisStatusConsts.Submitted && ts.Thesis.IsDeleted == false)
             .Select(s => s.Thesis.Id).ToListAsync();
 
-        IQueryable<Thesis> queryable = _context.Theses.Include(i => i.Lecture)
+        IQueryable<Thesis> queryable = _context.Theses.Include(i => i.Lecture).Include(i => i.ThesisSupervisor)
             .Where(t => t.StatusId == ThesisStatusConsts.Submitted && t.ThesisGroupId != null && t.IsDeleted == false && t.Lecture.IsDeleted == false)
+            .Where(t => t.ThesisSupervisor.IsCompleted == true)
             .WhereBulkNotContains(thesisIds, t => t.Id);
 
         queryable = SetSearchExpression(queryable, searchBy, keyword);
@@ -588,8 +589,9 @@ public partial class ThesisRepository
             .Select(tc => tc.Thesis.Id).ToListAsync();
 
         IQueryable<Thesis> queryable = _context.Theses
-            .Include(i => i.Lecture).Include(i => i.ThesisGroup)
+            .Include(i => i.Lecture).Include(i => i.ThesisGroup).Include(i => i.CommitteeMemberResults)
             .Where(t => t.StatusId == ThesisStatusConsts.Submitted && t.IsDeleted == false && t.Lecture.IsDeleted == false)
+            .Where(t => t.CounterArgumentResult.IsCompleted == true)
             .WhereBulkNotContains(thesisIds, t => t.Id);
 
         queryable = SetSearchExpression(queryable, searchBy, keyword);

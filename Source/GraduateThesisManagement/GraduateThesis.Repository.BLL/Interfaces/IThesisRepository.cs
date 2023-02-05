@@ -10,7 +10,6 @@ public interface IThesisRepository : IAsyncSubRepository<ThesisInput, ThesisOutp
 {
     Task<Pagination<ThesisOutput>> GetPaginationAsync(int page, int pageSize, string orderBy, OrderOptions orderOptions, string searchBy, string keyword);
     Task<DataResponse> RegisterThesisAsync(ThesisRegistrationInput thesisRegistrationInput);
-    Task<DataResponse> SubmitThesisAsync(string thesisId, string thesisGroupId);
     Task<DataResponse> ApproveThesisAsync(ThesisApprovalInput approvalInput); 
     Task<DataResponse> RejectThesisAsync(ThesisApprovalInput approvalInput); 
     Task<Pagination<ThesisOutput>> GetPgnOfPubldThesesAsync(int page, int pageSize, string orderBy, OrderOptions orderOptions, string searchBy, string keyword);

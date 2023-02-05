@@ -84,6 +84,11 @@
                                 <input asp-for="ThesisStatus.Name" class="form-control bg-info" disabled />
                             </div>
                             <div class="form-group">
+                                <label asp-for="File" class="form-label"></label> | 
+                                <a href="~/@Model.File">Xem tập tin</a>
+                                <input asp-for="File" class="form-control" disabled />
+                            </div>
+                            <div class="form-group">
                                 <label asp-for="CreatedAt" class="form-label"></label>
                                 <input asp-for="CreatedAt" class="form-control" disabled />
                             </div>

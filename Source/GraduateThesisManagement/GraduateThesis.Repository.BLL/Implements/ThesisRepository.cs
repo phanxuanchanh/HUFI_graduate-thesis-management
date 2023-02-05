@@ -420,40 +420,6 @@ public partial class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, 
         }
     }
 
-    public async Task<DataResponse> SubmitThesisAsync(string thesisId, string groupId)
-    {
-        Thesis thesis = await _context.Theses.FindAsync(thesisId);
-        if (thesis == null)
-            return new DataResponse
-            {
-                Status = DataResponseStatus.NotFound,
-                Message = "Không tìm thấy đề tài có mã này!"
-            };
-
-        if (thesis.ThesisGroupId == null)
-            return new DataResponse
-            {
-                Status = DataResponseStatus.NotFound,
-                Message = "Đề tài này chưa được đăng ký ! Bạn không được phép nộp đề tài này"
-            };
-
-        if (thesis.ThesisGroupId != groupId)
-            return new DataResponse
-            {
-                Status = DataResponseStatus.InvalidData,
-                Message = "Đề tài này không thuộc nhóm của bạn!"
-            };
-
-        thesis.StatusId = ThesisStatusConsts.Finished;
-        await _context.SaveChangesAsync();
-
-        return new DataResponse
-        {
-            Status = DataResponseStatus.Success,
-            Message = "Bạn đã nộp đề tài thành công!"
-        };
-    }
-
     public async Task<DataResponse> ApproveThesisAsync(ThesisApprovalInput approvalInput)
     {
         Thesis thesis = await _context.Theses
@@ -952,7 +918,7 @@ public partial class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, 
 
         _fileManager.Save(file);
 
-        thesis.File = $"theses/{currentDateString}/file_{input.ThesisId}.rar";
+        thesis.File = $"{currentDateString}/file_{input.ThesisId}.rar";
         thesis.StatusId = ThesisStatusConsts.Submitted;
 
         groupDetails.ForEach(gd =>
