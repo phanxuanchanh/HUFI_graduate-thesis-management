@@ -82,7 +82,7 @@
                                         <tbody id="selectedStudent">
                                             <tr id="selected_@student.Id">
                                                 <td>@student.Id</td>
-                                                <td>@student.Name</td>
+                                                <td>@student.FullName</td>
                                                 <td>@student.StudentClass.Name</td>
                                                 <td>Đây là bạn</td>
                                             </tr>
@@ -117,7 +117,6 @@
         thesisId = "@ViewData["ThesisId"]";
         searchStudentUrl = "@Url.Action("SearchStudents")";
         getStudentByIdUrl = "@Url.Action("GetStudentById")";
-        checkMaxStudentNumberUrl = "@Url.Action("CheckMaxStudentNumber")";
+        checkCanAddMemberUrl = "@Url.Action("CanAddMember")";
     </script>
-
 }

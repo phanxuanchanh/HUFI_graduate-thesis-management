@@ -47,12 +47,18 @@
                                         <a class="btn btn-success btn-sm" asp-action="Details" asp-route-id="@thesisCommittee.Id">
                                             <i class="fas fa-folder"></i> Chi tiết
                                         </a>
-                                        <a class="btn btn-primary btn-sm" asp-action="Edit" asp-route-id="@thesisCommittee.Id">
-                                            <i class="fas fa-folder"></i> Sửa
-                                        </a>
-                                        <a class="btn btn-primary btn-sm" asp-controller="ThesisCommitteeManager" asp-action="LoadThesisMemberView" asp-route-thesisCommitteeId="@thesisCommittee.Id">
-                                            <i class="fas fa-folder"></i> Thêm thành viên
-                                        </a>
+                                        <div class="btn-group">
+                                            <div class="dropdown">
+                                                <button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                    Tác vụ
+                                                </button>
+                                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" style="margin: 0px;">
+                                                    <a class="dropdown-item" asp-action="Edit" asp-route-id="@thesisCommittee.Id">Sửa</a>
+                                                    <a class="dropdown-item" asp-action="LoadAddMemberView" asp-route-committeeId="@thesisCommittee.Id">Thêm thành viên</a>
+                                                    <a class="dropdown-item" asp-action="LoadAddThesisView" asp-route-committeeId="@thesisCommittee.Id">Thêm đề tài</a>
+                                                </div>
+                                            </div>
+                                        </div>
                                         <button type="submit" form="delete_@count" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i> Xóa</button>
                                         <form asp-action="BatchDelete" asp-route-id="@thesisCommittee.Id" id="delete_@count" method="post">
                                         </form>

@@ -23,10 +23,6 @@ public partial class ThesisGroup
 
     public bool IsDeleted { get; set; }
 
-    public bool IsCompleted { get; set; }
-
-    public bool IsFinished { get; set; }
-
     public virtual ICollection<Thesis> Theses { get; } = new List<Thesis>();
 
     public virtual ICollection<ThesisGroupDetail> ThesisGroupDetails { get; } = new List<ThesisGroupDetail>();

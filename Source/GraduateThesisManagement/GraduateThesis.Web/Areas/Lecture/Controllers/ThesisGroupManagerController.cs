@@ -4,9 +4,7 @@ using GraduateThesis.ApplicationCore.File;
 using GraduateThesis.ApplicationCore.Models;
 using GraduateThesis.ApplicationCore.WebAttributes;
 using GraduateThesis.Common.WebAttributes;
-using GraduateThesis.Repository.BLL.Implements;
 using GraduateThesis.Repository.BLL.Interfaces;
-using GraduateThesis.Repository.DAL;
 using GraduateThesis.Repository.DTO;
 using GraduateThesis.WebExtensions;
 using Microsoft.AspNetCore.Mvc;
@@ -24,11 +22,13 @@ namespace GraduateThesis.Web.Areas.Lecture.Controllers;
 public class ThesisGroupManagerController : WebControllerBase<IThesisGroupRepository, ThesisGroupInput, ThesisGroupOutput, string>
 {
     private readonly IThesisGroupRepository _thesisGroupRepository;
+    private readonly IThesisRepository _thesisRepository;
 
     public ThesisGroupManagerController(IRepository repository)
         :base(repository.ThesisGroupRepository)
     {
-        _thesisGroupRepository = repository.ThesisGroupRepository; 
+        _thesisGroupRepository = repository.ThesisGroupRepository;
+        _thesisRepository = repository.ThesisRepository;
     }
 
     protected override Dictionary<string, string> SetOrderByProperties()
@@ -169,5 +169,38 @@ public class ThesisGroupManagerController : WebControllerBase<IThesisGroupReposi
     public override async Task<IActionResult> Restore([Required] string id)
     {
         return await RestoreResult(id);
+    }
+
+    [Route("update-points/{thesisId}/{groupId}")]
+    [HttpGet]
+    [PageName(Name = "Cập nhật điểm cho nhóm thực hiện đề tài")]
+    public async Task<IActionResult> UpdatePoints(string thesisId, string groupId)
+    {
+        List<StudentGroupDtInput> studentGroupDts = (await _thesisGroupRepository
+            .GetStndtGrpDtsAsync(groupId)).Select(s => { return (s as StudentGroupDtInput); }).ToList();
+
+        ViewData["Thesis"] = await _thesisRepository.GetAsync(thesisId);
+
+        return View(new GroupPointInput { ThesisId = thesisId, GroupId = groupId, StudentPoints = studentGroupDts });
+    }
+
+    [Route("update-points/{thesisId}/{groupId}")]
+    [HttpPost]
+    public async Task<IActionResult> UpdatePoints(GroupPointInput input)
+    {
+        if (!ModelState.IsValid)
+        {
+            AddTempData(DataResponseStatus.InvalidData);
+            return RedirectToAction("UpdatePoints", new { thesisId = input.ThesisId, groupId = input.GroupId });
+        }
+
+        DataResponse dataResponse = await _thesisGroupRepository.UpdatePointsAsync(input);
+        if(dataResponse.Status == DataResponseStatus.Success)
+        {
+            return RedirectToAction("Details", "ThesisManager", new { id = input.ThesisId });
+        }
+
+        AddTempData(DataResponseStatus.InvalidData);
+        return RedirectToAction("UpdatePoints", new { thesisId = input.ThesisId, groupId = input.GroupId });
     }
 }

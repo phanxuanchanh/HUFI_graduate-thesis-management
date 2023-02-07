@@ -22,7 +22,7 @@
                 </li>
 
                 <li class="sidebar-item has-sub">
-                    <a asp-action="ExecQuery" asp-controller="SystemManager" class='sidebar-link'>
+                    <a href="#" class='sidebar-link'>
                         <i class="bi bi-stack"></i>
                         <span>Hệ thống</span>
                     </a>
@@ -49,7 +49,7 @@
                 </li>
 
                 <li class="sidebar-item has-sub">
-                    <a asp-action="Index" asp-controller="SystemManager" class='sidebar-link'>
+                    <a href="#" class='sidebar-link'>
                         <i class="bi bi-stack"></i>
                         <span>Sao lưu và phục hồi</span>
                     </a>
@@ -70,42 +70,37 @@
                 </li>
 
                 <li class="sidebar-item has-sub">
-                    <a asp-action="Index" asp-controller="AppPageManager" class='sidebar-link'>
+                    <a href="#" class='sidebar-link'>
                         <i class="bi bi-stack"></i>
-                        <span>Trang</span>
+                        <span>Người dùng</span>
                     </a>
                     <ul class="submenu has-sub">
                         <li class="submenu-item ">
-                            <a asp-action="Index" asp-controller="AppPageManager">Danh sách</a>
+                            <a asp-action="GetFacultyStaffs" asp-controller="UserManager">Nhân viên khoa</a>
                         </li>
                         <li class="submenu-item ">
-                            <a asp-action="Trash" asp-controller="AppPageManager">Thùng rác</a>
+                            <a asp-action="GetFacultyStaffs" asp-controller="UserManager">Sinh viên</a>
                         </li>
                     </ul>
                 </li>
 
                 <li class="sidebar-item has-sub">
-                    <a asp-action="Index" asp-controller="AppRoleManager" class='sidebar-link'>
+                    <a href="#" class='sidebar-link'>
                         <i class="bi bi-stack"></i>
-                        <span>Quyền truy cập</span>
+                        <span>Nhóm quyền & Chức năng</span>
                     </a>
                     <ul class="submenu has-sub">
                         <li class="submenu-item ">
-                            <a asp-action="Index" asp-controller="AppRoleManager">Danh sách</a>
+                            <a asp-action="Index" asp-controller="AppRoleManager">Danh sách quyền</a>
                         </li>
                         <li class="submenu-item ">
-                            <a asp-action="Grant" asp-controller="AppRoleManager">Cấp quyền</a>
-                        </li>
-                        <li class="submenu-item ">
-                            <a asp-action="Revoke" asp-controller="AppRoleManager">Thu hồi</a>
+                            <a asp-action="Index" asp-controller="AppPageManager">Danh sách trang</a>
                         </li>
                     </ul>
                 </li>
 
-                
-
                 <li class="sidebar-item has-sub">
-                    <a asp-action="Index" asp-controller="AppRoleManager" class='sidebar-link'>
+                    <a href="#" class='sidebar-link'>
                         <i class="bi bi-stack"></i>
                         <span>Dịch vụ bên thứ ba</span>
                     </a>

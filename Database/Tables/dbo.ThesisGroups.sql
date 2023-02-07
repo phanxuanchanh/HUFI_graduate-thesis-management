@@ -8,8 +8,6 @@
   [UpdatedAt] [datetime] NULL,
   [DeletedAt] [datetime] NULL,
   [IsDeleted] [bit] NOT NULL,
-  [IsCompleted] [bit] NOT NULL,
-  [IsFinished] [bit] NOT NULL,
   CONSTRAINT [PK_StudentThesisGroup_ID] PRIMARY KEY CLUSTERED ([ID])
 )
 ON [PRIMARY]

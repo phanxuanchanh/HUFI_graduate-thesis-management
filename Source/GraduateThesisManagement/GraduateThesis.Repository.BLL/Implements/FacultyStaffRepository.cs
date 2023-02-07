@@ -48,6 +48,12 @@ public class FacultyStaffRepository : AsyncSubRepository<FacultyStaff, FacultySt
             Surname = s.Surname,
             Name = s.Name,
             Email = s.Email,
+            Roles = _context.AppUserRoles.Include(i => i.Role)
+                .Where(ur => ur.UserId == s.Id).Select(ur => new AppRoleOutput
+                {
+                    Id = ur.Role.Id,
+                    Name = ur.Role.Name
+                }).ToList(),
             CreatedAt = s.CreatedAt
         };
 
@@ -161,6 +167,22 @@ public class FacultyStaffRepository : AsyncSubRepository<FacultyStaff, FacultySt
             };
 
         return new DataResponse<FacultyStaffOutput> { Status = DataResponseStatus.Success };
+    }
+
+    public override async Task<FacultyStaffOutput> GetAsync(string id)
+    {
+        FacultyStaffOutput facultyStaff = await base.GetAsync(id);
+        if(facultyStaff != null)
+        {
+            facultyStaff.Roles = await _context.AppUserRoles.Include(i => i.Role)
+                .Where(ur => ur.UserId == id).Select(s => new AppRoleOutput
+                {
+                    Id = s.Role.Id,
+                    Name = s.Role.Name
+                }).ToListAsync();
+        }
+
+        return facultyStaff;
     }
 
     public async Task<Pagination<FacultyStaffOutput>> GetPaginationAsync(int page, int pageSize, string orderBy, OrderOptions orderOptions, string searchBy, string keyword)
@@ -353,35 +375,6 @@ public class FacultyStaffRepository : AsyncSubRepository<FacultyStaff, FacultySt
         };
     }
 
-    public async Task<Pagination<FacultyStaffOutput>> GetPgnHasRoleIdAsync(string roleId, int page, int pageSize, string keyword)
-    {
-        int n = (page - 1) * pageSize;
-        int totalItemCount = await _context.AppUserRoles
-            .Where(f => f.RoleId == roleId && f.User.IsDeleted == false)
-            .Where(f => f.User.Id.Contains(keyword) || f.User.Surname.Contains(keyword) || f.User.Name.Contains(keyword) || f.User.Email.Contains(keyword))
-            .CountAsync();
-
-        List<FacultyStaffOutput> onePageOfData = await _context.AppUserRoles.Include(i => i.User)
-            .Where(f => f.RoleId == roleId && f.User.IsDeleted == false)
-            .Where(f => f.User.Id.Contains(keyword) || f.User.Surname.Contains(keyword) || f.User.Name.Contains(keyword) || f.User.Email.Contains(keyword))
-            .Skip(n).Take(pageSize)
-            .Select(s => new FacultyStaffOutput
-            {
-                Id = s.User.Id,
-                Surname = s.User.Surname,
-                Name = s.User.Name,
-                Email = s.User.Email
-            }).ToListAsync();
-
-        return new Pagination<FacultyStaffOutput>
-        {
-            Page = page,
-            PageSize = pageSize,
-            TotalItemCount = totalItemCount,
-            Items = onePageOfData
-        };
-    }
-
     public async Task<DataResponse> UpdateProfileAsync(FacultyStaffInput input, FileUploadModel avtUploadModel)
     {
         FacultyStaff facultyStaff_fromDb = await _context.FacultyStaffs.FindAsync(input.Id);
@@ -474,5 +467,92 @@ public class FacultyStaffRepository : AsyncSubRepository<FacultyStaff, FacultySt
             if (memoryStream != null)
                 memoryStream.Dispose();
         }
+    }
+
+    public async Task<DataResponse> GrantRoleAsync(AppUserRoleInput input)
+    {
+        bool checkRolesExists = await _context.AppRoles
+            .AnyAsync(r => r.Id == input.RoleId && r.IsDeleted == false);
+        if (!checkRolesExists)
+            return new DataResponse
+            {
+                Status = DataResponseStatus.NotFound,
+                Message = "Không tìm thấy quyền có Id này!"
+            };
+
+        bool checkUserExists = await _context.FacultyStaffs
+            .AnyAsync(f => f.Id == input.UserId && f.IsDeleted == false);
+        if (!checkUserExists)
+            return new DataResponse
+            {
+                Status = DataResponseStatus.NotFound,
+                Message = "Không tìm thấy người dùng có Id này!"
+            };
+
+        bool checkExists = await _context.AppUserRoles
+            .AnyAsync(ur => ur.RoleId == input.RoleId && ur.UserId == input.UserId);
+
+        if (checkExists)
+            return new DataResponse
+            {
+                Status = DataResponseStatus.AlreadyExists,
+                Message = "Quyền đã được gán vào cho người dùng, không thể thực hiện gán trùng!"
+            };
+
+        AppUserRole appUserRole = new AppUserRole
+        {
+            RoleId = input.RoleId,
+            UserId = input.UserId,
+            CreatedAt = DateTime.Now
+        };
+
+        await _context.AppUserRoles.AddAsync(appUserRole);
+        await _context.SaveChangesAsync();
+
+        return new DataResponse
+        {
+            Status = DataResponseStatus.Success,
+            Message = "Đã gán quyền thành công!"
+        };
+    }
+
+    public async Task<DataResponse> RevokeRoleAsync(AppUserRoleInput input)
+    {
+        bool checkRolesExists = await _context.AppRoles
+            .AnyAsync(r => r.Id == input.RoleId && r.IsDeleted == false);
+        if (!checkRolesExists)
+            return new DataResponse
+            {
+                Status = DataResponseStatus.NotFound,
+                Message = "Không tìm thấy quyền có Id này!"
+            };
+
+        bool checkUserExists = await _context.FacultyStaffs
+            .AnyAsync(f => f.Id == input.UserId && f.IsDeleted == false);
+        if (!checkUserExists)
+            return new DataResponse
+            {
+                Status = DataResponseStatus.NotFound,
+                Message = "Không tìm thấy người dùng có Id này!"
+            };
+
+        AppUserRole appUserRole = await _context.AppUserRoles
+            .FindAsync(input.UserId, input.RoleId);
+
+        if (appUserRole == null)
+            return new DataResponse
+            {
+                Status = DataResponseStatus.AlreadyExists,
+                Message = "Không thể thu hồi quyền vì không tồn tại trong hệ thống!"
+            };
+
+        _context.AppUserRoles.Remove(appUserRole);
+        await _context.SaveChangesAsync();
+
+        return new DataResponse
+        {
+            Status = DataResponseStatus.Success,
+            Message = "Đã thu hồi quyền thành công!"
+        };
     }
 }

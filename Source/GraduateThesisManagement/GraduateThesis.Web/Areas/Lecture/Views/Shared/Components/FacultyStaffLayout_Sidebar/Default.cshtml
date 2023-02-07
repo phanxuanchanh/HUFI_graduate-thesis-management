@@ -167,7 +167,7 @@
                     </li>
                 }
 
-                @if (appPages.Any(p => p.ControllerName == "CouncilManager" || p.ControllerName == "ThesisCommitteeManager"))
+                @if (appPages.Any(p => p.ControllerName == "CouncilManager" || p.ControllerName == "CommitteeManager"))
                 {
                     <li class="sidebar-item  has-sub">
                         <a href="#" class='sidebar-link'>
@@ -181,10 +181,18 @@
                                     <a asp-action="Index" asp-controller="CouncilManager">Danh sách hội đồng</a>
                                 </li>
                             }
+
                             @if (appPages.Any(p => p.ControllerName == "CommitteeManager" && p.ActionName == "Index"))
                             {
                                 <li class="submenu-item ">
                                     <a asp-action="Index" asp-controller="CommitteeManager">Danh sách tiểu ban</a>
+                                </li>
+                            }
+
+                            @if (appPages.Any(p => p.ControllerName == "CommitteeManager" && p.ActionName == "GetCmtesOfLecturer"))
+                            {
+                                <li class="submenu-item ">
+                                    <a asp-action="GetCmtesOfLecturer" asp-controller="CommitteeManager">Tiểu ban của tôi</a>
                                 </li>
                             }
 
@@ -224,20 +232,6 @@
                             {
                                 <li class="submenu-item ">
                                     <a asp-action="GetThesesOfLecturer" asp-controller="ThesisManager">Đề tài của tôi</a>
-                                </li>
-                            }
-
-                            @if (appPages.Any(p => p.ControllerName == "ThesisManager" && p.ActionName == "GetApprovedList"))
-                            {
-                                <li class="submenu-item ">
-                                    <a asp-action="GetApprovedList" asp-controller="ThesisManager">Đã được duyệt</a>
-                                </li>
-                            }
-
-                            @if (appPages.Any(p => p.ControllerName == "ThesisManager" && p.ActionName == "GetRejectedList"))
-                            {
-                                <li class="submenu-item ">
-                                    <a asp-action="GetRejectedList" asp-controller="ThesisManager">Bị từ chối duyệt</a>
                                 </li>
                             }
 

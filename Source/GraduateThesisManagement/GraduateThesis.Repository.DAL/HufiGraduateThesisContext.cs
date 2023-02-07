@@ -31,6 +31,8 @@ public partial class HufiGraduateThesisContext : DbContext
 
     public virtual DbSet<FacultyStaff> FacultyStaffs { get; set; }
 
+    public virtual DbSet<GroupStatus> GroupStatuses { get; set; }
+
     public virtual DbSet<ImplementationPlan> ImplementationPlans { get; set; }
 
     public virtual DbSet<MemberEvaluation> MemberEvaluations { get; set; }
@@ -42,8 +44,6 @@ public partial class HufiGraduateThesisContext : DbContext
     public virtual DbSet<Student> Students { get; set; }
 
     public virtual DbSet<StudentClass> StudentClasses { get; set; }
-
-    public virtual DbSet<Sysdiagram> Sysdiagrams { get; set; }
 
     public virtual DbSet<Thesis> Theses { get; set; }
 
@@ -170,8 +170,6 @@ public partial class HufiGraduateThesisContext : DbContext
                 .HasMaxLength(50)
                 .IsUnicode(false)
                 .HasColumnName("ID");
-            entity.Property(e => e.CreatedAt).HasColumnType("datetime");
-            entity.Property(e => e.DeletedAt).HasColumnType("datetime");
             entity.Property(e => e.MemberId)
                 .IsRequired()
                 .HasMaxLength(50)
@@ -182,9 +180,7 @@ public partial class HufiGraduateThesisContext : DbContext
                 .IsUnicode(false);
             entity.Property(e => e.Titles)
                 .IsRequired()
-                .HasMaxLength(50)
-                .IsUnicode(false);
-            entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+                .HasMaxLength(50);
 
             entity.HasOne(d => d.Member).WithMany(p => p.CommitteeMembers)
                 .HasForeignKey(d => d.MemberId)
@@ -205,14 +201,10 @@ public partial class HufiGraduateThesisContext : DbContext
             entity.Property(e => e.CommitteeMemberId)
                 .HasMaxLength(50)
                 .IsUnicode(false);
-            entity.Property(e => e.CreatedAt).HasColumnType("datetime");
-            entity.Property(e => e.DeletedAt).HasColumnType("datetime");
             entity.Property(e => e.EvaluationId)
-                .IsRequired()
                 .HasMaxLength(50)
                 .IsUnicode(false);
             entity.Property(e => e.Point).HasColumnType("decimal(5, 2)");
-            entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
             entity.HasOne(d => d.CommitteeMember).WithMany(p => p.CommitteeMemberResults)
                 .HasForeignKey(d => d.CommitteeMemberId)
@@ -342,6 +334,18 @@ public partial class HufiGraduateThesisContext : DbContext
                 .HasForeignKey(d => d.FacultyId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_FacultyStaffs_Faculties_ID");
+        });
+
+        modelBuilder.Entity<GroupStatus>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK_GroupStatus_Id");
+
+            entity.ToTable("GroupStatus");
+
+            entity.Property(e => e.Description).HasColumnType("ntext");
+            entity.Property(e => e.Name)
+                .IsRequired()
+                .HasMaxLength(100);
         });
 
         modelBuilder.Entity<ImplementationPlan>(entity =>
@@ -514,24 +518,6 @@ public partial class HufiGraduateThesisContext : DbContext
                 .HasConstraintName("FK_StudentClasses_Faculties_ID");
         });
 
-        modelBuilder.Entity<Sysdiagram>(entity =>
-        {
-            entity.HasKey(e => e.DiagramId).HasName("PK__sysdiagr__C2B05B61B31F7C2C");
-
-            entity.ToTable("sysdiagrams");
-
-            entity.HasIndex(e => new { e.PrincipalId, e.Name }, "UK_principal_name").IsUnique();
-
-            entity.Property(e => e.DiagramId).HasColumnName("diagram_id");
-            entity.Property(e => e.Definition).HasColumnName("definition");
-            entity.Property(e => e.Name)
-                .IsRequired()
-                .HasMaxLength(128)
-                .HasColumnName("name");
-            entity.Property(e => e.PrincipalId).HasColumnName("principal_id");
-            entity.Property(e => e.Version).HasColumnName("version");
-        });
-
         modelBuilder.Entity<Thesis>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK_Thesis_ID");
@@ -547,7 +533,7 @@ public partial class HufiGraduateThesisContext : DbContext
             entity.Property(e => e.Description)
                 .IsRequired()
                 .HasColumnType("ntext");
-            entity.Property(e => e.DocumentFile).HasMaxLength(50);
+            entity.Property(e => e.File).HasMaxLength(500);
             entity.Property(e => e.LectureId)
                 .IsRequired()
                 .HasMaxLength(50)
@@ -556,9 +542,6 @@ public partial class HufiGraduateThesisContext : DbContext
                 .IsRequired()
                 .HasMaxLength(400);
             entity.Property(e => e.Notes).HasMaxLength(200);
-            entity.Property(e => e.PdfFile).HasMaxLength(50);
-            entity.Property(e => e.PresentationFile).HasMaxLength(50);
-            entity.Property(e => e.SourceCode).HasMaxLength(50);
             entity.Property(e => e.SpecializationId)
                 .IsRequired()
                 .HasMaxLength(50)
@@ -653,14 +636,11 @@ public partial class HufiGraduateThesisContext : DbContext
                 .IsUnicode(false);
             entity.Property(e => e.Conclusions).HasColumnType("ntext");
             entity.Property(e => e.Contents).HasColumnType("ntext");
-            entity.Property(e => e.CreatedAt).HasColumnType("datetime");
-            entity.Property(e => e.DeletedAt).HasColumnType("datetime");
             entity.Property(e => e.Point).HasColumnType("decimal(5, 2)");
             entity.Property(e => e.ThesisCommitteeId)
                 .IsRequired()
                 .HasMaxLength(50)
                 .IsUnicode(false);
-            entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
             entity.HasOne(d => d.ThesisCommittee).WithMany(p => p.ThesisCommitteeResults)
                 .HasForeignKey(d => d.ThesisCommitteeId)
@@ -699,10 +679,20 @@ public partial class HufiGraduateThesisContext : DbContext
             entity.Property(e => e.StudentId)
                 .HasMaxLength(50)
                 .IsUnicode(false);
+            entity.Property(e => e.CommitteePoint).HasColumnType("decimal(5, 2)");
             entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+            entity.Property(e => e.CtrArgPoint).HasColumnType("decimal(5, 2)");
             entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+            entity.Property(e => e.FinalPoint).HasColumnType("decimal(5, 2)");
             entity.Property(e => e.Notes).HasColumnType("ntext");
+            entity.Property(e => e.StatusId).HasDefaultValueSql("((1))");
+            entity.Property(e => e.SupervisorPoint).HasColumnType("decimal(5, 2)");
             entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+            entity.HasOne(d => d.Status).WithMany(p => p.ThesisGroupDetails)
+                .HasForeignKey(d => d.StatusId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ThesisGroupDetails_GroupStatus_Id");
 
             entity.HasOne(d => d.Student).WithMany(p => p.ThesisGroupDetails)
                 .HasForeignKey(d => d.StudentId)
@@ -766,7 +756,6 @@ public partial class HufiGraduateThesisContext : DbContext
                 .IsRequired()
                 .HasMaxLength(50)
                 .IsUnicode(false);
-            entity.Property(e => e.Notes).HasMaxLength(200);
             entity.Property(e => e.Point).HasColumnType("decimal(5, 2)");
             entity.Property(e => e.Results).HasColumnType("ntext");
 

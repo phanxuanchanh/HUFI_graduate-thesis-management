@@ -21,13 +21,7 @@ public class ThesisInput
     [Range(1, 3, ErrorMessage = "{0} có giá từ 1 đến 3")]
     public int MaxStudentNumber { get; set; }
 
-    public string DocumentFile { get; set; }
-
-    public string PresentationFile { get; set; }
-
-    public string PdfFile { get; set; }
-
-    public string SourceCode { get; set; }
+    public string File { get; set; }
 
     [Display(Name = "Số tín chỉ")]
     [Required(ErrorMessage = "{0} không được để trống")]
@@ -126,6 +120,9 @@ public class ThesisExport
     public int Semester { get; set; }
     public string SpecializationName { get; set; }
     public string TopicName { get; set; }
-    public string LectureName { get; set; }
+    public string LecturerName { get; set; }
     public string Notes { get; set; }
+    public string SupervisorName { get; set; }
+    public string CLectName { get; set; }
+    public string Students { get; set; }
 }

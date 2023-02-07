@@ -43,6 +43,8 @@ public partial class Student
 
     public string Surname { get; set; }
 
+    public bool? IsCompleted { get; set; }
+
     public virtual StudentClass StudentClass { get; set; }
 
     public virtual ICollection<ThesisGroupDetail> ThesisGroupDetails { get; } = new List<ThesisGroupDetail>();

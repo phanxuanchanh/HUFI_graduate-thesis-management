@@ -14,11 +14,8 @@ public class ThesisGroupDtOutput
     public DateTime? RegistrationDate { get; set; }
     public string GroupNotes { get; set; }
     public string MemberNotes { get; set; }
-    public bool Group_IsCompleted { get; set; }
-    public bool Group_IsFinished { get; set; }
-    public bool Member_IsApproved { get; set; }
-    public bool Member_IsCompleted { get; set; }
-    public bool Member_IsFinished { get; set; }
+    public int StatusId { get; set; }
+    public bool IsLeader { get; set; }
 
     public List<StudentOutput> Students { get; set; }
 }

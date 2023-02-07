@@ -19,13 +19,7 @@
 <section class="section">
     <div class="card">
         <div class="card-header">
-            Xem theo:
-            <a asp-action="GetPndgThesesOfLecturer" class="btn btn-sm btn-info mb-1 me-1">Đang chờ duyệt</a>
-            <a asp-action="GetRejdThesesOfLecturer" class="btn btn-sm btn-danger mb-1 me-1">Bị từ chối duyệt</a>
-            <a asp-action="GetAppdThesesOfLecturer" class="btn btn-sm btn-success mb-1 me-1">Đã được duyệt</a>
-            <a asp-action="GetPublishedList" class="btn btn-sm btn-primary mb-1 me-1">Được phân công hướng dẫn</a>
-            <a asp-action="GetPublishedList" class="btn btn-sm btn-primary mb-1 me-1">Đang phân công phản biện</a>
-            <a asp-action="GetFinishedList" class="btn btn-sm btn-secondary mb-1 me-1">Đã kết thúc</a>
+            @await Component.InvokeAsync("FacultyStaffLayout_MyTListSlctn", new { action = "GetThesesOfLecturer" })
         </div>
         <div class="card-body">
             <div class="dataTable-wrapper dataTable-loading no-footer sortable searchable fixed-columns">
@@ -37,7 +31,7 @@
                                 <th data-sortable="" style="width: 10%;">
                                     <a href="#" class="dataTable-sorter">STT</a>
                                 </th>
-                                <th data-sortable="" style="width: 15%;">
+                                <th data-sortable="" style="width: 20%;">
                                     <a href="#" class="dataTable-sorter">@Html.DisplayNameFor(model => model.Id)</a>
                                 </th>
                                 <th data-sortable="" style="width: 35%;">
@@ -49,7 +43,7 @@
                                 <th data-sortable="" style="width: 8%">
                                     <a href="#" class="dataTable-sorter">@Html.DisplayNameFor(model => model.Semester)</a>
                                 </th>
-                                <th data-sortable="" style="width: 20%;">
+                                <th data-sortable="" style="width: 15%;">
                                     <a href="#" class="dataTable-sorter">Công cụ</a>
                                 </th>
                             </tr>
@@ -96,12 +90,6 @@
                                         <a class="btn btn-success btn-sm" asp-action="Details" asp-route-id="@thesis.Id">
                                             <i class="fas fa-folder"></i> Chi tiết
                                         </a>
-                                        <a class="btn btn-primary btn-sm" asp-action="Edit" asp-route-id="@thesis.Id">
-                                            <i class="fas fa-folder"></i> Sửa
-                                        </a>
-                                        <button type="submit" form="delete_@count" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i> Xóa</button>
-                                        <form asp-action="BatchDelete" asp-route-id="@thesis.Id" id="delete_@count" method="post">
-                                        </form>
                                     </td>
                                 </tr>
                                 count++;
