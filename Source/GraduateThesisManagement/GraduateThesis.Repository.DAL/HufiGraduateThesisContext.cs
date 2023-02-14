@@ -311,7 +311,9 @@ public partial class HufiGraduateThesisContext : DbContext
                 .HasMaxLength(50)
                 .IsUnicode(false)
                 .HasDefaultValueSql("('BHyFWSywrk')");
-            entity.Property(e => e.Gender).HasMaxLength(10);
+            entity.Property(e => e.Gender)
+                .HasMaxLength(10)
+                .HasDefaultValueSql("('Nam')");
             entity.Property(e => e.Name).HasMaxLength(100);
             entity.Property(e => e.Notes).HasMaxLength(200);
             entity.Property(e => e.Password)
@@ -522,6 +524,8 @@ public partial class HufiGraduateThesisContext : DbContext
         {
             entity.HasKey(e => e.Id).HasName("PK_Thesis_ID");
 
+            entity.HasIndex(e => e.ThesisGroupId, "UQ__Theses__A7E70BA48A7956F9").IsUnique();
+
             entity.Property(e => e.Id)
                 .HasMaxLength(50)
                 .IsUnicode(false)
@@ -581,8 +585,8 @@ public partial class HufiGraduateThesisContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Theses_ThesisStatus_Id");
 
-            entity.HasOne(d => d.ThesisGroup).WithMany(p => p.Theses)
-                .HasForeignKey(d => d.ThesisGroupId)
+            entity.HasOne(d => d.ThesisGroup).WithOne(p => p.Thesis)
+                .HasForeignKey<Thesis>(d => d.ThesisGroupId)
                 .OnDelete(DeleteBehavior.SetNull)
                 .HasConstraintName("FK_Theses_ThesisGroups_ID");
 

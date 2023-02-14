@@ -2,7 +2,7 @@
   [ID] [varchar](50) NOT NULL,
   [FacultyId] [varchar](50) NOT NULL DEFAULT ('BHyFWSywrk'),
   [Description] [ntext] NULL,
-  [Gender] [nvarchar](10) NULL,
+  [Gender] [nvarchar](10) NULL DEFAULT ('Nam'),
   [Phone] [varchar](20) NULL,
   [Address] [nvarchar](50) NULL,
   [Email] [nvarchar](50) NOT NULL,
@@ -22,7 +22,8 @@
   [Surname] [nvarchar](200) NULL,
   [Name] [nvarchar](100) NULL,
   CONSTRAINT [PK_FacultyStaff_ID] PRIMARY KEY CLUSTERED ([ID]),
-  UNIQUE ([Email])
+  UNIQUE ([Email]),
+  CHECK ([Gender]=N'Nữ' OR [Gender]='Nam')
 )
 ON [PRIMARY]
 TEXTIMAGE_ON [PRIMARY]

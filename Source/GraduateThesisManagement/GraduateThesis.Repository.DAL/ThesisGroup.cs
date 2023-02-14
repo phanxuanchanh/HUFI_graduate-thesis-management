@@ -23,7 +23,7 @@ public partial class ThesisGroup
 
     public bool IsDeleted { get; set; }
 
-    public virtual ICollection<Thesis> Theses { get; } = new List<Thesis>();
+    public virtual Thesis Thesis { get; set; }
 
     public virtual ICollection<ThesisGroupDetail> ThesisGroupDetails { get; } = new List<ThesisGroupDetail>();
 }
