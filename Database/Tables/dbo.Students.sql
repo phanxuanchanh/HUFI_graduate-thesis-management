@@ -20,7 +20,8 @@ CREATE TABLE [dbo].[Students] (
   [Surname] [nvarchar](200) NOT NULL,
   [IsCompleted] [bit] NULL,
   CONSTRAINT [PK_Students_ID] PRIMARY KEY CLUSTERED ([ID]),
-  UNIQUE ([Email])
+  UNIQUE ([Email]),
+  CHECK ([Gender]=N'N?' OR [Gender]='Nam')
 )
 ON [PRIMARY]
 TEXTIMAGE_ON [PRIMARY]

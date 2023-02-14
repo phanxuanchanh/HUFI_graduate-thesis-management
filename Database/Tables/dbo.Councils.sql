@@ -8,7 +8,8 @@
   [UpdatedAt] [datetime] NULL,
   [DeletedAt] [datetime] NULL,
   [IsDeleted] [bit] NOT NULL,
-  CONSTRAINT [PK_Councils_ID] PRIMARY KEY CLUSTERED ([ID])
+  CONSTRAINT [PK_Councils_ID] PRIMARY KEY CLUSTERED ([ID]),
+  CHECK ([Semester]=(3) OR [Semester]=(2) OR [Semester]=(1))
 )
 ON [PRIMARY]
 TEXTIMAGE_ON [PRIMARY]

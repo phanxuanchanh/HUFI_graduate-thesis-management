@@ -12,7 +12,10 @@
   [UpdatedAt] [datetime] NULL,
   [DeletedAt] [datetime] NULL,
   [IsDeleted] [bit] NOT NULL,
-  CONSTRAINT [PK_StudentThesisGroupDetail_PK_StudentThesisGroup_ID] PRIMARY KEY CLUSTERED ([StudentThesisGroupId], [StudentId])
+  CONSTRAINT [PK_StudentThesisGroupDetail_PK_StudentThesisGroup_ID] PRIMARY KEY CLUSTERED ([StudentThesisGroupId], [StudentId]),
+  CHECK ([CommitteePoint]>=(0)),
+  CHECK ([CtrArgPoint]>=(0)),
+  CHECK ([SupervisorPoint]>=(0))
 )
 ON [PRIMARY]
 TEXTIMAGE_ON [PRIMARY]

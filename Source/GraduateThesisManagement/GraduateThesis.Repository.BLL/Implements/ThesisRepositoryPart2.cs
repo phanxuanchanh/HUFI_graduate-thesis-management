@@ -340,11 +340,11 @@ public partial class ThesisRepository
     public async Task<Pagination<ThesisOutput>> GetPgnToAssignSupvAsync(int page, int pageSize, string orderBy, OrderOptions orderOptions, string searchBy, string keyword)
     {
         List<string> thesisIds = await _context.ThesisSupervisors.Include(i => i.Thesis)
-            .Where(ts => (ts.Thesis.StatusId == ThesisStatusConsts.Published || ts.Thesis.StatusId == ThesisStatusConsts.InProgress) && ts.Thesis.IsDeleted == false)
+            .Where(ts => ts.Thesis.StatusId == ThesisStatusConsts.Approved && ts.Thesis.IsDeleted == false)
             .Select(s => s.Thesis.Id).ToListAsync();
 
         IQueryable<Thesis> queryable = _context.Theses.Include(i => i.Lecture)
-            .Where(t => (t.StatusId == ThesisStatusConsts.Published || t.StatusId == ThesisStatusConsts.InProgress) && t.ThesisGroupId != null && t.IsDeleted == false && t.Lecture.IsDeleted == false)
+            .Where(t => t.StatusId == ThesisStatusConsts.Approved && t.IsDeleted == false && t.Lecture.IsDeleted == false)
             .WhereBulkNotContains(thesisIds, t => t.Id);
 
         queryable = SetSearchExpression(queryable, searchBy, keyword);
@@ -383,7 +383,7 @@ public partial class ThesisRepository
     {
         IQueryable<ThesisSupervisor> queryable = _context.ThesisSupervisors
             .Include(i => i.Thesis).Include(i => i.Thesis.Lecture)
-            .Where(ts => (ts.Thesis.StatusId == ThesisStatusConsts.Published || ts.Thesis.StatusId == ThesisStatusConsts.InProgress) && ts.Thesis.IsDeleted == false && ts.Thesis.Lecture.IsDeleted == false);
+            .Where(ts => ts.Thesis.StatusId == ThesisStatusConsts.Approved && ts.Thesis.IsDeleted == false && ts.Thesis.Lecture.IsDeleted == false);
 
         if (!string.IsNullOrEmpty(keyword) && string.IsNullOrEmpty(searchBy))
         {

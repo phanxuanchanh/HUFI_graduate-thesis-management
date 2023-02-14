@@ -26,7 +26,7 @@ public class ThesisGroupRepository : AsyncSubRepository<ThesisGroup, ThesisGroup
 
     protected override void ConfigureIncludes()
     {
-        IncludeMany(i => i.Theses);
+        IncludeMany(i => i.Thesis);
     }
 
     protected override void ConfigureSelectors()
@@ -48,16 +48,15 @@ public class ThesisGroupRepository : AsyncSubRepository<ThesisGroup, ThesisGroup
             Description = s.Description,
             StudentQuantity = s.StudentQuantity,
             Notes = s.Notes,
-            Thesis = s.Theses.Select(ts => new ThesisOutput
+            Thesis = new ThesisOutput
             {
-                Id = ts.Id,
-                Name = ts.Name,
-                Description = ts.Description,
-                Notes = ts.Notes,
-                TopicId = ts.Notes,
-                MaxStudentNumber = ts.MaxStudentNumber,
-
-            }).FirstOrDefault()
+                Id = s.Thesis.Id,
+                Name = s.Thesis.Name,
+                Description = s.Thesis.Description,
+                Notes = s.Thesis.Notes,
+                TopicId = s.Thesis.Notes,
+                MaxStudentNumber = s.Thesis.MaxStudentNumber,
+            }
         };
     }
 
