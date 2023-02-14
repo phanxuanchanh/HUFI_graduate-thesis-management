@@ -700,6 +700,14 @@ public partial class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, 
                 Message = "Không thể công bố khi đề tài đang diễn ra hoặc đã kết thúc!"
             };
 
+        bool checkSupvExists = await _context.ThesisSupervisors.AnyAsync(ts => ts.ThesisId == thesisId);
+        if (!checkSupvExists)
+            return new DataResponse
+            {
+                Status = DataResponseStatus.Failed,
+                Message = "Không thể công bố đề tài khi chưa thực hiện phân công giảng viên hướng dẫn"
+            };
+
         thesis.StatusId = ThesisStatusConsts.Published;
         await _context.SaveChangesAsync();
 
@@ -712,9 +720,16 @@ public partial class ThesisRepository : AsyncSubRepository<Thesis, ThesisInput, 
 
     public async Task<DataResponse> PublishThesesAsync(string[] thesisIds)
     {
-        List<Thesis> theses = await _context.Theses
+        List<Thesis> theses = await _context.Theses.Include(i => i.ThesisSupervisor)
             .Where(t => t.StatusId == ThesisStatusConsts.Approved && t.IsDeleted == false)
             .WhereBulkContains(thesisIds, s => s.Id).ToListAsync();
+
+        if (theses.Any(t => t.ThesisSupervisor == null))
+            return new DataResponse
+            {
+                Status = DataResponseStatus.Failed,
+                Message = "Không thể phân công những đề tài đã chọn. Vì có đề tài chưa được phân công GVHD"
+            };
 
         theses.ForEach((t) => { t.StatusId = ThesisStatusConsts.Published; });
         await _context.SaveChangesAsync();
