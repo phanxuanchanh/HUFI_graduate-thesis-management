@@ -249,17 +249,10 @@
                                 </li>
                             }
 
-                            @if (appPages.Any(p => p.ControllerName == "ThesisManager" && p.ActionName == "Import"))
+                            @if (appPages.Any(p => p.ControllerName == "ThesisManager" && p.ActionName == "ExportThesesInpr"))
                             {
                                 <li class="submenu-item ">
-                                    <a asp-action="Import" asp-controller="ThesisManager">Nhập</a>
-                                </li>
-                            }
-
-                            @if (appPages.Any(p => p.ControllerName == "ThesisManager" && p.ActionName == "Export"))
-                            {
-                                <li class="submenu-item ">
-                                    <a asp-action="Export" asp-controller="">Xuất</a>
+                                    <a asp-action="ExportThesesInpr" asp-controller="ThesisManager">Xuất (đang TH)</a>
                                 </li>
                             }
 
