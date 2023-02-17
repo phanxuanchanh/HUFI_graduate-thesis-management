@@ -16,12 +16,12 @@ CREATE TABLE [dbo].[Students] (
   [IsDeleted] [bit] NOT NULL,
   [VerificationCode] [varchar](100) NULL,
   [CodeExpTime] [datetime] NULL,
-  [Gender] [nvarchar](10) NULL DEFAULT (N'Nam'),
+  [Gender] [nvarchar](10) NULL DEFAULT ('Nam'),
   [Surname] [nvarchar](200) NOT NULL,
   [IsCompleted] [bit] NULL,
   CONSTRAINT [PK_Students_ID] PRIMARY KEY CLUSTERED ([ID]),
   UNIQUE ([Email]),
-  CHECK ([Gender]=N'N?' OR [Gender]='Nam')
+  CHECK ([Gender]=N'N?' OR [Gender]=N'Nam')
 )
 ON [PRIMARY]
 TEXTIMAGE_ON [PRIMARY]
