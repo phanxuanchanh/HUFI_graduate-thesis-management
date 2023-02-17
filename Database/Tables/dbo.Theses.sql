@@ -22,11 +22,16 @@
   [StatusId] [int] NOT NULL DEFAULT (1),
   [File] [nvarchar](500) NULL,
   CONSTRAINT [PK_Thesis_ID] PRIMARY KEY CLUSTERED ([ID]),
-  UNIQUE ([ThesisGroupId]),
   CHECK ([Semester]=(3) OR [Semester]=(2) OR [Semester]=(1))
 )
 ON [PRIMARY]
 TEXTIMAGE_ON [PRIMARY]
+GO
+
+CREATE UNIQUE INDEX [ux_groupId_notnull]
+  ON [dbo].[Theses] ([ThesisGroupId])
+  WHERE ([ThesisGroupId] IS NOT NULL)
+  ON [PRIMARY]
 GO
 
 ALTER TABLE [dbo].[Theses]

@@ -289,6 +289,10 @@ public partial class HufiGraduateThesisContext : DbContext
 
             entity.HasIndex(e => e.Email, "UQ__FacultyS__A9D10534A2288D2B").IsUnique();
 
+            entity.HasIndex(e => e.Phone, "ux_fsphone_notnull")
+                .IsUnique()
+                .HasFilter("([Phone] IS NOT NULL)");
+
             entity.Property(e => e.Id)
                 .HasMaxLength(50)
                 .IsUnicode(false)
@@ -444,6 +448,10 @@ public partial class HufiGraduateThesisContext : DbContext
 
             entity.HasIndex(e => e.Email, "UQ__Students__A9D105343DDCBD48").IsUnique();
 
+            entity.HasIndex(e => e.Phone, "ux_sphone_notnull")
+                .IsUnique()
+                .HasFilter("([Phone] IS NOT NULL)");
+
             entity.Property(e => e.Id)
                 .HasMaxLength(50)
                 .IsUnicode(false)
@@ -524,7 +532,9 @@ public partial class HufiGraduateThesisContext : DbContext
         {
             entity.HasKey(e => e.Id).HasName("PK_Thesis_ID");
 
-            entity.HasIndex(e => e.ThesisGroupId, "UQ__Theses__A7E70BA48A7956F9").IsUnique();
+            entity.HasIndex(e => e.ThesisGroupId, "ux_groupId_notnull")
+                .IsUnique()
+                .HasFilter("([ThesisGroupId] IS NOT NULL)");
 
             entity.Property(e => e.Id)
                 .HasMaxLength(50)

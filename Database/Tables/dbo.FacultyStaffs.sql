@@ -29,6 +29,12 @@ ON [PRIMARY]
 TEXTIMAGE_ON [PRIMARY]
 GO
 
+CREATE UNIQUE INDEX [ux_fsphone_notnull]
+  ON [dbo].[FacultyStaffs] ([Phone])
+  WHERE ([Phone] IS NOT NULL)
+  ON [PRIMARY]
+GO
+
 ALTER TABLE [dbo].[FacultyStaffs]
   ADD CONSTRAINT [FK_FacultyStaffs_Faculties_ID] FOREIGN KEY ([FacultyId]) REFERENCES [dbo].[Faculties] ([ID]) ON DELETE SET DEFAULT ON UPDATE CASCADE
 GO
